@@ -1,0 +1,80 @@
+try:
+    import hotshot
+    from hotshot import stats
+except ImportError:
+    hotshot, stats = None, None
+import os
+import tempfile
+
+from unittest2 import Plugin
+
+
+class Profiler(Plugin):
+    configSection = 'profiler'
+    commandLineSwitch = ('P', 'profile', 'Run tests under profiler')
+
+    def __init__(self):
+        self.pfile = self.config.as_str('filename', '')
+        self.sort = self.config.as_str('sort', 'cumulative')
+        self.restrict = self.config.as_list('restrict', [])
+        self.clean = False
+        self.fileno = None
+
+    def startTestRun(self, event):
+        if not hotshot:
+            return
+        self.createPfile()
+        self.prof = hotshot.Profile(self.pfile)
+        self.suite = event.suite
+        event.suite = self.runProf
+
+    def runProf(self, result):
+        self.prof.runcall(self.suite, result)
+
+    def stopTestRun(self, event):
+        if not hotshot:
+            return
+        # write prof output to stream
+        class Stream:
+            def write(self, *msg):
+                for m in msg:
+                    event.message(unicode(m), (1, 2))
+                    event.message(u' ', (1, 2))
+        stream = Stream()
+        self.prof.close()
+        prof_stats = stats.load(self.pfile)
+        prof_stats.sort_stats(self.sort)
+        event.message("\n\nProfiling results\n", (1, 2))
+        compat_25 = hasattr(prof_stats, 'stream')
+        if compat_25:
+            tmp = prof_stats.stream
+            prof_stats.stream = stream
+        else:
+            tmp = sys.stdout
+            sys.stdout = stream
+        try:
+            if self.restrict:
+                prof_stats.print_stats(*self.restrict)
+            else:
+                prof_stats.print_stats()
+        finally:
+            if compat_25:
+                prof_stats.stream = tmp
+            else:
+                sys.stdout = tmp
+        self.prof.close()
+        if self.clean:
+            if self.fileno:
+                try:
+                    os.close(self.fileno)
+                except OSError:
+                    pass
+            try:
+                os.unlink(self.pfile)
+            except OSError:
+                pass
+
+    def createPfile(self):
+        if not self.pfile:
+            self.fileno, self.pfile = tempfile.mkstemp()
+            self.clean = True

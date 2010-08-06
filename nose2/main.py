@@ -1,10 +1,10 @@
 import os
 
-from unittest2 import main_, config, events
+from unittest2.main import TestProgram, USAGE_AS_MAIN
 
 from . import plugins
 
 
-def nose2_main():
-    events.loadPlugins(configLocations=[plugins.configFile()])
-    main_()
+def main_():
+    TestProgram.USAGE = USAGE_AS_MAIN
+    TestProgram(module=None, buffer=True, config=plugins.configFile())

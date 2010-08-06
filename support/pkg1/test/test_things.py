@@ -9,6 +9,7 @@ class SomeTests(unittest2.TestCase):
         raise TypeError("oops")
 
     def test_failed(self):
+        print "Hello stdout"
         assert False, "I failed"
 
     def test_skippy(self):

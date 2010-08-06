@@ -5,7 +5,7 @@ setup(
     version='0.1',
     entry_points= {
         'console_scripts': [
-            'nose2 = nose2:nose2_main',
+            'nose2 = nose2:main_',
             ],
         }
 )

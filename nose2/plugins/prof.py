@@ -25,26 +25,30 @@ class Profiler(Plugin):
             return
         self.createPfile()
         self.prof = hotshot.Profile(self.pfile)
-        self.suite = event.suite
-        event.suite = self.runProf
+        event.executeTests = self.prof.runcall
 
     def runProf(self, result):
         self.prof.runcall(self.suite, result)
 
-    def stopTestRun(self, event):
+    def beforeSummaryReport(self, event):
         if not hotshot:
             return
         # write prof output to stream
         class Stream:
             def write(self, *msg):
                 for m in msg:
-                    event.message(unicode(m), (1, 2))
-                    event.message(u' ', (1, 2))
+                    event.message(unicode(m), (0, 1, 2))
+                    event.message(u' ', (0, 1, 2))
         stream = Stream()
         self.prof.close()
         prof_stats = stats.load(self.pfile)
         prof_stats.sort_stats(self.sort)
-        event.message("\n\nProfiling results\n", (1, 2))
+        result = event.result
+        if hasattr(result, 'separator1'):
+            event.message(result.separator1, (0, 1, 2))
+        event.message("\nProfiling results\n", (0, 1, 2))
+        if hasattr(result, 'separator2'):
+            event.message(result.separator2, (0, 1, 2))
         compat_25 = hasattr(prof_stats, 'stream')
         if compat_25:
             tmp = prof_stats.stream
@@ -63,6 +67,8 @@ class Profiler(Plugin):
             else:
                 sys.stdout = tmp
         self.prof.close()
+        event.message("\n", (0, 1, 2))
+
         if self.clean:
             if self.fileno:
                 try:

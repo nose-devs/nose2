@@ -1,4 +1,4 @@
-from unittest2.events import hooks, Plugin, addOption
+from unittest2.events import Plugin, addOption
 from unittest import TestSuite
 
 undefined = object()

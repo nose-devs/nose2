@@ -16,7 +16,7 @@ class LoaderCompat(Plugin):
     def loadTestsFromModule(self, event):
         module = event.module
         # shim to make nose-style implicit generators
-        # and test functions work with moduleloading plugin
+        # and test function fixtures work with moduleloading plugin
         for attr in dir(module):
             item = getattr(module, attr, None)
             if inspect.isfunction(item):

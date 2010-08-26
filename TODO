@@ -13,3 +13,6 @@
 - collect plugin (just collect tests, print test names)
 
 - --failed support in testid plugin
+
+- support yield x, y, z syntax from generators in addition to
+  yield x (y, z)

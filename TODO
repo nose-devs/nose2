@@ -1,0 +1,7 @@
+- stdout capture and reporting
+  (avoiding printing it except in full reports, so buffer should
+   not be attached in _exc_info_to_string)
+
+- log capture and reporting
+  (avoiding printing it except in full reports, so buffer should
+   not be attached in _exc_info_to_string)

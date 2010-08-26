@@ -24,7 +24,7 @@ class TestId(Plugin):
         return self.id
 
     def startTest(self, event):
-        testid = event.test.id()
+        testid = event.test.id().split('\n')[0]
         if testid not in self.tests:
             id_ = self.nextId()
             self.ids[id_] = testid

@@ -5,3 +5,11 @@
 - log capture and reporting
   (avoiding printing it except in full reports, so buffer should
    not be attached in _exc_info_to_string)
+
+- failure detail plugin / assert introspector
+
+- allmodules plugin (examine all modules for tests)
+
+- collect plugin (just collect tests, print test names)
+
+- --failed support in testid plugin

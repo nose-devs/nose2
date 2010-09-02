@@ -27,6 +27,14 @@ def test_gen():
         yield check, (i, i,)
 test_gen.testGenerator = True
 
+
+def test_gen_nose_style():
+    def check(a, b):
+        assert a == b
+    for i in range(0, 5):
+        yield check, i, i
+
+
 did_setup = False
 def setup():
     global did_setup

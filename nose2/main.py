@@ -1,4 +1,5 @@
 import os
+import sys
 
 from unittest2.main import TestProgram, USAGE_AS_MAIN
 
@@ -6,6 +7,7 @@ from . import plugins
 
 
 def main_():
+    sys.path.insert(0, os.getcwd())
     TestProgram.USAGE = USAGE_AS_MAIN
     TestProgram(module=None, config=plugins.configFile())
 

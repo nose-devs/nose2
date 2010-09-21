@@ -15,6 +15,7 @@ def unpack(_self, generator):
 
 
 class Functions(ml.Functions):
+    configSection = 'nose-functions'
     unpack = unpack
 
     def createTests(self, obj, testIndex=None):
@@ -36,11 +37,11 @@ class Functions(ml.Functions):
 
 
 class Generators(ml.Generators):
+    configSection = 'nose-generators'
     unpack = unpack
 
     def isGenerator(self, obj):
         return (inspect.isgeneratorfunction(obj) or
                 super(Generators, self).isGenerator(obj))
-
 
 

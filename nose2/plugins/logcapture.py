@@ -23,11 +23,9 @@ class LogCapture(Plugin):
         self.logdatefmt = self.config.as_str('date-format', self.logdatefmt)
         self.filters = self.config.as_list('filter', self.filters)
         self.clear = self.config.as_bool('clear-handlers', self.clear)
-        print "inited"
 
     def setupLoghandler(self):
         # setup our handler with root logger
-        print "setup"
         root_logger = logging.getLogger()
         if self.clear:
             if hasattr(root_logger, "handlers"):

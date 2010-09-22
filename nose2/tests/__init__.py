@@ -7,7 +7,9 @@ ROOT = os.path.join(HERE, '..', '..')
 SUPPORT = os.path.join(ROOT, 'support')
 
 
-class TestCase(unittest2.TestCase):
+class FunctionalTestCase(unittest2.TestCase):
+
+    tags = ['functional']
 
     def assertTestRunOutputMatches(self, proc, stdout=None, stderr=None):
         cmd_stdout, cmd_stderr = proc.communicate()

@@ -25,7 +25,7 @@ class LogCaptureUnitTest(unittest2.TestCase):
         self.plugin = LogCapture()
 
     def event(self, error=True, failed=False):
-        e = Event
+        e = Event()
         e.error = True
         e.failed = False
         e.traceback = ''

@@ -3,6 +3,8 @@ import unittest2
 from ..plugins import loader
 
 class LoaderUnitTests(unittest2.TestCase):
+    tags = ['unit']
+
     def test_unpack_handles_nose_style_generators(self):
         def gen():
             for i in range(0, 3):

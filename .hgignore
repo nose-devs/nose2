@@ -1,1 +1,2 @@
 \.noseids
+.*\.egg-info$

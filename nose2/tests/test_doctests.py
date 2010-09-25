@@ -24,42 +24,57 @@ class UnitTestDocTestLoader(TestCase):
     def test_handle_file(self):
         """Test method handleFile."""
         # Create doctest files of supported types
-        plug = self.__create()
         doc_test = """\
 >>> 2 == 2
 True
 """
-        for ext in ['txt', 'rst']:
-            fh = open('docs.%s' % ext, 'wb')
-            try:
-                fh.write(doc_test)
-            finally:
-                fh.close()
-
-            event = FakeHandleFileEvent(fh.name)
-            plug.handleFile(event)
-
-            test, = event.extraTests
-            self.assertTrue(isinstance(test, doctest.DocFileCase))
-            self.assertEqual(repr(test), fh.name)
-
+        txt_event = self.__handle_file('docs.txt', doc_test)
+        rst_event = self.__handle_file('docs.rst', doc_test)
         # Excercise loading of doctests from Python code
-        fh = open('docs.py', 'wb')
-        try:
-            fh.write("""\
+        py_event = self.__handle_file('docs.py', """\
 \"\"\"
 >>> 2 == 2
 True
 \"\"\"
 """)
+
+
+        for event, ext in [(txt_event, 'txt'), (rst_event, 'rst')]:
+            test, = event.extraTests
+            self.assertTrue(isinstance(test, doctest.DocFileCase))
+            self.assertEqual(repr(test), "docs.%s" % ext)
+
+        testsuite, = py_event.extraTests
+        test, = list(testsuite)
+        self.assertEqual(repr(test), 'docs ()')
+
+
+    def test_handle_file_python_without_doctests(self):
+        """Test calling handleFile for a Python module without doctests."""
+        event = self.__handle_file("mod.py", """\
+def func():
+    pass
+""")
+
+        self.assertEqual(event.extraTests, [])
+
+
+    def __handle_file(self, fpath, content):
+        """Have plugin handle a file with certain content.
+
+        The file is created, then a plugin is instantiated and its handleFile
+        method is called for the file.
+        """
+        plug = self.__create()
+        fh = open(fpath, "wb")
+        try:
+            fh.write(content)
         finally:
             fh.close()
-        
+
         event = FakeHandleFileEvent(fh.name)
         plug.handleFile(event)
-        testsuite, = event.extraTests
-        test, = list(testsuite)
-        self.assertEqual(repr(test), '%s ()' % os.path.splitext(fh.name)[0])
+        return event
 
 
     def __create(self):

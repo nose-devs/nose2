@@ -34,9 +34,20 @@ class TestId(Plugin):
         event.message('#%s ' % id_, (2,))
 
     def loadTestsFromName(self, event):
-        self.loadIds()
+        """Implement loading of tests from name.
+        
+        If the name is a number, it might be an ID assigned by us. If we can
+        find a test to which we have assigned that ID, event.name is changed to
+        the test's real ID. In this way, tests can be referred to via sequential
+        numbers.
+        """
         id_ = self.argToId(event.name)
-        if id_ and id_ in self.ids:
+        if id_ is None:
+            return
+
+        self.loadIds()
+        if id_ in self.ids:
+            # Translate to test's real ID
             event.name = self.ids[id_]
 
     def loadTestsFromNames(self, event):
@@ -54,15 +65,26 @@ class TestId(Plugin):
         pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
 
     def argToId(self, name):
+        """Try to translate name to numeric ID."""
         m = self.idpat.match(name)
         if m:
             return int(m.groups()[0])
 
     def loadIds(self):
+        """Load previously pickled 'ids' and 'tests' attributes."""
         if self._loaded:
             return
-        fh = open(self.idfile, 'r')
-        data = pickle.load(fh)
+
+        try:
+            fh = open(self.idfile, 'r')
+        except EnvironmentError:
+            # XXX: Should we set _loaded to True?
+            return
+        try:
+            data = pickle.load(fh)
+        finally:
+            fh.close()
+
         if 'ids' in data:
             self.ids = data['ids']
         if 'tests' in data:

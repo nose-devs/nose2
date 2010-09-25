@@ -1,5 +1,7 @@
 """Test doctests plugin."""
 import doctest
+import unittest
+import os.path
 
 from ..plugins import doctests
 
@@ -40,6 +42,24 @@ True
             test, = event.extraTests
             self.assertTrue(isinstance(test, doctest.DocFileCase))
             self.assertEqual(repr(test), fh.name)
+
+        # Excercise loading of doctests from Python code
+        fh = open('docs.py', 'wb')
+        try:
+            fh.write("""\
+\"\"\"
+>>> 2 == 2
+True
+\"\"\"
+""")
+        finally:
+            fh.close()
+        
+        event = FakeHandleFileEvent(fh.name)
+        plug.handleFile(event)
+        testsuite, = event.extraTests
+        test, = list(testsuite)
+        self.assertEqual(repr(test), '%s ()' % os.path.splitext(fh.name)[0])
 
 
     def __create(self):

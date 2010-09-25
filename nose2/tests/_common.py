@@ -3,6 +3,7 @@ import unittest2.loader
 import os.path
 import tempfile
 import shutil
+import sys
 
 class TestCase(unittest2.TestCase):
     """TestCase extension.
@@ -17,8 +18,10 @@ class TestCase(unittest2.TestCase):
         
         if self._RUN_IN_TEMP:
             self.__orig_dir = os.getcwd()
-            self.__work_dir = tempfile.mkdtemp()
+            work_dir = self.__work_dir = tempfile.mkdtemp()
             os.chdir(self.__work_dir)
+            # Make sure it's possible to import modules from current directory
+            sys.path.insert(0, work_dir)
 
     def tearDown(self):
         super(TestCase, self).tearDown()

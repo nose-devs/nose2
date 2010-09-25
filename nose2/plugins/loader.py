@@ -1,6 +1,6 @@
 import inspect
 from unittest2.plugins import moduleloading as ml
-
+from nose2 import util
 
 def unpack(_self, generator):
     for index, func_args in enumerate(generator):
@@ -32,7 +32,7 @@ class Functions(ml.Functions):
         return super(Functions, self).createTests(obj, testIndex)
 
     def isGenerator(self, obj):
-        return (inspect.isgeneratorfunction(obj) or
+        return (util.isgeneratorfunction(obj) or
                 super(Functions, self).isGenerator(obj))
 
 
@@ -41,7 +41,5 @@ class Generators(ml.Generators):
     unpack = unpack
 
     def isGenerator(self, obj):
-        return (inspect.isgeneratorfunction(obj) or
+        return (util.isgeneratorfunction(obj) or
                 super(Generators, self).isGenerator(obj))
-
-

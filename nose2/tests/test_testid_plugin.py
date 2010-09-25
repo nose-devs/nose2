@@ -7,7 +7,8 @@ import shutil
 import tempfile
 
 from ..plugins import testid
-from ._common import FakeStartTestEvent, FakeLoadFromNameEvent
+from ._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
+        FakeLoadFromNamesEvent)
 
 class UnitTestTestId(TestCase):
     """Test class TestId.
@@ -97,18 +98,33 @@ class UnitTestTestId(TestCase):
         event = FakeLoadFromNameEvent('1')
         plug.loadTestsFromName(event)
 
-        # The numeric ID should be translated to one of our test methods
-        cls_name, mthd_name = event.name.split('.')[-2:]
-        self.assertEqual(cls_name, type(self).__name__)
-        self.assertTrue(mthd_name.startswith('test_'))
+        # The numeric ID should be translated to this test's ID
+        self.assertEqual(event.name, self.id())
 
     def test_load_tests_from_name_no_ids(self):
         """Test calling loadTestsFromName when no IDs have been saved."""
         plug = self.__create()
         event = FakeLoadFromNameEvent('1')
         plug.loadTestsFromName(event)
+
         # The event's name should be unchanged, since no IDs should be mapped
         self.assertEqual(event.name, '1')
+
+
+    def test_load_tests_from_names(self):
+        """Test loadTestsFromNames method."""
+        plug = self.__create()
+        # By first starting/stopping a test, an ID is assigned by the plugin
+        plug.startTest(FakeStartTestEvent(self))
+        plug.stopTestRun(None)
+        event = FakeLoadFromNamesEvent(['1', '2'])
+        plug.loadTestsFromNames(event)
+
+        name1, name2 = event.names
+        # The first numeric ID should be translated to this test's ID
+        self.assertEqual(name1, self.id())
+        # The second one should not have a match
+        self.assertEqual(name2, '2')
 
 
     def __create(self):

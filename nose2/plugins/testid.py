@@ -20,10 +20,15 @@ class TestId(Plugin):
         self._loaded = False
 
     def nextId(self):
+        """Increment ID and return it.
+        
+        XXX: Make private?
+        """
         self.id += 1
         return self.id
 
     def startTest(self, event):
+        """Implement hook"""
         testid = event.test.id().split('\n')[0]
         if testid not in self.tests:
             id_ = self.nextId()
@@ -34,51 +39,42 @@ class TestId(Plugin):
         event.message('#%s ' % id_, (2,))
 
     def loadTestsFromName(self, event):
-        """Implement loading of tests from name.
+        """Implement hook.
         
         If the name is a number, it might be an ID assigned by us. If we can
         find a test to which we have assigned that ID, event.name is changed to
         the test's real ID. In this way, tests can be referred to via sequential
         numbers.
         """
-        id_ = self.argToId(event.name)
-        if id_ is None:
-            return
-
-        self.loadIds()
-        if id_ in self.ids:
-            # Translate to test's real ID
-            event.name = self.ids[id_]
+        test_id = self.__real_id_from_id(event.name)
+        if test_id is not None:
+            event.name = test_id
 
     def loadTestsFromNames(self, event):
-        self.loadIds()
+        """Implement hook."""
         new_names = []
-        for name in event.names:
-            if self.argToId(name) in self.ids:
-                new_names.append(self.ids[name])
-            else:
-                new_names.append(name)
-        event.names[:] = new_names
+        for i, name in enumerate(event.names[:]):
+            test_id = self.__real_id_from_id(name)
+            if test_id is not None:
+                event.names[i] = test_id
 
     def stopTestRun(self, event):
+        """Implement hook."""
         fh = open(self.idfile, 'w')
         pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
 
-    def argToId(self, name):
-        """Try to translate name to numeric ID."""
-        m = self.idpat.match(name)
-        if m:
-            return int(m.groups()[0])
-
     def loadIds(self):
-        """Load previously pickled 'ids' and 'tests' attributes."""
+        """Load previously pickled 'ids' and 'tests' attributes.
+        
+        XXX: Make private?
+        """
         if self._loaded:
             return
 
         try:
             fh = open(self.idfile, 'r')
         except EnvironmentError:
-            # XXX: Should we set _loaded to True?
+            self._loaded = True
             return
         try:
             data = pickle.load(fh)
@@ -91,3 +87,19 @@ class TestId(Plugin):
             self.tests = data['tests']
         self.id = max(self.ids.keys())
         self._loaded = True
+
+
+    def __real_id_from_id(self, name):
+        """Try to translate one of our IDs to real test ID."""
+        m = self.idpat.match(name)
+        if m is None:
+            return None
+
+        id_ = int(m.groups()[0])
+
+        self.loadIds()
+        # Translate to test's real ID
+        try:
+            return self.ids[id_]
+        except KeyError:
+            return None

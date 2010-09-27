@@ -50,7 +50,7 @@ class FunctionalTestCase(unittest2.TestCase):
 
     def runIn(self, testdir, *args):
         cmd = ['nose2'] + list(args)
-        proc = subprocess.Popen(cmd, 
+        proc = subprocess.Popen(cmd,
                                 cwd=os.path.join(SUPPORT, testdir),
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)

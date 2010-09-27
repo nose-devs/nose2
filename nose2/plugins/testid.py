@@ -52,7 +52,6 @@ class TestId(Plugin):
 
     def loadTestsFromNames(self, event):
         """Implement hook."""
-        new_names = []
         for i, name in enumerate(event.names[:]):
             testid = self._testNameFromId(name)
             if testid is not None:

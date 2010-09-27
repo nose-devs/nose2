@@ -2,7 +2,7 @@ import logging
 import re
 import unittest2
 
-from . import FunctionalTestCase
+from ._common import FunctionalTestCase
 from ..plugins.logcapture import LogCapture
 
 

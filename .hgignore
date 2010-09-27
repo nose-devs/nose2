@@ -1,2 +1,6 @@
 \.noseids
 .*\.egg-info$
+dist
+\..*\.sw.
+.*\~
+.+\.py[co]

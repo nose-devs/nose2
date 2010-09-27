@@ -46,7 +46,7 @@ class TestId(Plugin):
         the test's real ID. In this way, tests can be referred to via sequential
         numbers.
         """
-        test_id = self.__real_id_from_id(event.name)
+        test_id = self._testNameFromId(event.name)
         if test_id is not None:
             event.name = test_id
 
@@ -54,7 +54,7 @@ class TestId(Plugin):
         """Implement hook."""
         new_names = []
         for i, name in enumerate(event.names[:]):
-            test_id = self.__real_id_from_id(name)
+            test_id = self._testNameFromId(name)
             if test_id is not None:
                 event.names[i] = test_id
 
@@ -89,7 +89,7 @@ class TestId(Plugin):
         self._loaded = True
 
 
-    def __real_id_from_id(self, name):
+    def _testNameFromId(self, name):
         """Try to translate one of our IDs to real test ID."""
         m = self.idpat.match(name)
         if m is None:

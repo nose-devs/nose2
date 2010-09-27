@@ -20,21 +20,21 @@ class UnitTestTestId(TestCase):
 
     def setUp(self):
         super(UnitTestTestId, self).setUp()
-        self.__orig_dir = os.getcwd()
+        self._orig_dir = os.getcwd()
         # XXX: Use deterministic temporary directory, which can be inspected
         # after test?
-        self.__temp_dir = tempfile.mkdtemp()
-        os.chdir(self.__temp_dir)
+        self._temp_dir = tempfile.mkdtemp()
+        os.chdir(self._temp_dir)
 
     def tearDown(self):
         super(UnitTestTestId, self).tearDown()
-        os.chdir(self.__orig_dir)
-        shutil.rmtree(self.__temp_dir, ignore_errors=True)
+        os.chdir(self._orig_dir)
+        shutil.rmtree(self._temp_dir, ignore_errors=True)
 
 
     def test___init__(self):
         """Test the __init__ method."""
-        plug = self.__create()
+        plug = self._create()
         # Test attributes
         for name, exp_val in [('configSection', 'testid'), ('commandLineSwitch',
             ('I', 'with-id', 'Add test ids to output')), ('idfile',
@@ -51,7 +51,7 @@ class UnitTestTestId(TestCase):
     def test_start_test(self):
         """Test startTest method."""
         event = FakeStartTestEvent(self)
-        plug = self.__create()
+        plug = self._create()
         plug.startTest(event)
 
         self.assertEqual(plug.id, 1)
@@ -63,7 +63,7 @@ class UnitTestTestId(TestCase):
     def test_start_test_twice(self):
         """Test calling startTest twice."""
         event = FakeStartTestEvent(self)
-        plug = self.__create()
+        plug = self._create()
         plug.startTest(event)
         plug.startTest(event)
 
@@ -77,7 +77,7 @@ class UnitTestTestId(TestCase):
 
     def test_stop_test_run(self):
         """Test stopTestRun method."""
-        plug = self.__create()
+        plug = self._create()
         plug.startTest(FakeStartTestEvent(self))
         plug.stopTestRun(None)
 
@@ -91,7 +91,7 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_name(self):
         """Test loadTestsFromName method."""
-        plug = self.__create()
+        plug = self._create()
         # By first starting/stopping a test, an ID is assigned by the plugin
         plug.startTest(FakeStartTestEvent(self))
         plug.stopTestRun(None)
@@ -103,7 +103,7 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_name_no_ids(self):
         """Test calling loadTestsFromName when no IDs have been saved."""
-        plug = self.__create()
+        plug = self._create()
         event = FakeLoadFromNameEvent('1')
         plug.loadTestsFromName(event)
 
@@ -113,7 +113,7 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_names(self):
         """Test loadTestsFromNames method."""
-        plug = self.__create()
+        plug = self._create()
         # By first starting/stopping a test, an ID is assigned by the plugin
         plug.startTest(FakeStartTestEvent(self))
         plug.stopTestRun(None)
@@ -127,6 +127,6 @@ class UnitTestTestId(TestCase):
         self.assertEqual(name2, '2')
 
 
-    def __create(self):
+    def _create(self):
         """Create a TestId instance."""
         return testid.TestId()

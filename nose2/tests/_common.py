@@ -72,6 +72,7 @@ class FakeHandleFileEvent(_FakeEventBase):
         super(FakeHandleFileEvent, self).__init__()
 
         self.loader = unittest2.loader.TestLoader()
+        self.loader._top_level_dir = os.getcwd()
         self.name = name
         self.path = os.path.split(name)[1]
         self.extraTests = []

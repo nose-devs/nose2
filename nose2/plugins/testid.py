@@ -46,17 +46,17 @@ class TestId(Plugin):
         the test's real ID. In this way, tests can be referred to via sequential
         numbers.
         """
-        test_id = self._testNameFromId(event.name)
-        if test_id is not None:
-            event.name = test_id
+        testid = self._testNameFromId(event.name)
+        if testid is not None:
+            event.name = testid
 
     def loadTestsFromNames(self, event):
         """Implement hook."""
         new_names = []
         for i, name in enumerate(event.names[:]):
-            test_id = self._testNameFromId(name)
-            if test_id is not None:
-                event.names[i] = test_id
+            testid = self._testNameFromId(name)
+            if testid is not None:
+                event.names[i] = testid
 
     def stopTestRun(self, event):
         """Implement hook."""

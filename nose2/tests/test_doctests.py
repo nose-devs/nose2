@@ -20,7 +20,6 @@ class UnitTestDocTestLoader(TestCase):
 
         self.assertEqual(plug.extensions, ['.txt', '.rst'])
 
-
     def test_handle_file(self):
         """Test method handleFile."""
         # Create doctest files of supported types
@@ -37,8 +36,6 @@ True
 True
 \"\"\"
 """)
-
-
         for event, ext in [(txt_event, 'txt'), (rst_event, 'rst')]:
             test, = event.extraTests
             self.assertTrue(isinstance(test, doctest.DocFileCase))
@@ -48,16 +45,13 @@ True
         test, = list(testsuite)
         self.assertEqual(repr(test), 'docs ()')
 
-
     def test_handle_file_python_without_doctests(self):
         """Test calling handleFile for a Python module without doctests."""
         event = self._handle_file("mod.py", """\
 def func():
     pass
 """)
-
         self.assertEqual(event.extraTests, [])
-
 
     def _handle_file(self, fpath, content):
         """Have plugin handle a file with certain content.
@@ -75,7 +69,6 @@ def func():
         event = FakeHandleFileEvent(fh.name)
         plug.handleFile(event)
         return event
-
 
     def _create(self):
         """Create a DocTestLoader instance."""

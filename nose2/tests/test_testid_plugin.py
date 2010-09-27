@@ -8,7 +8,7 @@ import tempfile
 
 from ..plugins import testid
 from ._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
-        FakeLoadFromNamesEvent)
+                      FakeLoadFromNamesEvent)
 
 class UnitTestTestId(TestCase):
     """Test class TestId.

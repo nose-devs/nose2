@@ -12,7 +12,7 @@ from ._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
 
 class UnitTestTestId(TestCase):
     """Test class TestId.
-    
+
     Tests are carried out in a temporary directory, since TestId stores state
     to file. The temporary directory is removed after testing.
     """
@@ -31,7 +31,6 @@ class UnitTestTestId(TestCase):
         os.chdir(self._orig_dir)
         shutil.rmtree(self._temp_dir, ignore_errors=True)
 
-
     def test___init__(self):
         """Test the __init__ method."""
         plug = self._create()
@@ -46,7 +45,6 @@ class UnitTestTestId(TestCase):
                 self.fail('TestId instance doesn\'t have attribute %s' % (name,))
             self.assertEqual(val, exp_val, 'Attribute %s should have value '
                 '\'%s\', but has value %s' % (name, exp_val, val))
-
 
     def test_start_test(self):
         """Test startTest method."""
@@ -74,7 +72,6 @@ class UnitTestTestId(TestCase):
         msg = ('#1 ', (2,))
         self.assertEqual(event._fake_messages, [msg, msg])
 
-
     def test_stop_test_run(self):
         """Test stopTestRun method."""
         plug = self._create()
@@ -87,7 +84,6 @@ class UnitTestTestId(TestCase):
         finally:
             fh.close()
         self.assertEqual(data, {'ids': plug.ids, 'tests': plug.tests})
-
 
     def test_load_tests_from_name(self):
         """Test loadTestsFromName method."""
@@ -110,7 +106,6 @@ class UnitTestTestId(TestCase):
         # The event's name should be unchanged, since no IDs should be mapped
         self.assertEqual(event.name, '1')
 
-
     def test_load_tests_from_names(self):
         """Test loadTestsFromNames method."""
         plug = self._create()
@@ -125,7 +120,6 @@ class UnitTestTestId(TestCase):
         self.assertEqual(name1, self.id())
         # The second one should not have a match
         self.assertEqual(name2, '2')
-
 
     def _create(self):
         """Create a TestId instance."""

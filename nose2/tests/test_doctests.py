@@ -16,7 +16,7 @@ class UnitTestDocTestLoader(TestCase):
 
     def test___init__(self):
         """Test the __init__ method."""
-        plug = self.__create()
+        plug = self._create()
 
         self.assertEqual(plug.extensions, ['.txt', '.rst'])
 
@@ -28,10 +28,10 @@ class UnitTestDocTestLoader(TestCase):
 >>> 2 == 2
 True
 """
-        txt_event = self.__handle_file('docs.txt', doc_test)
-        rst_event = self.__handle_file('docs.rst', doc_test)
+        txt_event = self._handle_file('docs.txt', doc_test)
+        rst_event = self._handle_file('docs.rst', doc_test)
         # Excercise loading of doctests from Python code
-        py_event = self.__handle_file('docs.py', """\
+        py_event = self._handle_file('docs.py', """\
 \"\"\"
 >>> 2 == 2
 True
@@ -51,7 +51,7 @@ True
 
     def test_handle_file_python_without_doctests(self):
         """Test calling handleFile for a Python module without doctests."""
-        event = self.__handle_file("mod.py", """\
+        event = self._handle_file("mod.py", """\
 def func():
     pass
 """)
@@ -59,13 +59,13 @@ def func():
         self.assertEqual(event.extraTests, [])
 
 
-    def __handle_file(self, fpath, content):
+    def _handle_file(self, fpath, content):
         """Have plugin handle a file with certain content.
 
         The file is created, then a plugin is instantiated and its handleFile
         method is called for the file.
         """
-        plug = self.__create()
+        plug = self._create()
         fh = open(fpath, "wb")
         try:
             fh.write(content)
@@ -77,7 +77,7 @@ def func():
         return event
 
 
-    def __create(self):
+    def _create(self):
         """Create a DocTestLoader instance."""
         plug = doctests.DocTestLoader()
         return plug

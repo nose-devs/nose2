@@ -1,5 +1,4 @@
 """Test testid plugin."""
-from unittest2 import TestCase
 import re
 import os.path
 import pickle
@@ -8,7 +7,7 @@ import tempfile
 
 from ..plugins import testid
 from ._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
-                      FakeLoadFromNamesEvent)
+                      FakeLoadFromNamesEvent, TestCase)
 
 class UnitTestTestId(TestCase):
     """Test class TestId.
@@ -17,19 +16,7 @@ class UnitTestTestId(TestCase):
     to file. The temporary directory is removed after testing.
     """
     tags = ['unit']
-
-    def setUp(self):
-        super(UnitTestTestId, self).setUp()
-        self._orig_dir = os.getcwd()
-        # XXX: Use deterministic temporary directory, which can be inspected
-        # after test?
-        self._temp_dir = tempfile.mkdtemp()
-        os.chdir(self._temp_dir)
-
-    def tearDown(self):
-        super(UnitTestTestId, self).tearDown()
-        os.chdir(self._orig_dir)
-        shutil.rmtree(self._temp_dir, ignore_errors=True)
+    _RUN_IN_TEMP = True
 
     def test___init__(self):
         """Test the __init__ method."""

@@ -13,14 +13,18 @@ class DocTestLoader(Plugin):
         self.extensions = self.config.as_list('extensions', ['.txt', '.rst'])
 
     def handleFile(self, event):
+        """Implement hook."""
         loader_ = event.loader
         path = event.path
         _root, ext = os.path.splitext(path)
         if ext in self.extensions:
             suite = doctest.DocFileTest(path, module_relative=False)
             event.extraTests.append(suite)
+            # XXX: Return from here, since we know now this isn't a module from
+            # which to load doctests?
         elif not loader.VALID_MODULE_NAME.match(os.path.basename(path)):
             return
+
         name = loader_._get_name_from_path(path)
         try:
             module = loader_._get_module_from_name(name)

@@ -1,10 +1,10 @@
 """Common functionality."""
+import unittest2.loader
 import os.path
 import tempfile
 import shutil
 import sys
 import subprocess
-import unittest2
 
 HERE = os.path.dirname(__file__)
 ROOT = os.path.join(HERE, '..', '..')
@@ -13,7 +13,7 @@ SUPPORT = os.path.join(ROOT, 'support')
 
 class TestCase(unittest2.TestCase):
     """TestCase extension.
-    
+
     If the class variable _RUN_IN_TEMP is True (default: False), tests will be
     performed in a temporary directory, which is deleted afterwards.
     """
@@ -21,7 +21,7 @@ class TestCase(unittest2.TestCase):
 
     def setUp(self):
         super(TestCase, self).setUp()
-        
+
         if self._RUN_IN_TEMP:
             self._orig_dir = os.getcwd()
             work_dir = self._work_dir = tempfile.mkdtemp()
@@ -65,6 +65,18 @@ class _FakeEventBase(object):
     def message(self, msg, verbosity=(1, 2)):
         self._fake_messages.append((msg, verbosity))
 
+
+class FakeHandleFileEvent(_FakeEventBase):
+    """Fake HandleFileEvent."""
+    def __init__(self, name):
+        super(FakeHandleFileEvent, self).__init__()
+
+        self.loader = unittest2.loader.TestLoader()
+        self.name = name
+        self.path = os.path.split(name)[1]
+        self.extraTests = []
+
+
 class FakeStartTestEvent(_FakeEventBase):
     """Fake StartTestEvent."""
     def __init__(self, test):
@@ -74,11 +86,13 @@ class FakeStartTestEvent(_FakeEventBase):
         import time
         self.startTime = time.time()
 
+
 class FakeLoadFromNameEvent(_FakeEventBase):
     """Fake LoadFromNameEvent."""
     def __init__(self, name):
         super(FakeLoadFromNameEvent, self).__init__()
         self.name = name
+
 
 class FakeLoadFromNamesEvent(_FakeEventBase):
     """Fake LoadFromNamesEvent."""

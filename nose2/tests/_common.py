@@ -56,7 +56,7 @@ class FunctionalTestCase(unittest2.TestCase):
                                 stderr=subprocess.PIPE)
         return proc
 
-        
+
 class _FakeEventBase(object):
     """Baseclass for fake Events."""
     def __init__(self):

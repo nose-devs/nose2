@@ -1,10 +1,10 @@
 """Common functionality."""
+import unittest2.loader
 import os.path
 import tempfile
 import shutil
 import sys
 import subprocess
-import unittest2
 
 HERE = os.path.dirname(__file__)
 ROOT = os.path.join(HERE, '..', '..')
@@ -59,3 +59,13 @@ class FunctionalTestCase(unittest2.TestCase):
 
 class _FakeEventBase(object):
     """Baseclass for fake Events."""
+
+class FakeHandleFileEvent(_FakeEventBase):
+    """Fake HandleFileEvent."""
+    def __init__(self, name):
+        super(FakeHandleFileEvent, self).__init__()
+
+        self.loader = unittest2.loader.TestLoader()
+        self.name = name
+        self.path = os.path.split(name)[1]
+        self.extraTests = []

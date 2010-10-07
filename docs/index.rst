@@ -11,6 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   usage
+   differences
+   plugins_cfg
+   plugins
+
 Indices and tables
 ==================
 

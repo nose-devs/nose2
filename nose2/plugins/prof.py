@@ -10,6 +10,8 @@ from unittest2 import Plugin
 
 
 class Profiler(Plugin):
+    """TODO: document"""
+
     configSection = 'profiler'
     commandLineSwitch = ('P', 'profile', 'Run tests under profiler')
 

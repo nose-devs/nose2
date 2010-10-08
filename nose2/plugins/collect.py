@@ -4,6 +4,8 @@ from unittest2.events import hooks, StartTestEvent, TestReport
 
 
 class CollectOnly(Plugin):
+    """TODO: document"""
+
     configSection = 'collect-only'
     commandLineSwitch = (None, 'collect-only',
                          'Collect and output test names, do not run any tests')

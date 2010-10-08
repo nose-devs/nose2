@@ -5,6 +5,8 @@ undefined = object()
 
 
 class AttributeSelector(Plugin):
+    """TODO: document"""
+
     def __init__(self):
         self.attribs = []
         self.register()

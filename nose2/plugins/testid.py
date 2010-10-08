@@ -5,6 +5,8 @@ from unittest2.events import Plugin
 
 
 class TestId(Plugin):
+    """TODO: document"""
+
     configSection = 'testid'
     commandLineSwitch = ('I', 'with-id', 'Add test ids to output')
     idpat = re.compile(r'(\d+)')
@@ -21,7 +23,7 @@ class TestId(Plugin):
 
     def nextId(self):
         """Increment ID and return it.
-        
+
         XXX: Make private?
         """
         self.id += 1
@@ -40,7 +42,7 @@ class TestId(Plugin):
 
     def loadTestsFromName(self, event):
         """Implement hook.
-        
+
         If the name is a number, it might be an ID assigned by us. If we can
         find a test to which we have assigned that ID, event.name is changed to
         the test's real ID. In this way, tests can be referred to via sequential
@@ -64,7 +66,7 @@ class TestId(Plugin):
 
     def loadIds(self):
         """Load previously pickled 'ids' and 'tests' attributes.
-        
+
         XXX: Make private?
         """
         if self._loaded:

@@ -11,6 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class LogCapture(Plugin):
+    """TODO: document"""
+
     configSection = 'logging'
     commandLineSwitch = (None, 'log-capture', 'Enable log capture')
     logformat = '%(name)s: %(levelname)s: %(message)s'

@@ -15,6 +15,8 @@ def unpack(_self, generator):
 
 
 class Functions(ml.Functions):
+    """TODO: document"""
+
     configSection = 'nose-functions'
     unpack = unpack
 
@@ -37,6 +39,8 @@ class Functions(ml.Functions):
 
 
 class Generators(ml.Generators):
+    """TODO: document"""
+
     configSection = 'nose-generators'
     unpack = unpack
 

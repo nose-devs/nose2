@@ -1,6 +1,7 @@
 from unittest2.events import hooks, Plugin
 
 class Outcomes(Plugin):
+    """TODO: document"""
 
     configSection = 'outcomes'
 

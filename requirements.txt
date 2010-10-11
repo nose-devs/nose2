@@ -1,3 +1,4 @@
 Sphinx==1.0.4
+coverage>=3.3
 -e hg+http://hg.python.org/unittest2/@plugins#egg=unittest2
 

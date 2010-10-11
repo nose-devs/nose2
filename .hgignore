@@ -6,3 +6,4 @@ dist
 .+\.py[co]
 docs/_build
 docs/_themes
+htmlcov

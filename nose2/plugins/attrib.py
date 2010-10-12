@@ -62,7 +62,7 @@ class AttributeSelector(Plugin):
             for key, value in group:
                 obj_value = self.getAttr(test, key)
                 if callable(value):
-                    if not value(key, test_attribs):
+                    if not value(key, test):
                         match = False
                         break
                 elif value is True:

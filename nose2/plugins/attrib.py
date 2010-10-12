@@ -3,6 +3,7 @@ from unittest import TestSuite
 
 undefined = object()
 
+# TODO: eval attribs
 
 class AttributeSelector(Plugin):
     """TODO: document"""

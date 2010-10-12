@@ -11,6 +11,7 @@ class CollectOnlyFunctionalTest(FunctionalTestCase):
             self.runIn('layout1', '-v', '--collect-only'),
             stderr=EXPECT_LAYOUT1)
 
+
 class TestCollectOnly(unittest2.TestCase):
     tags = ['unit']
 

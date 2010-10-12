@@ -2,6 +2,7 @@ import unittest2
 
 from ..plugins import loader
 
+
 class TestGeneratorUnpack(unittest2.TestCase):
     tags = ['unit']
 

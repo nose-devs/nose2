@@ -1,3 +1,4 @@
+from unittest2.events import PluginsLoadedEvent
 from unittest2.util import getObjectFromName
 
 from docutils import nodes
@@ -15,10 +16,24 @@ class AutoPlugin(Directive):
     def run(self):
         plugin_name = self.arguments[0]
         parent, plugin = getObjectFromName(plugin_name)
+        # FIXME this is too naive
         mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
 
         rst = ViewList()
         rst.append('.. automodule :: %s\n' % mod_name, '<autodoc>')
+        rst.append('', '<autodoc>')
+
+        # FIXME: monkeypatch/hook in somehow so we can replace
+        # plugin's config/options with recording mocks. This will
+        # have to wait until the new plugin initialization stuff
+        # lands.
+
+        # command-line options
+
+        # config options
+
+        # class __doc__
+        rst.append(' .. autoclass :: %s\n' % plugin_name, '<autodoc>')
         rst.append('', '<autodoc>')
 
         print rst

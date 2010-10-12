@@ -100,3 +100,19 @@ class FakeLoadFromNamesEvent(_FakeEventBase):
     def __init__(self, names):
         super(FakeLoadFromNamesEvent, self).__init__()
         self.names = names
+
+
+class FakeStartTestRunEvent(_FakeEventBase):
+    """Fake StartTestRunEvent"""
+    def __init__(self, runner=None, suite=None, result=None, startTime=None,
+                 executeTests=None):
+        super(FakeStartTestRunEvent, self).__init__()
+        self.suite = suite
+        self.runner = runner
+        self.result = result
+        self.startTime = startTime
+        self.executeTests = executeTests
+
+
+class Stub(object):
+    """Stub object for use in tests"""

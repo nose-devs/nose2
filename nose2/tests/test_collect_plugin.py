@@ -1,7 +1,8 @@
 import re
 import unittest2
 
-from ._common import FunctionalTestCase
+from ._common import FunctionalTestCase, FakeStartTestRunEvent
+from ..plugins import collect
 
 
 class CollectOnlyFunctionalTest(FunctionalTestCase):
@@ -10,6 +11,16 @@ class CollectOnlyFunctionalTest(FunctionalTestCase):
             self.runIn('layout1', '-v', '--collect-only'),
             stderr=EXPECT_LAYOUT1)
 
+class TestCollectOnly(unittest2.TestCase):
+    tags = ['unit']
+
+    def setUp(self):
+        self.plugin = collect.CollectOnly()
+
+    def test_startTestRun_sets_executeTests(self):
+        event = FakeStartTestRunEvent()
+        self.plugin.startTestRun(event)
+        self.assertEqual(event.executeTests, self.plugin.collectTests)
 
 
 # expectations

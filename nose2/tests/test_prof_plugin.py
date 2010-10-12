@@ -18,7 +18,7 @@ class TestProfPlugin(unittest2.TestCase):
         prof.hotshot = self.hotshot
         prof.stats = self.stats
 
-    def test_start_test_run_sets_executeTests(self):
+    def test_startTestRun_sets_executeTests(self):
         _prof = Stub()
         _prof.runcall = object()
         prof.hotshot.Profile = lambda filename: _prof

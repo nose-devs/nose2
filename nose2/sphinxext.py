@@ -114,6 +114,7 @@ class ConfigBucket(object):
 
 class OptBucket(object):
     def __init__(self, doc=None, prog='nosetests'):
+        self.seen = set()
         self.opts = []
         self.doc = doc
         self.prog = prog
@@ -125,7 +126,9 @@ class OptBucket(object):
         return self.doc.replace('%prog', self.prog).replace(':\n', '::\n')
 
     def add_option(self, *arg, **kw):
-        self.opts.append(Opt(*arg, **kw))
+        if not arg in self.seen:
+            self.opts.append(Opt(*arg, **kw))
+            self.seen.add(arg)
 
     def __call__(self, callback, opt=None, longOpt=None, help=None):
         opts = []

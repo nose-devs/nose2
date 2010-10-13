@@ -2,5 +2,5 @@
 TODO: title
 ===========
 
-.. automodule :: nose2.plugins.doctests
-   :members:
+.. autoplugin :: nose2.plugins.doctests.DocTestLoader
+

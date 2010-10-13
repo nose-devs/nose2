@@ -95,12 +95,21 @@ class ConfigBucket(object):
     def as_int(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'integer',
                            'default': default}
-    #as_float
-    #as_str
-    #as_list
-    #__getitem__
-    #get
-
+    def as_float(self, item, default=DEFAULT):
+        self.vars[item] = {'type': 'float',
+                           'default': default}
+    def as_str(self, item, default=DEFAULT):
+        self.vars[item] = {'type': 'str',
+                           'default': default}
+    def as_list(self, item, default=DEFAULT):
+        self.vars[item] = {'type': 'list',
+                           'default': default}
+    def __getitem__(self, item):
+        self.vars[item] = {'type': None,
+                           'default': DEFAULT}
+    def get(self, item, default=DEFAULT):
+        self.vars[item] = {'type': None,
+                           'default': default}
 
 
 class OptBucket(object):

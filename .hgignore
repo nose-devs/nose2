@@ -7,3 +7,5 @@ dist
 docs/_build
 docs/_themes
 htmlcov
+.tox
+\$py\.class$

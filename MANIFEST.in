@@ -1,0 +1,8 @@
+include AUTHORS
+include requirements.txt
+include test-requirements.txt
+include nose2/plugins/plugins.cfg
+include tox.ini
+include unittest.cfg
+graft docs
+graft support

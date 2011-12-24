@@ -24,6 +24,7 @@ class LogCapture(Plugin):
         self.logdatefmt = self.config.as_str('date-format', self.logdatefmt)
         self.filters = self.config.as_list('filter', self.filters)
         self.clear = self.config.as_bool('clear-handlers', self.clear)
+        # FIXME loglevel
 
     def setupLoghandler(self):
         # setup our handler with root logger
@@ -46,7 +47,7 @@ class LogCapture(Plugin):
             if isinstance(handler, MyMemoryHandler):
                 root_logger.handlers.remove(handler)
         root_logger.addHandler(self.handler)
-        # to make sure everything gets captured
+        # to make sure everything gets captured FIXME use level config
         root_logger.setLevel(logging.NOTSET)
 
     def addCapturedLogs(self, event):

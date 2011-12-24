@@ -1,6 +1,6 @@
-===========
-TODO: title
-===========
+=====================================
+Collecting tests without running them
+=====================================
 
-.. automodule :: nose2.plugins.collect
-   :members:
+.. autoplugin :: nose2.plugins.collect.CollectOnly
+

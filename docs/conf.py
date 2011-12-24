@@ -219,3 +219,6 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+import unittest2.config
+unittest2.config.loadConfig()

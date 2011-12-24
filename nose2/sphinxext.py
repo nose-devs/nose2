@@ -4,6 +4,7 @@ from docutils import nodes
 from docutils.statemachine import ViewList
 from docutils.parsers.rst import Directive
 
+AD = u'<autodoc>'
 
 class AutoPlugin(Directive):
     required_arguments = 1
@@ -23,8 +24,8 @@ class AutoPlugin(Directive):
             mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
 
             rst = ViewList()
-            rst.append('.. automodule :: %s\n' % mod_name, '<autodoc>')
-            rst.append('', '<autodoc>')
+            rst.append(u'.. automodule :: %s\n' % mod_name, AD)
+            rst.append(u'', AD)
 
             obj = plugin()
             try:
@@ -32,15 +33,21 @@ class AutoPlugin(Directive):
             except AttributeError:
                 pass
 
-            # command-line options
-            print config.vars
-
             # config options
-            print [opt.options() for opt in opts]
+            if config.vars:
+                self.add_config(rst, config)
+
+            # command-line options
+            self.headline(rst, u'Command-line options')
+            for opt in opts:
+                rst.append(opt.options(), AD)
+                rst.append('', AD)
 
             # class __doc__
-            rst.append(' .. autoclass :: %s\n' % plugin_name, '<autodoc>')
-            rst.append('', '<autodoc>')
+            self.headline(rst, u'Plugin class reference')
+            rst.append(u'.. autoclass :: %s' % plugin_name, AD)
+            rst.append(u'   :members:', AD)
+            rst.append(u'', AD)
 
             print rst
 
@@ -70,9 +77,48 @@ class AutoPlugin(Directive):
         events.getConfig = self._getConfig
         events.addOption = self._addOption
 
+    def add_config(self, rst, config):
+        headline = u'Configuration [%s]' % config.section
+        self.headline(rst, headline)
+
+        for var in sorted(config.vars.keys()):
+            info = config.vars[var]
+            rst.append(u'.. rst:configvar :: %s' % var, AD)
+            rst.append(u'  ', AD)
+            rst.append(u'  Default: %(default)s' % info, AD)
+            rst.append(u'  Type: %(type)s' % info, AD)
+            rst.append(u'', AD)
+
+        self.headline(rst, u"Sample configuration", '-')
+        rst.append(u'The default configuration is equivalent to including '
+                   u'the following in a unittest.cfg file.', AD)
+        rst.append(u'', AD)
+        rst.append(u'.. code-block:: ini', AD)
+        rst.append(u'  ', AD)
+        rst.append(u'  [%s]' % config.section, AD)
+        for var in sorted(config.vars.keys()):
+            info = config.vars[var]
+            entry = '  %s = ' % (var)
+            if info['type'] != 'list':
+                entry = u'%s%s' % (entry, info['default'])
+                rst.append(entry, AD)
+            else:
+                pad = ' ' * len(entry)
+                entry = u'%s%s' % (entry, info['default'][0])
+                rst.append(entry, AD)
+                for val in info['default'][1:]:
+                    rst.append(u'%s%s' % (pad, val), AD)
+        rst.append(u'', AD)
+
+    def headline(self, rst, headline, level=u'='):
+        rst.append(headline, AD)
+        rst.append(level * len(headline), AD)
+        rst.append(u'', AD)
+
 
 def setup(app):
     app.add_directive('autoplugin', AutoPlugin)
+    app.add_object_type('configvar', 'config', u'pair: %s; configvar')
 
 
 DEFAULT = object()
@@ -151,10 +197,16 @@ class Opt(object):
         buf = []
         for optstring in self.opts:
             desc = optstring
+            print "Action", self.action
             if self.action not in ('store_true', 'store_false'):
                 desc += '=%s' % self.meta(optstring)
             buf.append(desc)
-        return '.. cmdoption :: ' + ', '.join(buf)
+            res = ['.. option:: ' + ', '.join(buf)]
+            if self.help:
+                res.append('   ')
+                res.append('   %s' % self.help)
+            res.append('')
+        return '\n'.join(res)
 
     def meta(self, optstring):
         # FIXME optparser default metavar?

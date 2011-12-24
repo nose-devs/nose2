@@ -1,2 +1,0 @@
--e hg+http://hg.python.org/unittest2/@plugins#egg=unittest2
-

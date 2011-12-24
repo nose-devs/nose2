@@ -1,4 +1,4 @@
-from unittest2.events import hooks, Plugin
+from unittest2.events import Plugin
 
 class Outcomes(Plugin):
     """TODO: document"""

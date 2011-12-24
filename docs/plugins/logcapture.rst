@@ -2,5 +2,4 @@
 TODO: title
 ===========
 
-.. automodule :: nose2.plugins.logcapture
-   :members:
+.. autoplugin :: nose2.plugins.logcapture.LogCapture

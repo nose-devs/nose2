@@ -1,6 +1,13 @@
-===========
-TODO: title
-===========
+===================================
+Mapping exceptions to test outcomes
+===================================
 
-.. automodule :: nose2.plugins.outcomes
-   :members:
+.. code-block :: ini
+
+   [outcomes]
+   always-on = True
+   treat-as-fail = TodoException
+                   NotImplemented
+
+.. autoplugin :: nose2.plugins.outcomes.Outcomes
+

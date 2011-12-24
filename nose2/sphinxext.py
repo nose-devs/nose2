@@ -85,8 +85,8 @@ class AutoPlugin(Directive):
             info = config.vars[var]
             rst.append(u'.. rst:configvar :: %s' % var, AD)
             rst.append(u'  ', AD)
-            rst.append(u'  Default: %(default)s' % info, AD)
-            rst.append(u'  Type: %(type)s' % info, AD)
+            rst.append(u'  :Default: %(default)s' % info, AD)
+            rst.append(u'  :Type: %(type)s' % info, AD)
             rst.append(u'', AD)
 
         self.headline(rst, u"Sample configuration", '-')
@@ -102,12 +102,14 @@ class AutoPlugin(Directive):
             if info['type'] != 'list':
                 entry = u'%s%s' % (entry, info['default'])
                 rst.append(entry, AD)
-            else:
+            elif info['default']:
                 pad = ' ' * len(entry)
                 entry = u'%s%s' % (entry, info['default'][0])
                 rst.append(entry, AD)
                 for val in info['default'][1:]:
                     rst.append(u'%s%s' % (pad, val), AD)
+            else:
+                rst.append(entry, AD)
         rst.append(u'', AD)
 
     def headline(self, rst, headline, level=u'='):
@@ -141,15 +143,19 @@ class ConfigBucket(object):
     def as_int(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'integer',
                            'default': default}
+        return default
     def as_float(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'float',
                            'default': default}
+        return default
     def as_str(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'str',
                            'default': default}
+        return default
     def as_list(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'list',
                            'default': default}
+        return default
     def __getitem__(self, item):
         self.vars[item] = {'type': None,
                            'default': DEFAULT}
@@ -197,8 +203,7 @@ class Opt(object):
         buf = []
         for optstring in self.opts:
             desc = optstring
-            print "Action", self.action
-            if self.action not in ('store_true', 'store_false'):
+            if self.action not in ('store_true', 'store_false', None):
                 desc += '=%s' % self.meta(optstring)
             buf.append(desc)
             res = ['.. option:: ' + ', '.join(buf)]

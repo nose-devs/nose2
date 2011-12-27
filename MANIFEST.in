@@ -4,5 +4,6 @@ include test-requirements.txt
 include nose2/plugins/plugins.cfg
 include tox.ini
 include unittest.cfg
+graft nose2/tests/functional/support
 graft docs
 graft support

@@ -46,7 +46,7 @@ class Config(object):
             return default
         for val in vlist:
             lines.extend(
-                line.strip() for line in val
+                line.strip() for line in val.splitlines()
                 if line.strip() and not line.strip().startswith('#'))
         return lines
 

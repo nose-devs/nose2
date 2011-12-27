@@ -1,5 +1,6 @@
 import ConfigParser
 
+TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
 
 class Config(object):
     """Configuration for an element.
@@ -19,7 +20,14 @@ class Config(object):
         return self._mvd[key]
 
     def as_bool(self, key, default=None):
-        return self._cast(key, bool, default)
+        try:
+            val = self._mvd[key][0].strip()
+        except KeyError:
+            return default
+        except IndexError:
+            # setting = -> False
+            return False
+        return val.lower() in TRUE_VALS
 
     def as_int(self, key, default=None):
         return self._cast(key, int, default)

@@ -14,7 +14,6 @@ class TestMultipassOptionParser(unittest.TestCase):
     def test_parser_can_extract_test_names(self):
         self.p.add_argument('tests', nargs='*', default=[])
         args, argv = self.p.parse_args(['-x', 'foo', 'bar'])
-        print args, argv
         self.assertEqual(argv, ['-x'])
         self.assertEqual(args.tests, ['foo', 'bar'])
 

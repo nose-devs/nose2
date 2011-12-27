@@ -1,4 +1,4 @@
-from nose2 import config
+from nose2 import config, events
 from nose2.compat import unittest
 
 

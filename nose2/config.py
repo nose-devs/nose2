@@ -1,6 +1,10 @@
 import ConfigParser
+import sys
+
+from nose2 import events
 
 TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
+
 
 class Config(object):
     """Configuration for an element.
@@ -66,6 +70,7 @@ class Session(object):
     """
     def __init__(self):
         self.config = ConfigParser.ConfigParser()
+        self.plugins = []
 
     def get(self, section):
         # FIXME cache these
@@ -76,3 +81,32 @@ class Session(object):
 
     def loadConfigFiles(self, *filenames):
         self.config.read(filenames)
+
+    def loadPlugins(self, modules=None):
+        # plugins set directly
+        if modules is None:
+            modules = []
+        # plugins mentioned in config file(s)
+        cfg = self.get('unittest')
+        more_plugins = cfg.as_list('plugins', [])
+        exclude = set(cfg.as_list('excluded-plugins', []))
+        all_  = set(sum(modules, more_plugins)) - exclude
+        for module in all_:
+            __import__(module)
+            self.loadPluginsFromModule(sys.modules[module])
+
+    def loadPluginsFromModule(self, module):
+        avail = []
+        for entry in dir(module):
+            try:
+                item = getattr(module, entry)
+            except AttributeError:
+                pass
+            try:
+                if issubclass(item, events.Plugin):
+                    avail.append(item)
+            except TypeError:
+                pass
+        for cls in avail:
+            self.plugins.append(cls(session=self))
+

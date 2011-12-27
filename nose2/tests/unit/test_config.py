@@ -9,7 +9,8 @@ class TestConfigSession(unittest.TestCase):
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
-        self.conf = config.Config([('a', ' 1 '), ('b', '  x\n  y ')])
+        self.conf = config.Config([
+                ('a', ' 1 '), ('b', '  x\n  y '), ('c', '0')])
 
     def test_as_int(self):
         self.assertEqual(self.conf.as_int('a'), 1)
@@ -21,6 +22,7 @@ class TestConfig(unittest.TestCase):
 
     def test_as_bool(self):
         self.assertEqual(self.conf.as_bool('a'), True)
+        self.assertEqual(self.conf.as_bool('c'), False)
 
     def test_as_float(self):
         self.assertAlmostEqual(self.conf.as_float('a'), 1.0)

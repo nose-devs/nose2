@@ -1,7 +1,9 @@
-import ConfigParser
 import sys
 
+from six.moves import configparser
+
 from nose2 import events
+
 
 TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
 
@@ -69,7 +71,7 @@ class Session(object):
 
     """
     def __init__(self):
-        self.config = ConfigParser.ConfigParser()
+        self.config = configparser.ConfigParser()
         self.plugins = []
 
     def get(self, section):

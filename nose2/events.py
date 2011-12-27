@@ -1,3 +1,6 @@
+import six
+
+
 class PluginMeta(type):
     def __call__(cls, *args, **kwargs):
         session = kwargs.pop('session', None)
@@ -11,6 +14,6 @@ class PluginMeta(type):
         return instance
 
 
-class Plugin(object):
-    __metaclass__ = PluginMeta
+class Plugin(six.with_metaclass(PluginMeta)):
+    pass
 

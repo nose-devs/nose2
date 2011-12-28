@@ -1,14 +1,21 @@
 import os
 
 from nose2.compat import unittest
-from nose2 import session
+from nose2 import loader, session
 
 
 class PluggableTestProgram(unittest.TestProgram):
+    sessionClass = session.Session
+    loaderClass = loader.PluggableTestLoader
+
+    # XXX override __init__ to warn that testLoader and testRunner are ignored?
 
     def parseArgs(self, argv):
-        self.session = session.Session()
+        self.session = self.sessionClass()
         self.argparse = self.session.argparse # for convenience
+
+        # XXX force these? or can it be avoided?
+        self.testLoader = self.loaderClass(self.session)
 
         # Parse initial arguments like config file paths, verbosity
         self.setInitialArguments()
@@ -16,7 +23,7 @@ class PluggableTestProgram(unittest.TestProgram):
         self.handleCfgArgs(cfg_args)
 
         # Parse arguments for plugins (if any) and test names
-        self.argparse.add_argument('tests', nargs='*')
+        self.argparse.add_argument('testNames', nargs='*')
         args, argv = self.argparse.parse_args(argv)
         if argv:
             self.argparse.error("Unrecognized arguments: %s" % ' '.join(argv))

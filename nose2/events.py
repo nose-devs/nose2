@@ -8,9 +8,14 @@ unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
 
 """
+import logging
+
 import six
 
 from nose2 import config
+
+log = logging.getLogger(__name__)
+
 
 class PluginMeta(type):
     def __call__(cls, *args, **kwargs):

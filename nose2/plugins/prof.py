@@ -6,7 +6,7 @@ except ImportError:
 import os
 import tempfile
 
-from unittest2 import Plugin
+from nose2.events import Plugin
 
 
 class Profiler(Plugin):

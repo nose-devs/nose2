@@ -1,7 +1,8 @@
 import os
 import pickle
 import re
-from unittest2.events import Plugin
+
+from nose2.events import Plugin
 
 
 class TestId(Plugin):

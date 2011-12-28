@@ -1,4 +1,4 @@
-from unittest2.events import Plugin
+from nose2.events import Plugin
 
 class Outcomes(Plugin):
     """TODO: document"""

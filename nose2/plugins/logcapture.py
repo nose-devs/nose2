@@ -1,8 +1,8 @@
 import logging
 from logging.handlers import BufferingHandler
 import threading
-from unittest2.events import Plugin
 
+from nose2.events import Plugin
 from nose2.util import ln
 
 

@@ -1,6 +1,6 @@
-import inspect
-from unittest2.plugins import moduleloading as ml
 from nose2 import util
+from nose2.events import Plugin
+
 
 def unpack(_self, generator):
     for index, func_args in enumerate(generator):
@@ -14,7 +14,7 @@ def unpack(_self, generator):
             yield index, (func, args)
 
 
-class Functions(ml.Functions):
+class Functions(Plugin):
     """TODO: document"""
 
     configSection = 'nose-functions'
@@ -38,7 +38,7 @@ class Functions(ml.Functions):
                 super(Functions, self).isGenerator(obj))
 
 
-class Generators(ml.Generators):
+class Generators(Plugin):
     """TODO: document"""
 
     configSection = 'nose-generators'

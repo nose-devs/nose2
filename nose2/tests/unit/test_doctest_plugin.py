@@ -1,11 +1,8 @@
 """Test doctests plugin."""
 import doctest
-import unittest
-import os.path
 
-from ..plugins import doctests
-
-from ._common import TestCase, FakeHandleFileEvent
+from nose2.plugins import doctests
+from nose2.tests._common import TestCase, FakeHandleFileEvent
 
 
 class UnitTestDocTestLoader(TestCase):

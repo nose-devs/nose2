@@ -1,13 +1,11 @@
 """Test testid plugin."""
-import re
 import os.path
 import pickle
-import shutil
-import tempfile
 
-from ..plugins import testid
-from ._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
-                      FakeLoadFromNamesEvent, TestCase)
+from nose2.plugins import testid
+from nose2.tests._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
+                                 FakeLoadFromNamesEvent, TestCase)
+
 
 class UnitTestTestId(TestCase):
     """Test class TestId.

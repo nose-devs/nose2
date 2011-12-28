@@ -1,9 +1,8 @@
-import unittest2
+from nose2.plugins import loader
+from nose2.tests._common import TestCase
 
-from ..plugins import loader
 
-
-class TestGeneratorUnpack(unittest2.TestCase):
+class TestGeneratorUnpack(TestCase):
     tags = ['unit']
 
     def setUp(self):

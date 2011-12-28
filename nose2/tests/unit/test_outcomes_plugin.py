@@ -1,8 +1,8 @@
-import unittest2
+from nose2.plugins import outcomes
+from nose2.tests._common import TestCase
 
-from ..plugins import outcomes
 
-class TestOutComesPlugin(unittest2.TestCase):
+class TestOutComesPlugin(TestCase):
     tags = ['unit']
 
     def setUp(self):

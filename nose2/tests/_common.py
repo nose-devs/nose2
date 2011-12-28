@@ -1,17 +1,17 @@
 """Common functionality."""
-import unittest2.loader
 import os.path
 import tempfile
 import shutil
 import sys
 import subprocess
 
+from nose2.compat import unittest
+
 HERE = os.path.dirname(__file__)
-ROOT = os.path.join(HERE, '..', '..')
-SUPPORT = os.path.join(ROOT, 'support')
+SUPPORT = os.path.join(HERE, 'functional', 'support')
 
 
-class TestCase(unittest2.TestCase):
+class TestCase(unittest.TestCase):
     """TestCase extension.
 
     If the class variable _RUN_IN_TEMP is True (default: False), tests will be
@@ -37,8 +37,7 @@ class TestCase(unittest2.TestCase):
             shutil.rmtree(self._work_dir, ignore_errors=True)
 
 
-class FunctionalTestCase(unittest2.TestCase):
-
+class FunctionalTestCase(unittest.TestCase):
     tags = ['functional']
 
     def assertTestRunOutputMatches(self, proc, stdout=None, stderr=None):
@@ -49,12 +48,7 @@ class FunctionalTestCase(unittest2.TestCase):
             self.assertRegexpMatches(cmd_stderr, stderr)
 
     def runIn(self, testdir, *args):
-        cmd = ['nose2'] + list(args)
-        proc = subprocess.Popen(cmd,
-                                cwd=os.path.join(SUPPORT, testdir),
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
-        return proc
+        return run_nose2(*args, cwd=testdir)
 
 
 class _FakeEventBase(object):
@@ -71,8 +65,7 @@ class FakeHandleFileEvent(_FakeEventBase):
     def __init__(self, name):
         super(FakeHandleFileEvent, self).__init__()
 
-        self.loader = unittest2.loader.TestLoader()
-        self.loader._top_level_dir = os.getcwd()
+        self.loader = Stub() # FIXME
         self.name = name
         self.path = os.path.split(name)[1]
         self.extraTests = []
@@ -116,3 +109,24 @@ class FakeStartTestRunEvent(_FakeEventBase):
 
 class Stub(object):
     """Stub object for use in tests"""
+    def __getattr__(self, attr):
+        return Stub()
+    def __call__(self, *arg, **kw):
+        return Stub()
+
+
+def support_file(*path_parts):
+    return os.path.join(SUPPORT, *path_parts)
+
+
+def run_nose2(*nose2_args, **popen_args):
+    if 'cwd' in popen_args:
+        cwd = popen_args.pop('cwd')
+        if not os.path.isabs(cwd):
+            popen_args['cwd'] = support_file(cwd)
+    process = subprocess.Popen(
+        ['python', '-m', 'nose2.__main__'] + list(nose2_args),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        **popen_args)
+    return process

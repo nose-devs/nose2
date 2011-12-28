@@ -1,13 +1,12 @@
-import unittest2
+from nose2.plugins import attrib
+from nose2.tests._common import TestCase
 
-from ..plugins import attrib
 
-
-class TestAttribPlugin(unittest2.TestCase):
+class TestAttribPlugin(TestCase):
     tags = ['unit']
 
     def setUp(self):
-        class TC_1(unittest2.TestCase):
+        class TC_1(TestCase):
             tags = ['a', 'b']
             def test_a(self):
                 pass

@@ -1,8 +1,7 @@
-import sys
-
 from six.moves import configparser
 
-from nose2 import config, events, options
+from nose2 import config, events, options, util
+
 
 class Session(object):
     """Configuration session.
@@ -13,7 +12,12 @@ class Session(object):
     def __init__(self):
         self.argparse = options.MultipassOptionParser(prog='nose2')
         self.config = configparser.ConfigParser()
+        self.hooks = events.PluginInterface()
         self.plugins = []
+
+    def event(self, cls, *arg, **kw):
+        kw['session'] = self
+        return cls(*arg, **kw)
 
     def get(self, section):
         # FIXME cache these
@@ -35,8 +39,9 @@ class Session(object):
         exclude = set(cfg.as_list('excluded-plugins', []))
         all_  = set(sum(modules, more_plugins)) - exclude
         for module in all_:
-            __import__(module)
-            self.loadPluginsFromModule(sys.modules[module])
+            self.loadPluginsFromModule(util.module_from_name(module))
+        self.hooks.loadedPlugins(
+            self.event(events.PluginsLoadedEvent, self.plugins))
 
     def loadPluginsFromModule(self, module):
         avail = []
@@ -52,4 +57,5 @@ class Session(object):
                 pass
         for cls in avail:
             self.plugins.append(cls(session=self))
+            # XXX add to hooks now? or wait to check if enabled
 

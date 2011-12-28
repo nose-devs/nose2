@@ -58,7 +58,7 @@ class PluggableTestProgram(unittest.TestProgram):
     def handleArgs(self, args):
         # FIXME activate or deactivate plugins,
         # pass arguments to plugins that want them
-        pass
+        self.testNames = args.testNames
 
     def loadPlugins(self):
         # FIXME pass in plugins set via __init__ args
@@ -66,7 +66,10 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def createTests(self):
         # fire plugin hook
-        pass
+        if self.testNames is None:
+            self.test = self.testLoader.loadTestsFromModule(self.module)
+        else:
+            self.test = self.testLoader.loadTestsFromNames(self.testNames)
 
     def runTests(self):
         # fire plugin hook

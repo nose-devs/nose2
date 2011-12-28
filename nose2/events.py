@@ -1,3 +1,13 @@
+"""
+Adapted from unittest2/events.py from the unittest2 plugins branch.
+
+This module contains some code copied from unittest2/events.py and other
+code developed in reference to that module and others within unittest2.
+
+unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+Rights Reserved. See: http://docs.python.org/license.html
+
+"""
 import six
 
 from nose2 import config

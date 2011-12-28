@@ -1,8 +1,9 @@
 """Test doctests plugin."""
 import doctest
 
+from nose2 import events, loader, session
 from nose2.plugins import doctests
-from nose2.tests._common import TestCase, FakeHandleFileEvent
+from nose2.tests._common import TestCase
 
 
 class UnitTestDocTestLoader(TestCase):
@@ -10,6 +11,11 @@ class UnitTestDocTestLoader(TestCase):
     tags = ['unit']
 
     _RUN_IN_TEMP = True
+
+    def setUp(self):
+        self.session = session.Session()
+        self.loader = loader.PluggableTestLoader(self.session)
+        super(UnitTestDocTestLoader, self).setUp()
 
     def test___init__(self):
         """Test the __init__ method."""
@@ -63,7 +69,11 @@ def func():
         finally:
             fh.close()
 
-        event = FakeHandleFileEvent(fh.name)
+        event = self.session.event(
+            events.HandleFileEvent,
+            loader=self.loader, name=fh.name,
+            path=fpath, pattern=None, top_level_directory=None,
+            )
         plug.handleFile(event)
         return event
 

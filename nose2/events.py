@@ -10,6 +10,7 @@ Rights Reserved. See: http://docs.python.org/license.html
 """
 import logging
 
+import argparse
 import six
 
 from nose2 import config

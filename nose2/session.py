@@ -60,3 +60,12 @@ class Session(object):
         for method in self.hooks.methods:
             if hasattr(plugin, method):
                 self.hooks.register(method, plugin)
+
+    # convenience properties
+    @property
+    def testFilePattern(self):
+        return self.get('unittest').as_str('test-file-pattern', 'test*.py')
+
+    @property
+    def testMethodPrefix(self):
+        return self.get('unittest').as_str('test-method-prefix', 'test')

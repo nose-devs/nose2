@@ -47,8 +47,8 @@ class FunctionalTestCase(unittest.TestCase):
         if stderr:
             self.assertRegexpMatches(cmd_stderr, stderr)
 
-    def runIn(self, testdir, *args):
-        return run_nose2(*args, cwd=testdir)
+    def runIn(self, testdir, *args, **kw):
+        return run_nose2(*args, cwd=testdir, **kw)
 
 
 class _FakeEventBase(object):

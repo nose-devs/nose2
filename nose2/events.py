@@ -46,7 +46,7 @@ class PluginMeta(type):
 
 class Plugin(six.with_metaclass(PluginMeta)):
 
-    def register(self):
+    def register(self, *_):
         """Add myself to the plugins that get called"""
         if self.session is None:
             log.warning("Unable to register %s, no session", self)
@@ -62,7 +62,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
         class CB(argparse.Action):
             def __call__(self, parser, namespace, values, option_string=None):
                 if six.callable(callback):
-                    callback()
+                    callback(values)
                 elif isinstance(callback, list):
                     callback.append(values)
                 else:

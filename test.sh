@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. ~/.local/bin/virtualenvwrapper.sh
-workon unit2
 
 nargs=""
 skip="no"
@@ -37,4 +35,4 @@ do
 done
 
 cd $root
-nose2 $nargs
+tox -e py26 -- $nargs

@@ -1,6 +1,7 @@
+import argparse
 from six.moves import configparser
 
-from nose2 import config, events, options, util
+from nose2 import config, events, util
 
 
 class Session(object):
@@ -10,7 +11,7 @@ class Session(object):
 
     """
     def __init__(self):
-        self.argparse = options.MultipassOptionParser(prog='nose2')
+        self.argparse = argparse.ArgumentParser(prog='nose2')
         self.config = configparser.ConfigParser()
         self.hooks = events.PluginInterface()
         self.plugins = []

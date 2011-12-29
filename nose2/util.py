@@ -69,10 +69,7 @@ def module_from_name(name):
 
 
 def ispackage(path):
-    """
-    Is this path a package directory?
-
-    """
+    """Is this path a package directory?"""
     if os.path.isdir(path):
         # at least the end of the path must be a legal python identifier
         # and __init__.py[co] must exist

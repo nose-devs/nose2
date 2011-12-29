@@ -6,6 +6,8 @@ import sys
 import subprocess
 
 from nose2.compat import unittest
+from nose2 import util
+
 
 HERE = os.path.dirname(__file__)
 SUPPORT = os.path.join(HERE, 'functional', 'support')
@@ -43,9 +45,9 @@ class FunctionalTestCase(unittest.TestCase):
     def assertTestRunOutputMatches(self, proc, stdout=None, stderr=None):
         cmd_stdout, cmd_stderr = proc.communicate()
         if stdout:
-            self.assertRegexpMatches(cmd_stdout, stdout)
+            self.assertRegexpMatches(util.safe_decode(cmd_stdout), stdout)
         if stderr:
-            self.assertRegexpMatches(cmd_stderr, stderr)
+            self.assertRegexpMatches(util.safe_decode(cmd_stderr), stderr)
 
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)

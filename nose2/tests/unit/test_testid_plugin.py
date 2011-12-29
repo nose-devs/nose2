@@ -63,7 +63,7 @@ class UnitTestTestId(TestCase):
         plug.startTest(FakeStartTestEvent(self))
         plug.stopTestRun(None)
 
-        fh = open(plug.idfile, 'r')
+        fh = open(plug.idfile, 'rb')
         try:
             data = pickle.load(fh)
         finally:

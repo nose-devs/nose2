@@ -53,5 +53,10 @@ class Session(object):
                 pass
         for cls in avail:
             self.plugins.append(cls(session=self))
-            # XXX add to hooks now? or wait to check if enabled
 
+    def registerPlugin(self, plugin):
+        if plugin not in self.plugins:
+            self.plugins.append(plugin)
+        for method in self.hooks.methods:
+            if hasattr(plugin, method):
+                self.hooks.register(method, plugin)

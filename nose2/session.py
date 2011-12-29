@@ -37,8 +37,7 @@ class Session(object):
         all_  = set(sum(modules, more_plugins)) - exclude
         for module in all_:
             self.loadPluginsFromModule(util.module_from_name(module))
-        self.hooks.loadedPlugins(
-            self.event(events.PluginsLoadedEvent, self.plugins))
+        self.hooks.loadedPlugins(events.PluginsLoadedEvent(self.plugins))
 
     def loadPluginsFromModule(self, module):
         avail = []

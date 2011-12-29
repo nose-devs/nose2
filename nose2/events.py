@@ -98,7 +98,7 @@ class Hook(object):
 class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
                'handleFile', 'startTestRun', 'startTest', 'loadTestsFromName',
-               'stopTestRun',
+               'stopTestRun', 'createTests',
                # ... etc
                )
 
@@ -154,6 +154,14 @@ class StartTestEvent(Event):
         super(StartTestEvent, self).__init__(**kw)
 
 
+class CreateTestsEvent(Event):
+    def __init__(self, loader, names, module, **kw):
+        self.loader = loader
+        self.names = names
+        self.module = module
+        super(CreateTestsEvent, self).__init__(**kw)
+
+
 class LoadFromModuleEvent(Event):
     def __init__(self, loader, module, **kw):
         self.loader = loader
@@ -171,6 +179,15 @@ class LoadFromNamesEvent(Event):
         super(LoadFromNamesEvent, self).__init__(**kw)
 
 
+class LoadFromNameEvent(Event):
+    def __init__(self, loader, name, module, **kw):
+        self.loader = loader
+        self.name = name
+        self.module = module
+        self.extraTests = []
+        super(LoadFromNameEvent, self).__init__(**kw)
+
+
 class HandleFileEvent(Event):
     def __init__(self, loader, name, path, pattern,
                     top_level_directory, **kw):
@@ -182,6 +199,14 @@ class HandleFileEvent(Event):
         self.pattern = pattern
         self.top_level_directory = top_level_directory
         super(HandleFileEvent, self).__init__(**kw)
+
+class MatchPathEvent(Event):
+    def __init__(self, name, path, pattern, **kw):
+        self.path = path
+        self.name = name
+        self.pattern = pattern
+        super(MatchPathEvent, self).__init__(**kw)
+
 
 
 class TestReport(Event):

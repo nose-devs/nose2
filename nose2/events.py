@@ -23,13 +23,24 @@ class PluginMeta(type):
         session = kwargs.pop('session', None)
         instance = object.__new__(cls, *args, **kwargs)
         instance.session = session
-        if session is not None:
-            configSection = getattr(instance, 'configSection', None)
-            if configSection is not None:
-                instance.config = session.get(configSection)
-        else:
-            instance.config = config.Config([])
+        instance.config = config.Config([])
+
+        config_section = getattr(instance, 'configSection', None)
+        switch = getattr(instance, 'commandLineSwitch', None)
+
+        if session is not None and config_section is not None:
+            instance.config = session.get(config_section)
+
+        always_on = instance.config.as_bool('always-on', default=False)
+
         instance.__init__(*args, **kwargs)
+        if always_on:
+            instance.register()
+        else:
+            if switch is not None:
+                short_opt, long_opt, help = switch
+                instance.addOption(
+                    instance.register, short_opt, long_opt, help)
         return instance
 
 
@@ -37,11 +48,36 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
     def register(self):
         """Add myself to the plugins that get called"""
-        pass
+        if self.session is None:
+            log.warning("Unable to register %s, no session", self)
+            return
+        self.session.registerPlugin(self)
 
     def addOption(self, callback, short_opt, long_opt, help_text=None):
         """Add command-line option"""
-        pass
+        if self.session is None:
+            log.warning("Unable to add option %s/%s for %s, no session",
+                        short_opt, long_opt, self)
+            return
+        class CB(argparse.Action):
+            def __call__(self, parser, namespace, values, option_string=None):
+                if six.callable(callback):
+                    callback()
+                elif isinstance(callback, list):
+                    callback.append(values)
+                else:
+                    raise ValueError("Invalid callback %s for plugin option %s",
+                                     callback, option_string)
+        opts = []
+        if short_opt:
+            if short_opt.lower() == short_opt:
+                raise ValueError(
+                    'Lowercase short options are reserved: %s' % short_opt)
+            opts.append('-' + short_opt)
+        if long_opt:
+            opts.append('--' + long_opt)
+        self.session.argparse.add_argument(
+            *opts, action=CB, help=help_text, const=True, nargs=0)
 
 
 class Hook(object):
@@ -60,6 +96,12 @@ class Hook(object):
 
 
 class PluginInterface(object):
+    methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
+               'handleFile', 'startTestRun', 'startTest', 'loadTestsFromName',
+               'stopTestRun',
+               # ... etc
+               )
+
     def __init__(self):
         self.hooks = {}
 
@@ -117,6 +159,7 @@ class HandleFileEvent(Event):
         self.pattern = pattern
         self.top_level_directory = top_level_directory
         super(HandleFileEvent, self).__init__(**kw)
+
 
 class TestReport(Event):
     pass

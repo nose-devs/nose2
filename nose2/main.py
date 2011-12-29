@@ -1,7 +1,7 @@
 import os
 
 from nose2.compat import unittest
-from nose2 import loader, session
+from nose2 import events, loader, session
 
 
 class PluggableTestProgram(unittest.TestProgram):
@@ -67,10 +67,16 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def createTests(self):
         # fire plugin hook
-        if self.testNames is None:
-            self.test = self.testLoader.loadTestsFromModule(self.module)
+        event = events.CreateTestsEvent(
+            self.testLoader, self.testNames, self.module)
+        result = self.session.hooks.createTests(event)
+        if event.handled:
+            self.test = result
         else:
-            self.test = self.testLoader.loadTestsFromNames(self.testNames)
+            if self.testNames is None:
+                self.test = self.testLoader.loadTestsFromModule(self.module)
+            else:
+                self.test = self.testLoader.loadTestsFromNames(self.testNames)
 
     def runTests(self):
         # fire plugin hook

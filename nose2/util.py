@@ -17,6 +17,8 @@ except ImportError:
         return bool((inspect.isfunction(func) or inspect.ismethod(func)) and
                     func.func_code.co_flags & CO_GENERATOR)
 
+import six
+
 
 IDENT_RE = re.compile(r'^[_a-zA-Z]\w*$r', re.UNICODE)
 VALID_MODULE_RE = re.compile(r'[_a-zA-Z]\w*\.py$', re.UNICODE)
@@ -83,3 +85,16 @@ def ispackage(path):
                     os.path.isfile(os.path.join(path, '__init__$py.class')):
                 return True
     return False
+
+
+def safe_decode(string):
+    if string is None:
+        return string
+    try:
+        return string.decode()
+    except UnicodeDecodeError:
+        pass
+    try:
+        return string.decode('utf-8')
+    except UnicodeDecodeError:
+        return six.u('<unable to decode>')

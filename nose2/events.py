@@ -127,8 +127,31 @@ class PluginsLoadedEvent(Event):
         super(PluginsLoadedEvent, self).__init__(**kw)
 
 
+class StartTestRunEvent(Event):
+    def __init__(self, runner, suite, result, startTime, executeTests, **kw):
+        self.suite = suite
+        self.runner = runner
+        self.result = result
+        self.startTime = startTime
+        self.executeTests = executeTests
+        super(StartTestRunEvent, self).__init__(**kw)
+
+
+class StopTestRunEvent(Event):
+    def __init__(self, runner, result, stopTime, timeTaken, **kw):
+        self.runner = runner
+        self.result = result
+        self.stopTime = stopTime
+        self.timeTaken = timeTaken
+        super(StopTestRunEvent, self).__init__(**kw)
+
+
 class StartTestEvent(Event):
-    pass
+    def __init__(self, test, result, startTime, **kw):
+        self.test = test
+        self.result = result
+        self.startTime = startTime
+        super(StartTestEvent, self).__init__(**kw)
 
 
 class LoadFromModuleEvent(Event):

@@ -19,12 +19,12 @@ class PluggableTestProgram(unittest.TestProgram):
 
         # Parse initial arguments like config file paths, verbosity
         self.setInitialArguments()
-        cfg_args, argv = self.argparse.parse_args(argv)
+        cfg_args, argv = self.argparse.parse_known_args(argv)
         self.handleCfgArgs(cfg_args)
 
         # Parse arguments for plugins (if any) and test names
         self.argparse.add_argument('testNames', nargs='*')
-        args, argv = self.argparse.parse_args(argv)
+        args, argv = self.argparse.parse_known_args(argv)
         if argv:
             self.argparse.error("Unrecognized arguments: %s" % ' '.join(argv))
         self.handleArgs(args)

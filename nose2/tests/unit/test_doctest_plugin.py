@@ -63,7 +63,7 @@ def func():
         method is called for the file.
         """
         plug = self._create()
-        fh = open(fpath, "wb")
+        fh = open(fpath, "w")
         try:
             fh.write(content)
         finally:

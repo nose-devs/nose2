@@ -62,6 +62,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def loadPlugins(self):
         # FIXME pass in plugins set via __init__ args
+        # FIXME pass in default plugins
         self.session.loadPlugins()
 
     def createTests(self):

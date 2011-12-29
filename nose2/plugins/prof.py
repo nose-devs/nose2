@@ -6,6 +6,8 @@ except ImportError:
 import os
 import tempfile
 
+import six
+
 from nose2.events import Plugin
 
 
@@ -39,8 +41,8 @@ class Profiler(Plugin):
         class Stream:
             def write(self, *msg):
                 for m in msg:
-                    event.message(unicode(m), (0, 1, 2))
-                    event.message(u' ', (0, 1, 2))
+                    event.message(m, (0, 1, 2))
+                    event.message(' ', (0, 1, 2))
         stream = Stream()
         self.prof.close()
         prof_stats = stats.load(self.pfile)

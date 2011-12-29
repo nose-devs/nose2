@@ -2,6 +2,8 @@ import logging
 from logging.handlers import BufferingHandler
 import threading
 
+import six
+
 from nose2.events import Plugin
 from nose2.util import ln
 
@@ -57,7 +59,7 @@ class LogCapture(Plugin):
         # FIXME when there's a better way, do that instead
         records = [ln('>> begin captured logging <<')] + records + [
             ln('>> end captured logging <<')]
-        records = u'\n'.join(records)
+        records = six.u('\n').join(records)
         event.traceback = "%s\n%s" % (
             event.traceback, records.encode('utf-8'))
 

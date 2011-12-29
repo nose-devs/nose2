@@ -33,7 +33,7 @@ def ln(label, char='-', width=70):
 
     """
     label_len = len(label) + 2
-    chunk = (width - label_len) / 2
+    chunk = (width - label_len) // 2
     out = '%s %s %s' % (char * chunk, label, char * chunk)
     pad = width - len(out)
     if pad > 0:

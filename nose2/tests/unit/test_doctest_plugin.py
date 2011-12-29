@@ -69,8 +69,7 @@ def func():
         finally:
             fh.close()
 
-        event = self.session.event(
-            events.HandleFileEvent,
+        event = events.HandleFileEvent(
             loader=self.loader, name=fh.name,
             path=fpath, pattern=None, top_level_directory=None,
             )

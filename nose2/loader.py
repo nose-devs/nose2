@@ -11,17 +11,12 @@ class PluggableTestLoader(object):
         self.session = session
 
     def loadTestsFromModule(self, module):
-        evt = self.session.event(
-            events.LoadFromModuleEvent,
-            self, module)
+        evt = events.LoadFromModuleEvent(self, module)
         self.session.hooks.loadTestsFromModule(evt)
         return self.suiteClass(evt.extraTests)
 
     def loadTestsFromNames(self, testNames, module=None):
-        evt = self.session.event(
-            events.LoadFromNamesEvent,
-            self,
-            testNames,
-            module)
+        evt = events.LoadFromNamesEvent(
+            self, testNames,module)
         self.session.hooks.loadTestsFromNames(evt)
         return self.suiteClass(evt.extraTests)

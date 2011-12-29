@@ -9,10 +9,7 @@ class TestPluggableTestLoader(TestCase):
 
     def test_load_from_module_calls_hook(self):
         self.session.hooks.register('loadTestsFromModule', FakePlugin())
-        evt = self.session.event(
-            events.LoadFromModuleEvent,
-            self.loader,
-            'some_module')
+        evt = events.LoadFromModuleEvent(self.loader, 'some_module')
         self.session.hooks.loadTestsFromModule(evt)
         assert evt.fake, "FakePlugin was not called"
 

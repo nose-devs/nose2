@@ -71,16 +71,12 @@ class PluginInterface(object):
 
 
 class Event(object):
-    def __init__(self, session=None, **kw):
+    def __init__(self):
         self.handled = False
-        self.session = session
         self.info = {}
-        super(Event, self).__init__(**kw)
 
     def message(self, message, verbosity=(1, 2)):
-        if self.session:
-            self.session.message(message, verbosity)
-        log.warning("Unable to send message %s: no session", message)
+        raise NotImplementedError("Not supported")
 
 
 class PluginsLoadedEvent(Event):

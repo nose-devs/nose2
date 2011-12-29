@@ -16,10 +16,6 @@ class Session(object):
         self.hooks = events.PluginInterface()
         self.plugins = []
 
-    def event(self, cls, *arg, **kw):
-        kw['session'] = self
-        return cls(*arg, **kw)
-
     def get(self, section):
         # FIXME cache these
         items = []

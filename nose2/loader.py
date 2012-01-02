@@ -12,8 +12,8 @@ class PluggableTestLoader(object):
     def __init__(self, session):
         self.session = session
 
-    def loadTestsFromModule(self, module):
-        evt = events.LoadFromModuleEvent(self, module)
+    def loadTestsFromModule(self, module, use_load_tests=False):
+        evt = events.LoadFromModuleEvent(self, module, use_load_tests)
         result = self.session.hooks.loadTestsFromModule(evt)
         if evt.handled:
             suite = result or self.suiteClass()

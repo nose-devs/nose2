@@ -1,12 +1,14 @@
 import os
+import sys
 
 from nose2.compat import unittest
-from nose2 import events, loader, session
+from nose2 import events, loader, runner, session
 
 
 class PluggableTestProgram(unittest.TestProgram):
     sessionClass = session.Session
     loaderClass = loader.PluggableTestLoader
+    runnerClass = runner.PluggableTestRunner
 
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
 
@@ -80,6 +82,16 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def runTests(self):
         # fire plugin hook
-        pass
+        runner = self._makeRunner()
+        self.result = runner.run(self.test)
+        if self.exit:
+            sys.exit(not self.result.wasSuccessful())
+
+    def _makeRunner(self):
+        runner = self.runnerClass(self.session)
+        event = events.RunnerCreatedEvent(runner)
+        self.session.hooks.runnerCreated(event)
+        return event.runner
+
 
 main_ = PluggableTestProgram

@@ -47,7 +47,6 @@ class PluggableTestLoader(object):
             # Python 2.3 compatibility
             # format_exc returns two frames of discover.py as well
             message += '\n%s' % traceback.format_exc()
-        print message
         return self._makeFailedTest(
             'ModuleImportFailure', name, ImportError(message))
 

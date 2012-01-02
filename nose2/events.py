@@ -18,6 +18,10 @@ from nose2 import config
 log = logging.getLogger(__name__)
 
 
+# XXX I'd rather move this stuff to Plugin.__init__ and
+# have __init__ call self.configure() or something after the
+# initial setup, but that would further break compatibilty
+# with the unittest2 plugins branch Plugin class.
 class PluginMeta(type):
     def __call__(cls, *args, **kwargs):
         session = kwargs.pop('session', None)

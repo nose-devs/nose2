@@ -145,7 +145,7 @@ class DiscoveryLoader(events.Plugin):
                                              self._top_level_dir)
                 result = self.session.hooks.handleFile(evt)
                 if evt.extraTests:
-                    yield self.suiteClass(evt.extraTests)
+                    yield event.loader.suiteClass(evt.extraTests)
 
                 if evt.handled:
                     if result:

@@ -102,7 +102,7 @@ class Hook(object):
 class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
                'handleFile', 'startTestRun', 'startTest', 'loadTestsFromName',
-               'stopTestRun', 'createTests',
+               'stopTestRun', 'createTests', 'matchPath', 'getTestCaseNames',
                # ... etc
                )
 
@@ -167,11 +167,20 @@ class CreateTestsEvent(Event):
 
 
 class LoadFromModuleEvent(Event):
-    def __init__(self, loader, module, **kw):
+    def __init__(self, loader, module, use_load_tests=False, **kw):
         self.loader = loader
         self.module = module
+        self.useLoadTests = use_load_tests
         self.extraTests = []
         super(LoadFromModuleEvent, self).__init__(**kw)
+
+
+class LoadFromTestCaseEvent(Event):
+    def __init__(self, loader, testCase, **kw):
+        self.loader = loader
+        self.testCase = testCase
+        self.extraTests = []
+        super(LoadFromTestCaseEvent, self).__init__(**kw)
 
 
 class LoadFromNamesEvent(Event):
@@ -204,6 +213,7 @@ class HandleFileEvent(Event):
         self.top_level_directory = top_level_directory
         super(HandleFileEvent, self).__init__(**kw)
 
+
 class MatchPathEvent(Event):
     def __init__(self, name, path, pattern, **kw):
         self.path = path
@@ -211,6 +221,16 @@ class MatchPathEvent(Event):
         self.pattern = pattern
         super(MatchPathEvent, self).__init__(**kw)
 
+
+class GetTestCaseNamesEvent(Event):
+    def __init__(self, loader, testCase, is_test_method, **kw):
+        self.loader = loader
+        self.testCase = testCase
+        self.testMethodPrefix = None
+        self.extraNames = []
+        self.excludedNames = []
+        self.isTestMethod = is_test_method
+        super(GetTestCaseNamesEvent, self).__init__(**kw)
 
 
 class TestReport(Event):

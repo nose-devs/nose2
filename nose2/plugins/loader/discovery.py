@@ -77,12 +77,14 @@ class DiscoveryLoader(events.Plugin):
 
         is_not_importable = False
         if os.path.isdir(os.path.abspath(start_dir)):
+            started_with_dir = True
             start_dir = os.path.abspath(start_dir)
             if start_dir != top_level_dir:
                 is_not_importable = not os.path.isfile(
                     os.path.join(start_dir, '__init__.py'))
         else:
             # support for discovery from dotted module names
+            started_with_dir = False
             try:
                 __import__(start_dir)
             except ImportError:
@@ -103,8 +105,6 @@ class DiscoveryLoader(events.Plugin):
                 'Start directory is not importable: %r' % start_dir)
 
         def check_dir(the_dir):
-            if not implicit_start:
-                return
             full_path =  os.path.join(start_dir, the_dir)
             if (os.path.isdir(full_path) and not
                 os.path.isfile(os.path.join(full_path, '__init__.py'))):
@@ -121,7 +121,7 @@ class DiscoveryLoader(events.Plugin):
         if src_dir is not None:
             self._top_level_dir = src_dir
             tests.extend(list(self._find_tests(event, src_dir, pattern)))
-        if implicit_start:
+        if started_with_dir:
             for entry in os.listdir(start_dir):
                 if not 'test' in entry.lower():
                     continue

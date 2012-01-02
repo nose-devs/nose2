@@ -53,6 +53,9 @@ class PluggableTestLoader(object):
     def failedLoadTests(self, name, exception):
         return self._makeFailedTest('LoadTestsFailure', name, exception)
 
+    def sortTestMethodsUsing(self, name):
+        return name.lower()
+
     def _makeFailedTest(self, classname, methodname, exception):
         def testFailure(self):
             raise exception

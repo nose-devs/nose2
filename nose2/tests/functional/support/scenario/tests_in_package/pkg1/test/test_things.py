@@ -1,6 +1,6 @@
-import unittest2
+import unittest
 
-class SomeTests(unittest2.TestCase):
+class SomeTests(unittest.TestCase):
 
     def test_ok(self):
         pass
@@ -9,11 +9,11 @@ class SomeTests(unittest2.TestCase):
         raise TypeError("oops")
 
     def test_failed(self):
-        print "Hello stdout"
+        print("Hello stdout")
         assert False, "I failed"
 
     def test_skippy(self):
-        raise unittest2.SkipTest("I wanted to skip")
+        raise unittest.SkipTest("I wanted to skip")
 
 
 def test_func():

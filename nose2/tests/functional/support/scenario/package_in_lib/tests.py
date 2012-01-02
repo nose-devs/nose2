@@ -1,5 +1,5 @@
 import logging
-import unittest2
+import unittest
 
 from pkg2 import get_one
 
@@ -17,7 +17,7 @@ def test_fail():
     assert get_one() == 2
 
 
-class Tests(unittest2.TestCase):
+class Tests(unittest.TestCase):
     def test_fail2(self):
         log.debug("test_fail2 run")
         self.assertEqual(get_one(), 4)

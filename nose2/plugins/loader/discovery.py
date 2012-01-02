@@ -210,9 +210,10 @@ class DiscoveryLoader(events.Plugin):
                 else:
                     try:
                         yield load_tests(self, tests, pattern)
-                    except Exception, e:
+                    except Exception:
+                        ec, ev, tb = sys.exec_info()
                         yield event.loader.failedLoadTests(
-                            package.__name__, e)
+                            package.__name__, ev)
 
     def _match_path(self, path, full_path, pattern):
         # override this method to use alternative matching strategy

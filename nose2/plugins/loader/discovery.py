@@ -39,17 +39,24 @@ class DiscoveryLoader(events.Plugin):
         self.top_level_dir = top_level_dir
 
     def createTests(self, event):
-        event.handled = True # I'm taking this one
-        return self.discover(event, self.start_dir, self.top_level_dir)
+        """Discover tests in my start_dir.
 
-    def discover(self, event, start_dir, top_level_dir):
-        print "** discover", start_dir, top_level_dir
+        .. note ::
+
+           Sets event.handled to True, which prevents other plugins
+           from responding to this event. Other plugins that want
+           to load tests should implement handleFile or
+           loadTestsFromModule.
+
+        """
+        event.handled = True # I'm taking this one
+        return self._discover(event, self.start_dir, self.top_level_dir)
+
+    def _discover(self, event, start_dir, top_level_dir):
         loader = event.loader
         pattern = self.session.testFilePattern
-        implicit_start = False
         if start_dir is None:
             start_dir = '.'
-            implicit_start = True
         set_implicit_top = False
         if top_level_dir is None and self._top_level_dir is not None:
             # make top_level_dir optional if called from load_tests in a package

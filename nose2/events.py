@@ -103,6 +103,7 @@ class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
                'handleFile', 'startTestRun', 'startTest', 'loadTestsFromName',
                'stopTestRun', 'createTests', 'matchPath', 'getTestCaseNames',
+               'runnerCreated', 'resultCreated',
                # ... etc
                )
 
@@ -129,6 +130,18 @@ class PluginsLoadedEvent(Event):
     def __init__(self, pluginsLoaded, **kw):
         self.pluginsLoaded = pluginsLoaded
         super(PluginsLoadedEvent, self).__init__(**kw)
+
+
+class RunnerCreatedEvent(Event):
+    def __init__(self, runner, **kw):
+        self.runner = runner
+        super(RunnerCreatedEvent, self).__init__(**kw)
+
+
+class ResultCreatedEvent(Event):
+    def __init__(self, result, **kw):
+        self.result = result
+        super(ResultCreatedEvent, self).__init__(**kw)
 
 
 class StartTestRunEvent(Event):

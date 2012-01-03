@@ -136,7 +136,7 @@ class PluginInterface(object):
 class Event(object):
     def __init__(self):
         self.handled = False
-        self.info = {}
+        self.metadata = {}
 
     def message(self, message, verbosity=(1, 2)):
         raise NotImplementedError("Not supported")

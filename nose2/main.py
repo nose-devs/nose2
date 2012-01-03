@@ -13,7 +13,12 @@ class PluggableTestProgram(unittest.TestProgram):
     sessionClass = session.Session
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
-
+    defaultPlugins = ['nose2.plugins.loader.discovery',
+                      'nose2.plugins.loader.testcases',
+                      'nose2.plugins.result',
+                      'nose2.plugins.collect',
+                      # etc
+                      ]
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
 
     def parseArgs(self, argv):
@@ -69,8 +74,8 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def loadPlugins(self):
         # FIXME pass in plugins set via __init__ args
-        # FIXME pass in default plugins
-        self.session.loadPlugins()
+        # pass in default plugins
+        self.session.loadPlugins(self.defaultPlugins)
 
     def createTests(self):
         # fire plugin hook

@@ -35,6 +35,7 @@ class Session(object):
         more_plugins = cfg.as_list('plugins', [])
         exclude = set(cfg.as_list('excluded-plugins', []))
         all_  = set(sum(modules, more_plugins)) - exclude
+        all_  = set(modules + more_plugins) - exclude
         for module in all_:
             self.loadPluginsFromModule(util.module_from_name(module))
         self.hooks.loadedPlugins(events.PluginsLoadedEvent(self.plugins))

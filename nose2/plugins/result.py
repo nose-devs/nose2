@@ -198,6 +198,8 @@ class ResultReporter(events.Plugin):
         infos.extend(extraInfos)
         if infos:
             reportEvent.stream.writeln(" (%s)" % (", ".join(infos),))
+        else:
+            reportEvent.stream.writeln('')
 
         self.session.hooks.afterSummaryReport(reportEvent)
 

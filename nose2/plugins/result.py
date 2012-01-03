@@ -10,6 +10,7 @@ import sys
 
 from nose2 import events, result, util
 
+__unittest = True
 
 class ResultReporter(events.Plugin):
 

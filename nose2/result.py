@@ -7,6 +7,7 @@ ERROR = 'error'
 FAIL = 'failed'
 SKIP = 'skipped'
 PASS = 'passed'
+__unittest = True
 
 
 class PluggableTestResult(object):

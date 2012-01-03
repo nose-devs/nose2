@@ -13,6 +13,9 @@ import unittest
 from nose2 import events
 
 
+__unittest = True
+
+
 class TestCaseLoader(events.Plugin):
     def __init__(self):
         # really always on!

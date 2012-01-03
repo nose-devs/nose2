@@ -14,6 +14,8 @@ import sys
 
 from nose2 import events, util
 
+__unittest = True
+
 
 class DiscoveryLoader(events.Plugin):
 

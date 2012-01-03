@@ -7,6 +7,7 @@ from nose2 import events, loader, runner, session
 
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class PluggableTestProgram(unittest.TestProgram):

@@ -2,8 +2,6 @@ import logging
 from logging.handlers import BufferingHandler
 import threading
 
-import six
-
 from nose2.events import Plugin
 from nose2.util import ln
 
@@ -14,7 +12,7 @@ log = logging.getLogger(__name__)
 class LogCapture(Plugin):
     """TODO: document"""
 
-    configSection = 'logging'
+    configSection = 'log-capture'
     commandLineSwitch = (None, 'log-capture', 'Enable log capture')
     logformat = '%(name)s: %(levelname)s: %(message)s'
     logdatefmt = None
@@ -26,9 +24,32 @@ class LogCapture(Plugin):
         self.logdatefmt = self.config.as_str('date-format', self.logdatefmt)
         self.filters = self.config.as_list('filter', self.filters)
         self.clear = self.config.as_bool('clear-handlers', self.clear)
-        # FIXME loglevel
+        # FIXME support symbolic level names
+        self.loglevel = self.config.as_int('log-level', logging.NOTSET)
+        self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
+                                       self.filters)
 
-    def setupLoghandler(self):
+
+    def startTestRun(self, event):
+        self._setupLoghandler()
+
+    def startTest(self, event):
+        self._setupLoghandler()
+
+    def testOutcome(self, event):
+        self._addCapturedLogs(event)
+
+    def stopTest(self, event):
+        self.handler.truncate()
+
+    def outcomeDetail(self, event):
+        logs = event.outcomeEvent.metadata.get('logs', None)
+        if logs:
+            event.extraDetail.append(ln('>> begin captured logging <<'))
+            event.extraDetail.extend(logs)
+            event.extraDetail.append(ln('>> end captured logging <<'))
+
+    def _setupLoghandler(self):
         # setup our handler with root logger
         root_logger = logging.getLogger()
         if self.clear:
@@ -49,32 +70,12 @@ class LogCapture(Plugin):
             if isinstance(handler, MyMemoryHandler):
                 root_logger.handlers.remove(handler)
         root_logger.addHandler(self.handler)
-        # to make sure everything gets captured FIXME use level config
-        root_logger.setLevel(logging.NOTSET)
+        root_logger.setLevel(self.loglevel)
 
-    def addCapturedLogs(self, event):
+    def _addCapturedLogs(self, event):
         format = self.handler.format
         records = [format(r) for r in self.handler.buffer]
         event.metadata['logs'] = records
-        # FIXME when there's a better way, do that instead
-        records = [ln('>> begin captured logging <<')] + records + [
-            ln('>> end captured logging <<')]
-        records = six.u('\n').join(records)
-        event.traceback = "%s\n%s" % (
-            event.traceback, records.encode('utf-8'))
-
-    def startTestRun(self, event):
-        self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
-                                       self.filters)
-        self.setupLoghandler()
-
-    def startTest(self, event):
-        self.setupLoghandler()
-
-    def stopTest(self, event):
-        if event.error or event.failed:
-            self.addCapturedLogs(event)
-        self.handler.truncate()
 
 
 class FilterSet(object):

@@ -17,6 +17,7 @@ from nose2 import config
 
 log = logging.getLogger(__name__)
 
+# FIXME decide on a real rule for camelCase vs under_score and stick with it.
 
 # XXX I'd rather move this stuff to Plugin.__init__ and
 # have __init__ call self.configure() or something after the

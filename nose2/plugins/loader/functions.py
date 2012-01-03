@@ -1,26 +1,54 @@
+"""
+This module contains some code copied from unittest2/ and other code
+developed in reference to unittest2.
+
+unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+Rights Reserved. See: http://docs.python.org/license.html
+
+"""
+import types
+
 from nose2 import util
 from nose2.events import Plugin
-
-
-def unpack(_self, generator):
-    for index, func_args in enumerate(generator):
-        try:
-            func, args = func_args
-            if not isinstance(args, tuple):
-                args = (args,)
-            yield index, (func, args)
-        except ValueError:
-            func, args = func_args[0], func_args[1:]
-            yield index, (func, args)
+from nose2.compat import unittest
 
 
 class Functions(Plugin):
     """TODO: document"""
+    configSection = 'functions'
 
-    configSection = 'nose-functions'
-    unpack = unpack
+    def __init__(self):
+        self.register()
 
-    def createTests(self, obj, testIndex=None):
+    def loadTestsFromName(self, event):
+        name = event.name
+        module = event.module
+        result = util.test_from_name(name, module)
+        if result is None:
+            return
+        parent, obj, name, index = result
+
+        if isinstance(obj, types.FunctionType):
+            suite = event.loader.suiteClass()
+            suite.addTests(self._createTests(obj, index))
+            event.handled = True
+            return suite
+
+    def loadTestsFromModule(self, event):
+        module = event.module
+
+        def is_test(obj):
+            # FIXME check that it takes no non-default args
+            return obj.__name__.startswith(self.session.testMethodPrefix)
+
+        tests = []
+        for name in dir(module):
+            obj = getattr(module, name)
+            if isinstance(obj, types.FunctionType) and is_test(obj):
+                tests.extend(self._createTests(obj))
+        event.extraTests.extend(tests)
+
+    def _createTests(self, obj):
         if not hasattr(obj, 'setUp'):
             if hasattr(obj, 'setup'):
                 obj.setUp = obj.setup
@@ -31,19 +59,21 @@ class Functions(Plugin):
                 obj.tearDown = obj.teardowns
             elif hasattr(obj, 'tearDownFunc'):
                 obj.tearDown = obj.tearDownFunc
-        return super(Functions, self).createTests(obj, testIndex)
 
-    def isGenerator(self, obj):
-        return (util.isgeneratorfunction(obj) or
-                super(Functions, self).isGenerator(obj))
+        tests = []
+        args = {}
+        setUp = getattr(obj, 'setUp', None)
+        tearDown = getattr(obj, 'tearDown', None)
+        if setUp is not None:
+            args['setUp'] = setUp
+        if tearDown is not None:
+            args['tearDown'] = tearDown
 
-
-class Generators(Plugin):
-    """TODO: document"""
-
-    configSection = 'nose-generators'
-    unpack = unpack
-
-    def isGenerator(self, obj):
-        return (util.isgeneratorfunction(obj) or
-                super(Generators, self).isGenerator(obj))
+        paramList = getattr(obj, 'paramList', None)
+        isGenerator = util.isgenerator(obj)
+        if paramList is not None or isGenerator:
+            return tests
+        else:
+            case = unittest.FunctionTestCase(obj, **args)
+            tests.append(case)
+        return tests

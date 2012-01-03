@@ -1,7 +1,12 @@
+import logging
+
 import argparse
 from six.moves import configparser
 
 from nose2 import config, events, util
+
+
+log = logging.getLogger(__name__)
 
 
 class Session(object):
@@ -34,8 +39,8 @@ class Session(object):
         cfg = self.get('unittest')
         more_plugins = cfg.as_list('plugins', [])
         exclude = set(cfg.as_list('excluded-plugins', []))
-        all_  = set(sum(modules, more_plugins)) - exclude
         all_  = set(modules + more_plugins) - exclude
+        log.debug("Loading plugin modules: %s", all_)
         for module in all_:
             self.loadPluginsFromModule(util.module_from_name(module))
         self.hooks.loadedPlugins(events.PluginsLoadedEvent(self.plugins))
@@ -53,13 +58,16 @@ class Session(object):
             except TypeError:
                 pass
         for cls in avail:
+            log.debug("Plugin is available: %s", cls)
             self.plugins.append(cls(session=self))
 
     def registerPlugin(self, plugin):
+        log.debug("Register active plugin %s", plugin)
         if plugin not in self.plugins:
             self.plugins.append(plugin)
         for method in self.hooks.methods:
             if hasattr(plugin, method):
+                log.debug("Register method %s for plugin %s", method, plugin)
                 self.hooks.register(method, plugin)
 
     # convenience properties

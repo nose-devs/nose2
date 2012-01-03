@@ -77,6 +77,46 @@ def module_from_name(name):
     return sys.modules[name]
 
 
+def test_from_name(name, module):
+    pos = name.find(':')
+    index = None
+    if pos != -1:
+        real_name, digits = name[:pos], name[pos+1:]
+        try:
+            index = int(digits)
+        except ValueError:
+            pass
+        else:
+            name = real_name
+    try:
+        parent, obj = object_from_name(name, module)
+    except (AttributeError, ImportError):
+        return None
+    return parent, obj, name, index
+
+
+def object_from_name(name, module=None):
+    parts = name.split('.')
+    if module is None:
+        parts_copy = parts[:]
+        while parts_copy:
+            try:
+                module = __import__('.'.join(parts_copy))
+                break
+            except ImportError:
+                del parts_copy[-1]
+                if not parts_copy:
+                    raise
+        parts = parts[1:]
+
+    parent = None
+    obj = module
+    for part in parts:
+        parent, obj = obj, getattr(obj, part)
+    return parent, obj
+
+
+
 def ispackage(path):
     """Is this path a package directory?"""
     if os.path.isdir(path):
@@ -91,6 +131,11 @@ def ispackage(path):
                     os.path.isfile(os.path.join(path, '__init__$py.class')):
                 return True
     return False
+
+
+def isgenerator(obj):
+    return (isgeneratorfunction(obj)
+            or getattr(obj, 'testGenerator', None) is not None)
 
 
 def safe_decode(string):

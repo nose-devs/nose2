@@ -10,7 +10,7 @@ Rights Reserved. See: http://docs.python.org/license.html
 """
 import unittest
 
-from nose2 import events
+from nose2 import events, util
 
 
 __unittest = True
@@ -28,6 +28,18 @@ class TestCaseLoader(events.Plugin):
             obj = getattr(module, name)
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
                 event.extraTests.append(self._loadTestsFromTestCase(event, obj))
+
+    def loadTestsFromName(self, event):
+        name = event.name
+        module = event.module
+        result = util.test_from_name(name, module)
+        if result is None:
+            return
+        parent, obj, name, index = result
+        if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
+            event.extraTests.append(self._loadTestsFromTestCase(event, obj))
+        elif isinstance(parent, type) and issubclass(parent, unittest.TestCase):
+            event.extraTests.append(parent(obj.__name__))
 
     def _loadTestsFromTestCase(self, event, testCaseClass):
         evt = events.LoadFromTestCaseEvent(event.loader, testCaseClass)

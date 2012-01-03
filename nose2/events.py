@@ -107,14 +107,23 @@ class Hook(object):
 
 class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
-               'handleFile', 'startTestRun', 'startTest', 'loadTestsFromName',
+               'handleFile', 'startTestRun', 'startTest', 'stopTest',
+               'loadTestsFromName',
                'stopTestRun', 'createTests', 'matchPath', 'getTestCaseNames',
-               'runnerCreated', 'resultCreated',
+               'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
+               'resultStop', 'setTestOutcome', 'describeTest',
+               'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',
+               'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
+               'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
+               'beforeSummary', 'afterSummary',
                # ... etc
                )
 
     def __init__(self):
         self.hooks = {}
+
+    def addMethod(self, method):
+        self.methods = self.methods + (method,)
 
     def register(self, method, plugin):
         self.hooks.setdefault(method, Hook(method)).append(plugin)

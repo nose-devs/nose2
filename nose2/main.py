@@ -49,15 +49,16 @@ class PluggableTestProgram(unittest.TestProgram):
                                  dest='user_config', const=False, default=True)
         self.argparse.add_argument('--no-plugins', action='store_const',
                                  dest='load_plugins', const=False, default=True)
-        self.argparse.add_argument('--verbose', '-v', action='count')
+        self.argparse.add_argument('--verbose', '-v', action='count', default=0)
         self.argparse.add_argument('--quiet', action='store_const',
                                  dest='verbose', const=0)
 
     def handleCfgArgs(self, cfg_args):
+        if cfg_args.verbose:
+            self.session.verbosity += cfg_args.verbose
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
         if cfg_args.load_plugins:
             self.loadPlugins()
-        # FIXME set verbosity
 
     def findConfigFiles(self, cfg_args):
         filenames = cfg_args.config[:]

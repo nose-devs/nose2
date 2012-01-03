@@ -15,9 +15,6 @@ class LogCaptureUnitTest(TestCase):
 
     def event(self, error=True, failed=False):
         e = Event()
-        e.error = True
-        e.failed = False
-        e.traceback = ''
         e.metadata = {}
         return e
 
@@ -26,7 +23,9 @@ class LogCaptureUnitTest(TestCase):
         self.plugin.startTest(None)
         log.debug("hello")
         assert self.plugin.handler.buffer
-        self.plugin.stopTest(self.event())
+        self.plugin.testOutcome(self.event())
+        assert self.plugin.handler.buffer
+        self.plugin.stopTest(None)
         assert not self.plugin.handler.buffer
 
     def test_buffered_logs_attached_to_event(self):
@@ -35,9 +34,8 @@ class LogCaptureUnitTest(TestCase):
         log.debug("hello")
         assert self.plugin.handler.buffer
         e = self.event()
-        self.plugin.stopTest(e)
+        self.plugin.testOutcome(e)
         assert 'logs' in e.metadata, "No log in %s" % e.metadata
-        assert e.traceback
 
 
 class Event:

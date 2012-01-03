@@ -1,8 +1,12 @@
+import logging
 import os
 import sys
 
 from nose2.compat import unittest
 from nose2 import events, loader, runner, session
+
+
+log = logging.getLogger(__name__)
 
 
 class PluggableTestProgram(unittest.TestProgram):
@@ -13,6 +17,7 @@ class PluggableTestProgram(unittest.TestProgram):
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
 
     def parseArgs(self, argv):
+        log.debug("parse argv %s", argv)
         self.session = self.sessionClass()
         self.argparse = self.session.argparse # for convenience
 

@@ -22,10 +22,11 @@ class DiscoveryLoader(events.Plugin):
         self.top_level_dir = self.start_dir
         self._top_level_dir = None # ???
 
-        self.addOption(
+        self.addArgument(
             self.setStartDir,
-            'S', 'start-directory', "Directory to start discovery ('.' default)")
-        self.addOption(
+            'S', 'start-directory',
+            "Directory to start discovery ('.' default)")
+        self.addArgument(
             self.setTopLevelDir,
             'T', 'top-level-directory',
             "Top level directory of project (defaults to start dir)")
@@ -33,9 +34,13 @@ class DiscoveryLoader(events.Plugin):
         self.register()
 
     def setStartDir(self, start_dir):
+        if isinstance(start_dir, list):
+            start_dir = start_dir[0]
         self.start_dir = start_dir
 
     def setTopLevelDir(self, top_level_dir):
+        if isinstance(top_level_dir, list):
+            top_level_dir = top_level_dir[0]
         self.top_level_dir = top_level_dir
 
     def createTests(self, event):

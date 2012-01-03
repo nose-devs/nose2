@@ -186,6 +186,28 @@ class StartTestEvent(Event):
         super(StartTestEvent, self).__init__(**kw)
 
 
+class StopTestEvent(Event):
+    def __init__(self, test, result, stopTime, **kw):
+        self.test = test
+        self.result = result
+        self.stopTime = stopTime
+        super(StopTestEvent, self).__init__(**kw)
+
+
+class TestOutcomeEvent(Event):
+    def __init__(self, test, result, outcome, exc_info=None, reason=None,
+                 expected=True, short_label=None, long_label=None, **kw):
+        self.test = test
+        self.result = result
+        self.outcome = outcome
+        self.exc_info = exc_info
+        self.reason = reason
+        self.expected = expected
+        self.short_label = short_label
+        self.long_label = long_label
+        super(TestOutcomeEvent, self).__init__(**kw)
+
+
 class CreateTestsEvent(Event):
     def __init__(self, loader, names, module, **kw):
         self.loader = loader
@@ -261,5 +283,44 @@ class GetTestCaseNamesEvent(Event):
         super(GetTestCaseNamesEvent, self).__init__(**kw)
 
 
-class TestReport(Event):
-    pass
+class ResultSuccessEvent(Event):
+    def __init__(self, result, success, **kw):
+        self.result = result
+        self.success = success
+        super(ResultSuccessEvent, self).__init__(**kw)
+
+
+class ResultStopEvent(Event):
+    def __init__(self, result, shouldStop, **kw):
+        self.result = result
+        self.shouldStop = shouldStop
+        super(ResultStopEvent, self).__init__(**kw)
+
+
+class DescribeTestEvent(Event):
+    def __init__(self, test, description=None, **kw):
+        self.test = test
+        self.description = description
+        super(DescribeTestEvent, self).__init__(**kw)
+
+
+class OutcomeDetailEvent(Event):
+    def __init__(self, outcomeEvent, **kw):
+        self.outcomeEvent = outcomeEvent
+        self.extraDetail = []
+        super(OutcomeDetailEvent, self).__init__(**kw)
+
+
+class ReportSummaryEvent(Event):
+    def __init__(self, stopTestEvent, stream, reportCategories, **kw):
+        self.stopTestEvent = stopTestEvent
+        self.stream = stream
+        self.reportCategories = reportCategories
+        super(ReportSummaryEvent, self).__init__(**kw)
+
+
+class ReportTestEvent(Event):
+    def __init__(self, testEvent, stream, **kw):
+        self.testEvent = testEvent
+        self.stream = stream
+        super(ReportTestEvent, self).__init__(**kw)

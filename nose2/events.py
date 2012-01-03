@@ -57,7 +57,13 @@ class Plugin(six.with_metaclass(PluginMeta)):
             return
         self.session.registerPlugin(self)
 
-    def addOption(self, callback, short_opt, long_opt, help_text=None):
+    def addFlag(self, callback, short_opt, long_opt, help_text=None):
+        self.addOption(callback, short_opt, long_opt, help_text, nargs=0)
+
+    def addArgument(self, callback, short_opt, long_opt, help_text=None):
+        self.addOption(callback, short_opt, long_opt, help_text, nargs=1)
+
+    def addOption(self, callback, short_opt, long_opt, help_text=None, nargs=0):
         """Add command-line option"""
         if self.session is None:
             log.warning("Unable to add option %s/%s for %s, no session",
@@ -81,7 +87,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
         if long_opt:
             opts.append('--' + long_opt)
         self.session.argparse.add_argument(
-            *opts, action=CB, help=help_text, const=True, nargs=0)
+            *opts, action=CB, help=help_text, const=True, nargs=nargs)
 
 
 class Hook(object):

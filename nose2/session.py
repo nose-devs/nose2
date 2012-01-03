@@ -20,6 +20,7 @@ class Session(object):
         self.config = configparser.ConfigParser()
         self.hooks = events.PluginInterface()
         self.plugins = []
+        self.verbosity = 1
 
     def get(self, section):
         # FIXME cache these

@@ -16,8 +16,11 @@ class PluggableTestProgram(unittest.TestProgram):
     runnerClass = runner.PluggableTestRunner
     defaultPlugins = ['nose2.plugins.loader.discovery',
                       'nose2.plugins.loader.testcases',
+                      'nose2.plugins.loader.functions',
+                      'nose2.plugins.loader.generators',
                       'nose2.plugins.result',
                       'nose2.plugins.collect',
+                      'nose2.plugins.logcapture',
                       # etc
                       ]
     # XXX override __init__ to warn that testLoader and testRunner are ignored?

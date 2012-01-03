@@ -9,6 +9,7 @@ Rights Reserved. See: http://docs.python.org/license.html
 import os
 import re
 import sys
+import traceback
 
 try:
     from compiler.consts import CO_GENERATOR
@@ -103,3 +104,58 @@ def safe_decode(string):
         return string.decode('utf-8')
     except UnicodeDecodeError:
         return six.u('<unable to decode>')
+
+
+def exc_info_to_string(err, test):
+    formatTraceback = getattr(test, 'formatTraceback', None)
+    if formatTraceback is not None:
+        return test.formatTraceback(err)
+    else:
+        return format_traceback(test, err)
+
+
+def format_traceback(test, err):
+    """Converts a sys.exc_info()-style tuple of values into a string."""
+    exctype, value, tb = err
+    # Skip test runner traceback levels
+    while tb and _is_relevant_tb_level(tb):
+        tb = tb.tb_next
+    failure = getattr(test, 'failureException', AssertionError)
+    if exctype is failure:
+        # Skip assert*() traceback levels
+        length = _count_relevant_tb_levels(tb)
+        msgLines = traceback.format_exception(exctype, value, tb, length)
+    else:
+        msgLines = traceback.format_exception(exctype, value, tb)
+    return ''.join(msgLines)
+
+
+def _is_relevant_tb_level(tb):
+    return '__unittest' in tb.tb_frame.f_globals
+
+
+def _count_relevant_tb_levels(tb):
+    length = 0
+    while tb and not _is_relevant_tb_level(tb):
+        length += 1
+        tb = tb.tb_next
+    return length
+
+
+class _WritelnDecorator(object):
+    """Used to decorate file-like objects with a handy 'writeln' method"""
+    def __init__(self, stream):
+        self.stream = stream
+
+    def __getattr__(self, attr):
+        if attr in ('stream', '__getstate__'):
+            raise AttributeError(attr)
+        return getattr(self.stream, attr)
+
+    def write(self, arg):
+        self.stream.write(arg)
+
+    def writeln(self, arg=None):
+        if arg:
+            self.stream.write(arg)
+        self.stream.write('\n') # text-mode streams translate to \r\n if needed

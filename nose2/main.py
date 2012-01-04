@@ -3,7 +3,7 @@ import os
 import sys
 
 from nose2.compat import unittest
-from nose2 import events, loader, runner, session
+from nose2 import events, loader, runner, session, util
 
 
 log = logging.getLogger(__name__)
@@ -35,18 +35,27 @@ class PluggableTestProgram(unittest.TestProgram):
 
         # Parse initial arguments like config file paths, verbosity
         self.setInitialArguments()
-        cfg_args, argv = self.argparse.parse_known_args(argv)
+        # FIXME -h here makes processing stop.
+        cfg_args, argv = self.argparse.parse_known_args(argv[1:])
+        print cfg_args, argv
         self.handleCfgArgs(cfg_args)
 
         # Parse arguments for plugins (if any) and test names
         self.argparse.add_argument('testNames', nargs='*')
         args, argv = self.argparse.parse_known_args(argv)
+        print args, argv
         if argv:
             self.argparse.error("Unrecognized arguments: %s" % ' '.join(argv))
         self.handleArgs(args)
         self.createTests()
 
     def setInitialArguments(self):
+        self.argparse.add_argument(
+            '-s', '--start-dir', default='.',
+            help="Directory to start discovery ('.' default)")
+        self.argparse.add_argument(
+            '-t', '--top-level-directory', '--project-directory',
+            help='Top level directory of project (defaults to start dir)')
         self.argparse.add_argument('--config', '-c', nargs='?', action='append',
                                  default=['unittest.cfg', 'nose2.cfg'])
         self.argparse.add_argument('--no-user-config', action='store_const',
@@ -60,40 +69,43 @@ class PluggableTestProgram(unittest.TestProgram):
     def handleCfgArgs(self, cfg_args):
         if cfg_args.verbose:
             self.session.verbosity += cfg_args.verbose
+        self.session.startDir = cfg_args.start_dir
+        if cfg_args.top_level_directory:
+            self.session.topLevelDir = cfg_args.top_level_directory
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
+        self.session.prepareSysPath()
         if cfg_args.load_plugins:
             self.loadPlugins()
 
     def findConfigFiles(self, cfg_args):
         filenames = cfg_args.config[:]
+        proj_opts = ('unittest.cfg', 'nose2.cfg')
+        for fn in proj_opts:
+            if cfg_args.top_level_directory:
+                fn = os.path.abspath(
+                    os.path.join(cfg_args.top_level_directory, fn))
+            filenames.append(fn)
         if cfg_args.user_config:
-            opts = ('unittest.cfg', 'nose2.cfg', '.unittest.cfg', '.nose2.cfg')
-            for fn in opts:
+            user_opts = ('~/.unittest.cfg', '~/.nose2.cfg')
+            for fn in user_opts:
                 filenames.append(os.path.expanduser(fn))
         return filenames
 
     def handleArgs(self, args):
-        # FIXME activate or deactivate plugins,
-        # pass arguments to plugins that want them
+        # FIXME pass arguments to session & plugins
         self.testNames = args.testNames
 
     def loadPlugins(self):
-        # FIXME pass in plugins set via __init__ args
-        # pass in default plugins
+        # FIXME also pass in plugins set via __init__ args
         self.session.loadPlugins(self.defaultPlugins)
 
     def createTests(self):
-        # fire plugin hook
-        event = events.CreateTestsEvent(
-            self.testLoader, self.testNames, self.module)
-        result = self.session.hooks.createTests(event)
-        if event.handled:
-            self.test = result
-        else:
-            if self.testNames is None:
-                self.test = self.testLoader.loadTestsFromModule(self.module)
-            else:
-                self.test = self.testLoader.loadTestsFromNames(self.testNames)
+        # XXX belongs in init?
+        log.debug("Create tests from %s/%s", self.testNames, self.module)
+        if self.module and '__unittest' in dir(self.module):
+            self.module = None
+        self.test = self.testLoader.loadTestsFromNames(
+            self.testNames, self.module)
 
     def runTests(self):
         # fire plugin hook

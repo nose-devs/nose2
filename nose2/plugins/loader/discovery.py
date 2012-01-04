@@ -70,7 +70,7 @@ class DiscoveryLoader(events.Plugin):
             top_level_dir = start_dir
 
         if not os.path.isdir(os.path.abspath(start_dir)):
-            raise OSError("%s is not a directory" % start_dir)
+            raise OSError("%s is not a directory" % os.path.abspath(start_dir))
 
         is_not_importable = False
         start_dir = os.path.abspath(start_dir)

@@ -180,13 +180,12 @@ class TestLoadTestsOutsideOfPackage(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
         self.assertEqual(proc.poll(), 1)
 
-
     def test_function_name(self):
         proc = self.runIn(
             'scenario/package_in_lib',
             '-v',
             'tests.test')
-        self.assertTestRunOutputMatches(proc, stderr='tests.test')
+        self.assertTestRunOutputMatches(proc, stderr='test')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertTestRunOutputMatches(proc, stderr='OK')
         self.assertEqual(proc.poll(), 0)

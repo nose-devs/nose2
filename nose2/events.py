@@ -109,7 +109,7 @@ class Hook(object):
 class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
                'handleFile', 'startTestRun', 'startTest', 'stopTest',
-               'loadTestsFromName',
+               'loadTestsFromName', 'loadTestsFromTestCase',
                'stopTestRun', 'matchPath', 'getTestCaseNames',
                'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
                'resultStop', 'setTestOutcome', 'describeTest',

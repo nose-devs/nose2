@@ -3,7 +3,7 @@ import os
 import sys
 
 from nose2.compat import unittest
-from nose2 import events, loader, runner, session, util
+from nose2 import events, loader, runner, session
 
 
 log = logging.getLogger(__name__)

@@ -116,6 +116,10 @@ def object_from_name(name, module=None):
     return parent, obj
 
 
+def name_from_args(name, index, args):
+    summary = ', '.join(repr(arg) for arg in args)
+    return '%s:%s\n%s' % (name, index + 1, summary[:79])
+
 
 def ispackage(path):
     """Is this path a package directory?"""

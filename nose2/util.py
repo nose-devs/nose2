@@ -133,6 +133,11 @@ def ispackage(path):
     return False
 
 
+def ensure_importable(dirname):
+    if not dirname in sys.path:
+        sys.path.insert(0, dirname)
+
+
 def isgenerator(obj):
     return (isgeneratorfunction(obj)
             or getattr(obj, 'testGenerator', None) is not None)

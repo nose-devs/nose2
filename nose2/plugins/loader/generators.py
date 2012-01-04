@@ -1,5 +1,5 @@
 """
-This module contains some code copied from unittest2/ and other code
+This module contains some code copied from unittest2 and other code
 developed in reference to unittest2.
 
 unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
@@ -37,10 +37,13 @@ class Generators(Plugin):
                 yield index, (func, args)
 
     def loadTestsFromTestCase(self, event):
+        log.debug('loadTestsFromTestCase %s', event.testCase)
         testCaseClass = event.testCase
         for name in dir(testCaseClass):
             method = getattr(testCaseClass, name)
-            if util.isgenerator(method):
+            if (name.startswith(self.session.testMethodPrefix) and
+                hasattr(getattr(testCaseClass, name), '__call__') and
+                util.isgenerator(method)):
                 instance = testCaseClass(name)
                 event.extraTests.extend(
                     self._testsFromGenerator(
@@ -48,6 +51,7 @@ class Generators(Plugin):
                 )
 
     def getTestCaseNames(self, event):
+        log.debug('getTestCaseNames %s', event.testCase)
         names = filter(event.isTestMethod, dir(event.testCase))
         klass = event.testCase
         for name in names:
@@ -113,7 +117,7 @@ class Generators(Plugin):
     def _testsFromGenerator(self, event, name, generator, testCaseClass):
         try:
             for index, (func, args) in self.unpack(generator):
-                method_name = name_from_args(name, index, args)
+                method_name = util.name_from_args(name, index, args)
                 setattr(testCaseClass, method_name, None)
                 instance = testCaseClass(method_name)
                 delattr(testCaseClass, method_name)
@@ -142,11 +146,6 @@ class Generators(Plugin):
             return GeneratorFunctionCase(name, **args)
         for test in self._testsFromGenerator(event, name, extras, createTest):
             yield test
-
-
-def name_from_args(name, index, args):
-    summary = ', '.join(repr(arg) for arg in args)
-    return '%s:%s\n%s' % (name, index + 1, summary[:79])
 
 
 class GeneratorFunctionCase(ut2.FunctionTestCase):

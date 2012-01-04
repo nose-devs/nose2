@@ -62,8 +62,8 @@ class TestId(Plugin):
 
     def stopTestRun(self, event):
         """Implement hook."""
-        fh = open(self.idfile, 'wb')
-        pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
+        with open(self.idfile, 'wb') as fh:
+            pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
 
     def loadIds(self):
         """Load previously pickled 'ids' and 'tests' attributes.
@@ -74,14 +74,11 @@ class TestId(Plugin):
             return
 
         try:
-            fh = open(self.idfile, 'rb')
+            with open(self.idfile, 'rb') as fh:
+                data = pickle.load(fh)
         except EnvironmentError:
             self._loaded = True
             return
-        try:
-            data = pickle.load(fh)
-        finally:
-            fh.close()
 
         if 'ids' in data:
             self.ids = data['ids']

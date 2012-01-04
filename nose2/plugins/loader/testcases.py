@@ -38,7 +38,10 @@ class TestCaseLoader(events.Plugin):
         parent, obj, name, index = result
         if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
             event.extraTests.append(self._loadTestsFromTestCase(event, obj))
-        elif isinstance(parent, type) and issubclass(parent, unittest.TestCase):
+        elif (isinstance(parent, type) and
+              issubclass(parent, unittest.TestCase) and not
+              util.isgenerator(obj) and not
+              hasattr(obj, 'paramList')):
             event.extraTests.append(parent(obj.__name__))
 
     def _loadTestsFromTestCase(self, event, testCaseClass):

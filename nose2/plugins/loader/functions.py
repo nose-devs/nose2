@@ -6,6 +6,7 @@ unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
 
 """
+import inspect
 import types
 
 from nose2 import util
@@ -28,7 +29,10 @@ class Functions(Plugin):
             return
         parent, obj, name, index = result
 
-        if isinstance(obj, types.FunctionType) and not util.isgenerator(obj):
+        if (isinstance(obj, types.FunctionType) and not
+            util.isgenerator(obj) and not
+            hasattr(obj, 'paramList') and not
+            inspect.getargspec(obj).args):
             suite = event.loader.suiteClass()
             suite.addTests(self._createTests(obj))
             event.handled = True
@@ -38,8 +42,11 @@ class Functions(Plugin):
         module = event.module
 
         def is_test(obj):
-            # FIXME check that it takes no non-default args
-            return obj.__name__.startswith(self.session.testMethodPrefix)
+            if not obj.__name__.startswith(self.session.testMethodPrefix):
+                return False
+            if inspect.getargspec(obj).args:
+                return False
+            return True
 
         tests = []
         for name in dir(module):

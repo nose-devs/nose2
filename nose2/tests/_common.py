@@ -9,7 +9,7 @@ from nose2.compat import unittest
 from nose2 import util
 
 
-HERE = os.path.dirname(__file__)
+HERE = os.path.abspath(os.path.dirname(__file__))
 SUPPORT = os.path.join(HERE, 'functional', 'support')
 
 
@@ -118,7 +118,7 @@ class Stub(object):
 
 
 def support_file(*path_parts):
-    return os.path.join(SUPPORT, *path_parts)
+    return os.path.abspath(os.path.join(SUPPORT, *path_parts))
 
 
 def run_nose2(*nose2_args, **popen_args):

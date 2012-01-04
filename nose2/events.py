@@ -110,7 +110,7 @@ class PluginInterface(object):
     methods = ('pluginsLoaded', 'loadTestsFromModule', 'loadTestsFromNames',
                'handleFile', 'startTestRun', 'startTest', 'stopTest',
                'loadTestsFromName',
-               'stopTestRun', 'createTests', 'matchPath', 'getTestCaseNames',
+               'stopTestRun', 'matchPath', 'getTestCaseNames',
                'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
                'resultStop', 'setTestOutcome', 'describeTest',
                'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',
@@ -207,14 +207,6 @@ class TestOutcomeEvent(Event):
         self.short_label = short_label
         self.long_label = long_label
         super(TestOutcomeEvent, self).__init__(**kw)
-
-
-class CreateTestsEvent(Event):
-    def __init__(self, loader, names, module, **kw):
-        self.loader = loader
-        self.names = names
-        self.module = module
-        super(CreateTestsEvent, self).__init__(**kw)
 
 
 class LoadFromModuleEvent(Event):

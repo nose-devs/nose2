@@ -1,4 +1,5 @@
 import logging
+import os
 
 import argparse
 from six.moves import configparser
@@ -21,6 +22,8 @@ class Session(object):
         self.hooks = events.PluginInterface()
         self.plugins = []
         self.verbosity = 1
+        self.startDir = '.'
+        self.topLevelDir = None
 
     def get(self, section):
         # FIXME cache these
@@ -37,7 +40,7 @@ class Session(object):
         if modules is None:
             modules = []
         # plugins mentioned in config file(s)
-        cfg = self.get('unittest')
+        cfg = self.unittest
         more_plugins = cfg.as_list('plugins', [])
         exclude = set(cfg.as_list('excluded-plugins', []))
         all_  = set(modules + more_plugins) - exclude
@@ -71,11 +74,31 @@ class Session(object):
                 log.debug("Register method %s for plugin %s", method, plugin)
                 self.hooks.register(method, plugin)
 
+    def prepareSysPath(self):
+        tld = self.topLevelDir
+        sd = self.startDir
+        if tld is None:
+            tld = sd
+        tld = os.path.abspath(tld)
+        util.ensure_importable(tld)
+        for libdir in self.libDirs:
+            libdir = os.path.abspath(os.path.join(tld, libdir))
+            if os.path.exists(libdir):
+                util.ensure_importable(libdir)
+
     # convenience properties
     @property
+    def libDirs(self):
+        return self.unittest.as_list('code-directories', ['lib', 'src'])
+
+    @property
     def testFilePattern(self):
-        return self.get('unittest').as_str('test-file-pattern', 'test*.py')
+        return self.unittest.as_str('test-file-pattern', 'test*.py')
 
     @property
     def testMethodPrefix(self):
-        return self.get('unittest').as_str('test-method-prefix', 'test')
+        return self.unittest.as_str('test-method-prefix', 'test')
+
+    @property
+    def unittest(self):
+        return self.get('unittest')

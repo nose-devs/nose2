@@ -32,3 +32,14 @@ class TestFunctionLoader(TestCase):
         event = events.LoadFromModuleEvent(self.loader, m)
         self.session.hooks.loadTestsFromModule(event)
         self.assertEqual(len(event.extraTests), 0)
+
+    def test_ignores_functions_that_take_args(self):
+        class Mod(object):
+            pass
+        def test(a):
+            pass
+        m = Mod()
+        m.test = test
+        event = events.LoadFromModuleEvent(self.loader, m)
+        self.session.hooks.loadTestsFromModule(event)
+        self.assertEqual(len(event.extraTests), 0)

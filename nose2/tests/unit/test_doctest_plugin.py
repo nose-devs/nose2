@@ -69,10 +69,7 @@ def func():
         finally:
             fh.close()
 
-        event = events.HandleFileEvent(
-            loader=self.loader, name=fh.name,
-            path=fpath, pattern=None, top_level_directory=None,
-            )
+        event = events.HandleFileEvent(self.loader, fh.name, fpath, None, None)
         plug.handleFile(event)
         return event
 

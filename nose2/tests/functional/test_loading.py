@@ -17,15 +17,39 @@ pkg1.test.test_things.SomeTests.test_ok
 # param method index
 
 """
-from nose2.tests._common import FunctionalTestCase
+from nose2.tests._common import FunctionalTestCase, support_file
 
 
-class TestLoadTestsFromNames(FunctionalTestCase):
+class TestLoadTestsFromPackage(FunctionalTestCase):
     def test_module_name(self):
         proc = self.runIn(
             'scenario/tests_in_package',
             '-v',
             'pkg1.test.test_things')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'Ran 16 tests' in stderr, stderr
+
+    def test_package_name(self):
+        proc = self.runIn(
+            'scenario/tests_in_package',
+            '-v',
+            'pkg1')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'Ran 16 tests' in stderr, stderr
+
+    def test_module_name_with_start_dir(self):
+        proc = self.runIn(
+            '.', '-v', '-s', support_file('scenario/tests_in_package'),
+            'pkg1.test.test_things')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'Ran 16 tests' in stderr, stderr
+
+    def test_package_name_with_start_dir(self):
+        proc = self.runIn(
+            '.', '-v', '-s', support_file('scenario/tests_in_package'), 'pkg1')
         stdout, stderr = proc.communicate()
         self.assertEqual(proc.poll(), 0, stderr)
         assert 'Ran 16 tests' in stderr, stderr
@@ -92,3 +116,32 @@ class TestLoadTestsFromNames(FunctionalTestCase):
         assert 'SomeTests' in stderr, stderr
         assert 'Ran 1 test' in stderr, stderr
         assert 'OK' in stderr, stderr
+
+
+class TestLoadTestsOutsideOfPackage(FunctionalTestCase):
+    def test_module_name(self):
+        proc = self.runIn(
+            'scenario/package_in_lib',
+            '-v',
+            'tests')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'Ran 3 tests' in stderr, stderr
+
+    def test_function_name(self):
+        proc = self.runIn(
+            'scenario/package_in_lib',
+            '-v',
+            'tests.test')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'tests.test' in stderr
+        assert 'Ran 1 test' in stderr
+        assert 'OK' in stderr
+
+    def test_module_name_with_start_dir(self):
+        proc = self.runIn(
+            '.', '-v', '-s', support_file('scenario/package_in_lib'), 'tests')
+        stdout, stderr = proc.communicate()
+        self.assertEqual(proc.poll(), 0, stderr)
+        assert 'Ran 3 tests' in stderr, stderr

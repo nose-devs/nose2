@@ -20,19 +20,21 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
         self.watcher.register()
 
     def test_can_discover_test_modules_in_packages(self):
-        self.plug.start_dir = support_file('scenario/tests_in_package')
-        event = events.CreateTestsEvent(self.loader, None, None)
-        result = self.session.hooks.createTests(event)
+        self.session.startDir = support_file('scenario/tests_in_package')
+        event = events.LoadFromNamesEvent(self.loader, [], None)
+        result = self.session.hooks.loadTestsFromNames(event)
         assert isinstance(result, self.loader.suiteClass)
+        self.assertEqual(len(result._tests), 1)
         self.assertEqual(len(self.watcher.called), 1)
         self.assertEqual(self.watcher.called[0].module.__name__,
                          'pkg1.test.test_things')
 
     def test_discovery_supports_code_in_lib_dir(self):
-        self.plug.start_dir = support_file('scenario/package_in_lib')
-        event = events.CreateTestsEvent(self.loader, None, None)
-        result = self.session.hooks.createTests(event)
+        self.session.startDir = support_file('scenario/package_in_lib')
+        event = events.LoadFromNamesEvent(self.loader, [], None)
+        result = self.session.hooks.loadTestsFromNames(event)
         assert isinstance(result, self.loader.suiteClass)
+        self.assertEqual(len(result._tests), 1)
         self.assertEqual(len(self.watcher.called), 1)
         self.assertEqual(self.watcher.called[0].module.__name__, 'tests')
 
@@ -43,10 +45,11 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
                 return False
         mp = NoTestsForYou(session=self.session)
         mp.register()
-        self.plug.start_dir = support_file('scenario/tests_in_package')
-        event = events.CreateTestsEvent(self.loader, None, None)
-        result = self.session.hooks.createTests(event)
+        self.session.startDir = support_file('scenario/tests_in_package')
+        event = events.LoadFromNamesEvent(self.loader, [], None)
+        result = self.session.hooks.loadTestsFromNames(event)
         assert isinstance(result, self.loader.suiteClass)
+        self.assertEqual(len(result._tests), 0)
         self.assertEqual(len(self.watcher.called), 0)
 
     def test_handle_file_event_can_add_tests(self):
@@ -59,9 +62,9 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
                     event.extraTests.append(TextTest('test'))
         mp = TestsInText(session=self.session)
         mp.register()
-        self.plug.start_dir = support_file('scenario/tests_in_package')
-        event = events.CreateTestsEvent(self.loader, None, None)
-        result = self.session.hooks.createTests(event)
+        self.session.startDir = support_file('scenario/tests_in_package')
+        event = events.LoadFromNamesEvent(self.loader, [], None)
+        result = self.session.hooks.loadTestsFromNames(event)
         assert isinstance(result, self.loader.suiteClass)
         self.assertEqual(len(result._tests), 2)
         self.assertEqual(len(self.watcher.called), 1)

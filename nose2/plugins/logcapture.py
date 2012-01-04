@@ -29,7 +29,6 @@ class LogCapture(Plugin):
         self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
                                        self.filters)
 
-
     def startTestRun(self, event):
         self._setupLoghandler()
 

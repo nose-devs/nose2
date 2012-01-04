@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. ~/.local/bin/virtualenvwrapper.sh
+workon nose2
 
 nargs=""
 skip="no"
@@ -35,4 +37,4 @@ do
 done
 
 cd $root
-tox -e py26 -- $nargs
+python -m nose2.__main__ $nargs

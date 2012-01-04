@@ -1,5 +1,6 @@
-from unittest2.events import Plugin, addOption
 from unittest import TestSuite
+
+from nose2.events import Plugin
 
 undefined = object()
 
@@ -10,8 +11,7 @@ class AttributeSelector(Plugin):
 
     def __init__(self):
         self.attribs = []
-        self.register()
-        addOption(self.attribs, "A", "attr", "Attribulate")
+        self.addOption(self.attribs, "A", "attr", "Attribulate")
 
     def startTestRun(self, event):
         if not self.attribs:

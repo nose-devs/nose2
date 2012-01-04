@@ -1,24 +1,13 @@
 import logging
-import re
-import unittest2
 
-from ._common import FunctionalTestCase
-from ..plugins.logcapture import LogCapture
+from nose2.tests._common import TestCase
+from nose2.plugins.logcapture import LogCapture
 
 
 log = logging.getLogger(__name__)
 
 
-class LogCaptureFunctionalTest(FunctionalTestCase):
-    def test_layout2(self):
-        match = re.compile('>> begin captured logging <<')
-        self.assertTestRunOutputMatches(
-            self.runIn('layout2'),
-            stderr=match)
-
-
-class LogCaptureUnitTest(unittest2.TestCase):
-
+class LogCaptureUnitTest(TestCase):
     tags = ['unit']
 
     def setUp(self):
@@ -26,9 +15,6 @@ class LogCaptureUnitTest(unittest2.TestCase):
 
     def event(self, error=True, failed=False):
         e = Event()
-        e.error = True
-        e.failed = False
-        e.traceback = ''
         e.metadata = {}
         return e
 
@@ -37,7 +23,9 @@ class LogCaptureUnitTest(unittest2.TestCase):
         self.plugin.startTest(None)
         log.debug("hello")
         assert self.plugin.handler.buffer
-        self.plugin.stopTest(self.event())
+        self.plugin.testOutcome(self.event())
+        assert self.plugin.handler.buffer
+        self.plugin.stopTest(None)
         assert not self.plugin.handler.buffer
 
     def test_buffered_logs_attached_to_event(self):
@@ -46,10 +34,8 @@ class LogCaptureUnitTest(unittest2.TestCase):
         log.debug("hello")
         assert self.plugin.handler.buffer
         e = self.event()
-        self.plugin.stopTest(e)
+        self.plugin.testOutcome(e)
         assert 'logs' in e.metadata, "No log in %s" % e.metadata
-        assert e.traceback
-
 
 
 class Event:

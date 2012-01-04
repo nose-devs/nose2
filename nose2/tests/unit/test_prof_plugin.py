@@ -1,10 +1,9 @@
-import unittest2
+from nose2.plugins import prof
+from nose2.events import StartTestRunEvent
+from nose2.tests._common import Stub, TestCase
 
-from ..plugins import prof
-from ._common import Stub, FakeStartTestRunEvent
 
-
-class TestProfPlugin(unittest2.TestCase):
+class TestProfPlugin(TestCase):
     tags = ['unit']
 
     def setUp(self):
@@ -22,7 +21,8 @@ class TestProfPlugin(unittest2.TestCase):
         _prof = Stub()
         _prof.runcall = object()
         prof.hotshot.Profile = lambda filename: _prof
-        event = FakeStartTestRunEvent()
+        event = StartTestRunEvent(runner=None, suite=None, result=None,
+                                  startTime=None, executeTests=None)
         self.plugin.startTestRun(event)
         assert event.executeTests is _prof.runcall, \
             "executeTests was not replaced"

@@ -1,14 +1,13 @@
 import sys
 
-from nose2.compat import unittest
-from nose2 import config
-from nose2.tests.functional import support_file
+from nose2 import session
+from nose2.tests._common import support_file, FunctionalTestCase
 
 
-class TestConfigLoading(unittest.TestCase):
+class SessionFunctionalTests(FunctionalTestCase):
 
     def setUp(self):
-        self.s = config.Session()
+        self.s = session.Session()
         self.s.loadConfigFiles(support_file('cfg', 'a.cfg'),
                                support_file('cfg', 'b.cfg'))
         sys.path.insert(0, support_file('lib'))

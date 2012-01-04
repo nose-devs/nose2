@@ -1,23 +1,5 @@
-from nose2 import config, events
+from nose2 import config
 from nose2.compat import unittest
-
-
-class TestConfigSession(unittest.TestCase):
-    def test_can_create_session(self):
-        config.Session()
-
-    def test_load_plugins_from_module_can_load_plugins(self):
-        class fakemod:
-            pass
-        f = fakemod()
-        class A(events.Plugin):
-            pass
-        f.A = A
-        session = config.Session()
-        session.loadPluginsFromModule(f)
-        assert session.plugins
-        a = session.plugins[0]
-        self.assertEqual(a.session, session)
 
 
 class TestConfig(unittest.TestCase):

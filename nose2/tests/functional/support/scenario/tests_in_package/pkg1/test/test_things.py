@@ -1,6 +1,7 @@
-import unittest2
+import unittest
 
-class SomeTests(unittest2.TestCase):
+
+class SomeTests(unittest.TestCase):
 
     def test_ok(self):
         pass
@@ -9,11 +10,21 @@ class SomeTests(unittest2.TestCase):
         raise TypeError("oops")
 
     def test_failed(self):
-        print "Hello stdout"
+        print("Hello stdout")
         assert False, "I failed"
 
     def test_skippy(self):
-        raise unittest2.SkipTest("I wanted to skip")
+        raise unittest.SkipTest("I wanted to skip")
+
+    def test_gen_method(self):
+        def check(x):
+            assert x == 1
+        yield check, 1
+        yield check, 2
+
+    def test_params_method(self, a):
+        self.assertEqual(a, 1)
+    test_params_method.paramList = (1, 2)
 
 
 def test_func():
@@ -45,3 +56,12 @@ def test_fixt():
     assert did_setup
 test_fixt.setup = setup
 
+
+def test_params_func(a):
+    assert a == 1
+test_params_func.paramList = (1, 2)
+
+
+def test_params_func_multi_arg(a, b):
+    assert a == b
+test_params_func_multi_arg.paramList = ((1, 1), (1, 2), (2, 2))

@@ -1,10 +1,3 @@
-import sys
-
-from six.moves import configparser
-
-from nose2 import events
-
-
 TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
 
 
@@ -56,59 +49,11 @@ class Config(object):
                 if line.strip() and not line.strip().startswith('#'))
         return lines
 
+    def get(self, key, default=None):
+        return self.as_str(key, default)
+
     def _cast(self, key, type_, default):
         try:
             return type_(self._mvd[key][0].strip())
         except (KeyError, IndexError):
             return default
-
-
-class Session(object):
-    """Configuration session.
-
-
-    Encapsulates all configuration for a given test run.
-
-    """
-    def __init__(self):
-        self.config = configparser.ConfigParser()
-        self.plugins = []
-
-    def get(self, section):
-        # FIXME cache these
-        items = []
-        if self.config.has_section(section):
-            items = self.config.items(section)
-        return Config(items)
-
-    def loadConfigFiles(self, *filenames):
-        self.config.read(filenames)
-
-    def loadPlugins(self, modules=None):
-        # plugins set directly
-        if modules is None:
-            modules = []
-        # plugins mentioned in config file(s)
-        cfg = self.get('unittest')
-        more_plugins = cfg.as_list('plugins', [])
-        exclude = set(cfg.as_list('excluded-plugins', []))
-        all_  = set(sum(modules, more_plugins)) - exclude
-        for module in all_:
-            __import__(module)
-            self.loadPluginsFromModule(sys.modules[module])
-
-    def loadPluginsFromModule(self, module):
-        avail = []
-        for entry in dir(module):
-            try:
-                item = getattr(module, entry)
-            except AttributeError:
-                pass
-            try:
-                if issubclass(item, events.Plugin):
-                    avail.append(item)
-            except TypeError:
-                pass
-        for cls in avail:
-            self.plugins.append(cls(session=self))
-

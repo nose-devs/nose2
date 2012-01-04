@@ -35,7 +35,7 @@ class PluggableTestResult(object):
         self.session.hooks.testOutcome(event)
 
     def addFailure(self, test, err):
-        event = events.TestOutcomeEvent(test, self, FAIL, err)
+        event = events.TestOutcomeEvent(test, self, FAIL, err, expected=False)
         self.session.hooks.testOutcome(event)
 
     def addSuccess(self, test):

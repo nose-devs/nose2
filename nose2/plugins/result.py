@@ -53,7 +53,7 @@ class ResultReporter(events.Plugin):
             self.reportCategories['errors'].append(event)
             self._reportError(event)
         elif event.outcome == result.FAIL:
-            if event.expected:
+            if not event.expected:
                 self.reportCategories['failures'].append(event)
                 self._reportFailure(event)
             else:
@@ -86,8 +86,8 @@ class ResultReporter(events.Plugin):
         event.success = True
         for name, events in self.reportCategories.items():
             for e in events:
-                if (e.outcome in (result.ERROR, result.FAIL)
-                    and not e.expected):
+                if (e.outcome == result.ERROR or
+                    (e.outcome == result.FAIL and not e.expected)):
                     event.success = False
                     break
 

@@ -37,13 +37,11 @@ class PluggableTestProgram(unittest.TestProgram):
         self.setInitialArguments()
         # FIXME -h here makes processing stop.
         cfg_args, argv = self.argparse.parse_known_args(argv[1:])
-        print cfg_args, argv
         self.handleCfgArgs(cfg_args)
 
         # Parse arguments for plugins (if any) and test names
         self.argparse.add_argument('testNames', nargs='*')
         args, argv = self.argparse.parse_known_args(argv)
-        print args, argv
         if argv:
             self.argparse.error("Unrecognized arguments: %s" % ' '.join(argv))
         self.handleArgs(args)

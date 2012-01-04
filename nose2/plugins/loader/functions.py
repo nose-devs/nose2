@@ -28,9 +28,9 @@ class Functions(Plugin):
             return
         parent, obj, name, index = result
 
-        if isinstance(obj, types.FunctionType):
+        if isinstance(obj, types.FunctionType) and not util.isgenerator(obj):
             suite = event.loader.suiteClass()
-            suite.addTests(self._createTests(obj, index))
+            suite.addTests(self._createTests(obj))
             event.handled = True
             return suite
 

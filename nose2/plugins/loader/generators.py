@@ -6,6 +6,7 @@ unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
 
 """
+import logging
 import sys
 import types
 import unittest
@@ -13,6 +14,9 @@ import unittest
 from nose2 import exceptions, util
 from nose2.events import Plugin
 from nose2.compat import unittest as ut2
+
+
+log = logging.getLogger(__name__)
 
 
 class Generators(Plugin):
@@ -63,34 +67,29 @@ class Generators(Plugin):
         if not util.isgenerator(obj):
             return
 
-        if (index is None and
-            (not isinstance(parent, type)
-             or not isinstance(obj, types.FunctionType))):
+        if (index is None
+            and not isinstance(parent, type)
+            and not isinstance(obj, types.FunctionType)):
+            log.debug("Don't know how to load generator tests from %s", obj)
             return
 
-        if issubclass(parent, unittest.TestCase):
+        if (parent
+            and isinstance(parent, type)
+            and issubclass(parent, unittest.TestCase)):
             # generator method
             instance = parent(obj.__name__)
             tests = list(
                 self._testsFromGenerator(event, name, obj(instance), parent)
                     )
-
         else:
             # generator func
-            tests = list(self._testsFromGeneratorFunc(event, name, obj))
+            tests = list(self._testsFromGeneratorFunc(event, obj))
 
         if index is not None:
             try:
                 tests = [tests[index-1]]
             except IndexError:
                 raise exceptions.TestNotFoundError(original_name)
-
-
-        if (index is None or not isinstance(parent, type) or
-            not issubclass(parent, unittest.TestCase) or
-            not util.isgenerator(obj)):
-            # we're only handling TestCase generator methods here
-            return
 
         suite = event.loader.suiteClass()
         suite.addTests(tests)

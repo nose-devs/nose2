@@ -197,23 +197,23 @@ class StopTestEvent(Event):
 
 class TestOutcomeEvent(Event):
     def __init__(self, test, result, outcome, exc_info=None, reason=None,
-                 expected=True, short_label=None, long_label=None, **kw):
+                 expected=True, shortLabel=None, longLabel=None, **kw):
         self.test = test
         self.result = result
         self.outcome = outcome
         self.exc_info = exc_info
         self.reason = reason
         self.expected = expected
-        self.short_label = short_label
-        self.long_label = long_label
+        self.shortLabel = shortLabel
+        self.longLabel = longLabel
         super(TestOutcomeEvent, self).__init__(**kw)
 
 
 class LoadFromModuleEvent(Event):
-    def __init__(self, loader, module, use_load_tests=False, **kw):
+    def __init__(self, loader, module, useLoadTests=False, **kw):
         self.loader = loader
         self.module = module
-        self.useLoadTests = use_load_tests
+        self.useLoadTests = useLoadTests
         self.extraTests = []
         super(LoadFromModuleEvent, self).__init__(**kw)
 
@@ -234,6 +234,9 @@ class LoadFromNamesEvent(Event):
         self.extraTests = []
         super(LoadFromNamesEvent, self).__init__(**kw)
 
+    def __str__(self):
+        return "LoadFromNames(names=%r, module=%r)" % (self.names, self.module)
+
 
 class LoadFromNameEvent(Event):
     def __init__(self, loader, name, module, **kw):
@@ -244,16 +247,16 @@ class LoadFromNameEvent(Event):
         super(LoadFromNameEvent, self).__init__(**kw)
 
 
+
 class HandleFileEvent(Event):
-    def __init__(self, loader, name, path, pattern,
-                    top_level_directory, **kw):
+    def __init__(self, loader, name, path, pattern, topLevelDirectory, **kw):
         self.extraTests = []
         self.path = path
         self.loader = loader
         self.name = name
         # note: pattern may be None if not called during test discovery
         self.pattern = pattern
-        self.top_level_directory = top_level_directory
+        self.topLevelDirectory = topLevelDirectory
         super(HandleFileEvent, self).__init__(**kw)
 
 
@@ -266,13 +269,13 @@ class MatchPathEvent(Event):
 
 
 class GetTestCaseNamesEvent(Event):
-    def __init__(self, loader, testCase, is_test_method, **kw):
+    def __init__(self, loader, testCase, isTestMethod, **kw):
         self.loader = loader
         self.testCase = testCase
         self.testMethodPrefix = None
         self.extraNames = []
         self.excludedNames = []
-        self.isTestMethod = is_test_method
+        self.isTestMethod = isTestMethod
         super(GetTestCaseNamesEvent, self).__init__(**kw)
 
 

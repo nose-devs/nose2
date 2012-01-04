@@ -229,15 +229,15 @@ class ResultReporter(events.Plugin):
             detail.extend(evt.extraDetail)
         return "\n".join(detail)
 
-    def _report(self, event, hook, short_label, long_label):
+    def _report(self, event, hook, shortLabel, longLabel):
         evt = events.ReportTestEvent(event, self.stream)
         getattr(self.session.hooks, hook)(evt)
         if evt.handled:
             return
         if self.session.verbosity > 1:
             # event I fired has stream, event I received has labels
-            evt.stream.writeln(getattr(event, 'long_label', None) or long_label)
+            evt.stream.writeln(getattr(event, 'longLabel', None) or longLabel)
         elif self.session.verbosity:
-            evt.stream.write(getattr(event, 'short_label', None) or short_label)
+            evt.stream.write(getattr(event, 'shortLabel', None) or shortLabel)
             evt.stream.flush()
 

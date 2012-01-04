@@ -43,7 +43,16 @@ class FunctionalTestCase(unittest.TestCase):
     tags = ['functional']
 
     def assertTestRunOutputMatches(self, proc, stdout=None, stderr=None):
-        cmd_stdout, cmd_stderr = proc.communicate()
+        cmd_stdout, cmd_stderr = None, None
+        try:
+            cmd_stdout, cmd_stderr = self._output[proc.pid]
+        except AttributeError:
+            self._output = {}
+        except KeyError:
+            pass
+        if cmd_stdout is None:
+            cmd_stdout, cmd_stderr = proc.communicate()
+            self._output[proc.pid] = cmd_stdout, cmd_stderr
         if stdout:
             self.assertRegexpMatches(util.safe_decode(cmd_stdout), stdout)
         if stderr:

@@ -1,7 +1,11 @@
+import logging
 import traceback
 
 from nose2 import events
 from nose2.compat import unittest
+
+
+log = logging.getLogger(__name__)
 
 
 class PluggableTestLoader(object):
@@ -22,8 +26,9 @@ class PluggableTestLoader(object):
 
     def loadTestsFromNames(self, testNames, module=None):
         event = events.LoadFromNamesEvent(
-            self, testNames,module)
+            self, testNames, module)
         result = self.session.hooks.loadTestsFromNames(event)
+        log.debug('loadTestsFromNames event %s result %s', event, result)
         if event.handled:
             suites = result or []
         else:
@@ -45,7 +50,7 @@ class PluggableTestLoader(object):
         message = 'Failed to import test module: %s' % name
         if hasattr(traceback, 'format_exc'):
             # Python 2.3 compatibility
-            # format_exc returns two frames of discover.py as well
+            # format_exc returns two frames of discover.py as well XXX ?
             message += '\n%s' % traceback.format_exc()
         return self._makeFailedTest(
             'ModuleImportFailure', name, ImportError(message))

@@ -1,10 +1,12 @@
-from unittest2 import events, util
-
 from docutils import nodes
 from docutils.statemachine import ViewList
 from docutils.parsers.rst import Directive
 
+from nose2 import events, session, util
+
+
 AD = u'<autodoc>'
+
 
 class AutoPlugin(Directive):
     required_arguments = 1
@@ -14,68 +16,55 @@ class AutoPlugin(Directive):
     option_spec = {}
 
     def run(self):
-        config = ConfigBucket()
-        opts = OptBucket()
-        self._patch(config, opts)
+        ssn = session.Session()
+        ssn.configClass = ssn.config = config = ConfigBucket()
+        ssn.pluginargs = opts = OptBucket()
+
+        plugin_name = self.arguments[0]
+        parent, plugin = util.object_from_name(plugin_name)
+        # FIXME this is too naive
+        mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
+
+        rst = ViewList()
+        rst.append(u'.. automodule :: %s\n' % mod_name, AD)
+        rst.append(u'', AD)
+
+        obj = plugin(session=ssn)
         try:
-            plugin_name = self.arguments[0]
-            parent, plugin = util.getObjectFromName(plugin_name)
-            # FIXME this is too naive
-            mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
+            obj.pluginsLoaded(events.PluginsLoadedEvent())
+        except AttributeError:
+            pass
 
-            rst = ViewList()
-            rst.append(u'.. automodule :: %s\n' % mod_name, AD)
-            rst.append(u'', AD)
+        # config options
+        if config.vars:
+            self.add_config(rst, config)
 
-            obj = plugin()
-            try:
-                obj.pluginsLoaded(events.PluginsLoadedEvent())
-            except AttributeError:
-                pass
+        # command-line options
+        self.headline(rst, u'Command-line options')
+        for opt in opts:
+            for line in opt.options():
+                rst.append(line, AD)
+            rst.append('', AD)
 
-            # config options
-            if config.vars:
-                self.add_config(rst, config)
+        # class __doc__
+        self.headline(rst, u'Plugin class reference')
+        rst.append(u'.. autoclass :: %s' % plugin_name, AD)
+        rst.append(u'   :members:', AD)
+        rst.append(u'', AD)
 
-            # command-line options
-            self.headline(rst, u'Command-line options')
-            for opt in opts:
-                rst.append(opt.options(), AD)
-                rst.append('', AD)
+        # parse rst and generate new nodelist
+        state = self.state
+        node = nodes.section()
+        node.document = state.document
+        surrounding_title_styles = state.memo.title_styles
+        surrounding_section_level = state.memo.section_level
+        state.memo.title_styles = []
+        state.memo.section_level = 0
+        state.nested_parse(rst, 0, node, match_titles=1)
+        state.memo.title_styles = surrounding_title_styles
+        state.memo.section_level = surrounding_section_level
 
-            # class __doc__
-            self.headline(rst, u'Plugin class reference')
-            rst.append(u'.. autoclass :: %s' % plugin_name, AD)
-            rst.append(u'   :members:', AD)
-            rst.append(u'', AD)
-
-            print rst
-
-            # parse rst and generate new nodelist
-            state = self.state
-            node = nodes.section()
-            node.document = state.document
-            surrounding_title_styles = state.memo.title_styles
-            surrounding_section_level = state.memo.section_level
-            state.memo.title_styles = []
-            state.memo.section_level = 0
-            state.nested_parse(rst, 0, node, match_titles=1)
-            state.memo.title_styles = surrounding_title_styles
-            state.memo.section_level = surrounding_section_level
-
-            return node.children
-        finally:
-            self._unpatch()
-
-    def _patch(self, config, opts):
-        self._getConfig = events.getConfig
-        self._addOption = events.addOption
-        events.getConfig = config
-        events.addOption = opts
-
-    def _unpatch(self):
-        events.getConfig = self._getConfig
-        events.addOption = self._addOption
+        return node.children
 
     def add_config(self, rst, config):
         headline = u'Configuration [%s]' % config.section
@@ -130,10 +119,16 @@ class ConfigBucket(object):
         self.section = None
         self.vars = {}
 
-    def __call__(self, section):
-        self.section = section
-        self.vars = {}
+    def __call__(self, items):
+        self.vars = dict(items)
         return self
+
+    def has_section(self, section):
+        self.section = section
+        return False
+
+    def items(self):
+        return self.vars.items()
 
     def as_bool(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'boolean',
@@ -177,7 +172,7 @@ class OptBucket(object):
     def format_help(self):
         return self.doc.replace('%prog', self.prog).replace(':\n', '::\n')
 
-    def add_option(self, *arg, **kw):
+    def add_argument(self, *arg, **kw):
         if not arg in self.seen:
             self.opts.append(Opt(*arg, **kw))
             self.seen.add(arg)
@@ -204,14 +199,14 @@ class Opt(object):
         for optstring in self.opts:
             desc = optstring
             if self.action not in ('store_true', 'store_false', None):
-                desc += '=%s' % self.meta(optstring)
+                desc += ' %s' % self.meta(optstring)
             buf.append(desc)
-            res = ['.. option:: ' + ', '.join(buf)]
+            res = ['.. cmdoption :: ' + ', '.join(buf)]
             if self.help:
-                res.append('   ')
+                res.append('')
                 res.append('   %s' % self.help)
             res.append('')
-        return '\n'.join(res)
+        return res
 
     def meta(self, optstring):
         # FIXME optparser default metavar?

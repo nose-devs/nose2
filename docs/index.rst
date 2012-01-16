@@ -1,25 +1,27 @@
-.. nose2 documentation master file, created by
-   sphinx-quickstart on Thu Oct  7 15:16:09 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+:orphan:
 
-Welcome to nose2's documentation!
-=================================
+Welcome to nose2
+================
 
-Contents:
+nose2 is the next generation of nicer testing for Python, based
+on the plugins branch of unittest2. nose2 aims to improve on nose by:
 
-.. toctree::
-   :maxdepth: 2
+ * providing a better plugin api
+ * being easier for users to configure
+ * simplifying internal interfaces and processes
+ * supporting Python 2 and 3 from the same codebase, without translation
+ * encourging greater community involvment in its development
 
-   usage
-   differences
-   plugins_cfg
-   plugins
+In service of some those goals, some features of nose *will not* be
+supported in nose2. See :doc:`differences` for a thorough rundown.
 
-Indices and tables
-==================
+In time -- once unittest2 supports plugins -- nose2 should be able to
+become just a collection of plugins and configuration defaults. For
+now, it provides a plugin api similar to the one in the unittest2
+plugins branch, and overrides various unittest2 objects.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
+new direction!
+
+.. include :: contents.rst.inc
 

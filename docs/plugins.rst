@@ -1,5 +1,5 @@
 ===============
-nose2's plugins
+Builtin Plugins
 ===============
 
 .. toctree::
@@ -7,9 +7,15 @@ nose2's plugins
 
    plugins/attrib
    plugins/collect
+   plugins/discovery
    plugins/doctests
-   plugins/loader
+   plugins/functions
+   plugins/generators
    plugins/logcapture
    plugins/outcomes
+   plugins/parameters
+   plugins/printhooks
    plugins/prof
+   plugins/testcases
    plugins/testid
+

@@ -5,17 +5,25 @@ Builtin Plugins
 .. toctree::
    :maxdepth: 2
 
-   plugins/attrib
-   plugins/collect
    plugins/discovery
-   plugins/doctests
    plugins/functions
    plugins/generators
+   plugins/parameters
+   plugins/testcases
+   plugins/doctests
+   plugins/result
+   plugins/buffer
+   plugins/debugger
+   plugins/failfast
    plugins/logcapture
    plugins/outcomes
-   plugins/parameters
+
+   plugins/attrib
+   plugins/collect
+   plugins/testid
+
    plugins/printhooks
    plugins/prof
-   plugins/testcases
-   plugins/testid
+
+
 

@@ -59,7 +59,7 @@ names start with 'test'.
 
 The ``nose2`` script supports a number of command-line options, as
 well as extensive configuration via config files. For more information
-see :doc:`usage` and :doc:`plugins_cfg`.
+see :doc:`usage` and :doc:`configuration`.
 
 .. _pip : http://pypi.python.org/pypi/pip/1.0.2
 .. _pypi : http://pypi.python.org/pypi

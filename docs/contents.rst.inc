@@ -6,8 +6,8 @@ User's Guide
 
    getting_started
    usage
+   configuration
    differences
-   plugins_cfg
    plugins
 
 Plugin Developer's Guide
@@ -17,6 +17,7 @@ Plugin Developer's Guide
    :maxdepth: 2
 
    dev/writing_plugins
+   dev/documenting_plugins
    dev/event_reference
    dev/hook_reference
    dev/session_reference

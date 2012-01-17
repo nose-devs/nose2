@@ -41,6 +41,15 @@ To nose's loader, those two test modules look like different
 modules. But to nose2's loader, they look the same, and will not load
 correctly.
 
+Test Fixtures
+^^^^^^^^^^^^^
+
+nose2 supports only the *same levels of fixtures as unittest2*. This
+means class level fixtures and module level fixtures are supported,
+but *package-level fixtures are not*. In addition, unlike nose, nose2
+does not attempt to order tests named on the command-line to group
+those with the same fixtures together.
+
 
 Parameterized and Generator Tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -62,26 +71,32 @@ generally have only one command-line option, the option to activate
 the plugin. Other configuration parameters should be loaded from
 config files. This allows more repeatable test runs and keeps the set
 of command-line options small enough for humans to read. See:
-:doc:`plugins_cfg` for more.
+:doc:`configuration` for more.
 
 Plugin Loading
 ^^^^^^^^^^^^^^
 
 nose uses setuptools entry points to find and load plugins. nose2
-does not. Instead, it requires that all plugins be listing in config
+does not. Instead, it requires that all plugins be listed in config
 files. This ensures that no plugin is loaded into a test system just
 by virtue of being installed somewhere, and makes it easier to include
 plugins that are part of the project under test. See:
-:doc:`plugins_cfg` for more.
+:doc:`configuration` for more.
 
-No Support for ``python setup.py test``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Limited support for ``python setup.py test``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-nose2 has *no support for running tests the distribute/setuptools*
-``python setup.py test`` *standard*. Unfortunately, this command does
-not allow projects to specify a test runner, making it impossible to
-use with nose2 without reimplementing all of the wrapping and proxying
-that make nose so internally complex.
+nose2 supports setuptools' ``python setup.test`` command, but via very
+different means than nose. To avoid the internal complexity forced on
+nose by the fact that the setuptools test command can't be configured
+with a custom test runner, when run this way, *nose2 essentially
+hijacks the test running process*. The "test suite" that
+:func:`nose2.collector.collector` returns actually *is* a test runner,
+cloaked inside of a test case. It loads and runs tests as normal,
+setting up its own test runner and test result, and calls sys.exit()
+itself -- completely bypassing the test runner and test result that
+setuptools/unittest create. This may be incompatible with some
+projects.
 
 New Plugin API
 ^^^^^^^^^^^^^^
@@ -123,10 +138,11 @@ the request of the majority of nose contributors.
 What's the Same
 ~~~~~~~~~~~~~~~
 
-nose2 has the same goals as nose: to make testing nicer and easier to
-understand. It aims to give developers flexibility, power and
-transparency, so that common test scenarios require no extra work, and
-uncommon test scenarios can be supported with minimal fuss and magic.
+nose2 has the same goals as nose: to extend unittest to make testing
+nicer and easier to understand. It aims to give developers
+flexibility, power and transparency, so that common test scenarios
+require no extra work, and uncommon test scenarios can be supported
+with minimal fuss and magic.
 
 nose2 is not (exactly) unittest2/plugins
 ----------------------------------------

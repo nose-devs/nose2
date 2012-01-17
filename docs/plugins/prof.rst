@@ -1,6 +1,5 @@
-===========
-TODO: title
-===========
+=========
+Profiling
+=========
 
-.. automodule :: nose2.plugins.prof
-   :members:
+.. autoplugin :: nose2.plugins.prof.Profiler

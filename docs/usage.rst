@@ -49,113 +49,56 @@ importable directory of the project, use the :option:`-s` and
    packages, and is always prepended to sys.path before test discovery
    begins.
 
+Specifying Tests to Run
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Configuration Files
--------------------
+Pass *test names* to nose2 on the command line to run individual test
+modules, classes, or tests.
 
-Most configuration of nose2 is done via config files. These are
-standard, .ini-style config files, with sections marked off by
-brackets ("[unittest]") and key = value pairs within those sections.
+A test name consists of a *python object part* and, for generator or
+parameterized tests, an *argument part*. The *python object part* is a
+dotted name, such as
+``pkg1.tests.test_things.SomeTests.test_ok``. The argument
+part is separated from the python object part by a colon (":") and
+specifies the *index* of the generated test to select, *starting from
+1*. For example, ``pk1.test.test_things.test_params_func:1`` would
+select the *first* test generated from the parameterized test
+``test_params_func``.
 
-Two command line options, :option:`-c` and :option:`--no-user-config`
-may be used to determine which config files are loaded.
+Plugins may provide other means of test selection.
 
-.. cmdoption :: -c CONFIG, --config CONFIG
+Running Tests with ``python setup.py test``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   Config files to load. Default behavior is to look for
-   ``unittest.cfg`` and ``nose2.cfg`` in the start directory, as well
-   as any user config files (unless :option:`--no-user-config` is
-   selected).
+nose2 supports distribute/setuptools' ``python setup.py test``
+standard for running tests. To use nose2 to run your package's tests,
+add the following to your setup.py::
 
-.. cmdoption :: --no-user-config
+  setup(...
+        test_suite='nose2.collector.collector',
+        ...
+        )
 
-   Do not load user config files. If not specified, in addition to the
-   standard config files and any specified with :option:`-c`, nose2
-   will look for ``.unittest.cfg`` and ``.nose2.cfg`` in the user's
-   $HOME directory.
+(Not literally. Don't put the '...' parts in.)
 
+Two warnings about running tests this way.
 
-Configuring Test Discovery
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+One: because the setuptools test command is limited, nose2 returns a "test
+suite" that actually takes over the test running process completely,
+bypassing the test result and test runner that call it. This may be
+incompatible with some packages.
 
-The ``[unittest]`` section of nose2 config files is used to configure
-nose2 itself. The following options are available to configure test
-discovery:
-
-.. rst:configvar :: code-directories
-
-   This option configures nose2 to add the named directories to
-   sys.path and the discovery path. Use this if your project has
-   code in a location other than the top level of the project, or the
-   directories ``lib`` or ``src``. The value here may be a list: put each
-   directory on its own line in the config file.
-
-.. rst:configvar :: test-file-pattern
-
-   This option configures how nose detects test modules. It is a file
-   glob.
-
-.. rst:configvar :: test-method-prefix
-
-   This option configures how nose detects test functions and
-   methods. The prefix set here will be matched (via simple string
-   matching) against the start of the name of each method in test
-   cases and each function in test modules.
-
-Examples:
-
-.. code-block :: ini
-
-  [unittest]
-  code-directories = source
-                     more_source
-  test-file-pattern = *_test.py
-  test-method-prefix = t
-
-Specifying Plugins to Load
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To avoid loading any plugins, use the :option:`--no-plugins`
-option. Beware, though: nose2 does all test discovery and loading via
-plugins, so unless you are patching in a custom test loader and
-runner, when run with :option:`--no-plugins`, nose2 will do nothing.
-
-.. cmdoption :: --no-plugins
-
-   Do not load any plugins. *This kills the nose2.*
-
-To specify plugins to load beyond the builtin plugins automatically
-loaded, add a :config:`plugins` entry under the ``[unittest]``
-section in a config file.
-
-.. rst:configvar :: plugins
-
-   List of plugins to load. Put one plugin module on each line.
-
-To exclude some plugins that would otherwise be loaded, add an
-:config:`exclude-plugins` entry under the ``[unittest]``
-section in a config file.
-
-.. rst:configvar :: exclude-plugins
-
-   List of plugins to exclude. Put one plugin module on each line.
-
-.. note ::
-
-   It bears repeating that in both :config:`plugins` and
-   :config:`exclude-plugins` entries, you specify the plugin *module*,
-   not the plugin *class*.
-
-Examples:
-
-.. code-block :: ini
-
-  [unittest]
-  plugins = myproject.plugins.frobulate
-            otherproject.contrib.plugins.derper
-
-  exclude-plugins = nose2.plugins.loader.functions
-                    nose2.plugins.outcomes
+Two: because the command line arguments to the test command may not
+match up properly with nose2's arguments, the nose2 instance started
+by the collector *does not accept any command line arguments*. This
+means that it always runs all tests, and that you cannot configure
+plugins on the command line when running tests this way. As a
+workaround, when running under the test command, nose2 will read
+configuration from ``setup.cfg`` if it is present, in addition to
+``unittest.cfg`` and ``nose2.cfg``. This enables you to put
+configuration specific to the setuptools test command in ``setup.cfg``
+-- for instance to activate plugins that you would otherwise activate
+via the command line.
 
 
 Getting Help

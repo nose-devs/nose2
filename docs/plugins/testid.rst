@@ -1,6 +1,6 @@
-===========
-TODO: title
-===========
+========
+Test IDs
+========
 
-.. automodule :: nose2.plugins.testid
-   :members:
+.. autoplugin :: nose2.plugins.testid.TestId
+

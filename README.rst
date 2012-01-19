@@ -19,7 +19,7 @@ on the plugins branch of unittest2. nose2 aims to improve on nose by:
  * encourging greater community involvment in its development
 
 In service of some those goals, some features of nose *will not* be
-supported in nose2. See :doc:`differences` for a thorough rundown.
+supported in nose2. See `differences`_ for a thorough rundown.
 
 In time -- once unittest2 supports plugins -- nose2 should be able to
 become just a collection of plugins and configuration defaults. For
@@ -28,3 +28,5 @@ plugins branch, and overrides various unittest2 objects.
 
 You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
 new direction!
+
+.. _differences: https://nose-devs.github.com/nose2/differences.html

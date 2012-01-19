@@ -1,0 +1,285 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Writing Plugins &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Documenting plugins" href="documenting_plugins.html" />
+    <link rel="prev" title="Profiling" href="../plugins/prof.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="documenting_plugins.html" title="Documenting plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../plugins/prof.html" title="Profiling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="writing-plugins">
+<h1>Writing Plugins<a class="headerlink" href="#writing-plugins" title="Permalink to this headline">¶</a></h1>
+<p>nose2 supports plugins for test collection, selection, observation and
+reporting &#8211; among other things. There are two basic rules for plugins:</p>
+<ul class="simple">
+<li>Plugin classes must subclass <a class="reference internal" href="plugin_class_reference.html#nose2.events.Plugin" title="nose2.events.Plugin"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.Plugin</span></tt></a>.</li>
+<li>Plugins may implement any of the methods described in the
+<a class="reference internal" href="hook_reference.html"><em>Hook reference</em></a>.</li>
+</ul>
+<div class="section" id="hello-world">
+<h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<p>Here&#8217;s a basic plugin. It doesn&#8217;t do anything besides log a message at
+the start of a test run.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">nose2.events</span> <span class="kn">import</span> <span class="n">Plugin</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;nose2.plugins.helloworld&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">HelloWorld</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;helloworld&#39;</span>
+    <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;hello-world&#39;</span><span class="p">,</span> <span class="s">&#39;Say hello!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Hello pluginized world!&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To see this plugin in action, save it into an importable module, then
+add that module to the <tt class="docutils literal"><span class="pre">plugins</span></tt> key in the <tt class="docutils literal"><span class="pre">[unittest]</span></tt> section
+of a config file loaded by nose2, such as <tt class="docutils literal"><span class="pre">unittest.cfg</span></tt>. Then run
+nose2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nose2</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">INFO</span> <span class="o">--</span><span class="n">hello</span><span class="o">-</span><span class="n">world</span>
+</pre></div>
+</div>
+<p>And you should see the log message before the first dot appears.</p>
+</div>
+<div class="section" id="loading-plugins">
+<h2>Loading plugins<a class="headerlink" href="#loading-plugins" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned above, for nose2 to find a plugin, it must be in an
+importable module, and the module must be listed under the <tt class="docutils literal"><span class="pre">plugins</span></tt>
+key in the <tt class="docutils literal"><span class="pre">[unittest]</span></tt> section of a config file loaded by nose2:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[unittest]</span>
+<span class="na">plugins</span> <span class="o">=</span> <span class="s">mypackage.someplugin</span>
+<span class="s">          otherpackage.thatplugin</span>
+<span class="s">          thirdpackage.plugins.metoo</span>
+</pre></div>
+</div>
+<p>As you can see, plugin <em>modules</em> are listed, one per line. All plugin
+classes in those modules will be loaded &#8211; but not necessarily
+active. Typically plugins do not activate themselves (&#8220;register&#8221;)
+without seeing a command-line flag, or <tt class="docutils literal"><span class="pre">always-on</span> <span class="pre">=</span> <span class="pre">True</span></tt> in their
+config file section.</p>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line Options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<p>nose2 uses <a class="reference external" href="http://pypi.python.org/pypi/argparse/1.2.1">argparse</a> for command-line argument parsing. Plugins may
+enable command-line options that register them as active, or take
+arguments or flags controlling their operation.</p>
+<p>The most basic thing to do is to set the plugin&#8217;s
+<tt class="docutils literal"><span class="pre">commandLineSwitch</span></tt> attribute, which will automatically add a
+command-line flag that registers the plugin.</p>
+<p>To add other flags or arguments, you can use the Plugin methods
+<a class="reference internal" href="plugin_class_reference.html#nose2.events.Plugin.addFlag" title="nose2.events.Plugin.addFlag"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.Plugin.addFlag()</span></tt></a>,
+<a class="reference internal" href="plugin_class_reference.html#nose2.events.Plugin.addArgument" title="nose2.events.Plugin.addArgument"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.Plugin.addArgument()</span></tt></a> or
+<a class="reference internal" href="plugin_class_reference.html#nose2.events.Plugin.addOption" title="nose2.events.Plugin.addOption"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.Plugin.addOption()</span></tt></a>. If those don&#8217;t offer enough
+flexibility, you can directly manipulate the argument parser by
+accessing <tt class="docutils literal"><span class="pre">self.session.argparse</span></tt> or the plugin option group by
+accessing <tt class="docutils literal"><span class="pre">self.session.pluginargs</span></tt>.</p>
+<p>Please note though that the <em>majority</em> of your plugin&#8217;s configuration
+should be done via config file options, not command line options.</p>
+</div>
+<div class="section" id="config-file-options">
+<h2>Config File Options<a class="headerlink" href="#config-file-options" title="Permalink to this headline">¶</a></h2>
+<p>Plugins may specify a config file section that holds their
+configuration by setting their <tt class="docutils literal"><span class="pre">configSection</span></tt> attribute. All
+plugins, regardless of whether they specify a config section, have a
+<tt class="docutils literal"><span class="pre">config</span></tt> attribute that holds a <a class="reference internal" href="session_reference.html#nose2.config.Config" title="nose2.config.Config"><tt class="xref py py-class docutils literal"><span class="pre">nose2.config.Config</span></tt></a>
+instance. This will be empty of values if the plugin does not specify
+a config section or if no loaded config file includes that section.</p>
+<p>Plugins should extract the user&#8217;s configuration selections from their
+config attribute in their <tt class="docutils literal"><span class="pre">__init__</span></tt> methods. Plugins that want to
+use nose2&#8217;s <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> extension to automatically document themselves
+<strong>must</strong> do so.</p>
+<p>Config file options may be extracted as strings, ints, booleans or
+lists.</p>
+<p>You should provide reasonable defaults for all config options.</p>
+</div>
+<div class="section" id="guidelines">
+<h2>Guidelines<a class="headerlink" href="#guidelines" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="events">
+<h3>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h3>
+<p>nose2&#8217;s plugin api is based on the api in unittest2&#8217;s
+under-development plugins branch. It differs from nose&#8217;s plugins api
+in one major area: what it passes to hooks. Where nose passes a
+variety of arguments, nose2 <em>always passes an event</em>. The events are
+listed in the <a class="reference internal" href="event_reference.html"><em>Event reference</em></a>.</p>
+<p>Here&#8217;s the key thing about that: <em>event attributes are
+read-write</em>. Unless stated otherwise in the documentation for a hook,
+you can set a new value for any event attribute, and <em>this will do
+something</em>. Plugins and nose2 systems will see that new value and
+either use it instead of what was originally set in the event
+(example: the reporting stream or test executor), or use it to
+supplement something they find elsewhere (example: extraTests on a
+test loading event).</p>
+<div class="section" id="handling-events">
+<h4>&#8220;Handling&#8221; events<a class="headerlink" href="#handling-events" title="Permalink to this headline">¶</a></h4>
+<p>Many hooks give plugins a chance to completely handle events,
+bypassing other plugins and any core nose2 operations. To do this, a
+plugin sets <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and, generally, returns an
+appropriate value from the hook method. What is an appropriate value
+varies by hook, and some hooks <em>can&#8217;t</em> be handled in this way. But
+even for hooks where handling the event doesn&#8217;t stop all processing,
+it <em>will</em> stop subsequently-loaded plugins from seeing the event.</p>
+</div>
+</div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>nose2 uses the logging classes from the standard library. To enable users
+to view debug messages easily, plugins should use <tt class="docutils literal"><span class="pre">logging.getLogger()</span></tt> to
+acquire a logger in the <tt class="docutils literal"><span class="pre">nose2.plugins</span></tt> namespace.</p>
+</div>
+</div>
+<div class="section" id="recipes">
+<h2>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Writing a plugin that monitors or controls test result output</p>
+<p>Implement any of the <tt class="docutils literal"><span class="pre">report*</span></tt> hook methods, especially if you
+want to output to the console. If outputing to file or other system,
+you might implement <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> instead.</p>
+<p>Example: <a class="reference internal" href="../plugins/result.html#nose2.plugins.result.ResultReporter" title="nose2.plugins.result.ResultReporter"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.result.ResultReporter</span></tt></a></p>
+</li>
+<li><p class="first">Writing a plugin that handles exceptions</p>
+<p>If you just want to handle some exceptions as skips or failures
+instead of errors, see <a class="reference internal" href="../plugins/outcomes.html#nose2.plugins.outcomes.Outcomes" title="nose2.plugins.outcomes.Outcomes"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.outcomes.Outcomes</span></tt></a>,
+which offers a simple way to do that. Otherwise, implement
+<a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> to change test outcomes.</p>
+<p>Example: <a class="reference internal" href="../plugins/outcomes.html#nose2.plugins.outcomes.Outcomes" title="nose2.plugins.outcomes.Outcomes"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.outcomes.Outcomes</span></tt></a></p>
+</li>
+<li><p class="first">Writing a plugin that adds detail to error reports</p>
+<p>Implement <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> and put your extra information into
+<tt class="docutils literal"><span class="pre">event.metadata</span></tt>, then implement <a class="reference internal" href="hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a> to extract
+it and add it to the error report.</p>
+<p>Examples: <a class="reference internal" href="../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin" title="nose2.plugins.buffer.OutputBufferPlugin"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.buffer.OutputBufferPlugin</span></tt></a>, <a class="reference internal" href="../plugins/logcapture.html#nose2.plugins.logcapture.LogCapture" title="nose2.plugins.logcapture.LogCapture"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.logcapture.LogCapture</span></tt></a></p>
+</li>
+<li><p class="first">Writing a plugin that loads tests from files other than python modules</p>
+<p>Implement <a class="reference internal" href="hook_reference.html#handleFile" title="handleFile"><tt class="xref py py-func docutils literal"><span class="pre">handleFile()</span></tt></a>.</p>
+<p>Example: <a class="reference internal" href="../plugins/doctests.html#nose2.plugins.doctests.DocTestLoader" title="nose2.plugins.doctests.DocTestLoader"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.doctests.DocTestLoader</span></tt></a></p>
+</li>
+<li><p class="first">Writing a plugin that prints a report</p>
+<p>Implement <a class="reference internal" href="hook_reference.html#beforeErrorList" title="beforeErrorList"><tt class="xref py py-func docutils literal"><span class="pre">beforeErrorList()</span></tt></a>, <a class="reference internal" href="hook_reference.html#beforeSummaryReport" title="beforeSummaryReport"><tt class="xref py py-func docutils literal"><span class="pre">beforeSummaryReport()</span></tt></a> or
+<a class="reference internal" href="hook_reference.html#afterSummaryReport" title="afterSummaryReport"><tt class="xref py py-func docutils literal"><span class="pre">afterSummaryReport()</span></tt></a></p>
+<p>Example: <a class="reference internal" href="../plugins/prof.html#nose2.plugins.prof.Profiler" title="nose2.plugins.prof.Profiler"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.prof.Profiler</span></tt></a></p>
+</li>
+<li><p class="first">Writing a plugin that selects or rejects tests</p>
+<p>Implement <a class="reference internal" href="hook_reference.html#matchPath" title="matchPath"><tt class="xref py py-class docutils literal"><span class="pre">matchPath</span></tt></a> or <a class="reference internal" href="hook_reference.html#getTestCaseNames" title="getTestCaseNames"><tt class="xref py py-class docutils literal"><span class="pre">getTestCaseNames</span></tt></a>.</p>
+<p>Example: <a class="reference internal" href="../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters" title="nose2.plugins.loader.parameters.Parameters"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.loader.parameters.Parameters</span></tt></a></p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Writing Plugins</a><ul>
+<li><a class="reference internal" href="#hello-world">Hello World</a></li>
+<li><a class="reference internal" href="#loading-plugins">Loading plugins</a></li>
+<li><a class="reference internal" href="#command-line-options">Command-line Options</a></li>
+<li><a class="reference internal" href="#config-file-options">Config File Options</a></li>
+<li><a class="reference internal" href="#guidelines">Guidelines</a><ul>
+<li><a class="reference internal" href="#events">Events</a><ul>
+<li><a class="reference internal" href="#handling-events">&#8220;Handling&#8221; events</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recipes">Recipes</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../plugins/prof.html" title="previous chapter">Profiling</a></li>
+      <li>Next: <a href="documenting_plugins.html" title="next chapter">Documenting plugins</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/writing_plugins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,760 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hook reference &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Session reference" href="session_reference.html" />
+    <link rel="prev" title="Event reference" href="event_reference.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="session_reference.html" title="Session reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="event_reference.html" title="Event reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="hook-reference">
+<h1>Hook reference<a class="headerlink" href="#hook-reference" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Hooks are listed here in order of execution.</p>
+</div>
+<div class="section" id="pre-registration-hooks">
+<h2>Pre-registration Hooks<a class="headerlink" href="#pre-registration-hooks" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pluginsLoaded">
+<tt class="descname">pluginsLoaded</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#pluginsLoaded" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; <a class="reference internal" href="event_reference.html#nose2.events.PluginsLoadedEvent" title="nose2.events.PluginsLoadedEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.PluginsLoadedEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">pluginsLoaded</span></tt> hook is called after all config files have been read,
+and all plugin classes loaded. Plugins that register automatically
+(those that call <a class="reference internal" href="plugin_class_reference.html#nose2.events.Plugin.register" title="nose2.events.Plugin.register"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.Plugin.register()</span></tt></a> in __init__
+or have <tt class="docutils literal"><span class="pre">always-on</span> <span class="pre">=</span> <span class="pre">True</span></tt> set in their config file sections) will
+have already been registered with the hooks they implement. Plugins
+waiting for commmand-line activation will not yet be registered.</p>
+<p>Plugins can use this hook to examine or modify the set of loaded plugins,
+inject their own hook methods using
+<a class="reference internal" href="plugin_class_reference.html#nose2.events.PluginInterface.addMethod" title="nose2.events.PluginInterface.addMethod"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.PluginInterface.addMethod()</span></tt></a>, or take other
+actions to set up or configure themselves or the test run.</p>
+<p>Since <tt class="docutils literal"><span class="pre">pluginsLoaded</span></tt> is a pre-registration hook, it is called
+for <em>all plugins</em> that implement the method, whether they have
+registered or not. Plugins that do not automatically register
+themselves should limit their actions in this hook to
+configuration, since they may not actually be active during the
+test run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="handleArgs">
+<tt class="descname">handleArgs</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#handleArgs" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; <a class="reference internal" href="event_reference.html#nose2.events.CommandLineArgsEvent" title="nose2.events.CommandLineArgsEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.CommandLineArgsEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">handleArgs</span></tt> hook is called after all arguments from the command
+line have been parsed. Plugins can use this hook to handle command-line
+arguments in non-standard ways. They should not use it to try to modify
+arguments seen by other plugins, since the order in which plugins
+execute in a hook is not guaranteed.</p>
+<p>Since <tt class="docutils literal"><span class="pre">handleArgs</span></tt> is a pre-registration hook, it is called for
+<em>all plugins</em> that implement the method, whether they have registered
+or not. Plugins that do not automatically register
+themselves should limit their actions in this hook to
+configuration, since they may not actually be active during the
+test run.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="standard-hooks">
+<h2>Standard Hooks<a class="headerlink" href="#standard-hooks" title="Permalink to this headline">¶</a></h2>
+<p>These hooks are called for registered plugins only.</p>
+<dl class="function">
+<dt id="createTests">
+<tt class="descname">createTests</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#createTests" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.CreateTestsEvent" title="nose2.events.CreateTestsEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.CreateTestsEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can take over test loading by returning a test suite and setting
+<tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="loadTestsFromNames">
+<tt class="descname">loadTestsFromNames</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#loadTestsFromNames" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.LoadFromNamesEvent" title="nose2.events.LoadFromNamesEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.LoadFromNamesEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can return a test suite or list of test suites and set
+<tt class="docutils literal"><span class="pre">event.handled</span></tt> to True to prevent other plugins from loading
+tests from the given names, or append tests to
+<tt class="docutils literal"><span class="pre">event.extraTests</span></tt>. Plugins can also remove names from
+<tt class="docutils literal"><span class="pre">event.names</span></tt> to prevent other plugins from acting on those
+names.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.LoadFromNameEvent" title="nose2.events.LoadFromNameEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.LoadFromNameEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can return a test suite and set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True
+to prevent other plugins from loading tests from the given name,
+or append tests to <tt class="docutils literal"><span class="pre">event.extraTests</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="handleFile">
+<tt class="descname">handleFile</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#handleFile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.HandleFileEvent" title="nose2.events.HandleFileEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.HandleFileEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to load tests from files that are not
+python modules. Plugins may either append tests to <tt class="docutils literal"><span class="pre">event.extraTest</span></tt>,
+or, if they want to prevent other plugins from processing the file,
+set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and return a test case or test suite.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="matchPath">
+<tt class="descname">matchPath</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#matchPath" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.MatchPathEvent" title="nose2.events.MatchPathEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.MatchPathEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to prevent python modules from being
+loaded by the test loader or force them to be loaded by the test
+loader. Set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and return False to cause the
+loader to skip the module. Set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and return
+True to cause the loader to load the module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="loadTestsFromModule">
+<tt class="descname">loadTestsFromModule</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#loadTestsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.LoadFromModuleEvent" title="nose2.events.LoadFromModuleEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.LoadFromModuleEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to load tests from test modules. To
+prevent other plugins from loading from the module, set
+<tt class="docutils literal"><span class="pre">event.handled</span></tt> and return a test suite. Plugins can also append
+tests to <tt class="docutils literal"><span class="pre">event.extraTests</span></tt> &#8211; ususally that&#8217;s what you want to
+do, since that will allow other plugins to load their tests from
+the module as well.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="loadTestsFromTestCase">
+<tt class="descname">loadTestsFromTestCase</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#loadTestsFromTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.LoadFromTestCaseEvent" title="nose2.events.LoadFromTestCaseEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.LoadFromTestCaseEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to load tests from a
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a>. To prevent other plugins from loading
+tests from the test case, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and return
+a test suite. Plugins can also append tests to <tt class="docutils literal"><span class="pre">event.extraTests</span></tt>
+&#8211; ususally that&#8217;s what you want to do, since that will allow other
+plugins to load their tests from the test case as well.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="getTestCaseNames">
+<tt class="descname">getTestCaseNames</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#getTestCaseNames" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.GetTestCaseNamesEvent" title="nose2.events.GetTestCaseNamesEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.GetTestCaseNamesEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to limit or extend the list of test case
+names that will be loaded from a <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> by the
+standard nose2 test loader plugins (and other plugins that respect
+the results of the hook). To force a specific list of names, set
+<tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and return a list: this exact list will
+be the only test case names loaded from the test case. Plugins can
+also extend the list of names by appending test names to
+<tt class="docutils literal"><span class="pre">event.extraNames</span></tt>, and exclude names by appending test names to
+<tt class="docutils literal"><span class="pre">event.excludedNames</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="runnerCreated">
+<tt class="descname">runnerCreated</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#runnerCreated" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.RunnerCreatedEvent" title="nose2.events.RunnerCreatedEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.RunnerCreatedEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to wrap, capture or replace the test
+runner. To replace the test runner, set <tt class="docutils literal"><span class="pre">event.runner</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="resultCreated">
+<tt class="descname">resultCreated</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#resultCreated" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ResultCreatedEvent" title="nose2.events.ResultCreatedEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ResultCreatedEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to wrap, capture or replace the test
+result. To replace the test result, set <tt class="docutils literal"><span class="pre">event.result</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="startTestRun">
+<tt class="descname">startTestRun</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#startTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.StartTestRunEvent" title="nose2.events.StartTestRunEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StartTestRunEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to take action before the start of the
+test run, and to replace or wrap the test executor. To replace the
+executor, set <tt class="docutils literal"><span class="pre">event.executeTests</span></tt>. This must be a callable that
+takes two arguments: the top-level test and the test result.</p>
+<p>To prevent the test executor from running at all, set
+<tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="startTest">
+<tt class="descname">startTest</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#startTest" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.StartTestEvent" title="nose2.events.StartTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StartTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to take action immediately before a test
+runs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportStartTest">
+<tt class="descname">reportStartTest</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportStartTest" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to produce output for the user at the
+start of a test. If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting
+to the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="describeTest">
+<tt class="descname">describeTest</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#describeTest" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.DescribeTestEvent" title="nose2.events.DescribeTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.DescribeTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to alter test descriptions. To return a
+nonstandard description for a test, set <tt class="docutils literal"><span class="pre">event.description</span></tt>. Be
+aware that other plugins may have set this also!</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="setTestOutcome">
+<tt class="descname">setTestOutcome</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#setTestOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.TestOutcomeEvent" title="nose2.events.TestOutcomeEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.TestOutcomeEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to alter test outcomes. Plugins can
+<tt class="docutils literal"><span class="pre">event.outcome</span></tt> to change the outcome of the event, tweak, change
+or remove <tt class="docutils literal"><span class="pre">event.exc_info</span></tt>, set or clear <tt class="docutils literal"><span class="pre">event.expected</span></tt>, and
+so on.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="testOutcome">
+<tt class="descname">testOutcome</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#testOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.TestOutcomeEvent" title="nose2.events.TestOutcomeEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.TestOutcomeEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to take action based on the outcome of
+tests. Plugins <em>must not</em> alter test outcomes in this hook: that&#8217;s
+what <a class="reference internal" href="#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> is for. Here, plugins may only react to
+the outcome event, not alter it.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportSuccess">
+<tt class="descname">reportSuccess</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportSuccess" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.LoadFromNamesEvent" title="nose2.events.LoadFromNamesEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.LoadFromNamesEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report test success to the user. If
+you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportError">
+<tt class="descname">reportError</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportError" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report a test error to the user. If
+you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportFailure">
+<tt class="descname">reportFailure</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportFailure" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report test failure to the user. If
+you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportSkip">
+<tt class="descname">reportSkip</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportSkip" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report a skipped test to the user. If
+you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportExpectedFailure">
+<tt class="descname">reportExpectedFailure</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportExpectedFailure" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report an expected failure to the
+user. If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportUnexpectedSuccess">
+<tt class="descname">reportUnexpectedSuccess</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportUnexpectedSuccess" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report an unexpected success to the
+user. If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="reportOtherOutcome">
+<tt class="descname">reportOtherOutcome</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#reportOtherOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportTestEvent" title="nose2.events.ReportTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to report a custom test outcome to the
+user. If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console. To prevent other plugins from reporting to
+the user, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stopTest">
+<tt class="descname">stopTest</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#stopTest" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.StopTestEvent" title="nose2.events.StopTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StopTestEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to take action after a test has completed
+running and reported its outcome.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stopTestRun">
+<tt class="descname">stopTestRun</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#stopTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.StopTestRunEvent" title="nose2.events.StopTestRunEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StopTestRunEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to take action at the end of a test run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="resultStop">
+<tt class="descname">resultStop</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#resultStop" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ResultStopEvent" title="nose2.events.ResultStopEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ResultStopEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to <em>prevent</em> other plugins from stopping
+a test run. This hook fires when something calls
+<a class="reference internal" href="result.html#nose2.result.PluggableTestResult.stop" title="nose2.result.PluggableTestResult.stop"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.result.PluggableTestResult.stop()</span></tt></a>. If you want to
+prevent this from stopping the test run, set <tt class="docutils literal"><span class="pre">event.shouldStop</span></tt>
+to False.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="beforeErrorList">
+<tt class="descname">beforeErrorList</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#beforeErrorList" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportSummaryEvent" title="nose2.events.ReportSummaryEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportSummaryEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to output or modify summary information
+before the list of errors and failures is output. To modify the
+categories of outcomes that will be reported, plugins can modify
+the <tt class="docutils literal"><span class="pre">event.reportCategories</span></tt> dictionary. Plugins can set, wrap or
+capture the output stream by reading or setting <tt class="docutils literal"><span class="pre">event.stream</span></tt>.
+If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="outcomeDetail">
+<tt class="descname">outcomeDetail</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#outcomeDetail" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.OutcomeDetailEvent" title="nose2.events.OutcomeDetailEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.OutcomeDetailEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to add additional elements to error list
+output. Append extra detail lines to <tt class="docutils literal"><span class="pre">event.extraDetail</span></tt>; these
+will be joined together with newlines before being output as part
+of the detailed error/failure message, after the traceback.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="beforeSummaryReport">
+<tt class="descname">beforeSummaryReport</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#beforeSummaryReport" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportSummaryEvent" title="nose2.events.ReportSummaryEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportSummaryEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to output or modify summary information
+before the summary lines are output.  To modify the categories of
+outcomes that will be reported in the summary, plugins can modify
+the <tt class="docutils literal"><span class="pre">event.reportCategories</span></tt> dictionary. Plugins can set, wrap or
+capture the output stream by reading or setting
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. If you want to print to the console, write to
+<tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity when
+printing to the console.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wasSuccessful">
+<tt class="descname">wasSuccessful</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#wasSuccessful" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ResultSuccessEvent" title="nose2.events.ResultSuccessEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ResultSuccessEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to mark a test run as successful or
+unsuccessful. If not plugin marks the run as successful, the
+default state is failure. To mark a run as successful, set
+<tt class="docutils literal"><span class="pre">event.success</span></tt> to True. Be ware that other plugins may set this
+attribute as well!</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afterSummaryReport">
+<tt class="descname">afterSummaryReport</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#afterSummaryReport" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.ReportSummaryEvent" title="nose2.events.ReportSummaryEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.ReportSummaryEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to output a report to the user after the
+summary line is output. If you want to print to the console, write
+to <tt class="docutils literal"><span class="pre">event.stream</span></tt>. Remember to respect self.session.verbosity
+when printing to the console.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="user-interaction-hooks">
+<h2>User Interaction Hooks<a class="headerlink" href="#user-interaction-hooks" title="Permalink to this headline">¶</a></h2>
+<p>These hooks are called when plugins want to interact with the user.</p>
+<dl class="function">
+<dt id="beforeInteraction">
+<tt class="descname">beforeInteraction</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#beforeInteraction" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.UserInteractionEvent" title="nose2.events.UserInteractionEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.UserInteractionEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>Plugins should respond to this hook by getting out of the way of
+user interaction, if the need to, or setting <tt class="docutils literal"><span class="pre">event.handled</span></tt> and
+returning False, if they need to but can&#8217;t.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afterInteraction">
+<tt class="descname">afterInteraction</tt><big>(</big><em>event</em><big>)</big><a class="headerlink" href="#afterInteraction" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.UserInteractionEvent" title="nose2.events.UserInteractionEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.UserInteractionEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can respond to this hook by going back to whatever they
+were doing before the user stepped in and started poking around.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Hook reference</a><ul>
+<li><a class="reference internal" href="#pre-registration-hooks">Pre-registration Hooks</a></li>
+<li><a class="reference internal" href="#standard-hooks">Standard Hooks</a></li>
+<li><a class="reference internal" href="#user-interaction-hooks">User Interaction Hooks</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="event_reference.html" title="previous chapter">Event reference</a></li>
+      <li>Next: <a href="session_reference.html" title="next chapter">Session reference</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/hook_reference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

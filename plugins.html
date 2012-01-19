@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Builtin Plugins &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="index.html" />
+    <link rel="next" title="Loader: Test discovery" href="plugins/discovery.html" />
+    <link rel="prev" title="Differences: nose2 vs nose vs unittest2" href="differences.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugins/discovery.html" title="Loader: Test discovery"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="differences.html" title="Differences: nose2 vs nose vs unittest2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="builtin-plugins">
+<h1>Builtin Plugins<a class="headerlink" href="#builtin-plugins" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins/discovery.html">Loader: Test discovery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/discovery.html#configuration-discovery">Configuration [discovery]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/discovery.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/functions.html">Loader: Test Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/functions.html#configuration-functions">Configuration [functions]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/functions.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/generators.html">Loader: Test Generators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/generators.html#configuration-generators">Configuration [generators]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/generators.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/parameters.html">Loader: Parameterized Tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/parameters.html#configuration-parameters">Configuration [parameters]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/parameters.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/testcases.html">Loader: Test Cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html#configuration-testcases">Configuration [testcases]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/doctests.html">Loader: Doctests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#configuration-doctest">Configuration [doctest]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/result.html">Reporting test results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/result.html#configuration-test-result">Configuration [test-result]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/result.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/buffer.html">Buffering test output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/buffer.html#configuration-output-buffer">Configuration [output-buffer]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/buffer.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/buffer.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/debugger.html">Dropping Into the Debugger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/debugger.html#configuration-debugger">Configuration [debugger]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/debugger.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/debugger.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/failfast.html">Stopping After the First Error or Failure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/failfast.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/failfast.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/logcapture.html">Capturing log messages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html#configuration-log-capture">Configuration [log-capture]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/outcomes.html">Mapping exceptions to test outcomes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html#configuration-outcomes">Configuration [outcomes]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/collect.html">Collecting tests without running them</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/collect.html#configuration-collect-only">Configuration [collect-only]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/collect.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/collect.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/testid.html">Using Test IDs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testid.html#configuration-testid">Configuration [testid]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testid.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testid.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/printhooks.html">Tracing hook execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#configuration-print-hooks">Configuration [print-hooks]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#plugin-class-reference">Plugin class reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#sample-output">Sample output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/prof.html">Profiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#configuration-profiler">Configuration [profiler]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="differences.html" title="previous chapter">Differences: nose2 vs nose vs unittest2</a></li>
+      <li>Next: <a href="plugins/discovery.html" title="next chapter">Loader: Test discovery</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/plugins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

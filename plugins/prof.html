@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Profiling &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Writing Plugins" href="../dev/writing_plugins.html" />
+    <link rel="prev" title="Tracing hook execution" href="printhooks.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dev/writing_plugins.html" title="Writing Plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="printhooks.html" title="Tracing hook execution"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.prof">
+<span id="profiling"></span><h1>Profiling<a class="headerlink" href="#module-nose2.plugins.prof" title="Permalink to this headline">¶</a></h1>
+<p>Profile test execution using hotshot.</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a> and replaces
+<tt class="docutils literal"><span class="pre">event.executeTests</span></tt> with <a class="reference external" href="http://docs.python.org/library/hotshot.html#hotshot.Profile.runcall" title="(in Python v2.7)"><tt class="xref py py-meth docutils literal"><span class="pre">hotshot.Profile.runcall()</span></tt></a>. It
+implements <a class="reference internal" href="../dev/hook_reference.html#beforeSummaryReport" title="beforeSummaryReport"><tt class="xref py py-func docutils literal"><span class="pre">beforeSummaryReport()</span></tt></a> to output profiling information
+before the final test summary time. Config file options <tt class="docutils literal"><span class="pre">filename</span></tt>,
+<tt class="docutils literal"><span class="pre">sort</span></tt> and <tt class="docutils literal"><span class="pre">restrict</span></tt> can be used to change where profiling
+information is saved and how it is presented.</p>
+<div class="section" id="configuration-profiler">
+<h2>Configuration [profiler]<a class="headerlink" href="#configuration-profiler" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-filename">
+<tt class="descname">filename</tt><a class="headerlink" href="#configvar-filename" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-restrict">
+<tt class="descname">restrict</tt><a class="headerlink" href="#configvar-restrict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">[]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-sort">
+<tt class="descname">sort</tt><a class="headerlink" href="#configvar-sort" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">cumulative</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[profiler]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">filename</span> <span class="o">=</span> 
+<span class="na">restrict</span> <span class="o">=</span> 
+<span class="na">sort</span> <span class="o">=</span> <span class="s">cumulative</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-P">
+<tt class="descname">-P</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--profile</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-P" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run tests under profiler</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.prof.Profiler">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.prof.</tt><tt class="descname">Profiler</tt><a class="reference internal" href="../_modules/nose2/plugins/prof.html#Profiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.prof.Profiler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Profile the test run</p>
+<dl class="method">
+<dt id="nose2.plugins.prof.Profiler.beforeSummaryReport">
+<tt class="descname">beforeSummaryReport</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/prof.html#Profiler.beforeSummaryReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.prof.Profiler.beforeSummaryReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output profiling results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.prof.Profiler.register">
+<tt class="descname">register</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/prof.html#Profiler.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.prof.Profiler.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don&#8217;t register if hotshot is not found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.prof.Profiler.startTestRun">
+<tt class="descname">startTestRun</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/prof.html#Profiler.startTestRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.prof.Profiler.startTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the profiler</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Profiling</a><ul>
+<li><a class="reference internal" href="#configuration-profiler">Configuration [profiler]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="printhooks.html" title="previous chapter">Tracing hook execution</a></li>
+      <li>Next: <a href="../dev/writing_plugins.html" title="next chapter">Writing Plugins</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/prof.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Loader: Test Generators &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Loader: Parameterized Tests" href="parameters.html" />
+    <link rel="prev" title="Loader: Test Functions" href="functions.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parameters.html" title="Loader: Parameterized Tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="functions.html" title="Loader: Test Functions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.loader.generators">
+<span id="loader-test-generators"></span><h1>Loader: Test Generators<a class="headerlink" href="#module-nose2.plugins.loader.generators" title="Permalink to this headline">¶</a></h1>
+<p>Load tests from generators.</p>
+<p>This plugin implements <tt class="xref py py-func docutils literal"><span class="pre">loadTestFromTestCase()</span></tt>,
+<a class="reference internal" href="../dev/hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a> and <tt class="xref py py-func docutils literal"><span class="pre">loadTestFromModule()</span></tt> to enable
+loading tests from generators.</p>
+<p>Generators may be functions or methods in test cases. In either case,
+they must yield a callable and arguments for that callable once for
+each test they generate. The callable and arguments may all be in one
+tuple, or the arguments may be grouped into a separate tuple:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test_gen</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To address a particular generated test via a command-line test name,
+append a colon (&#8216;:&#8217;) followed by the index, <em>starting from 1</em>, of the
+generated case you want to execute.</p>
+<div class="section" id="configuration-generators">
+<h2>Configuration [generators]<a class="headerlink" href="#configuration-generators" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[generators]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.loader.generators.Generators">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.loader.generators.</tt><tt class="descname">Generators</tt><a class="reference internal" href="../_modules/nose2/plugins/loader/generators.html#Generators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.generators.Generators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loader plugin that loads generator tests</p>
+<dl class="method">
+<dt id="nose2.plugins.loader.generators.Generators.getTestCaseNames">
+<tt class="descname">getTestCaseNames</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/generators.html#Generators.getTestCaseNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.generators.Generators.getTestCaseNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get generator test case names from test case class</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.generators.Generators.loadTestsFromModule">
+<tt class="descname">loadTestsFromModule</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/generators.html#Generators.loadTestsFromModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.generators.Generators.loadTestsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from generator functions in a module</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.generators.Generators.loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/generators.html#Generators.loadTestsFromName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.generators.Generators.loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from generator named on command line</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.generators.Generators.loadTestsFromTestCase">
+<tt class="descname">loadTestsFromTestCase</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/generators.html#Generators.loadTestsFromTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.generators.Generators.loadTestsFromTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load generator tests from test case</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Loader: Test Generators</a><ul>
+<li><a class="reference internal" href="#configuration-generators">Configuration [generators]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="functions.html" title="previous chapter">Loader: Test Functions</a></li>
+      <li>Next: <a href="parameters.html" title="next chapter">Loader: Parameterized Tests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/generators.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

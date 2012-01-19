@@ -1,0 +1,292 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.session &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.session</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">configparser</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">util</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Configuration session.</span>
+
+<span class="sd">    Encapsulates all configuration for a given test run.</span>
+
+<span class="sd">    .. attribute :: argparse</span>
+
+<span class="sd">       An instance of :class:`argparse.ArgumentParser`. Plugins can</span>
+<span class="sd">       use this directly to add arguments and argument groups, but</span>
+<span class="sd">       *must* do so in their ``__init__`` methods.</span>
+
+<span class="sd">    .. attribute :: pluginargs</span>
+
+<span class="sd">       The argparse argument group in which plugins (by default) place</span>
+<span class="sd">       their command-line arguments. Plugins can use this directly to</span>
+<span class="sd">       add arguments, but *must* do so in their ``__init__`` methods.</span>
+
+<span class="sd">    .. attribute :: hooks</span>
+
+<span class="sd">       The :class:`nose2.events.PluginInterface` instance contains</span>
+<span class="sd">       all available plugin methods and hooks.</span>
+
+<span class="sd">    .. attribute :: plugins</span>
+
+<span class="sd">       The list of loaded -- but not necessarily *active* -- plugins.</span>
+
+<span class="sd">    .. attribute :: verbosity</span>
+
+<span class="sd">       Current verbosity level. Default: 1.</span>
+
+<span class="sd">    .. attribute :: startDir</span>
+
+<span class="sd">       Start directory of test run. Test discovery starts</span>
+<span class="sd">       here. Default: current working directory.</span>
+
+<span class="sd">    .. attribute :: topLevelDir</span>
+
+<span class="sd">       Top-level directory of test run. This directory is added to</span>
+<span class="sd">       sys.path. Default: starting directory.</span>
+
+<span class="sd">    .. attribute :: libDirs</span>
+
+<span class="sd">       Names of code directories, relative to starting</span>
+<span class="sd">       directory. Default: [&#39;lib&#39;, &#39;src&#39;]. These directories are added</span>
+<span class="sd">       to sys.path and discovery if the exist.</span>
+
+<span class="sd">    .. attribute :: testFilePattern</span>
+
+<span class="sd">       Pattern used to discover test module files. Default: test*.py</span>
+
+<span class="sd">    .. attribute :: testMethodPrefix</span>
+
+<span class="sd">       Prefix used to discover test methods and functions: Default: &#39;test&#39;.</span>
+
+<span class="sd">    .. attribute :: unittest</span>
+
+<span class="sd">       The config section for nose2 itself.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">configClass</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s">&#39;nose2&#39;</span><span class="p">,</span> <span class="n">add_help</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span>
+            <span class="s">&#39;plugin arguments&#39;</span><span class="p">,</span>
+            <span class="s">&#39;Command-line arguments added by plugins:&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">PluginInterface</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startDir</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topLevelDir</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Session.get"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a config section.</span>
+
+<span class="sd">        :param section: The section name to retreive.</span>
+<span class="sd">        :returns: instance of self.configClass.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># FIXME cache these</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">configClass</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Session.loadConfigFiles"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.loadConfigFiles">[docs]</a>    <span class="k">def</span> <span class="nf">loadConfigFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">filenames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load config files.</span>
+
+<span class="sd">        :param filenames: Names of config files to load.</span>
+
+<span class="sd">        Loads all names files that exist into ``self.config``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Session.loadPlugins"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.loadPlugins">[docs]</a>    <span class="k">def</span> <span class="nf">loadPlugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load plugins.</span>
+
+<span class="sd">        :param modules: List of module names from which to load plugins.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># plugins set directly</span>
+        <span class="k">if</span> <span class="n">modules</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c"># plugins mentioned in config file(s)</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unittest</span>
+        <span class="n">more_plugins</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;plugins&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;excluded-plugins&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">all_</span>  <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">modules</span> <span class="o">+</span> <span class="n">more_plugins</span><span class="p">)</span> <span class="o">-</span> <span class="n">exclude</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Loading plugin modules: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">all_</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">all_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loadPluginsFromModule</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_name</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">pluginsLoaded</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">PluginsLoadedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Session.loadPluginsFromModule"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.loadPluginsFromModule">[docs]</a>    <span class="k">def</span> <span class="nf">loadPluginsFromModule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load plugins from a module.</span>
+
+<span class="sd">        :param module: A python module containing zero or more plugin</span>
+<span class="sd">                       classes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">avail</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+                    <span class="n">avail</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="n">avail</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Plugin is available: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+            <span class="n">plugin</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">preRegistrationMethods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Session.registerPlugin"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.registerPlugin">[docs]</a>    <span class="k">def</span> <span class="nf">registerPlugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a plugin.</span>
+
+<span class="sd">        :param plugin: A `nose2.events.Plugin` instance.</span>
+
+<span class="sd">        Register the plugin with all methods it implements.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Register active plugin </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plugin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Register method </span><span class="si">%s</span><span class="s"> for plugin </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Session.prepareSysPath"><a class="viewcode-back" href="../../dev/session_reference.html#nose2.session.Session.prepareSysPath">[docs]</a>    <span class="k">def</span> <span class="nf">prepareSysPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add code directories to sys.path&quot;&quot;&quot;</span>
+        <span class="n">tld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topLevelDir</span>
+        <span class="n">sd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">startDir</span>
+        <span class="k">if</span> <span class="n">tld</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">tld</span> <span class="o">=</span> <span class="n">sd</span>
+        <span class="n">tld</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tld</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">ensure_importable</span><span class="p">(</span><span class="n">tld</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">libdir</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">libDirs</span><span class="p">:</span>
+            <span class="n">libdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tld</span><span class="p">,</span> <span class="n">libdir</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">libdir</span><span class="p">):</span>
+                <span class="n">util</span><span class="o">.</span><span class="n">ensure_importable</span><span class="p">(</span><span class="n">libdir</span><span class="p">)</span>
+
+    <span class="c"># convenience properties</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">libDirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unittest</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;code-directories&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;lib&#39;</span><span class="p">,</span> <span class="s">&#39;src&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">testFilePattern</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unittest</span><span class="o">.</span><span class="n">as_str</span><span class="p">(</span><span class="s">&#39;test-file-pattern&#39;</span><span class="p">,</span> <span class="s">&#39;test*.py&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">testMethodPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unittest</span><span class="o">.</span><span class="n">as_str</span><span class="p">(</span><span class="s">&#39;test-method-prefix&#39;</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unittest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;unittest&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

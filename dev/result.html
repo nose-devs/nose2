@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.result &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Internals" href="internals.html" />
+    <link rel="next" title="nose2.runner" href="runner.html" />
+    <link rel="prev" title="nose2.loader" href="loader.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="runner.html" title="nose2.runner"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="loader.html" title="nose2.loader"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="internals.html" accesskey="U">Internals</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.result">
+<span id="nose2-result"></span><h1>nose2.result<a class="headerlink" href="#module-nose2.result" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="nose2.result.PluggableTestResult">
+<em class="property">class </em><tt class="descclassname">nose2.result.</tt><tt class="descname">PluggableTestResult</tt><big>(</big><em>session</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result that defers to plugins.</p>
+<p>All test outcome recording and reporting is deferred to plugins,
+which are expected to implement startTest, stopTest, testOutcome,
+and wasSuccessful.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>session</strong> &#8211; Test run session.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="nose2.result.PluggableTestResult.shouldStop">
+<tt class="descname">shouldStop</tt><a class="headerlink" href="#nose2.result.PluggableTestResult.shouldStop" title="Permalink to this definition">¶</a></dt>
+<dd><p>When True, test run should stop before running another test.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addError">
+<tt class="descname">addError</tt><big>(</big><em>test</em>, <em>err</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case resulted in error.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addExpectedFailure">
+<tt class="descname">addExpectedFailure</tt><big>(</big><em>test</em>, <em>err</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addExpectedFailure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addExpectedFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case resulted in expected failure.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addFailure">
+<tt class="descname">addFailure</tt><big>(</big><em>test</em>, <em>err</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addFailure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case resulted in failure.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addSkip">
+<tt class="descname">addSkip</tt><big>(</big><em>test</em>, <em>reason</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addSkip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addSkip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case was skipped.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addSuccess">
+<tt class="descname">addSuccess</tt><big>(</big><em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addSuccess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addSuccess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case resulted in success.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.addUnexpectedSuccess">
+<tt class="descname">addUnexpectedSuccess</tt><big>(</big><em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.addUnexpectedSuccess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.addUnexpectedSuccess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test case resulted in unexpected success.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.startTest">
+<tt class="descname">startTest</tt><big>(</big><em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.startTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.startTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a test case.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#startTest" title="startTest"><tt class="xref py py-func docutils literal"><span class="pre">startTest()</span></tt></a> hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop test run.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#resultStop" title="resultStop"><tt class="xref py py-func docutils literal"><span class="pre">resultStop()</span></tt></a> hook, sets <tt class="docutils literal"><span class="pre">self.shouldStop</span></tt> to
+<tt class="docutils literal"><span class="pre">event.shouldStop</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.stopTest">
+<tt class="descname">stopTest</tt><big>(</big><em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.stopTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.stopTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a test case.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a> hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.result.PluggableTestResult.wasSuccessful">
+<tt class="descname">wasSuccessful</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/result.html#PluggableTestResult.wasSuccessful"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.result.PluggableTestResult.wasSuccessful" title="Permalink to this definition">¶</a></dt>
+<dd><p>Was test run successful?</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#wasSuccessful" title="wasSuccessful"><tt class="xref py py-func docutils literal"><span class="pre">wasSuccessful()</span></tt></a> hook, returns <tt class="docutils literal"><span class="pre">event.success</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="internals.html">Internals</a><ul>
+      <li>Previous: <a href="loader.html" title="previous chapter">nose2.loader</a></li>
+      <li>Next: <a href="runner.html" title="next chapter">nose2.runner</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/result.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

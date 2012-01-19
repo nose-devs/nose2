@@ -1,0 +1,178 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Loader: Test Functions &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Loader: Test Generators" href="generators.html" />
+    <link rel="prev" title="Loader: Test discovery" href="discovery.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="generators.html" title="Loader: Test Generators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="discovery.html" title="Loader: Test discovery"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.loader.functions">
+<span id="loader-test-functions"></span><h1>Loader: Test Functions<a class="headerlink" href="#module-nose2.plugins.loader.functions" title="Permalink to this headline">¶</a></h1>
+<p>Load tests from test functions in modules.</p>
+<p>This plugin responds to <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromModule" title="loadTestsFromModule"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromModule()</span></tt></a> by adding test
+cases for all test functions in the module to <tt class="docutils literal"><span class="pre">event.extraTests</span></tt>. It
+uses <tt class="docutils literal"><span class="pre">session.testMethodPrefix</span></tt> to find test functions.</p>
+<p>Functions that are generators, have param lists, or take arguments
+are not collected.</p>
+<p>This plugin also implements <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a> to enable loading
+tests from dotted function names passed on the command line.</p>
+<div class="section" id="configuration-functions">
+<h2>Configuration [functions]<a class="headerlink" href="#configuration-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[functions]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.loader.functions.Functions">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.loader.functions.</tt><tt class="descname">Functions</tt><a class="reference internal" href="../_modules/nose2/plugins/loader/functions.html#Functions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.functions.Functions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loader plugin that loads test functions</p>
+<dl class="method">
+<dt id="nose2.plugins.loader.functions.Functions.loadTestsFromModule">
+<tt class="descname">loadTestsFromModule</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/functions.html#Functions.loadTestsFromModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.functions.Functions.loadTestsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load test functions from event.module</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.functions.Functions.loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/functions.html#Functions.loadTestsFromName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.functions.Functions.loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load test if event.name is the name of a test function</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Loader: Test Functions</a><ul>
+<li><a class="reference internal" href="#configuration-functions">Configuration [functions]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="discovery.html" title="previous chapter">Loader: Test discovery</a></li>
+      <li>Next: <a href="generators.html" title="next chapter">Loader: Test Generators</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/functions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

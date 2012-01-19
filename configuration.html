@@ -1,0 +1,249 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuring nose2 &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="index.html" />
+    <link rel="next" title="Differences: nose2 vs nose vs unittest2" href="differences.html" />
+    <link rel="prev" title="Using nose2" href="usage.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="differences.html" title="Differences: nose2 vs nose vs unittest2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Using nose2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuring-nose2">
+<h1>Configuring nose2<a class="headerlink" href="#configuring-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration-files">
+<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>Most configuration of nose2 is done via config files. These are
+standard, .ini-style config files, with sections marked off by
+brackets (&#8220;<tt class="docutils literal"><span class="pre">[unittest]</span></tt>&#8221;) and <tt class="docutils literal"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">value</span></tt> pairs within those sections.</p>
+<p>Two command line options, <a class="reference internal" href="#cmdoption-c"><em class="xref std std-option">-c</em></a> and <a class="reference internal" href="#cmdoption--no-user-config"><em class="xref std std-option">--no-user-config</em></a>
+may be used to determine which config files are loaded.</p>
+<dl class="cmdoption">
+<dt id="cmdoption-c">
+<tt class="descname">-c</tt><tt class="descclassname"> CONFIG</tt><tt class="descclassname">, </tt><tt class="descname">--config</tt><tt class="descclassname"> CONFIG</tt><a class="headerlink" href="#cmdoption-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config files to load. Default behavior is to look for
+<tt class="docutils literal"><span class="pre">unittest.cfg</span></tt> and <tt class="docutils literal"><span class="pre">nose2.cfg</span></tt> in the start directory, as well
+as any user config files (unless <a class="reference internal" href="#cmdoption--no-user-config"><em class="xref std std-option">--no-user-config</em></a> is
+selected).</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption--no-user-config">
+<tt class="descname">--no-user-config</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption--no-user-config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not load user config files. If not specified, in addition to the
+standard config files and any specified with <a class="reference internal" href="#cmdoption-c"><em class="xref std std-option">-c</em></a>, nose2
+will look for <tt class="docutils literal"><span class="pre">.unittest.cfg</span></tt> and <tt class="docutils literal"><span class="pre">.nose2.cfg</span></tt> in the user&#8217;s
+$HOME directory.</p>
+</dd></dl>
+
+<div class="section" id="configuring-test-discovery">
+<h3>Configuring Test Discovery<a class="headerlink" href="#configuring-test-discovery" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">[unittest]</span></tt> section of nose2 config files is used to configure
+nose2 itself. The following options are available to configure test
+discovery:</p>
+<dl class="configvar">
+<dt id="configvar-code-directories">
+<tt class="descname">code-directories</tt><a class="headerlink" href="#configvar-code-directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>This option configures nose2 to add the named directories to
+sys.path and the discovery path. Use this if your project has
+code in a location other than the top level of the project, or the
+directories <tt class="docutils literal"><span class="pre">lib</span></tt> or <tt class="docutils literal"><span class="pre">src</span></tt>. The value here may be a list: put each
+directory on its own line in the config file.</p>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-test-file-pattern">
+<tt class="descname">test-file-pattern</tt><a class="headerlink" href="#configvar-test-file-pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>This option configures how nose detects test modules. It is a file
+glob.</p>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-test-method-prefix">
+<tt class="descname">test-method-prefix</tt><a class="headerlink" href="#configvar-test-method-prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This option configures how nose detects test functions and
+methods. The prefix set here will be matched (via simple string
+matching) against the start of the name of each method in test
+cases and each function in test modules.</p>
+</dd></dl>
+
+<p>Examples:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[unittest]</span>
+<span class="na">code-directories</span> <span class="o">=</span> <span class="s">source</span>
+<span class="s">                   more_source</span>
+<span class="na">test-file-pattern</span> <span class="o">=</span> <span class="s">*_test.py</span>
+<span class="na">test-method-prefix</span> <span class="o">=</span> <span class="s">t</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifying-plugins-to-load">
+<h3>Specifying Plugins to Load<a class="headerlink" href="#specifying-plugins-to-load" title="Permalink to this headline">¶</a></h3>
+<p>To avoid loading any plugins, use the <a class="reference internal" href="#cmdoption--no-plugins"><em class="xref std std-option">--no-plugins</em></a>
+option. Beware, though: nose2 does all test discovery and loading via
+plugins, so unless you are patching in a custom test loader and
+runner, when run with <a class="reference internal" href="#cmdoption--no-plugins"><em class="xref std std-option">--no-plugins</em></a>, nose2 will do nothing.</p>
+<dl class="cmdoption">
+<dt id="cmdoption--no-plugins">
+<tt class="descname">--no-plugins</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption--no-plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not load any plugins. <em>This kills the nose2.</em></p>
+</dd></dl>
+
+<p>To specify plugins to load beyond the builtin plugins automatically
+loaded, add a <a class="reference internal" href="#configvar-plugins"><tt class="xref std std-config docutils literal"><span class="pre">plugins</span></tt></a> entry under the <tt class="docutils literal"><span class="pre">[unittest]</span></tt>
+section in a config file.</p>
+<dl class="configvar">
+<dt id="configvar-plugins">
+<tt class="descname">plugins</tt><a class="headerlink" href="#configvar-plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of plugins to load. Put one plugin module on each line.</p>
+</dd></dl>
+
+<p>To exclude some plugins that would otherwise be loaded, add an
+<a class="reference internal" href="#configvar-exclude-plugins"><tt class="xref std std-config docutils literal"><span class="pre">exclude-plugins</span></tt></a> entry under the <tt class="docutils literal"><span class="pre">[unittest]</span></tt>
+section in a config file.</p>
+<dl class="configvar">
+<dt id="configvar-exclude-plugins">
+<tt class="descname">exclude-plugins</tt><a class="headerlink" href="#configvar-exclude-plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of plugins to exclude. Put one plugin module on each line.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It bears repeating that in both <a class="reference internal" href="#configvar-plugins"><tt class="xref std std-config docutils literal"><span class="pre">plugins</span></tt></a> and
+<a class="reference internal" href="#configvar-exclude-plugins"><tt class="xref std std-config docutils literal"><span class="pre">exclude-plugins</span></tt></a> entries, you specify the plugin <em>module</em>,
+not the plugin <em>class</em>.</p>
+</div>
+<p>Examples:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[unittest]</span>
+<span class="na">plugins</span> <span class="o">=</span> <span class="s">myproject.plugins.frobulate</span>
+<span class="s">          otherproject.contrib.plugins.derper</span>
+
+<span class="na">exclude-plugins</span> <span class="o">=</span> <span class="s">nose2.plugins.loader.functions</span>
+<span class="s">                  nose2.plugins.outcomes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="configuring-plugins">
+<h2>Configuring plugins<a class="headerlink" href="#configuring-plugins" title="Permalink to this headline">¶</a></h2>
+<p>Most plugins specify a config file section that may be used to
+configure the plugin. If nothing else, any plugin that specifies a
+config file section can be set to automatically register by including
+<tt class="docutils literal"><span class="pre">always-on</span> <span class="pre">=</span> <span class="pre">True</span></tt> in its config:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[my-plugin]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">True</span>
+</pre></div>
+</div>
+<p>Plugins may accept any number of other config values, which may be
+booleans, strings, integers or lists. A polite plugin will document
+these options somewhere. Plugins that want to make use of nose2&#8217;s
+<a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> extension as detailed in <a class="reference internal" href="dev/documenting_plugins.html"><em>Documenting plugins</em></a>
+<em>must</em> extract all of their config values in their <tt class="docutils literal"><span class="pre">__init__</span></tt>
+methods.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuring nose2</a><ul>
+<li><a class="reference internal" href="#configuration-files">Configuration Files</a><ul>
+<li><a class="reference internal" href="#configuring-test-discovery">Configuring Test Discovery</a></li>
+<li><a class="reference internal" href="#specifying-plugins-to-load">Specifying Plugins to Load</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-plugins">Configuring plugins</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Using nose2</a></li>
+      <li>Next: <a href="differences.html" title="next chapter">Differences: nose2 vs nose vs unittest2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

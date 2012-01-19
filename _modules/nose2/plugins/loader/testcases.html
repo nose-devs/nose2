@@ -1,0 +1,189 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.loader.testcases &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.loader.testcases</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Load tests from :class:`unittest.TestCase` subclasses.</span>
+
+<span class="sd">This plugin implements :func:`loadTestsFromName` and</span>
+<span class="sd">:func:`loadTestsFromModule` to load tests from</span>
+<span class="sd">:class:`unittest.TestCase` subclasses found in modules or named on the</span>
+<span class="sd">command line.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Adapted from unittest2/loader.py from the unittest2 plugins branch.</span>
+<span class="c"># This module contains some code copied from unittest2/loader.py and other</span>
+<span class="c"># code developed in reference to that module and others within unittest2.</span>
+<span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
+<span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">util</span>
+
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="TestCaseLoader"><a class="viewcode-back" href="../../../../plugins/testcases.html#nose2.plugins.loader.testcases.TestCaseLoader">[docs]</a><span class="k">class</span> <span class="nc">TestCaseLoader</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loader plugin that loads from test cases&quot;&quot;&quot;</span>
+    <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;testcases&#39;</span>
+
+<div class="viewcode-block" id="TestCaseLoader.loadTestsFromModule"><a class="viewcode-back" href="../../../../plugins/testcases.html#nose2.plugins.loader.testcases.TestCaseLoader.loadTestsFromModule">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromModule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load tests in :class:`unittest.TestCase` subclasses&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loadTestsFromTestCase</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="TestCaseLoader.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/testcases.html#nose2.plugins.loader.testcases.TestCaseLoader.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load tests from event.name if it names a test case/method&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+            <span class="c"># name is a test case class</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loadTestsFromTestCase</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+              <span class="n">util</span><span class="o">.</span><span class="n">isgenerator</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+              <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">)):</span>
+            <span class="c"># name is a single test method</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_loadTestsFromTestCase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">):</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">LoadFromTestCaseEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">loadTestsFromTestCase</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="n">loaded_suite</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">suiteClass</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getTestCaseNames</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">names</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="s">&#39;runTest&#39;</span><span class="p">):</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;runTest&#39;</span><span class="p">]</span>
+            <span class="c"># FIXME return failure test case if name not in testcase class</span>
+            <span class="n">loaded_suite</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">suiteClass</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">names</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">extraTests</span><span class="p">:</span>
+            <span class="n">loaded_suite</span><span class="o">.</span><span class="n">addTests</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">extraTests</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loaded_suite</span>
+
+    <span class="k">def</span> <span class="nf">_getTestCaseNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">):</span>
+        <span class="n">excluded</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">isTestMethod</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="o">=</span><span class="n">testCaseClass</span><span class="p">,</span>
+                         <span class="n">excluded</span><span class="o">=</span><span class="n">excluded</span><span class="p">):</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">evt</span><span class="o">.</span><span class="n">testMethodPrefix</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testMethodPrefix</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">attrname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">attrname</span><span class="p">),</span> <span class="s">&#39;__call__&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">attrname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded</span>
+            <span class="p">)</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">GetTestCaseNamesEvent</span><span class="p">(</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">,</span> <span class="n">isTestMethod</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">getTestCaseNames</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="n">test_names</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">excluded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">excludedNames</span><span class="p">)</span>
+            <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="n">isTestMethod</span><span class="p">(</span><span class="n">entry</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">extraNames</span><span class="p">:</span>
+            <span class="n">test_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">extraNames</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">sortTestMethodsUsing</span><span class="p">:</span>
+            <span class="n">test_names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">sortTestMethodsUsing</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_names</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

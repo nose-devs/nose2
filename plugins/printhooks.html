@@ -1,0 +1,245 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tracing hook execution &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Profiling" href="prof.html" />
+    <link rel="prev" title="Using Test IDs" href="testid.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="prof.html" title="Profiling"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="testid.html" title="Using Test IDs"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.printhooks">
+<span id="tracing-hook-execution"></span><h1>Tracing hook execution<a class="headerlink" href="#module-nose2.plugins.printhooks" title="Permalink to this headline">¶</a></h1>
+<p>This plugin is primarily useful for plugin authors who want to debug
+their plugins.</p>
+<p>It prints each hook that is called to stderr, along with details of
+the event that was passed to the hook.</p>
+<p>To do that, this plugin overrides <a class="reference internal" href="../dev/plugin_class_reference.html#nose2.events.Plugin.register" title="nose2.events.Plugin.register"><tt class="xref py py-meth docutils literal"><span class="pre">nose2.events.Plugin.register()</span></tt></a>
+and, after registration, replaces all existing
+<a class="reference internal" href="../dev/plugin_class_reference.html#nose2.events.Hook" title="nose2.events.Hook"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.Hook</span></tt></a> instances in <tt class="docutils literal"><span class="pre">session.hooks</span></tt> with
+instances of a Hook subclass that prints information about each call.</p>
+<div class="section" id="configuration-print-hooks">
+<h2>Configuration [print-hooks]<a class="headerlink" href="#configuration-print-hooks" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[print-hooks]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption--print-hooks">
+<tt class="descname">--print-hooks</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption--print-hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print names of hooks in order of execution</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.printhooks.PrintHooks">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.printhooks.</tt><tt class="descname">PrintHooks</tt><a class="reference internal" href="../_modules/nose2/plugins/printhooks.html#PrintHooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.printhooks.PrintHooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print hooks as they are called</p>
+<dl class="method">
+<dt id="nose2.plugins.printhooks.PrintHooks.register">
+<tt class="descname">register</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/printhooks.html#PrintHooks.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.printhooks.PrintHooks.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to inject noisy hook instances.</p>
+<p>Replaces Hook instances in <tt class="docutils literal"><span class="pre">self.session.hooks.hooks</span></tt> with
+noisier objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sample-output">
+<h2>Sample output<a class="headerlink" href="#sample-output" title="Permalink to this headline">¶</a></h2>
+<p>PrintHooks output for a test run that discovers one standard TestCase
+test in a python module.</p>
+<p>Hooks that appear indented are called from within other hooks.</p>
+<div class="highlight-python"><pre>handleArgs: CommandLineArgsEvent(handled=False, args=Namespace(collect_only=None, config=['unittest.cfg', 'nose2.cfg'], debugger=None, fail_fast=None, load_plugins=True, log_capture=None, output_buffer=None, print_hooks=None, start_dir='.', testNames=[], top_level_directory=None, user_config=True, verbose=0))
+
+createTests: CreateTestsEvent(loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testNames=[], module=&lt;module '__main__' from '/home/jpellerin/code/nose2-gh/nose2/__main__.py'&gt;)
+
+loadTestsFromNames: LoadFromNames(names=[], module=None)
+
+  handleFile: HandleFileEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, name='tests.py', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py', topLevelDirectory='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test')
+
+  matchPath: MatchPathEvent(handled=False, name='tests.py', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py')
+
+  loadTestsFromModule: LoadFromModuleEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, module=&lt;module 'tests' from '/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.pyc'&gt;, extraTests=[])
+
+    loadTestsFromTestCase: LoadFromTestCaseEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testCase=&lt;class 'tests.Test'&gt;, extraTests=[])
+
+    getTestCaseNames: GetTestCaseNamesEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testCase=&lt;class 'tests.Test'&gt;, testMethodPrefix=None, extraNames=[], excludedNames=[], isTestMethod=&lt;function isTestMethod at 0x18fb668&gt;)
+
+  handleFile: HandleFileEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, name='tests.pyc', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.pyc', pattern='test*.py', topLevelDirectory='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test')
+
+runnerCreated: RunnerCreatedEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;)
+
+resultCreated: ResultCreatedEvent(handled=False, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;)
+
+startTestRun: StartTestRunEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;, suite=&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;tests.Test testMethod=test&gt;]&gt;]&gt;]&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, startTime=1326751525.980829, executeTests=&lt;function &lt;lambda&gt; at 0x18fbaa0&gt;)
+
+startTest: StartTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, startTime=1326751525.9809561)
+
+  reportStartTest: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.StartTestEvent object at 0x1934690&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;)
+
+  describeTest: DescribeTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, description=None)
+test (tests.Test) ...
+testOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
+
+  setTestOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
+
+  reportSuccess: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.TestOutcomeEvent object at 0x1934690&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;)
+ok
+
+stopTest: StopTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, stopTime=1326751525.9812191)
+
+stopTestRun: StopTestRunEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, stopTime=1326751525.9812679, timeTaken=0.00043892860412597656)
+
+
+  beforeErrorList: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
+----------------------------------------------------------------------
+
+  beforeSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
+Ran 1 test in 0.000s
+
+
+  wasSuccessful: ResultSuccessEvent(handled=False, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, success=False)
+OK
+
+  afterSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tracing hook execution</a><ul>
+<li><a class="reference internal" href="#configuration-print-hooks">Configuration [print-hooks]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+<li><a class="reference internal" href="#sample-output">Sample output</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="testid.html" title="previous chapter">Using Test IDs</a></li>
+      <li>Next: <a href="prof.html" title="next chapter">Profiling</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/printhooks.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

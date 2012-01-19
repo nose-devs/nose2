@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using Test IDs &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Tracing hook execution" href="printhooks.html" />
+    <link rel="prev" title="Collecting tests without running them" href="collect.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="printhooks.html" title="Tracing hook execution"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="collect.html" title="Collecting tests without running them"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.testid">
+<span id="using-test-ids"></span><h1>Using Test IDs<a class="headerlink" href="#module-nose2.plugins.testid" title="Permalink to this headline">¶</a></h1>
+<p>Allow easy test selection with test ids.</p>
+<p>Assigns (and, in verbose mode, prints) a sequential test id for each
+test executed. Ids can be fed back in as test names, and this plugin
+will translate them back to full test names. Saves typing!</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#reportStartTest" title="reportStartTest"><tt class="xref py py-func docutils literal"><span class="pre">reportStartTest()</span></tt></a>,
+<a class="reference internal" href="../dev/hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromNames" title="loadTestsFromNames"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromNames()</span></tt></a> and
+<a class="reference internal" href="../dev/hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a>.</p>
+<div class="section" id="configuration-testid">
+<h2>Configuration [testid]<a class="headerlink" href="#configuration-testid" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-id-file">
+<tt class="descname">id-file</tt><a class="headerlink" href="#configvar-id-file" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">.noseids</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[testid]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">id-file</span> <span class="o">=</span> <span class="s">.noseids</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-I">
+<tt class="descname">-I</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--with-id</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-I" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add test ids to output</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.testid.TestId">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.testid.</tt><tt class="descname">TestId</tt><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow easy test select with ids</p>
+<dl class="attribute">
+<dt id="nose2.plugins.testid.TestId.idpat">
+<tt class="descname">idpat</tt><em class="property"> = &lt;_sre.SRE_Pattern object at 0x3e1ff30&gt;</em><a class="headerlink" href="#nose2.plugins.testid.TestId.idpat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.loadIds">
+<tt class="descname">loadIds</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.loadIds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.loadIds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load previously pickled &#8216;ids&#8217; and &#8216;tests&#8217; attributes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.loadTestsFromName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from a name that is an id</p>
+<p>If the name is a number, it might be an ID assigned by us. If we can
+find a test to which we have assigned that ID, event.name is changed to
+the test&#8217;s real ID. In this way, tests can be referred to via sequential
+numbers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.loadTestsFromNames">
+<tt class="descname">loadTestsFromNames</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.loadTestsFromNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.loadTestsFromNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate test ids into test names</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.nextId">
+<tt class="descname">nextId</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.nextId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.nextId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increment ID and return it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.reportStartTest">
+<tt class="descname">reportStartTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.reportStartTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.reportStartTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Record and possibly output test id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.testid.TestId.stopTestRun">
+<tt class="descname">stopTestRun</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/testid.html#TestId.stopTestRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.testid.TestId.stopTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write testids file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Test IDs</a><ul>
+<li><a class="reference internal" href="#configuration-testid">Configuration [testid]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="collect.html" title="previous chapter">Collecting tests without running them</a></li>
+      <li>Next: <a href="printhooks.html" title="next chapter">Tracing hook execution</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/testid.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

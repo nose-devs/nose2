@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.result &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.result</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span>
+
+
+<span class="n">ERROR</span> <span class="o">=</span> <span class="s">&#39;error&#39;</span>
+<span class="n">FAIL</span> <span class="o">=</span> <span class="s">&#39;failed&#39;</span>
+<span class="n">SKIP</span> <span class="o">=</span> <span class="s">&#39;skipped&#39;</span>
+<span class="n">PASS</span> <span class="o">=</span> <span class="s">&#39;passed&#39;</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="PluggableTestResult"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult">[docs]</a><span class="k">class</span> <span class="nc">PluggableTestResult</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test result that defers to plugins.</span>
+
+<span class="sd">    All test outcome recording and reporting is deferred to plugins,</span>
+<span class="sd">    which are expected to implement startTest, stopTest, testOutcome,</span>
+<span class="sd">    and wasSuccessful.</span>
+
+<span class="sd">    :param session: Test run session.</span>
+
+<span class="sd">    .. attribute :: shouldStop</span>
+
+<span class="sd">       When True, test run should stop before running another test.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shouldStop</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="PluggableTestResult.startTest"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.startTest">[docs]</a>    <span class="k">def</span> <span class="nf">startTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start a test case.</span>
+
+<span class="sd">        Fires :func:`startTest` hook.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">StartTestEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">startTest</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.stopTest"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.stopTest">[docs]</a>    <span class="k">def</span> <span class="nf">stopTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop a test case.</span>
+
+<span class="sd">        Fires :func:`stopTest` hook.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">StopTestEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">stopTest</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addError"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addError">[docs]</a>    <span class="k">def</span> <span class="nf">addError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case resulted in error.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addFailure"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addFailure">[docs]</a>    <span class="k">def</span> <span class="nf">addFailure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case resulted in failure.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addSuccess"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addSuccess">[docs]</a>    <span class="k">def</span> <span class="nf">addSuccess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case resulted in success.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">PASS</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addSkip"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addSkip">[docs]</a>    <span class="k">def</span> <span class="nf">addSkip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case was skipped.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">SKIP</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addExpectedFailure"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addExpectedFailure">[docs]</a>    <span class="k">def</span> <span class="nf">addExpectedFailure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case resulted in expected failure.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">FAIL</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.addUnexpectedSuccess"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.addUnexpectedSuccess">[docs]</a>    <span class="k">def</span> <span class="nf">addUnexpectedSuccess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test case resulted in unexpected success.</span>
+
+<span class="sd">        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">TestOutcomeEvent</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">PASS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setTestOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">testOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.wasSuccessful"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.wasSuccessful">[docs]</a>    <span class="k">def</span> <span class="nf">wasSuccessful</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Was test run successful?</span>
+
+<span class="sd">        Fires :func:`wasSuccessful` hook, returns ``event.success``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># assume failure, plugins must affirmatively declare success</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_success</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">ResultSuccessEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_success</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">success</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_success</span>
+</div>
+<div class="viewcode-block" id="PluggableTestResult.stop"><a class="viewcode-back" href="../../dev/result.html#nose2.result.PluggableTestResult.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop test run.</span>
+
+<span class="sd">        Fires :func:`resultStop` hook, sets ``self.shouldStop`` to</span>
+<span class="sd">        ``event.shouldStop``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">ResultStopEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">resultStop</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shouldStop</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">shouldStop</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;</span><span class="si">%s</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

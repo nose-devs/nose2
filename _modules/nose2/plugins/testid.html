@@ -1,0 +1,206 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.testid &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.testid</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Allow easy test selection with test ids.</span>
+
+<span class="sd">Assigns (and, in verbose mode, prints) a sequential test id for each</span>
+<span class="sd">test executed. Ids can be fed back in as test names, and this plugin</span>
+<span class="sd">will translate them back to full test names. Saves typing!</span>
+
+<span class="sd">This plugin implements :func:`reportStartTest`,</span>
+<span class="sd">:func:`loadTestsFromName`, :func:`loadTestsFromNames` and</span>
+<span class="sd">:func:`stopTest`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">nose2.events</span> <span class="kn">import</span> <span class="n">Plugin</span>
+
+
+<div class="viewcode-block" id="TestId"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId">[docs]</a><span class="k">class</span> <span class="nc">TestId</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Allow easy test select with ids&quot;&quot;&quot;</span>
+
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;testid&#39;</span>
+    <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;I&#39;</span><span class="p">,</span> <span class="s">&#39;with-id&#39;</span><span class="p">,</span> <span class="s">&#39;Add test ids to output&#39;</span><span class="p">)</span>
+    <span class="n">idpat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;(\d+)&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_str</span><span class="p">(</span><span class="s">&#39;id-file&#39;</span><span class="p">,</span> <span class="s">&#39;.noseids&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idfile</span><span class="p">):</span>
+            <span class="c"># FIXME expand-user?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">idfile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="TestId.nextId"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.nextId">[docs]</a>    <span class="k">def</span> <span class="nf">nextId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Increment ID and return it.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+</div>
+<div class="viewcode-block" id="TestId.reportStartTest"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.reportStartTest">[docs]</a>    <span class="k">def</span> <span class="nf">reportStartTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Record and possibly output test id&quot;&quot;&quot;</span>
+        <span class="n">testid</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">testEvent</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">testid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextId</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">testid</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">[</span><span class="n">testid</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">id_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">[</span><span class="n">testid</span><span class="p">]</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;testid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;#</span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="n">id_</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TestId.loadTestsFromName"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load tests from a name that is an id</span>
+
+<span class="sd">        If the name is a number, it might be an ID assigned by us. If we can</span>
+<span class="sd">        find a test to which we have assigned that ID, event.name is changed to</span>
+<span class="sd">        the test&#39;s real ID. In this way, tests can be referred to via sequential</span>
+<span class="sd">        numbers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">testid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testNameFromId</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">testid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">testid</span>
+</div>
+<div class="viewcode-block" id="TestId.loadTestsFromNames"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.loadTestsFromNames">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Translate test ids into test names&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">names</span><span class="p">[:]):</span>
+            <span class="n">testid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testNameFromId</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">testid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">testid</span>
+</div>
+<div class="viewcode-block" id="TestId.stopTestRun"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.stopTestRun">[docs]</a>    <span class="k">def</span> <span class="nf">stopTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write testids file&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idfile</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span><span class="s">&#39;ids&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">,</span> <span class="s">&#39;tests&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">},</span> <span class="n">fh</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TestId.loadIds"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.loadIds">[docs]</a>    <span class="k">def</span> <span class="nf">loadIds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load previously pickled &#39;ids&#39; and &#39;tests&#39; attributes.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idfile</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">EnvironmentError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="s">&#39;ids&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;ids&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s">&#39;tests&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;tests&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="bp">True</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_testNameFromId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to translate one of our IDs to real test ID.&quot;&quot;&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">idpat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">id_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadIds</span><span class="p">()</span>
+        <span class="c"># Translate to test&#39;s real ID</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

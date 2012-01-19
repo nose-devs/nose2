@@ -1,0 +1,209 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dropping Into the Debugger &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
+    <link rel="next" title="Stopping After the First Error or Failure" href="failfast.html" />
+    <link rel="prev" title="Buffering test output" href="buffer.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="failfast.html" title="Stopping After the First Error or Failure"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="buffer.html" title="Buffering test output"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.debugger">
+<span id="dropping-into-the-debugger"></span><h1>Dropping Into the Debugger<a class="headerlink" href="#module-nose2.plugins.debugger" title="Permalink to this headline">¶</a></h1>
+<p>Start a <a class="reference external" href="http://docs.python.org/library/pdb.html#pdb.post_mortem" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">pdb.post_mortem()</span></tt></a> on errors and failures.</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> and will drop into pdb
+whenever it sees a test outcome that includes exc_info.</p>
+<p>It fires <a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a> before launching pdb and
+<a class="reference internal" href="../dev/hook_reference.html#afterInteraction" title="afterInteraction"><tt class="xref py py-func docutils literal"><span class="pre">afterInteraction()</span></tt></a> after. Other plugins may implement
+<a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a> to return False and set event.handled to
+prevent this plugin from launching pdb.</p>
+<div class="section" id="configuration-debugger">
+<h2>Configuration [debugger]<a class="headerlink" href="#configuration-debugger" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-errors-only">
+<tt class="descname">errors-only</tt><a class="headerlink" href="#configvar-errors-only" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[debugger]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">errors-only</span> <span class="o">=</span> <span class="s">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-D">
+<tt class="descname">-D</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--debugger</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enter pdb on test fail or error</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.debugger.Debugger">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.debugger.</tt><tt class="descname">Debugger</tt><a class="reference internal" href="../_modules/nose2/plugins/debugger.html#Debugger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.debugger.Debugger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enter pdb on test error or failure</p>
+<dl class="attribute">
+<dt id="nose2.plugins.debugger.Debugger.pdb">
+<tt class="descname">pdb</tt><a class="headerlink" href="#nose2.plugins.debugger.Debugger.pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>For ease of mocking and using different pdb implementations, pdb
+is aliased as a class attribute.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">pdb</tt><em class="property"> = &lt;module 'pdb' from '/opt/lib/python2.7/pdb.pyc'&gt;</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.debugger.Debugger.testOutcome">
+<tt class="descname">testOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/debugger.html#Debugger.testOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.debugger.Debugger.testOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop into pdb on unexpected errors or failures</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dropping Into the Debugger</a><ul>
+<li><a class="reference internal" href="#configuration-debugger">Configuration [debugger]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Builtin Plugins</a><ul>
+      <li>Previous: <a href="buffer.html" title="previous chapter">Buffering test output</a></li>
+      <li>Next: <a href="failfast.html" title="next chapter">Stopping After the First Error or Failure</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/debugger.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

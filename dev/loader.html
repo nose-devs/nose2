@@ -1,0 +1,176 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.loader &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Internals" href="internals.html" />
+    <link rel="next" title="nose2.result" href="result.html" />
+    <link rel="prev" title="nose2.exceptions" href="exceptions.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="result.html" title="nose2.result"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exceptions.html" title="nose2.exceptions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+          <li><a href="internals.html" accesskey="U">Internals</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.loader">
+<span id="nose2-loader"></span><h1>nose2.loader<a class="headerlink" href="#module-nose2.loader" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="nose2.loader.PluggableTestLoader">
+<em class="property">class </em><tt class="descclassname">nose2.loader.</tt><tt class="descname">PluggableTestLoader</tt><big>(</big><em>session</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader that defers all loading to plugins</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>session</strong> &#8211; Test run session.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="nose2.loader.PluggableTestLoader.suiteClass">
+<tt class="descname">suiteClass</tt><a class="headerlink" href="#nose2.loader.PluggableTestLoader.suiteClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suite class to use. Default: <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestSuite" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestSuite</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.failedImport">
+<tt class="descname">failedImport</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.failedImport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.failedImport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test case representing a failed import.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.failedLoadTests">
+<tt class="descname">failedLoadTests</tt><big>(</big><em>name</em>, <em>exception</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.failedLoadTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.failedLoadTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make test case representing a failed test load.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.loadTestsFromModule">
+<tt class="descname">loadTestsFromModule</tt><big>(</big><em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.loadTestsFromModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.loadTestsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from module.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#loadTestsFromModule" title="loadTestsFromModule"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromModule()</span></tt></a> hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>name</em>, <em>module=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.loadTestsFromName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from test name.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a> hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.loadTestsFromNames">
+<tt class="descname">loadTestsFromNames</tt><big>(</big><em>testNames</em>, <em>module=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.loadTestsFromNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.loadTestsFromNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from test names.</p>
+<p>Fires <a class="reference internal" href="hook_reference.html#loadTestsFromNames" title="loadTestsFromNames"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromNames()</span></tt></a> hook.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.loader.PluggableTestLoader.sortTestMethodsUsing">
+<tt class="descname">sortTestMethodsUsing</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/nose2/loader.html#PluggableTestLoader.sortTestMethodsUsing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.loader.PluggableTestLoader.sortTestMethodsUsing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort key for test case test methods.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">suiteClass</tt></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">TestSuite</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="internals.html">Internals</a><ul>
+      <li>Previous: <a href="exceptions.html" title="previous chapter">nose2.exceptions</a></li>
+      <li>Next: <a href="result.html" title="next chapter">nose2.result</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/loader.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

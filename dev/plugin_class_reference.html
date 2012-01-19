@@ -1,0 +1,350 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Plugin class reference &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Contributing to nose2" href="contributing.html" />
+    <link rel="prev" title="Session reference" href="session_reference.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing to nose2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="session_reference.html" title="Session reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="plugin-class-reference">
+<h1>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h1>
+<p>The plugin system in nose2 is based on the plugin system in
+unittest2&#8217;s plugins branch.</p>
+<div class="section" id="plugin-base-class">
+<h2>Plugin base class<a class="headerlink" href="#plugin-base-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.events.Plugin">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">Plugin</tt><a class="reference internal" href="../_modules/nose2/events.html#Plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for nose2 plugins</p>
+<p>All nose2 plugins must subclass this class.</p>
+<dl class="attribute">
+<dt id="Plugin.session">
+<tt class="descname">session</tt><a class="headerlink" href="#Plugin.session" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="session_reference.html#nose2.session.Session" title="nose2.session.Session"><tt class="xref py py-class docutils literal"><span class="pre">nose2.session.Session</span></tt></a> under which the plugin
+has been loaded.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Plugin.config">
+<tt class="descname">config</tt><a class="headerlink" href="#Plugin.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="session_reference.html#nose2.config.Config" title="nose2.config.Config"><tt class="xref py py-class docutils literal"><span class="pre">nose2.config.Config</span></tt></a> representing the plugin&#8217;s
+config section as loaded from the session&#8217;s config files.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Plugin.commandLineOption">
+<tt class="descname">commandLineOption</tt><a class="headerlink" href="#Plugin.commandLineOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>A tuple of (short opt, long opt, help text) that defines a command
+line flag that activates this plugin. The short opt may be None. If
+defined, it must be a single upper-case character. Both short and
+long opt must <em>not</em> start with dashes.</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">commandLineOption</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;buffer-output&#39;</span><span class="p">,</span> <span class="s">&#39;Buffer output during tests&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Plugin.configSection">
+<tt class="descname">configSection</tt><a class="headerlink" href="#Plugin.configSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name config file section to load into this plugin&#8217;s config.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Plugin.alwaysOn">
+<tt class="descname">alwaysOn</tt><a class="headerlink" href="#Plugin.alwaysOn" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this plugin should automatically register itself, set alwaysOn to
+True. Default is False.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Plugins that use config values from config files and want to
+use the nose2 sphinx extension to automatically generate
+documentation <em>must</em> extract all config values from
+<tt class="docutils literal"><span class="pre">self.config</span></tt> in <tt class="docutils literal"><span class="pre">__init__</span></tt>. Otherwise the extension will
+not be able to detect the config keys that the plugin uses.</p>
+</div>
+<dl class="method">
+<dt id="nose2.events.Plugin.addArgument">
+<tt class="descname">addArgument</tt><big>(</big><em>callback</em>, <em>short_opt</em>, <em>long_opt</em>, <em>help_text=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Plugin.addArgument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin.addArgument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add command-line option that takes one argument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback</strong> &#8211; Callback function to run when flag is seen.
+The callback will receive one argument.</li>
+<li><strong>short_opt</strong> &#8211; Short option. Must be uppercase, no dashes.</li>
+<li><strong>long_opt</strong> &#8211; Long option. Must not start with dashes</li>
+<li><strong>help_text</strong> &#8211; Help text for users so they know what this
+flag does.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.Plugin.addFlag">
+<tt class="descname">addFlag</tt><big>(</big><em>callback</em>, <em>short_opt</em>, <em>long_opt</em>, <em>help_text=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Plugin.addFlag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin.addFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add command-line flag that takes no arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback</strong> &#8211; Callback function to run when flag is seen.
+The callback will receive one empty argument.</li>
+<li><strong>short_opt</strong> &#8211; Short option. Must be uppercase, no dashes.</li>
+<li><strong>long_opt</strong> &#8211; Long option. Must not start with dashes</li>
+<li><strong>help_text</strong> &#8211; Help text for users so they know what this
+flag does.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.Plugin.addOption">
+<tt class="descname">addOption</tt><big>(</big><em>callback</em>, <em>short_opt</em>, <em>long_opt</em>, <em>help_text=None</em>, <em>nargs=0</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Plugin.addOption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin.addOption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add command-line option.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback</strong> &#8211; Callback function to run when flag is seen.
+The callback will receive one argument.
+The &#8220;callback&#8221; may also be a list, in which
+case values submitted on the command line
+will be appended to the list.</li>
+<li><strong>short_opt</strong> &#8211; Short option. Must be uppercase, no dashes.</li>
+<li><strong>long_opt</strong> &#8211; Long option. Must not start with dashes</li>
+<li><strong>help_text</strong> &#8211; Help text for users so they know what this
+flag does.</li>
+<li><strong>nargs</strong> &#8211; Number of arguments to consume from command line.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.Plugin.register">
+<tt class="descname">register</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Plugin.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register with appropriate hooks.</p>
+<p>This activates the plugin and enables it to receive events.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-interface-classes">
+<h2>Plugin interface classes<a class="headerlink" href="#plugin-interface-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.events.PluginInterface">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">PluginInterface</tt><a class="reference internal" href="../_modules/nose2/events.html#PluginInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.PluginInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Definition of plugin interface.</p>
+<p>Instances of this class contain the methods that may be called,
+and a dictionary of <a class="reference internal" href="#nose2.events.Hook" title="nose2.events.Hook"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.Hook</span></tt></a> instances bound
+to each method.</p>
+<p>In a plugin, PluginInterface instance is typically available as
+self.session.hooks, and plugin hooks may be called on it
+directly:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">LoadFromModuleEvent</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">the_module</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">loadTestsFromModule</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="PluginInterface.preRegistrationMethods">
+<tt class="descname">preRegistrationMethods</tt><a class="headerlink" href="#PluginInterface.preRegistrationMethods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of methods that are called before registration.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PluginInterface.methods">
+<tt class="descname">methods</tt><a class="headerlink" href="#PluginInterface.methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of available plugin hook methods.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="PluginInterface.hookClass">
+<tt class="descname">hookClass</tt><a class="headerlink" href="#PluginInterface.hookClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to instantiate for each hook. Default: <a class="reference internal" href="#nose2.events.Hook" title="nose2.events.Hook"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.Hook</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.PluginInterface.addMethod">
+<tt class="descname">addMethod</tt><big>(</big><em>method</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#PluginInterface.addMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.PluginInterface.addMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a method to the available method.</p>
+<p>This allows plugins to register for this method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>method</strong> &#8211; A method name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.PluginInterface.hookClass">
+<tt class="descname">hookClass</tt><a class="headerlink" href="#nose2.events.PluginInterface.hookClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Hook</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.PluginInterface.register">
+<tt class="descname">register</tt><big>(</big><em>method</em>, <em>plugin</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#PluginInterface.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.PluginInterface.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a plugin for a method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>method</strong> &#8211; A method name</li>
+<li><strong>plugin</strong> &#8211; A plugin instance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.Hook">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">Hook</tt><big>(</big><em>method</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Hook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Hook" title="Permalink to this definition">¶</a></dt>
+<dd><p>A plugin hook</p>
+<p>Each plugin method in the <a class="reference internal" href="#nose2.events.PluginInterface" title="nose2.events.PluginInterface"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.PluginInterface</span></tt></a> is
+represented at runtime by a Hook instance that lists the plugins
+that should be called by that hook.</p>
+<dl class="attribute">
+<dt id="Hook.method">
+<tt class="descname">method</tt><a class="headerlink" href="#Hook.method" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the method that this Hook represents.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Hook.plugins">
+<tt class="descname">plugins</tt><a class="headerlink" href="#Hook.plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of plugin instances bound to this hook.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Plugin class reference</a><ul>
+<li><a class="reference internal" href="#plugin-base-class">Plugin base class</a></li>
+<li><a class="reference internal" href="#plugin-interface-classes">Plugin interface classes</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="session_reference.html" title="previous chapter">Session reference</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing to nose2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/plugin_class_reference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

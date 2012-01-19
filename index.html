@@ -1,88 +1,260 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='utf-8'>
 
-  <title>nose-devs/nose2 @ GitHub</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #5315ba;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #acea45; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #acea45; }
-    h3 { text-align: center; color: #acea45; }
-    a { color: #acea45; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
-</head>
 
-<body>
-  <a href="https://github.com/nose-devs/nose2"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="https://github.com/nose-devs/nose2/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/nose-devs/nose2/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="https://github.com/nose-devs/nose2">nose2</a>
-      <span class="small">by <a href="https://github.com/nose-devs">nose-devs</a></span></h1>
-
-    <div class="description">
-      The successor to nose, based on unittest2
-    </div>
-
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
+    <title>Welcome to nose2 &mdash; nose2 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.1 documentation" href="#" />
+    <link rel="next" title="Getting started with nose2" href="getting_started.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
 
-    
+  </head>
+  <body>
+  
+  
+  <div class=indexwrapper>
+  
 
-    
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started with nose2"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">nose2 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-    
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-nose2">
+<h1>Welcome to nose2<a class="headerlink" href="#welcome-to-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This is an early, pre-alpha release of nose2. It is not
+feature-complete, and will mostly be of interest to plugin authors,
+folks who want to contribute to nose2, and testing nerds. While of
+course we want you to try it out, you should probably not use nose2
+to run the test suite for your giant robot crane.</p>
+</div>
+<p>nose2 is the next generation of nicer testing for Python, based
+on the plugins branch of unittest2. nose2 aims to improve on nose by:</p>
+<blockquote>
+<div><ul class="simple">
+<li>providing a better plugin api</li>
+<li>being easier for users to configure</li>
+<li>simplifying internal interfaces and processes</li>
+<li>supporting Python 2 and 3 from the same codebase, without translation</li>
+<li>encourging greater community involvment in its development</li>
+</ul>
+</div></blockquote>
+<p>In service of some those goals, some features of nose <em>will not</em> be
+supported in nose2. See <a class="reference external" href="https://nose-devs.github.com/nose2/differences.html">differences</a> for a thorough rundown.</p>
+<p>In time &#8211; once unittest2 supports plugins &#8211; nose2 should be able to
+become just a collection of plugins and configuration defaults. For
+now, it provides a plugin api similar to the one in the unittest2
+plugins branch, and overrides various unittest2 objects.</p>
+<p>You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
+new direction!</p>
+</div>
+<div class="section" id="user-s-guide">
+<h1>User&#8217;s Guide<a class="headerlink" href="#user-s-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with nose2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#running-tests">Running tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using nose2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuring nose2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-files">Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuring-plugins">Configuring plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="differences.html">Differences: nose2 vs nose vs unittest2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="differences.html#nose2-is-not-nose">nose2 is not nose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="differences.html#nose2-is-not-exactly-unittest2-plugins">nose2 is not (exactly) unittest2/plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/discovery.html">Loader: Test discovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/functions.html">Loader: Test Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/generators.html">Loader: Test Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/parameters.html">Loader: Parameterized Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html">Loader: Test Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html">Loader: Doctests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/result.html">Reporting test results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/buffer.html">Buffering test output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/debugger.html">Dropping Into the Debugger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/failfast.html">Stopping After the First Error or Failure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html">Capturing log messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html">Mapping exceptions to test outcomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/collect.html">Collecting tests without running them</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/testid.html">Using Test IDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html">Tracing hook execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html">Profiling</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="plugin-developer-s-guide">
+<h1>Plugin Developer&#8217;s Guide<a class="headerlink" href="#plugin-developer-s-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/writing_plugins.html">Writing Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#hello-world">Hello World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#loading-plugins">Loading plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#command-line-options">Command-line Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#config-file-options">Config File Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#guidelines">Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/writing_plugins.html#recipes">Recipes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/documenting_plugins.html">Documenting plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/event_reference.html">Event reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/hook_reference.html">Hook reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/hook_reference.html#pre-registration-hooks">Pre-registration Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/hook_reference.html#standard-hooks">Standard Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/hook_reference.html#user-interaction-hooks">User Interaction Hooks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/session_reference.html">Session reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/session_reference.html#session">Session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/session_reference.html#config">Config</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/plugin_class_reference.html">Plugin class reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/plugin_class_reference.html#plugin-base-class">Plugin base class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/plugin_class_reference.html#plugin-interface-classes">Plugin interface classes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="developer-s-guide">
+<h1>Developer&#8217;s Guide<a class="headerlink" href="#developer-s-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/contributing.html">Contributing to nose2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/contributing.html#exhortation">Exhortation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/contributing.html#the-basics">The Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/contributing.html#coding-guidelines">Coding Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/contributing.html#merging-guidelines">Merging Guidelines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/internals.html">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/main.html">nose2.main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/compat.html">nose2.compat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/exceptions.html">nose2.exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/loader.html">nose2.loader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/result.html">nose2.result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/runner.html">nose2.runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/utils.html">nose2.util</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
 
-    
-      <h2>Authors</h2>
-      <p>Arve Knudsen (arve.knudsen@gmail.com)<br/>Augie Fackler (durin42@gmail.com)<br/>JP (jpellerin@gmail.com)<br/>      </p>
-    
 
-    
-      <h2>Contact</h2>
-      <p> (nose-issues@googlegroups.com)<br/>      </p>
-    
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/nose-devs/nose2/zipball/master">zip</a> or
-      <a href="https://github.com/nose-devs/nose2/tarball/master">tar formats.
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to nose2</a></li>
+<li><a class="reference internal" href="#user-s-guide">User&#8217;s Guide</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugin-developer-s-guide">Plugin Developer&#8217;s Guide</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#developer-s-guide">Developer&#8217;s Guide</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="getting_started.html" title="next chapter">Getting started with nose2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
     </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/nose-devs/nose2</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/nose-devs/nose2">nose-devs/nose2</a>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
     </div>
-
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
   </div>
-
-</body>
+  
+  </div>
+  
+  </body>
 </html>

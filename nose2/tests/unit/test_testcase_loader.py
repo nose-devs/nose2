@@ -57,3 +57,17 @@ class TestTestCaseLoader(TestCase):
         self.assertEqual(len(event.extraTests[0]._tests), 0) # A
         self.assertEqual(len(event.extraTests[1]._tests), 1) # B (runTest)
         self.assertEqual(len(event.extraTests[2]._tests), 1) # C
+
+    def test_plugins_can_exclude_test_names(self):
+        class Excluder(events.Plugin):
+            def getTestCaseNames(self, event):
+                event.excludedNames.append('test')
+        excl = Excluder(session=self.session)
+        excl.register()
+        event = events.LoadFromModuleEvent(self.loader, self.module)
+        result = self.session.hooks.loadTestsFromModule(event)
+        self.assertEqual(result, None)
+        self.assertEqual(len(event.extraTests), 3)
+        self.assertEqual(len(event.extraTests[0]._tests), 0) # A
+        self.assertEqual(len(event.extraTests[1]._tests), 1) # B (runTest)
+        self.assertEqual(len(event.extraTests[2]._tests), 0) # C

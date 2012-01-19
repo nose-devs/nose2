@@ -1,3 +1,4 @@
+from nose2 import session
 from nose2.plugins import prof
 from nose2.events import StartTestRunEvent
 from nose2.tests._common import Stub, TestCase
@@ -7,7 +8,7 @@ class TestProfPlugin(TestCase):
     tags = ['unit']
 
     def setUp(self):
-        self.plugin = prof.Profiler()
+        self.plugin = prof.Profiler(session=session.Session())
         self.hotshot = prof.hotshot
         self.stats = prof.stats
         prof.hotshot = Stub()

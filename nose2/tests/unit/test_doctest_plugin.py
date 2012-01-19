@@ -15,13 +15,12 @@ class UnitTestDocTestLoader(TestCase):
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
+        self.plugin = doctests.DocTestLoader(session=self.session)
         super(UnitTestDocTestLoader, self).setUp()
 
     def test___init__(self):
         """Test the __init__ method."""
-        plug = self._create()
-
-        self.assertEqual(plug.extensions, ['.txt', '.rst'])
+        self.assertEqual(self.plugin.extensions, ['.txt', '.rst'])
 
     def test_handle_file(self):
         """Test method handleFile."""
@@ -62,7 +61,6 @@ def func():
         The file is created, then a plugin is instantiated and its handleFile
         method is called for the file.
         """
-        plug = self._create()
         fh = open(fpath, "w")
         try:
             fh.write(content)
@@ -70,10 +68,5 @@ def func():
             fh.close()
 
         event = events.HandleFileEvent(self.loader, fh.name, fpath, None, None)
-        plug.handleFile(event)
+        self.plugin.handleFile(event)
         return event
-
-    def _create(self):
-        """Create a DocTestLoader instance."""
-        plug = doctests.DocTestLoader()
-        return plug

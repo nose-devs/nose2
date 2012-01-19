@@ -2,6 +2,10 @@
 import os.path
 import pickle
 
+from six import StringIO
+
+from nose2 import session
+from nose2.events import ReportTestEvent
 from nose2.plugins import testid
 from nose2.tests._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
                                  FakeLoadFromNamesEvent, TestCase)
@@ -16,9 +20,15 @@ class UnitTestTestId(TestCase):
     tags = ['unit']
     _RUN_IN_TEMP = True
 
+    def setUp(self):
+        super(UnitTestTestId, self).setUp()
+        self.stream = StringIO()
+        self.session = session.Session()
+        self.plugin = testid.TestId(session=self.session)
+
     def test___init__(self):
         """Test the __init__ method."""
-        plug = self._create()
+        plug = self.plugin
         # Test attributes
         for name, exp_val in [('configSection', 'testid'), ('commandLineSwitch',
             ('I', 'with-id', 'Add test ids to output')), ('idfile',
@@ -32,35 +42,37 @@ class UnitTestTestId(TestCase):
                 '\'%s\', but has value %s' % (name, exp_val, val))
 
     def test_start_test(self):
-        """Test startTest method."""
-        event = FakeStartTestEvent(self)
-        plug = self._create()
-        plug.startTest(event)
+        """Test reportStartTest method."""
+        self.session.verbosity = 2
+        event = ReportTestEvent(FakeStartTestEvent(self), self.stream)
+        plug = self.plugin
+        plug.reportStartTest(event)
 
         self.assertEqual(plug.id, 1)
         test_id = self.id()
         self.assertEqual(plug.ids, {1: test_id})
         self.assertEqual(plug.tests, {test_id: 1})
-        self.assertEqual(event._fake_messages, [('#1 ', (2,))])
+        self.assertEqual(self.stream.getvalue(), '#1 ')
 
     def test_start_test_twice(self):
-        """Test calling startTest twice."""
-        event = FakeStartTestEvent(self)
-        plug = self._create()
-        plug.startTest(event)
-        plug.startTest(event)
+        """Test calling reportStartTest twice."""
+        self.session.verbosity = 2
+        event = ReportTestEvent(FakeStartTestEvent(self), self.stream)
+        plug = self.plugin
+        plug.reportStartTest(event)
+        plug.reportStartTest(event)
 
         self.assertEqual(plug.id, 1)
         test_id = self.id()
         self.assertEqual(plug.ids, {1: test_id})
         self.assertEqual(plug.tests, {test_id: 1})
-        msg = ('#1 ', (2,))
-        self.assertEqual(event._fake_messages, [msg, msg])
+        self.assertEqual(self.stream.getvalue(), '#1 #1 ')
 
     def test_stop_test_run(self):
         """Test stopTestRun method."""
-        plug = self._create()
-        plug.startTest(FakeStartTestEvent(self))
+        plug = self.plugin
+        plug.reportStartTest(
+            ReportTestEvent(FakeStartTestEvent(self), self.stream))
         plug.stopTestRun(None)
 
         fh = open(plug.idfile, 'rb')
@@ -72,9 +84,10 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_name(self):
         """Test loadTestsFromName method."""
-        plug = self._create()
+        plug = self.plugin
         # By first starting/stopping a test, an ID is assigned by the plugin
-        plug.startTest(FakeStartTestEvent(self))
+        plug.reportStartTest(
+            ReportTestEvent(FakeStartTestEvent(self), self.stream))
         plug.stopTestRun(None)
         event = FakeLoadFromNameEvent('1')
         plug.loadTestsFromName(event)
@@ -84,7 +97,7 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_name_no_ids(self):
         """Test calling loadTestsFromName when no IDs have been saved."""
-        plug = self._create()
+        plug = self.plugin
         event = FakeLoadFromNameEvent('1')
         plug.loadTestsFromName(event)
 
@@ -93,9 +106,10 @@ class UnitTestTestId(TestCase):
 
     def test_load_tests_from_names(self):
         """Test loadTestsFromNames method."""
-        plug = self._create()
+        plug = self.plugin
         # By first starting/stopping a test, an ID is assigned by the plugin
-        plug.startTest(FakeStartTestEvent(self))
+        plug.reportStartTest(
+            ReportTestEvent(FakeStartTestEvent(self), self.stream))
         plug.stopTestRun(None)
         event = FakeLoadFromNamesEvent(['1', '2'])
         plug.loadTestsFromNames(event)
@@ -105,7 +119,3 @@ class UnitTestTestId(TestCase):
         self.assertEqual(name1, self.id())
         # The second one should not have a match
         self.assertEqual(name2, '2')
-
-    def _create(self):
-        """Create a TestId instance."""
-        return testid.TestId()

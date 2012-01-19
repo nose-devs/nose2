@@ -1,0 +1,7 @@
+#! /usr/bin/env python
+
+__unittest = True
+
+from nose2.main import main_
+
+main_()

@@ -1,9 +1,12 @@
 include AUTHORS
 include requirements.txt
-include test-requirements.txt
-include nose2/plugins/plugins.cfg
+include requirements-py26.txt
+include requirements-docs.txt
 include tox.ini
 include unittest.cfg
+include README.rst
+include license.txt
 graft nose2/tests/functional/support
 graft docs
-graft support
+graft bin
+

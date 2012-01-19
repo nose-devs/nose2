@@ -16,7 +16,8 @@ do
                     ;;
                 --pdb) nargs="$nargs --debug"
                     ;;
-                -w) skip="yes"
+                -w) nargs="$nargs -t"
+                    skip="copy"
                     ;;
                 -c) skip="yes"
                     ;;
@@ -32,6 +33,10 @@ do
             ;;
         yes)
             skip="no"
+            ;;
+        copy)
+            skip="no"
+            nargs="$nargs $var"
             ;;
     esac
 done

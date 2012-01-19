@@ -29,4 +29,4 @@ plugins branch, and overrides various unittest2 objects.
 You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
 new direction!
 
-.. _differences: https://nose-devs.github.com/nose2/differences.html
+.. _differences: http://nose-devs.github.com/nose2/differences.html

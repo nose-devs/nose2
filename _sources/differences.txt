@@ -138,11 +138,19 @@ the request of the majority of nose contributors.
 What's the Same
 ~~~~~~~~~~~~~~~
 
+Philosophy
+^^^^^^^^^^
+
 nose2 has the same goals as nose: to extend unittest to make testing
 nicer and easier to understand. It aims to give developers
 flexibility, power and transparency, so that common test scenarios
 require no extra work, and uncommon test scenarios can be supported
 with minimal fuss and magic.
+
+People
+^^^^^^
+
+nose2 is being developed by the same people who maintain nose.
 
 nose2 is not (exactly) unittest2/plugins
 ----------------------------------------

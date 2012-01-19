@@ -44,7 +44,14 @@ The github Merge Button(tm) should be used only for trivial
 changes. Other merges, even those that can be automatically merged,
 should be merged manually, so that you have an opportunity to run
 tests on the merged changes before pushing them. When you merge
-manually, please use ``--no-ff`` so that we have a record of all merges.
+manually, please use ``--no-ff`` so that we have a record of all
+merges.
+
+Also, core devs should not merge their own work -- again, unless it's
+trivial -- without giving other developers a chance to review it. The
+basic worfklow should be to do the work in a topic branch in your fork
+then post a pull request for that branch, whether you're a core
+developer or other contributor.
 
 
 .. _github: https://github.com/

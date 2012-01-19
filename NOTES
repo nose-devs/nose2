@@ -1,0 +1,14 @@
+- need a log-level command line arg for doing basic logging config,
+  in the absence of logcapture
+
+- order of events in loading from test cases prevents other plugins
+  from excluding test cases from being loaded by generator
+  plugin. can it work like params plugin?
+
+- generators and params plugins should also be able to load from
+  non-testcase subclasses, how is that going to work?
+
+- unclear how to make it possible for plugins to set wasSuccessful in
+  concert with each other. Need another flag probably, beside
+  event.success and event.handled.
+

@@ -1,13 +1,25 @@
 """
-Adapted from unittest2/loader.py from the unittest2 plugins branch.
+Discovery-based test loader.
 
-This module contains some code copied from unittest2/loader.py and other
-code developed in reference to that module and others within unittest2.
+This plugin implements nose2's automatic test module discovery. It
+looks for test modules in packages and directories whose names start
+with 'test', then fires the :func:`loadTestsFromModule` hook for each
+one to allow other plugins to load the actual tests.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+It also fires :func:`handleFile` for every file that it sees, and
+:func:`matchPath` for every python module, to allow other plugins to
+load tests from other kinds of files and to influence which modules
+are examined for tests.
 
 """
+
+
+# Adapted from unittest2/loader.py from the unittest2 plugins branch.
+# This module contains some code copied from unittest2/loader.py and other
+# code developed in reference to that module and others within unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
 from fnmatch import fnmatch
 import logging
 import os
@@ -20,21 +32,12 @@ log = logging.getLogger(__name__)
 
 
 class DiscoveryLoader(events.Plugin):
-    """Loader plugin that can discover tests
-
-    Responds to loadTestsFromNames when names and module are blank
-    by discovering tests in the configured start directory of the
-    session.
-
-    Responds to loadTestsFromName when the name is a module, file
-    or directory.
-
-    """
-    def __init__(self):
-        # really always on!
-        self.register()
+    """Loader plugin that can discover tests"""
+    alwaysOn = True
+    configSection = 'discovery'
 
     def loadTestsFromName(self, event):
+        """Load tests from module named by event.name"""
         # turn name into path or module name
         # fire appropriate hooks (handle file or load from module)
         if event.module:
@@ -55,6 +58,7 @@ class DiscoveryLoader(events.Plugin):
                 self._find_tests_in_module(event, module, top_level_dir))
 
     def loadTestsFromNames(self, event):
+        """Discover tests if no test names specified"""
         log.debug("Received event %s", event)
         if event.names or event.module:
             return

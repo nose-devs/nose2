@@ -1,3 +1,17 @@
+"""
+Load tests from doctests.
+
+This plugin implements :func:`handleFile` to load doctests from text files
+and python modules.
+
+To disable loading doctests from text files, configure an empty extensions list:
+
+.. code-block :: ini
+
+  [doctest]
+  extensions =
+
+"""
 import doctest
 import os
 
@@ -8,12 +22,13 @@ from nose2 import util
 class DocTestLoader(Plugin):
     configSection = 'doctest'
     commandLineSwitch = (None, 'with-doctest',
-                         'Look for doctests in all modules')
+                         'Load doctests from text files and modules')
 
     def __init__(self):
         self.extensions = self.config.as_list('extensions', ['.txt', '.rst'])
 
     def handleFile(self, event):
+        """Load doctests from text files and modules"""
         path = event.path
         _root, ext = os.path.splitext(path)
         if ext in self.extensions:
@@ -27,7 +42,7 @@ class DocTestLoader(Plugin):
         try:
             module = util.module_from_name(name)
         except Exception:
-            # XXX log warning here
+            # XXX log warning here?
             return
         if hasattr(module, '__test__') and not module.__test__:
             return

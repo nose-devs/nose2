@@ -1,19 +1,37 @@
 """
-This module contains some code copied from unittest2/runner.py and other
-code developed in reference to that module and others within unittest2.
+Collect and report test results.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+This plugin implements the primary user interface for nose2. It
+collects test outcomes and reports on them to the console, as well as
+firing several hooks for other plugins to do their own reporting.
 
+This plugin extends standard unittest console reporting slightly by
+allowing custom report categories. To put events into a custom
+reporting category, change the event.outcome to whatever you
+want. Note, however, that customer categories are *not* treated as
+errors or failures for the purposes of determining whether a test run
+has succeeded.
+
+Don't disable this plugin unless you a) have another one doing the
+same job or b) really don't want any test results (and want all test
+runs to exit(1))
 """
+# This module contains some code copied from unittest2/runner.py and other
+# code developed in reference to that module and others within unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
 import sys
 
 from nose2 import events, result, util
 
 __unittest = True
 
-class ResultReporter(events.Plugin):
 
+class ResultReporter(events.Plugin):
+    """Result plugin that implements standard unittest console reporting"""
+    alwaysOn = True
+    configSection = 'test-result'
     separator1 = '=' * 70
     separator2 = '-' * 70
 
@@ -29,7 +47,6 @@ class ResultReporter(events.Plugin):
 
         self.stream = util._WritelnDecorator(sys.stderr)
         self.descriptions = self.config.as_bool('descriptions', True)
-        self.register()
 
     def startTest(self, event):
         """Handle startTest hook
@@ -44,11 +61,10 @@ class ResultReporter(events.Plugin):
 
         - records test outcome in reportCategories
         - prints test outcome label
+        - fires reporting hooks (:func:`reportSuccess`, :func:`reportFailure`,
+          etc)
 
         """
-        # XXX let other plugins tweak outcomes
-        # explicitly another hook to avoid plugin ordering issues
-        self.session.hooks.setTestOutcome(event)
         if event.outcome == result.ERROR:
             self.reportCategories['errors'].append(event)
             self._reportError(event)
@@ -78,6 +94,8 @@ class ResultReporter(events.Plugin):
 
         - prints error lists
         - prints summary
+        - fires summary reporting hooks (:func:`beforeErrorList`,
+          :func:`beforeSummaryReport`, etc)
 
         """
         self._reportSummary(event)

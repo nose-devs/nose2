@@ -1,3 +1,15 @@
+"""
+Allow easy test selection with test ids.
+
+Assigns (and, in verbose mode, prints) a sequential test id for each
+test executed. Ids can be fed back in as test names, and this plugin
+will translate them back to full test names. Saves typing!
+
+This plugin implements :func:`reportStartTest`,
+:func:`loadTestsFromName`, :func:`loadTestsFromNames` and
+:func:`stopTest`.
+
+"""
 import os
 import pickle
 import re
@@ -6,14 +18,14 @@ from nose2.events import Plugin
 
 
 class TestId(Plugin):
-    """TODO: document"""
+    """Allow easy test select with ids"""
 
     configSection = 'testid'
     commandLineSwitch = ('I', 'with-id', 'Add test ids to output')
     idpat = re.compile(r'(\d+)')
 
     def __init__(self):
-        self.idfile = self.config.get('id-file', '.noseids')
+        self.idfile = self.config.as_str('id-file', '.noseids')
         self.ids = {}
         self.tests = {}
         if not os.path.isabs(self.idfile):
@@ -23,26 +35,25 @@ class TestId(Plugin):
         self._loaded = False
 
     def nextId(self):
-        """Increment ID and return it.
-
-        XXX: Make private?
-        """
+        """Increment ID and return it."""
         self.id += 1
         return self.id
 
-    def startTest(self, event):
-        """Implement hook"""
-        testid = event.test.id().split('\n')[0]
+    def reportStartTest(self, event):
+        """Record and possibly output test id"""
+        testid = event.testEvent.test.id().split('\n')[0]
         if testid not in self.tests:
             id_ = self.nextId()
             self.ids[id_] = testid
             self.tests[testid] = id_
         else:
             id_ = self.tests[testid]
-        event.message('#%s ' % id_, (2,))
+        event.metadata['testid'] = id_
+        if self.session.verbosity > 1:
+            event.stream.write('#%s ' % id_)
 
     def loadTestsFromName(self, event):
-        """Implement hook.
+        """Load tests from a name that is an id
 
         If the name is a number, it might be an ID assigned by us. If we can
         find a test to which we have assigned that ID, event.name is changed to
@@ -54,22 +65,19 @@ class TestId(Plugin):
             event.name = testid
 
     def loadTestsFromNames(self, event):
-        """Implement hook."""
+        """Translate test ids into test names"""
         for i, name in enumerate(event.names[:]):
             testid = self._testNameFromId(name)
             if testid is not None:
                 event.names[i] = testid
 
     def stopTestRun(self, event):
-        """Implement hook."""
+        """Write testids file"""
         with open(self.idfile, 'wb') as fh:
             pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
 
     def loadIds(self):
-        """Load previously pickled 'ids' and 'tests' attributes.
-
-        XXX: Make private?
-        """
+        """Load previously pickled 'ids' and 'tests' attributes."""
         if self._loaded:
             return
 

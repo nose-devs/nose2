@@ -1,11 +1,23 @@
 """
-This module contains some code copied from unittest2/ and other code
-developed in reference to unittest2.
+Load tests from test functions in modules.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+This plugin responds to :func:`loadTestsFromModule` by adding test
+cases for all test functions in the module to ``event.extraTests``. It
+uses ``session.testMethodPrefix`` to find test functions.
+
+Functions that are generators, have param lists, or take arguments
+are not collected.
+
+This plugin also implements :func:`loadTestsFromName` to enable loading
+tests from dotted function names passed on the command line.
 
 """
+# This module contains some code copied from unittest2/ and other code
+# developed in reference to unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
+
 import inspect
 import types
 
@@ -15,13 +27,12 @@ from nose2.compat import unittest
 
 
 class Functions(Plugin):
-    """TODO: document"""
+    """Loader plugin that loads test functions"""
+    alwaysOn = True
     configSection = 'functions'
 
-    def __init__(self):
-        self.register()
-
     def loadTestsFromName(self, event):
+        """Load test if event.name is the name of a test function"""
         name = event.name
         module = event.module
         result = util.test_from_name(name, module)
@@ -39,6 +50,7 @@ class Functions(Plugin):
             return suite
 
     def loadTestsFromModule(self, event):
+        """Load test functions from event.module"""
         module = event.module
 
         def is_test(obj):

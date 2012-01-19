@@ -1,16 +1,27 @@
+"""
+Capture log messages during test execution, appending them to the
+error reports of failed tests.
+
+This plugin implements :func:`startTestRun`, :func:`startTest`,
+:func:`stopTest`, :func:`testOutcome`, and :func:`outcomeDetail` to
+set up a logging configuration that captures log messages during test
+execution, and appends them to error reports for tests that fail or
+raise exceptions.
+
+"""
 import logging
 from logging.handlers import BufferingHandler
 import threading
 
 from nose2.events import Plugin
-from nose2.util import ln
+from nose2.util import ln, parse_log_level
 
 
 log = logging.getLogger(__name__)
 
 
 class LogCapture(Plugin):
-    """TODO: document"""
+    """Capture log messages during test execution"""
 
     configSection = 'log-capture'
     commandLineSwitch = (None, 'log-capture', 'Enable log capture')
@@ -24,24 +35,29 @@ class LogCapture(Plugin):
         self.logdatefmt = self.config.as_str('date-format', self.logdatefmt)
         self.filters = self.config.as_list('filter', self.filters)
         self.clear = self.config.as_bool('clear-handlers', self.clear)
-        # FIXME support symbolic level names
-        self.loglevel = self.config.as_int('log-level', logging.NOTSET)
+        self.loglevel = parse_log_level(
+            self.config.as_str('log-level', 'NOTSET'))
         self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
                                        self.filters)
 
     def startTestRun(self, event):
+        """Set up logging handler"""
         self._setupLoghandler()
 
     def startTest(self, event):
+        """Set up handler for new test"""
         self._setupLoghandler()
 
     def testOutcome(self, event):
+        """Store captured log messages in ``event.metadata``"""
         self._addCapturedLogs(event)
 
     def stopTest(self, event):
+        """Clear captured messages, ready for next test"""
         self.handler.truncate()
 
     def outcomeDetail(self, event):
+        """Append captured log messages to ``event.extraDetail``"""
         logs = event.outcomeEvent.metadata.get('logs', None)
         if logs:
             event.extraDetail.append(ln('>> begin captured logging <<'))

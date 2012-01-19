@@ -1,11 +1,44 @@
 """
-This module contains some code copied from unittest2 and other code
-developed in reference to unittest2.
+Load tests from parameterized functions and methods.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+This plugin implements :func:`getTestCaseNames`,
+:func:`loadTestsFromModule`, and :func:`loadTestsFromName` to support
+loading tests from parameterized test functions and methods.
+
+To parameterize a function or test case method, use :func:`nose2.tools.params`:
+
+.. code-block :: python
+
+  import unittest
+
+  from nose2.tools import params
+
+
+  @params(1, 2, 3)
+  def test_nums(num):
+      asset num < 4
+
+
+  class Test(unittest.TestCase):
+
+      @params((1, 2), (2, 3), (4, 5))
+      def test_less_than(self, a, b):
+          assert a < b
+
+Parameters in the list may be defined as simple values, or as
+tuples. To pass a tuple as a simple value, wrap it in another tuple.
+
+To address a particular parameterized test via a command-line test name,
+append a colon (':') followed by the index, *starting from 1*, of the
+case you want to execute.
 
 """
+# This module contains some code copied from unittest2 and other code
+# developed in reference to unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
+
 import logging
 import types
 import unittest
@@ -29,12 +62,12 @@ class ParamsFunctionCase(ut2.FunctionTestCase):
 
 
 class Parameters(Plugin):
+    """Loader plugin that loads parameterized tests"""
+    alwaysOn = True
     configSection = 'parameters'
 
-    def __init__(self):
-        self.register()
-
     def getTestCaseNames(self, event):
+        """Generate test case names for all parameterized methods"""
         log.debug('getTestCaseNames %s', event)
         names = filter(event.isTestMethod, dir(event.testCase))
         testCaseClass = event.testCase
@@ -49,6 +82,7 @@ class Parameters(Plugin):
             self._generate(event, name, method, testCaseClass)
 
     def loadTestsFromModule(self, event):
+        """Load tests from parameterized test functions in the module"""
         module = event.module
         def is_test(obj):
             return (obj.__name__.startswith(self.session.testMethodPrefix) and
@@ -63,6 +97,7 @@ class Parameters(Plugin):
         event.extraTests.extend(tests)
 
     def loadTestsFromName(self, event):
+        """Load parameterized test named on command line"""
         original_name = name = event.name
         module = event.module
         result = util.test_from_name(name, module)

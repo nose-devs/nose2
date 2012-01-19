@@ -1,13 +1,19 @@
 """
-Adapted from unittest2/loader.py from the unittest2 plugins branch.
+Load tests from :class:`unittest.TestCase` subclasses.
 
-This module contains some code copied from unittest2/loader.py and other
-code developed in reference to that module and others within unittest2.
+This plugin implements :func:`loadTestsFromName` and
+:func:`loadTestsFromModule` to load tests from
+:class:`unittest.TestCase` subclasses found in modules or named on the
+command line.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
 
 """
+# Adapted from unittest2/loader.py from the unittest2 plugins branch.
+# This module contains some code copied from unittest2/loader.py and other
+# code developed in reference to that module and others within unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
 import unittest
 
 from nose2 import events, util
@@ -17,12 +23,12 @@ __unittest = True
 
 
 class TestCaseLoader(events.Plugin):
-    def __init__(self):
-        # really always on!
-        self.register()
+    """Loader plugin that loads from test cases"""
+    alwaysOn = True
+    configSection = 'testcases'
 
     def loadTestsFromModule(self, event):
-        """Load tests in unittest.TestCase subclasses"""
+        """Load tests in :class:`unittest.TestCase` subclasses"""
         module = event.module
         for name in dir(module):
             obj = getattr(module, name)
@@ -30,6 +36,7 @@ class TestCaseLoader(events.Plugin):
                 event.extraTests.append(self._loadTestsFromTestCase(event, obj))
 
     def loadTestsFromName(self, event):
+        """Load tests from event.name if it names a test case/method"""
         name = event.name
         module = event.module
         result = util.test_from_name(name, module)
@@ -37,11 +44,13 @@ class TestCaseLoader(events.Plugin):
             return
         parent, obj, name, index = result
         if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
+            # name is a test case class
             event.extraTests.append(self._loadTestsFromTestCase(event, obj))
         elif (isinstance(parent, type) and
               issubclass(parent, unittest.TestCase) and not
               util.isgenerator(obj) and not
               hasattr(obj, 'paramList')):
+            # name is a single test method
             event.extraTests.append(parent(obj.__name__))
 
     def _loadTestsFromTestCase(self, event, testCaseClass):
@@ -75,7 +84,7 @@ class TestCaseLoader(events.Plugin):
         if evt.handled:
             test_names = result or []
         else:
-            excluded = excluded.update(evt.excludedNames)
+            excluded.update(evt.excludedNames)
             test_names = [entry for entry in dir(testCaseClass)
                           if isTestMethod(entry)]
         if evt.extraNames:

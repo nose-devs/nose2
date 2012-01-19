@@ -1,11 +1,29 @@
 """
-This module contains some code copied from unittest2 and other code
-developed in reference to unittest2.
+Load tests from generators.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+This plugin implements :func:`loadTestFromTestCase`,
+:func:`loadTestsFromName` and :func:`loadTestFromModule` to enable
+loading tests from generators.
+
+Generators may be functions or methods in test cases. In either case,
+they must yield a callable and arguments for that callable once for
+each test they generate. The callable and arguments may all be in one
+tuple, or the arguments may be grouped into a separate tuple::
+
+  def test_gen():
+      yield check, 1, 2
+      yield check, (1, 2)
+
+To address a particular generated test via a command-line test name,
+append a colon (':') followed by the index, *starting from 1*, of the
+generated case you want to execute.
 
 """
+# This module contains some code copied from unittest2 and other code
+# developed in reference to unittest2.
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
+
 import logging
 import sys
 import types
@@ -20,10 +38,9 @@ log = logging.getLogger(__name__)
 
 
 class Generators(Plugin):
+    """Loader plugin that loads generator tests"""
+    alwaysOn = True
     configSection = 'generators'
-
-    def __init__(self):
-        self.register()
 
     def unpack(self, generator):
         for index, func_args in enumerate(generator):
@@ -37,6 +54,7 @@ class Generators(Plugin):
                 yield index, (func, args)
 
     def loadTestsFromTestCase(self, event):
+        """Load generator tests from test case"""
         log.debug('loadTestsFromTestCase %s', event.testCase)
         testCaseClass = event.testCase
         for name in dir(testCaseClass):
@@ -51,6 +69,7 @@ class Generators(Plugin):
                 )
 
     def getTestCaseNames(self, event):
+        """Get generator test case names from test case class"""
         log.debug('getTestCaseNames %s', event.testCase)
         names = filter(event.isTestMethod, dir(event.testCase))
         klass = event.testCase
@@ -60,6 +79,7 @@ class Generators(Plugin):
                 event.excludedNames.append(name)
 
     def loadTestsFromName(self, event):
+        """Load tests from generator named on command line"""
         original_name = name = event.name
         module = event.module
         result = util.test_from_name(name, module)

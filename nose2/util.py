@@ -1,11 +1,10 @@
-"""
-This module contains some code copied from unittest2/loader.py and other
-code developed in reference to that module and others within unittest2.
+# This module contains some code copied from unittest2/loader.py and other
+# code developed in reference to that module and others within unittest2.
 
-unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
-Rights Reserved. See: http://docs.python.org/license.html
+# unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
+# Rights Reserved. See: http://docs.python.org/license.html
 
-"""
+import logging
 import os
 import re
 import sys
@@ -53,10 +52,12 @@ def ln(label, char='-', width=70):
 
 
 def valid_module_name(path):
+    """Is path a valid module name?"""
     return VALID_MODULE_RE.search(path)
 
 
 def name_from_path(path):
+    """Translate path into module name"""
     # back up to find module root
     parts = []
     path = os.path.normpath(path)
@@ -73,11 +74,13 @@ def name_from_path(path):
 
 
 def module_from_name(name):
+    """Import module from name"""
     __import__(name)
     return sys.modules[name]
 
 
 def test_from_name(name, module):
+    """Import test from name"""
     pos = name.find(':')
     index = None
     if pos != -1:
@@ -96,6 +99,7 @@ def test_from_name(name, module):
 
 
 def object_from_name(name, module=None):
+    """Import object from name"""
     parts = name.split('.')
     if module is None:
         parts_copy = parts[:]
@@ -117,6 +121,7 @@ def object_from_name(name, module=None):
 
 
 def name_from_args(name, index, args):
+    """Create test name from test args"""
     summary = ', '.join(repr(arg) for arg in args)
     return '%s:%s\n%s' % (name, index + 1, summary[:79])
 
@@ -138,16 +143,19 @@ def ispackage(path):
 
 
 def ensure_importable(dirname):
+    """Ensure a directory is on sys.path"""
     if not dirname in sys.path:
         sys.path.insert(0, dirname)
 
 
 def isgenerator(obj):
+    """is this object a generator?"""
     return (isgeneratorfunction(obj)
             or getattr(obj, 'testGenerator', None) is not None)
 
 
 def safe_decode(string):
+    """Safely decode a byte string into unicode"""
     if string is None:
         return string
     try:
@@ -161,6 +169,7 @@ def safe_decode(string):
 
 
 def exc_info_to_string(err, test):
+    """Format exception info for output"""
     formatTraceback = getattr(test, 'formatTraceback', None)
     if formatTraceback is not None:
         return test.formatTraceback(err)
@@ -182,6 +191,15 @@ def format_traceback(test, err):
     else:
         msgLines = traceback.format_exception(exctype, value, tb)
     return ''.join(msgLines)
+
+
+def parse_log_level(lvl):
+    """Return numeric log level given a string"""
+    try:
+        return int(lvl)
+    except ValueError:
+        pass
+    return getattr(logging, lvl.upper(), logging.WARN)
 
 
 def _is_relevant_tb_level(tb):

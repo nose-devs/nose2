@@ -1,3 +1,21 @@
+"""unittest/unittest2 compatibilty wrapper.
+
+Anything internal to nose2 *must* import unittest from here, to be
+sure that it is using unittest2 when on older pythons.
+
+Yes::
+
+  from nose2.compat import unittest
+
+**NO**::
+
+  import unittest
+
+**NO**::
+
+  import unittest2
+
+"""
 try:
     import unittest2 as unittest
 except ImportError:

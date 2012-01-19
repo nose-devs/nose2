@@ -15,9 +15,67 @@ class Session(object):
 
     Encapsulates all configuration for a given test run.
 
+    .. attribute :: argparse
+
+       An instance of :class:`argparse.ArgumentParser`. Plugins can
+       use this directly to add arguments and argument groups, but
+       *must* do so in their ``__init__`` methods.
+
+    .. attribute :: pluginargs
+
+       The argparse argument group in which plugins (by default) place
+       their command-line arguments. Plugins can use this directly to
+       add arguments, but *must* do so in their ``__init__`` methods.
+
+    .. attribute :: hooks
+
+       The :class:`nose2.events.PluginInterface` instance contains
+       all available plugin methods and hooks.
+
+    .. attribute :: plugins
+
+       The list of loaded -- but not necessarily *active* -- plugins.
+
+    .. attribute :: verbosity
+
+       Current verbosity level. Default: 1.
+
+    .. attribute :: startDir
+
+       Start directory of test run. Test discovery starts
+       here. Default: current working directory.
+
+    .. attribute :: topLevelDir
+
+       Top-level directory of test run. This directory is added to
+       sys.path. Default: starting directory.
+
+    .. attribute :: libDirs
+
+       Names of code directories, relative to starting
+       directory. Default: ['lib', 'src']. These directories are added
+       to sys.path and discovery if the exist.
+
+    .. attribute :: testFilePattern
+
+       Pattern used to discover test module files. Default: test*.py
+
+    .. attribute :: testMethodPrefix
+
+       Prefix used to discover test methods and functions: Default: 'test'.
+
+    .. attribute :: unittest
+
+       The config section for nose2 itself.
+
     """
+    configClass = config.Config
+
     def __init__(self):
-        self.argparse = argparse.ArgumentParser(prog='nose2')
+        self.argparse = argparse.ArgumentParser(prog='nose2', add_help=False)
+        self.pluginargs = self.argparse.add_argument_group(
+            'plugin arguments',
+            'Command-line arguments added by plugins:')
         self.config = configparser.ConfigParser()
         self.hooks = events.PluginInterface()
         self.plugins = []
@@ -26,16 +84,34 @@ class Session(object):
         self.topLevelDir = None
 
     def get(self, section):
+        """Get a config section.
+
+        :param section: The section name to retreive.
+        :returns: instance of self.configClass.
+
+        """
         # FIXME cache these
         items = []
         if self.config.has_section(section):
             items = self.config.items(section)
-        return config.Config(items)
+        return self.configClass(items)
 
     def loadConfigFiles(self, *filenames):
+        """Load config files.
+
+        :param filenames: Names of config files to load.
+
+        Loads all names files that exist into ``self.config``.
+
+        """
         self.config.read(filenames)
 
     def loadPlugins(self, modules=None):
+        """Load plugins.
+
+        :param modules: List of module names from which to load plugins.
+
+        """
         # plugins set directly
         if modules is None:
             modules = []
@@ -47,9 +123,15 @@ class Session(object):
         log.debug("Loading plugin modules: %s", all_)
         for module in all_:
             self.loadPluginsFromModule(util.module_from_name(module))
-        self.hooks.loadedPlugins(events.PluginsLoadedEvent(self.plugins))
+        self.hooks.pluginsLoaded(events.PluginsLoadedEvent(self.plugins))
 
     def loadPluginsFromModule(self, module):
+        """Load plugins from a module.
+
+        :param module: A python module containing zero or more plugin
+                       classes.
+
+        """
         avail = []
         for entry in dir(module):
             try:
@@ -63,9 +145,20 @@ class Session(object):
                 pass
         for cls in avail:
             log.debug("Plugin is available: %s", cls)
-            self.plugins.append(cls(session=self))
+            plugin = cls(session=self)
+            self.plugins.append(plugin)
+            for method in self.hooks.preRegistrationMethods:
+                if hasattr(plugin, method):
+                    self.hooks.register(method, plugin)
 
     def registerPlugin(self, plugin):
+        """Register a plugin.
+
+        :param plugin: A `nose2.events.Plugin` instance.
+
+        Register the plugin with all methods it implements.
+
+        """
         log.debug("Register active plugin %s", plugin)
         if plugin not in self.plugins:
             self.plugins.append(plugin)
@@ -75,6 +168,7 @@ class Session(object):
                 self.hooks.register(method, plugin)
 
     def prepareSysPath(self):
+        """Add code directories to sys.path"""
         tld = self.topLevelDir
         sd = self.startDir
         if tld is None:

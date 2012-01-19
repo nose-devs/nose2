@@ -40,11 +40,12 @@ class AutoPlugin(Directive):
             self.add_config(rst, config)
 
         # command-line options
-        self.headline(rst, u'Command-line options')
-        for opt in opts:
-            for line in opt.options():
-                rst.append(line, AD)
-            rst.append('', AD)
+        if opts.opts:
+            self.headline(rst, u'Command-line options')
+            for opt in opts:
+                for line in opt.options():
+                    rst.append(line, AD)
+                rst.append('', AD)
 
         # class __doc__
         self.headline(rst, u'Plugin class reference')
@@ -133,30 +134,37 @@ class ConfigBucket(object):
     def as_bool(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'boolean',
                            'default': default}
+        return default
     as_tri = as_bool
 
     def as_int(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'integer',
                            'default': default}
         return default
+
     def as_float(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'float',
                            'default': default}
         return default
+
     def as_str(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'str',
                            'default': default}
         return default
+
     def as_list(self, item, default=DEFAULT):
         self.vars[item] = {'type': 'list',
                            'default': default}
         return default
+
     def __getitem__(self, item):
         self.vars[item] = {'type': None,
                            'default': DEFAULT}
+
     def get(self, item, default=DEFAULT):
         self.vars[item] = {'type': None,
                            'default': default}
+        return default
 
 
 class OptBucket(object):

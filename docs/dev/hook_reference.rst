@@ -352,3 +352,25 @@ These hooks are called for registered plugins only.
    summary line is output. If you want to print to the console, write
    to ``event.stream``. Remember to respect self.session.verbosity
    when printing to the console.
+
+
+User Interaction Hooks
+----------------------
+
+These hooks are called when plugins want to interact with the user.
+
+.. function :: beforeInteraction(event)
+
+   :param event: A :class:`nose2.events.UserInteractionEvent`
+
+   Plugins should respond to this hook by getting out of the way of
+   user interaction, if the need to, or setting ``event.handled`` and
+   returning False, if they need to but can't.
+
+
+.. function :: afterInteraction(event)
+
+   :param event: A :class:`nose2.events.UserInteractionEvent`
+
+   Plugins can respond to this hook by going back to whatever they
+   were doing before the user stepped in and started poking around.

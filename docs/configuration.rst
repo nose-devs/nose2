@@ -6,7 +6,7 @@ Configuration Files
 
 Most configuration of nose2 is done via config files. These are
 standard, .ini-style config files, with sections marked off by
-brackets ("[unittest]") and key = value pairs within those sections.
+brackets ("``[unittest]``") and ``key = value`` pairs within those sections.
 
 Two command line options, :option:`-c` and :option:`--no-user-config`
 may be used to determine which config files are loaded.
@@ -125,6 +125,9 @@ config file section can be set to automatically register by including
 
 Plugins may accept any number of other config values, which may be
 booleans, strings, integers or lists. A polite plugin will document
-these options somewhere. Plugins that want to make use of
-:doc:`dev/documenting_plugins` *must* extract all of their config
-values in their ``__init__`` methods.
+these options somewhere. Plugins that want to make use of nose2's
+`Sphinx`_ extension as detailed in :doc:`dev/documenting_plugins`
+*must* extract all of their config values in their ``__init__``
+methods.
+
+.. _Sphinx : http://sphinx.pocoo.org/

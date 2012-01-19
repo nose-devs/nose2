@@ -61,7 +61,7 @@ dotted name, such as
 ``pkg1.tests.test_things.SomeTests.test_ok``. The argument
 part is separated from the python object part by a colon (":") and
 specifies the *index* of the generated test to select, *starting from
-1*. For example, ``pk1.test.test_things.test_params_func:1`` would
+1*. For example, ``pkg1.test.test_things.test_params_func:1`` would
 select the *first* test generated from the parameterized test
 ``test_params_func``.
 

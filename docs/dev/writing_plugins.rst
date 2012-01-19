@@ -110,8 +110,26 @@ You should provide reasonable defaults for all config options.
 Guidelines
 ==========
 
+Events
+------
+
+nose2's plugin api is based on the api in unittest2's
+under-development plugins branch. It differs from nose's plugins api
+in one major area: what it passes to hooks. Where nose passes a
+variety of arguments, nose2 *always passes an event*. The events are
+listed in the :doc:`event_reference`.
+
+Here's the key thing about that: *event attributes are
+read-write*. Unless stated otherwise in the documentation for a hook,
+you can set a new value for any event attribute, and *this will do
+something*. Plugins and nose2 systems will see that new value and
+either use it instead of what was originally set in the event
+(example: the reporting stream or test executor), or use it to
+supplement something they find elsewhere (example: extraTests on a
+test loading event).
+
 "Handling" events
------------------
+~~~~~~~~~~~~~~~~~
 
 Many hooks give plugins a chance to completely handle events,
 bypassing other plugins and any core nose2 operations. To do this, a
@@ -180,4 +198,4 @@ Recipes
   Example: :class:`nose2.plugins.loader.parameters.Parameters`
 
 .. _argparse : http://pypi.python.org/pypi/argparse/1.2.1
-.. _Sphinx : http://sphins.pocoo.org/
+.. _Sphinx : http://sphinx.pocoo.org/

@@ -1,7 +1,8 @@
 Plugin class reference
 ======================
 
-The plugin system in nose2 ... FIXME
+The plugin system in nose2 is based on the plugin system in
+unittest2's plugins branch.
 
 
 Plugin base class

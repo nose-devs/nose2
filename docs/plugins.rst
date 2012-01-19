@@ -18,7 +18,6 @@ Builtin Plugins
    plugins/logcapture
    plugins/outcomes
 
-   plugins/attrib
    plugins/collect
    plugins/testid
 

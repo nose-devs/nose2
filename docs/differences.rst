@@ -25,7 +25,7 @@ first, then begins test execution*. This has some important
 implications.
 
 First, it means that nose2 does not need a custom importer. nose2
-imports test modules with __import__().
+imports test modules with :func:`__import__`.
 
 Second, it means that *nose2 does not support all of the test project
 layouts that nose does*. Specifically, projects that look like this
@@ -65,9 +65,9 @@ Configuration
 ^^^^^^^^^^^^^
 
 nose expects plugins to make all of their configuration parameters
-available as command-line options. nose2 expects almost all
-configuration to be done via configuration files. Plugins should
-generally have only one command-line option, the option to activate
+available as command-line options. *nose2 expects almost all
+configuration to be done via configuration files*. Plugins should
+generally have only one command-line option: the option to activate
 the plugin. Other configuration parameters should be loaded from
 config files. This allows more repeatable test runs and keeps the set
 of command-line options small enough for humans to read. See:
@@ -77,8 +77,8 @@ Plugin Loading
 ^^^^^^^^^^^^^^
 
 nose uses setuptools entry points to find and load plugins. nose2
-does not. Instead, it requires that all plugins be listed in config
-files. This ensures that no plugin is loaded into a test system just
+does not. Instead, *nose2 requires that all plugins be listed in config
+files*. This ensures that no plugin is loaded into a test system just
 by virtue of being installed somewhere, and makes it easier to include
 plugins that are part of the project under test. See:
 :doc:`configuration` for more.
@@ -111,12 +111,12 @@ be rewritten to work with nose2*. See: :doc:`dev/writing_plugins` for more.
 Missing Plugins
 ^^^^^^^^^^^^^^^
 
-*nose2 does not (yet) include some of the more commonly-used plugins in
-nose*, including test coverage, xunit output and multiprocessing. Most
-of these should arrive in future releases. However, some of nose's
-builtin plugins cannot be ported to nose2 due to differences in
-internals. See: :doc:`plugins` for information on the plugins built in
-to nose2.
+*nose2 does not (yet) include some of the more commonly-used plugins
+in nose*, including test coverage, xunit output and filtering tests
+using attributes. Most of these should arrive in future
+releases. However, some of nose's builtin plugins cannot be ported to
+nose2 due to differences in internals. See: :doc:`plugins` for
+information on the plugins built in to nose2.
 
 Internals
 ^^^^^^^^^

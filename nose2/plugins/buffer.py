@@ -54,7 +54,7 @@ class OutputBufferPlugin(events.Plugin):
         """Stop buffering"""
         self._restore()
 
-    def testOutcome(self, event):
+    def setTestOutcome(self, event):
         """Attach buffer(s) to event.metadata"""
         if self.captureStdout:
             event.metadata['stdout'] = self.bufStdout

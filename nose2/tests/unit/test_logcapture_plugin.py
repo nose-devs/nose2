@@ -56,7 +56,7 @@ class LogCaptureUnitTest(TestCase):
         self.plugin.startTest(None)
         logcapture.logging.getLogger('test').debug("hello")
         assert self.plugin.handler.buffer
-        self.plugin.testOutcome(self.event())
+        self.plugin.setTestOutcome(self.event())
         assert self.plugin.handler.buffer
         self.plugin.stopTest(None)
         assert not self.plugin.handler.buffer
@@ -67,7 +67,7 @@ class LogCaptureUnitTest(TestCase):
         logcapture.logging.getLogger('test').debug("hello")
         assert self.plugin.handler.buffer
         e = self.event()
-        self.plugin.testOutcome(e)
+        self.plugin.setTestOutcome(e)
         assert 'logs' in e.metadata, "No log in %s" % e.metadata
 
 

@@ -7,6 +7,7 @@ from nose2 import session
 
 log = logging.getLogger(__name__)
 
+
 class StubLogging(object):
     def __init__(self, name=None):
         self.name = name
@@ -23,6 +24,7 @@ class StubLogging(object):
         for handler in self.handlers:
             handler.emit(StubRecord(message % arg))
 
+
 class StubRecord(object):
     def __init__(self, message):
         self.message = message
@@ -33,6 +35,7 @@ class StubRecord(object):
         self.stack_info = None
     def getMessage(self):
         return self.message
+
 
 class LogCaptureUnitTest(TestCase):
     tags = ['unit']
@@ -56,7 +59,7 @@ class LogCaptureUnitTest(TestCase):
         self.plugin.startTest(None)
         logcapture.logging.getLogger('test').debug("hello")
         assert self.plugin.handler.buffer
-        self.plugin.testOutcome(self.event())
+        self.plugin.setTestOutcome(self.event())
         assert self.plugin.handler.buffer
         self.plugin.stopTest(None)
         assert not self.plugin.handler.buffer
@@ -67,7 +70,7 @@ class LogCaptureUnitTest(TestCase):
         logcapture.logging.getLogger('test').debug("hello")
         assert self.plugin.handler.buffer
         e = self.event()
-        self.plugin.testOutcome(e)
+        self.plugin.setTestOutcome(e)
         assert 'logs' in e.metadata, "No log in %s" % e.metadata
 
 

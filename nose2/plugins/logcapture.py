@@ -3,7 +3,7 @@ Capture log messages during test execution, appending them to the
 error reports of failed tests.
 
 This plugin implements :func:`startTestRun`, :func:`startTest`,
-:func:`stopTest`, :func:`testOutcome`, and :func:`outcomeDetail` to
+:func:`stopTest`, :func:`setTestOutcome`, and :func:`outcomeDetail` to
 set up a logging configuration that captures log messages during test
 execution, and appends them to error reports for tests that fail or
 raise exceptions.
@@ -48,7 +48,7 @@ class LogCapture(Plugin):
         """Set up handler for new test"""
         self._setupLoghandler()
 
-    def testOutcome(self, event):
+    def setTestOutcome(self, event):
         """Store captured log messages in ``event.metadata``"""
         self._addCapturedLogs(event)
 

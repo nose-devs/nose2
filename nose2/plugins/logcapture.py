@@ -48,7 +48,7 @@ class LogCapture(Plugin):
         """Set up handler for new test"""
         self._setupLoghandler()
 
-    def testOutcome(self, event):
+    def setTestOutcome(self, event):
         """Store captured log messages in ``event.metadata``"""
         self._addCapturedLogs(event)
 

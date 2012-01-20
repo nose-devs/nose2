@@ -6,7 +6,7 @@ This allows you to use print for debugging in tests without making
 your test runs noisy.
 
 This plugin implements :func:`startTest`, :func:`stopTest`,
-:func:`testOutcome`, :func:`outcomeDetail`, :func:`beforeInteraction`
+:func:`setTestOutcome`, :func:`outcomeDetail`, :func:`beforeInteraction`
 and :func:`afterInteraction` to manage capturing sys.stdout and/or
 sys.stderr into buffers, attaching the buffered output to test error
 report detail, and getting out of the way when other plugins want to

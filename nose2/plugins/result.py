@@ -89,8 +89,8 @@ class ResultReporter(events.Plugin):
             self.reportCategories.setdefault(event.outcome, []).append(event)
             self._reportOtherOutcome(event)
 
-    def stopTestRun(self, event):
-        """Handle stopTestRun hook
+    def afterTestRun(self, event):
+        """Handle afterTestRun hook
 
         - prints error lists
         - prints summary

@@ -12,6 +12,7 @@ example.cfg
 .coverage
 nosetests.xml
 xunit.xml
+nose2-junit.xml
 _env
 docs/_build
 htmlcov

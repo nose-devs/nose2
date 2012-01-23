@@ -9,4 +9,3 @@ include license.txt
 graft nose2/tests/functional/support
 graft docs
 graft bin
-

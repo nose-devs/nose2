@@ -27,6 +27,8 @@ class PluggableTestProgram(unittest.TestProgram):
     :param failfast: *IGNORED*
     :param catchbreak: *IGNORED*
     :param buffer: *IGNORED*
+    :param plugins: List of additional plugin modules to load
+    :param excludePlugins: List of plugin modules to exclude
 
     .. attribute :: sessionClass
 
@@ -63,23 +65,30 @@ class PluggableTestProgram(unittest.TestProgram):
     sessionClass = session.Session
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
-    defaultPlugins = ['nose2.plugins.loader.discovery',
+    defaultPlugins = ('nose2.plugins.loader.discovery',
                       'nose2.plugins.loader.testcases',
                       'nose2.plugins.loader.functions',
                       'nose2.plugins.loader.generators',
                       'nose2.plugins.loader.parameters',
                       'nose2.plugins.result',
-                      'nose2.plugins.collect',
                       'nose2.plugins.logcapture',
                       'nose2.plugins.buffer',
                       'nose2.plugins.failfast',
                       'nose2.plugins.debugger',
-                      'nose2.plugins.printhooks',
+                      'nose2.plugins.collect',
                       'nose2.plugins.testid',
-                      'nose2.plugins.prof',
-                      # etc
-                      ]
+                      )
+    excludePlugins = ()
+
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
+    def __init__(self, **kw):
+        plugins = kw.pop('plugins', [])
+        exclude = kw.pop('excludePlugins', [])
+        self.defaultPlugins = list(self.defaultPlugins)
+        self.excludePlugins = list(self.excludePlugins)
+        self.defaultPlugins.extend(plugins)
+        self.excludePlugins.extend(exclude)
+        super(PluggableTestProgram, self).__init__(**kw)
 
     def parseArgs(self, argv):
         """Parse command line args
@@ -138,6 +147,14 @@ class PluggableTestProgram(unittest.TestProgram):
             dest='load_plugins', const=False, default=True,
             help="Do not load any plugins. Warning: nose2 does not "
             "do anything if no plugins are loaded")
+        self.argparse.add_argument(
+            '--plugin', action='append',
+            dest='plugins', default=[],
+            help="Load this plugin module.")
+        self.argparse.add_argument(
+            '--exclude-plugin', action='append',
+            dest='exclude_plugins', default=[],
+            help="Do not load this plugin module")
         self.argparse.add_argument('--verbose', '-v', action='count', default=0)
         self.argparse.add_argument('--quiet', action='store_const',
                                  dest='verbose', const=0)
@@ -162,7 +179,12 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
         self.session.prepareSysPath()
         if cfg_args.load_plugins:
+            self.defaultPlugins.extend(cfg_args.plugins)
+            self.excludePlugins.extend(cfg_args.exclude_plugins)
             self.loadPlugins()
+        elif cfg_args.plugins or cfg_args.exclude_plugins:
+            log.warn("Both '--no-plugins' and '--plugin' or '--exclude-plugin' "
+                     "specified. No plugins were loaded.")
 
     def findConfigFiles(self, cfg_args):
         """Find available config files"""
@@ -191,8 +213,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def loadPlugins(self):
         """Load available plugins"""
-        # FIXME also pass in plugins set via __init__ args
-        self.session.loadPlugins(self.defaultPlugins)
+        self.session.loadPlugins(self.defaultPlugins, self.excludePlugins)
 
     def createTests(self):
         """Create top-level test suite"""

@@ -15,6 +15,7 @@ xunit.xml
 _env
 docs/_build
 htmlcov
+cover/*
 dist
 build
 .noseids

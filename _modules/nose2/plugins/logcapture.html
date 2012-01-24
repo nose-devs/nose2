@@ -60,7 +60,7 @@
 <span class="sd">error reports of failed tests.</span>
 
 <span class="sd">This plugin implements :func:`startTestRun`, :func:`startTest`,</span>
-<span class="sd">:func:`stopTest`, :func:`testOutcome`, and :func:`outcomeDetail` to</span>
+<span class="sd">:func:`stopTest`, :func:`setTestOutcome`, and :func:`outcomeDetail` to</span>
 <span class="sd">set up a logging configuration that captures log messages during test</span>
 <span class="sd">execution, and appends them to error reports for tests that fail or</span>
 <span class="sd">raise exceptions.</span>
@@ -105,7 +105,7 @@
         <span class="sd">&quot;&quot;&quot;Set up handler for new test&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setupLoghandler</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="LogCapture.testOutcome"><a class="viewcode-back" href="../../../plugins/logcapture.html#nose2.plugins.logcapture.LogCapture.testOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">testOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="LogCapture.setTestOutcome"><a class="viewcode-back" href="../../../plugins/logcapture.html#nose2.plugins.logcapture.LogCapture.setTestOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">setTestOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Store captured log messages in ``event.metadata``&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_addCapturedLogs</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </div>

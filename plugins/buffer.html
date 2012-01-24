@@ -69,7 +69,7 @@ output to the error reports of failed tests.</p>
 <p>This allows you to use print for debugging in tests without making
 your test runs noisy.</p>
 <p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#startTest" title="startTest"><tt class="xref py py-func docutils literal"><span class="pre">startTest()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a>,
-<a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a>
+<a class="reference internal" href="../dev/hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a>
 and <a class="reference internal" href="../dev/hook_reference.html#afterInteraction" title="afterInteraction"><tt class="xref py py-func docutils literal"><span class="pre">afterInteraction()</span></tt></a> to manage capturing sys.stdout and/or
 sys.stderr into buffers, attaching the buffered output to test error
 report detail, and getting out of the way when other plugins want to
@@ -166,6 +166,12 @@ talk to the user.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="nose2.plugins.buffer.OutputBufferPlugin.setTestOutcome">
+<tt class="descname">setTestOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/buffer.html#OutputBufferPlugin.setTestOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.buffer.OutputBufferPlugin.setTestOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach buffer(s) to event.metadata</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="nose2.plugins.buffer.OutputBufferPlugin.startTest">
 <tt class="descname">startTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/buffer.html#OutputBufferPlugin.startTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.buffer.OutputBufferPlugin.startTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start buffering selected stream(s)</p>
@@ -175,12 +181,6 @@ talk to the user.</p>
 <dt id="nose2.plugins.buffer.OutputBufferPlugin.stopTest">
 <tt class="descname">stopTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/buffer.html#OutputBufferPlugin.stopTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.buffer.OutputBufferPlugin.stopTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop buffering</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="nose2.plugins.buffer.OutputBufferPlugin.testOutcome">
-<tt class="descname">testOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/buffer.html#OutputBufferPlugin.testOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.buffer.OutputBufferPlugin.testOutcome" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attach buffer(s) to event.metadata</p>
 </dd></dl>
 
 </dd></dl>

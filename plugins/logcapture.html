@@ -67,7 +67,7 @@
 <span class="target" id="module-nose2.plugins.logcapture"></span><p>Capture log messages during test execution, appending them to the
 error reports of failed tests.</p>
 <p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#startTest" title="startTest"><tt class="xref py py-func docutils literal"><span class="pre">startTest()</span></tt></a>,
-<a class="reference internal" href="../dev/hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a>, and <a class="reference internal" href="../dev/hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a> to
+<a class="reference internal" href="../dev/hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a>, and <a class="reference internal" href="../dev/hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a> to
 set up a logging configuration that captures log messages during test
 execution, and appends them to error reports for tests that fail or
 raise exceptions.</p>
@@ -199,6 +199,12 @@ raise exceptions.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.setTestOutcome">
+<tt class="descname">setTestOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.setTestOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.setTestOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store captured log messages in <tt class="docutils literal"><span class="pre">event.metadata</span></tt></p>
+</dd></dl>
+
+<dl class="method">
 <dt id="nose2.plugins.logcapture.LogCapture.startTest">
 <tt class="descname">startTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.startTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.startTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up handler for new test</p>
@@ -214,12 +220,6 @@ raise exceptions.</p>
 <dt id="nose2.plugins.logcapture.LogCapture.stopTest">
 <tt class="descname">stopTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.stopTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.stopTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear captured messages, ready for next test</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="nose2.plugins.logcapture.LogCapture.testOutcome">
-<tt class="descname">testOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.testOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.testOutcome" title="Permalink to this definition">¶</a></dt>
-<dd><p>Store captured log messages in <tt class="docutils literal"><span class="pre">event.metadata</span></tt></p>
 </dd></dl>
 
 </dd></dl>

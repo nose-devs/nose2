@@ -63,7 +63,7 @@
 <span class="sd">your test runs noisy.</span>
 
 <span class="sd">This plugin implements :func:`startTest`, :func:`stopTest`,</span>
-<span class="sd">:func:`testOutcome`, :func:`outcomeDetail`, :func:`beforeInteraction`</span>
+<span class="sd">:func:`setTestOutcome`, :func:`outcomeDetail`, :func:`beforeInteraction`</span>
 <span class="sd">and :func:`afterInteraction` to manage capturing sys.stdout and/or</span>
 <span class="sd">sys.stderr into buffers, attaching the buffered output to test error</span>
 <span class="sd">report detail, and getting out of the way when other plugins want to</span>
@@ -111,7 +111,7 @@
         <span class="sd">&quot;&quot;&quot;Stop buffering&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="p">()</span>
 </div>
-<div class="viewcode-block" id="OutputBufferPlugin.testOutcome"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin.testOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">testOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="OutputBufferPlugin.setTestOutcome"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin.setTestOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">setTestOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Attach buffer(s) to event.metadata&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStdout</span><span class="p">:</span>
             <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bufStdout</span>

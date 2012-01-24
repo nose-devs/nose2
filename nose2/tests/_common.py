@@ -5,8 +5,10 @@ import shutil
 import sys
 import subprocess
 
+import six
+
 from nose2.compat import unittest
-from nose2 import util
+from nose2 import main, util
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -129,14 +131,52 @@ def support_file(*path_parts):
     return os.path.abspath(os.path.join(SUPPORT, *path_parts))
 
 
-def run_nose2(*nose2_args, **popen_args):
-    if 'cwd' in popen_args:
-        cwd = popen_args.pop('cwd')
+def run_nose2(*nose2_args, **nose2_kwargs):
+    if 'cwd' in nose2_kwargs:
+        cwd = nose2_kwargs.pop('cwd')
         if not os.path.isabs(cwd):
-            popen_args['cwd'] = support_file(cwd)
-    process = subprocess.Popen(
-        ['python', '-m', 'nose2.__main__'] + list(nose2_args),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        **popen_args)
-    return process
+            nose2_kwargs['cwd'] = support_file(cwd)
+    if 'module' not in nose2_kwargs:
+        nose2_kwargs['module'] = None
+    return NotReallyAProc(nose2_args, **nose2_kwargs)
+
+
+class NotReallyAProc(object):
+    def __init__(self, args, cwd=None, **kwargs):
+        self.args = args
+        self.chdir = cwd
+        self.kwargs = kwargs
+
+    def __enter__(self):
+        self._stdout = sys.__stdout__
+        self._stderr = sys.__stderr__
+        self.cwd = os.getcwd()
+        if self.chdir:
+            os.chdir(self.chdir)
+        self.stdout = sys.stdout = sys.__stdout__ = six.StringIO()
+        self.stderr = sys.stderr = sys.__stderr__ = six.StringIO()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout = sys.__stdout__ = self._stdout
+        sys.stderr = sys.__stderr__ = self._stderr
+        if self.chdir:
+            os.chdir(self.cwd)
+        return False
+
+    def communicate(self):
+        self.__enter__()
+        try:
+            self.result = main.PluggableTestProgram(
+                argv=('nose2',) + self.args, exit=False,
+                **self.kwargs)
+            return self.stdout.getvalue(), self.stderr.getvalue()
+        finally:
+            self.__exit__(None, None, None)
+
+    @property
+    def pid(self):
+        return id(self)
+
+    def poll(self):
+        return not self.result.result.wasSuccessful()

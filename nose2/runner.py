@@ -51,6 +51,7 @@ class PluggableTestRunner(object):
             timeTaken = stopTime - startTime
             event = events.StopTestRunEvent(self, result, stopTime, timeTaken)
             self.session.hooks.stopTestRun(event)
+            self.session.hooks.afterTestRun(event)
         return result
 
     def _makeResult(self):

@@ -100,7 +100,11 @@ class Parameters(Plugin):
         """Load parameterized test named on command line"""
         original_name = name = event.name
         module = event.module
-        result = util.test_from_name(name, module)
+        try:
+            result = util.test_from_name(name, module)
+        except (AttributeError, ImportError) as e:
+            event.handled = True
+            return event.loader.failedLoadTests(name, e)
         if result is None:
             # we can't find it - let the default case handle it
             return

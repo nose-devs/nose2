@@ -9,15 +9,22 @@ undefined = object()
 # TODO: eval attribs
 
 class AttributeSelector(Plugin):
-    """TODO: document"""
+    """Filter tests by attribute"""
 
     def __init__(self):
         self.attribs = []
-        self.addOption(self.attribs, "A", "attr", "Attribulate")
+        self.addArgument(
+            self.attribs, "A", "attribute",
+            "Select tests with matching attribute")
+        # TODO eval-attribute argument
+
+    def handleArgs(self, args):
+        """Register if any attribs defined"""
+        if self.attribs:
+            self.register()
 
     def startTestRun(self, event):
-        if not self.attribs:
-            return
+        """Filter event.suite by specified attributes"""
         log.debug('Attribute selector attribs %s', self.attribs)
         attribs = []
         for attr in self.attribs:

@@ -1,7 +1,9 @@
+import logging
 from unittest import TestSuite
 
 from nose2.events import Plugin
 
+log = logging.getLogger(__name__)
 undefined = object()
 
 # TODO: eval attribs
@@ -16,6 +18,7 @@ class AttributeSelector(Plugin):
     def startTestRun(self, event):
         if not self.attribs:
             return
+        log.debug('Attribute selector attribs %s', self.attribs)
         attribs = []
         for attr in self.attribs:
             # all attributes within an attribute group must match

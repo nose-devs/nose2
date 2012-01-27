@@ -202,7 +202,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn(
             'scenario/module_import_err',
             '-v',
-            'tests')
+            'test_import_err')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 1)
 
@@ -210,7 +210,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn(
             'scenario/module_import_err',
             '-v',
-            'tests.test')
+            'test_import_err.test')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 1)
 
@@ -218,7 +218,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn(
             'scenario/module_import_err',
             '-v',
-            'tests.Test')
+            'test_import_err.Test')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 1)
 
@@ -226,6 +226,6 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn(
             'scenario/module_import_err',
             '-v',
-            'tests.Test.test')
+            'test_import_err.Test.test')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 1)

@@ -366,7 +366,9 @@ class StartTestRunEvent(Event):
 
     .. attribute :: suite
 
-       Top-level test suite to execute
+       Top-level test suite to execute. Plugins can filter this suite,
+       or set event.suite to change which tests execute (or how they
+       execute).
 
     .. attribute :: result
 

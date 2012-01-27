@@ -16,6 +16,7 @@ nose2-junit.xml
 _env
 docs/_build
 htmlcov
+cover/*
 dist
 build
 .noseids

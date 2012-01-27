@@ -218,6 +218,9 @@ class PluggableTestProgram(unittest.TestProgram):
     def createTests(self):
         """Create top-level test suite"""
         # XXX belongs in init?
+        if self.module and not '__unittest' in dir(self.module):
+            self.module = None
+
         event = events.CreateTestsEvent(
            self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
@@ -225,8 +228,6 @@ class PluggableTestProgram(unittest.TestProgram):
            self.test = result
         else:
             log.debug("Create tests from %s/%s", self.testNames, self.module)
-            if self.module and '__unittest' in dir(self.module):
-                self.module = None
             self.test = self.testLoader.loadTestsFromNames(
                 self.testNames, self.module)
 

@@ -71,6 +71,9 @@ class AttributeSelector(Plugin):
         for group in attribs:
             match = True
             for key, value in group:
+                neg = False
+                if key.startswith('!'):
+                    neg, key = True, key[1:]
                 obj_value = self.getAttr(test, key)
                 if callable(value):
                     if not value(key, test):
@@ -88,8 +91,12 @@ class AttributeSelector(Plugin):
                         break
                 elif type(obj_value) in (list, tuple):
                     # value must be found in the list attribute
-                    if not str(value).lower() in [str(x).lower()
-                                                  for x in obj_value]:
+                    found = str(value).lower() in [str(x).lower()
+                                                   for x in obj_value]
+                    if found and neg:
+                        match = False
+                        break
+                    elif not found and not neg:
                         match = False
                         break
                 else:

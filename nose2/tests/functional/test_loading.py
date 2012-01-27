@@ -196,3 +196,36 @@ class TestLoadTestsOutsideOfPackage(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
         self.assertEqual(proc.poll(), 1)
 
+
+class TestLoadingErrors(FunctionalTestCase):
+    def test_import_error_module(self):
+        proc = self.runIn(
+            'scenario/module_import_err',
+            '-v',
+            'test_import_err')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 1)
+
+    def test_import_error_func(self):
+        proc = self.runIn(
+            'scenario/module_import_err',
+            '-v',
+            'test_import_err.test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 1)
+
+    def test_import_error_testcase(self):
+        proc = self.runIn(
+            'scenario/module_import_err',
+            '-v',
+            'test_import_err.Test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 1)
+
+    def test_import_error_testcase_method(self):
+        proc = self.runIn(
+            'scenario/module_import_err',
+            '-v',
+            'test_import_err.Test.test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 1)

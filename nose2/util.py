@@ -91,10 +91,7 @@ def test_from_name(name, module):
             pass
         else:
             name = real_name
-    try:
-        parent, obj = object_from_name(name, module)
-    except (AttributeError, ImportError):
-        return None
+    parent, obj = object_from_name(name, module)
     return parent, obj, name, index
 
 

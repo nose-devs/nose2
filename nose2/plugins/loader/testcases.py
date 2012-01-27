@@ -39,7 +39,11 @@ class TestCaseLoader(events.Plugin):
         """Load tests from event.name if it names a test case/method"""
         name = event.name
         module = event.module
-        result = util.test_from_name(name, module)
+        try:
+            result = util.test_from_name(name, module)
+        except (AttributeError, ImportError) as e:
+            event.handled = True
+            return event.loader.failedLoadTests(name, e)
         if result is None:
             return
         parent, obj, name, index = result

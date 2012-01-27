@@ -160,6 +160,8 @@ def safe_decode(string):
         return string
     try:
         return string.decode()
+    except AttributeError:
+        return string
     except UnicodeDecodeError:
         pass
     try:

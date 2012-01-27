@@ -18,7 +18,6 @@ pkg1.test.test_things.SomeTests.test_ok
 
 """
 from nose2.tests._common import FunctionalTestCase, support_file
-from nose2 import util
 
 
 class TestLoadTestsFromPackage(FunctionalTestCase):
@@ -94,6 +93,7 @@ class TestLoadTestsFromPackage(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertTestRunOutputMatches(proc, stderr='OK')
         self.assertEqual(proc.poll(), 0)
+
     def test_testcase_name(self):
         proc = self.runIn(
             'scenario/tests_in_package',

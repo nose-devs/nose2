@@ -142,10 +142,9 @@ class Parameters(Plugin):
             method_name = util.name_from_args(name, index, argSet)
             def _method(self, method=method, argSet=argSet):
                 return method(self, *argSet)
-            if hasattr(testCaseClass, method_name):
-                # already generated
-                return
-            setattr(testCaseClass, method_name, _method)
+            if not hasattr(testCaseClass, method_name):
+                # not already generated
+                setattr(testCaseClass, method_name, _method)
             names.append(method_name)
         return names
 

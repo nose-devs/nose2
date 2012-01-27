@@ -156,7 +156,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
                 if six.callable(callback):
                     callback(values)
                 elif isinstance(callback, list):
-                    callback.append(values)
+                    callback.extend(values)
                 else:
                     raise ValueError("Invalid callback %s for plugin option %s",
                                      callback, option_string)

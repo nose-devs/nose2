@@ -289,6 +289,14 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to take action at the end of a test run.
 
+.. function :: afterTestRun(self, event)
+
+   :param event: A :class:`nose2.events.StopTestRunEvent` instance
+
+   Plugins can use this hook to take action *after* the end of a test
+   run, such as printing summary reports like the builtin result
+   reporter plugin :class:`nose2.plugins.result.ResultReporter`.
+
 .. function :: resultStop(self, event)
 
    :param event: A :class:`nose2.events.ResultStopEvent` instance

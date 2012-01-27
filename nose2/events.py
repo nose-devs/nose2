@@ -242,7 +242,7 @@ class PluginInterface(object):
         'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
         'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
-        'afterInteraction', 'createTests',
+        'afterInteraction', 'createTests', 'afterTestRun',
         # ... etc?
         )
     hookClass = Hook

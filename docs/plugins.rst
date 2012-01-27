@@ -30,6 +30,7 @@ keyword argument.
    plugins/collect
    plugins/testid
 
+
 Available
 =========
 
@@ -44,6 +45,7 @@ argument.
 .. toctree::
    :maxdepth: 2
 
+   plugins/attrib
    plugins/doctests
    plugins/junitxml
    plugins/prof

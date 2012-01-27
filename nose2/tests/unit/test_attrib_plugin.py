@@ -1,5 +1,7 @@
+import unittest
+
 from nose2.plugins import attrib
-from nose2 import session
+from nose2 import events, session
 from nose2.tests._common import TestCase
 
 
@@ -18,7 +20,8 @@ class TestAttribPlugin(TestCase):
                 pass
             test_b.b = 1
         self.TC_1 = TC_1
-        self.plugin = attrib.AttributeSelector(session=session.Session())
+        self.session = session.Session()
+        self.plugin = attrib.AttributeSelector(session=self.session)
         self.plugin.register()
 
     def test_validate_attribs_with_simple_values(self):
@@ -53,3 +56,12 @@ class TestAttribPlugin(TestCase):
         assert not self.plugin.validateAttrib(
             self.TC_1('test_a'), [[('tags', 'c')]])
 
+    def test_start_test_run_filters_suite(self):
+        self.plugin.attribs = ['a']
+        suite = unittest.TestSuite()
+        suite.addTest(self.TC_1('test_a'))
+        suite.addTest(self.TC_1('test_b'))
+        event = events.StartTestRunEvent(None, suite, None, 1, None)
+        self.session.hooks.startTestRun(event)
+        self.assertEqual(len(event.suite._tests), 1)
+        self.assertEqual(event.suite._tests[0]._testMethodName, 'test_a')

@@ -106,7 +106,7 @@ class Session(object):
         """
         self.config.read(filenames)
 
-    def loadPlugins(self, modules=None):
+    def loadPlugins(self, modules=None, exclude=None):
         """Load plugins.
 
         :param modules: List of module names from which to load plugins.
@@ -115,10 +115,14 @@ class Session(object):
         # plugins set directly
         if modules is None:
             modules = []
+        if exclude is None:
+            exclude = []
         # plugins mentioned in config file(s)
         cfg = self.unittest
         more_plugins = cfg.as_list('plugins', [])
-        exclude = set(cfg.as_list('excluded-plugins', []))
+        cfg_exclude = cfg.as_list('exclude-plugins', [])
+        exclude.extend(cfg_exclude)
+        exclude = set(exclude)
         all_  = set(modules + more_plugins) - exclude
         log.debug("Loading plugin modules: %s", all_)
         for module in all_:

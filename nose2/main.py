@@ -218,7 +218,7 @@ class PluggableTestProgram(unittest.TestProgram):
     def createTests(self):
         """Create top-level test suite"""
         # XXX belongs in init?
-        if self.module and not '__unittest' in dir(self.module):
+        if self.module and '__unittest' in dir(self.module):
             self.module = None
 
         event = events.CreateTestsEvent(

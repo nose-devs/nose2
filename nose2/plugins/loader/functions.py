@@ -35,11 +35,15 @@ class Functions(Plugin):
         """Load test if event.name is the name of a test function"""
         name = event.name
         module = event.module
-        result = util.test_from_name(name, module)
+        try:
+            result = util.test_from_name(name, module)
+        except (AttributeError, ImportError) as e:
+            event.handled = True
+            return event.loader.failedLoadTests(name, e)
         if result is None:
             return
-        parent, obj, name, index = result
 
+        parent, obj, name, index = result
         if (isinstance(obj, types.FunctionType) and not
             util.isgenerator(obj) and not
             hasattr(obj, 'paramList') and not

@@ -165,7 +165,8 @@ class Parameters(Plugin):
                 return obj(*argSet)
             name = '%s.%s' % (obj.__module__, obj.__name__)
             func_name = util.name_from_args(name, index, argSet)
-            yield ParamsFunctionCase(func_name, func, **args)
+            yield util.transplant_class(
+                ParamsFunctionCase, obj.__module__)(func_name, func, **args)
 
 
 def enumerate_params(paramList):

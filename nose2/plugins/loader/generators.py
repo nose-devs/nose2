@@ -167,7 +167,8 @@ class Generators(Plugin):
         if tearDown is not None:
             args['tearDown'] = tearDown
         def createTest(name):
-            return GeneratorFunctionCase(name, **args)
+            return util.transplant_class(
+                GeneratorFunctionCase, obj.__module__)(name, **args)
         for test in self._testsFromGenerator(event, name, extras, createTest):
             yield test
 

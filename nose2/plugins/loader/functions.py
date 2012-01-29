@@ -97,6 +97,7 @@ class Functions(Plugin):
         if paramList is not None or isGenerator:
             return tests
         else:
-            case = unittest.FunctionTestCase(obj, **args)
+            case = util.transplant_class(
+                unittest.FunctionTestCase, obj.__module__)(obj, **args)
             tests.append(case)
         return tests

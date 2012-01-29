@@ -109,6 +109,7 @@ class AttributeSelector(Plugin):
         return any_
 
     def getAttr(self, test, key):
+        # FIXME for vals that are lists (or just mutable?), combine all levels
         val = getattr(test, key, undefined)
         if val is not undefined:
             return val

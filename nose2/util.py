@@ -192,6 +192,14 @@ def format_traceback(test, err):
     return ''.join(msgLines)
 
 
+def transplant_class(cls, module):
+    class C(cls):
+        pass
+    C.__module__ = module
+    C.__name__ = cls.__name__
+    return C
+
+
 def parse_log_level(lvl):
     """Return numeric log level given a string"""
     try:

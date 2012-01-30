@@ -58,3 +58,13 @@ class TestAttribPlugin(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='test_failed')
         self.assertTestRunOutputMatches(proc, stderr='test_skippy')
         self.assertTestRunOutputMatches(proc, stderr='test_typeerr')
+
+    def test_eval_expr(self):
+        proc = self.runIn(
+            'scenario/tests_in_package',
+            '-v',
+            '--plugin=nose2.plugins.attrib',
+            '-E',
+            'a == b and a')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertTestRunOutputMatches(proc, stderr='skippy')

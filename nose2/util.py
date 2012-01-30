@@ -193,6 +193,16 @@ def format_traceback(test, err):
 
 
 def transplant_class(cls, module):
+    """Make class appear to reside in ``module``.
+
+    :param cls: A class
+    :param module: A module name
+    :returns: A subclass of ``cls`` that appears to have been defined in ``module``. 
+
+    The returned class's ``__name__`` will be equal to
+    ``cls.__name__``, and its ``__module__`` equal to ``module``.
+
+    """
     class C(cls):
         pass
     C.__module__ = module

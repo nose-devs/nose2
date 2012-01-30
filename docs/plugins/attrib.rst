@@ -110,5 +110,20 @@ value* specified. Tests that do not have the attribute at all are
 *not* selected.
 
 
+Select tests using Python expressions
+-------------------------------------
+
+For more complex cases, you can use the :option:`-E` command-line
+option to pass a Python expression that will be evaluated in the
+context of each test case. Only those test cases where the expression
+evaluates to True (and doesn't raise an exception) will be selected.
+
+Running nose2 like this::
+
+  -nose2 -v -E '"blue" in flags and layer > 2'
+
+Runs only one test::
+
+  test_slower (attrib_example.Test) ... ok
 
 .. autoplugin :: nose2.plugins.attrib.AttributeSelector

@@ -6,27 +6,40 @@ from nose2.events import Plugin
 log = logging.getLogger(__name__)
 undefined = object()
 
-# TODO: eval attribs
 
 class AttributeSelector(Plugin):
     """Filter tests by attribute"""
 
     def __init__(self):
         self.attribs = []
+        self.eval_attribs = []
         self.addArgument(
             self.attribs, "A", "attribute",
             "Select tests with matching attribute")
-        # TODO eval-attribute argument
+        self.addArgument(
+            self.eval_attribs, "E", "eval-attribute",
+            "Select tests for whose attributes the "
+            "given Python expression evalures to True")
 
     def handleArgs(self, args):
         """Register if any attribs defined"""
-        if self.attribs:
+        if self.attribs or self.eval_attribs:
             self.register()
 
     def startTestRun(self, event):
         """Filter event.suite by specified attributes"""
-        log.debug('Attribute selector attribs %s', self.attribs)
+        log.debug('Attribute selector attribs %s/%s',
+                  self.attribs, self.eval_attribs)
         attribs = []
+        for attr in self.eval_attribs:
+            def eval_in_context(expr, obj):
+                try:
+                    return eval(expr, None, ContextHelper(obj))
+                except Exception as e:
+                    log.warning(
+                        "%s raised exception %s with test %s", expr, e, obj)
+                    return False
+            attribs.append([(attr, eval_in_context)])
         for attr in self.attribs:
             # all attributes within an attribute group must match
             attr_group = []
@@ -74,7 +87,7 @@ class AttributeSelector(Plugin):
                 neg = False
                 if key.startswith('!'):
                     neg, key = True, key[1:]
-                obj_value = self.getAttr(test, key)
+                obj_value = _get_attr(test, key)
                 if callable(value):
                     if not value(key, test):
                         match = False
@@ -108,18 +121,29 @@ class AttributeSelector(Plugin):
             any_ = any_ or match
         return any_
 
-    def getAttr(self, test, key):
-        # FIXME for vals that are lists (or just mutable?), combine all levels
-        val = getattr(test, key, undefined)
+
+# helpers
+
+def _get_attr(test, key):
+    # FIXME for vals that are lists (or just mutable?), combine all levels
+    val = getattr(test, key, undefined)
+    if val is not undefined:
+        return val
+    if hasattr(test, '_testFunc'):
+        val = getattr(test._testFunc, key, undefined)
         if val is not undefined:
             return val
-        if hasattr(test, '_testFunc'):
-            val = getattr(test._testFunc, key, undefined)
+    elif hasattr(test, '_testMethodName'):
+        meth = getattr(test, test._testMethodName, undefined)
+        if meth is not undefined:
+            val = getattr(meth, key, undefined)
             if val is not undefined:
                 return val
-        elif hasattr(test, '_testMethodName'):
-            meth = getattr(test, test._testMethodName, undefined)
-            if meth is not undefined:
-                val = getattr(meth, key, undefined)
-                if val is not undefined:
-                    return val
+
+
+class ContextHelper:
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __getitem__(self, name):
+        return _get_attr(self.obj, name)

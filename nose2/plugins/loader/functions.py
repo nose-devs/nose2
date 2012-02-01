@@ -26,6 +26,9 @@ from nose2.events import Plugin
 from nose2.compat import unittest
 
 
+__unittest = True
+
+
 class Functions(Plugin):
     """Loader plugin that loads test functions"""
     alwaysOn = True

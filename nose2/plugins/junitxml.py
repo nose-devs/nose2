@@ -17,6 +17,9 @@ from xml.etree import ElementTree as ET
 from nose2 import events, result, util
 
 
+__unittest = True
+
+
 class JUnitXmlReporter(events.Plugin):
     """Output junit-xml test report to file"""
     configSection = 'junit-xml'

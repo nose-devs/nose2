@@ -12,6 +12,7 @@ import six
 from nose2 import config
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 # FIXME decide on a real rule for camelCase vs under_score and stick with it.
 

@@ -48,6 +48,7 @@ from nose2.events import Plugin
 from nose2.compat import unittest as ut2
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class ParamsFunctionCase(ut2.FunctionTestCase):

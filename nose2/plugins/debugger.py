@@ -16,6 +16,9 @@ import pdb
 from nose2 import events
 
 
+__unittest = True
+
+
 class Debugger(events.Plugin):
     """Enter pdb on test error or failure
 

@@ -19,6 +19,9 @@ from nose2.events import Plugin
 from nose2 import util
 
 
+__unittest = True
+
+
 class DocTestLoader(Plugin):
     configSection = 'doctest'
     commandLineSwitch = (None, 'with-doctest',

@@ -28,6 +28,7 @@ except ImportError:
 import six
 
 
+__unittest = True
 IDENT_RE = re.compile(r'^[_a-zA-Z]\w*$', re.UNICODE)
 VALID_MODULE_RE = re.compile(r'[_a-zA-Z]\w*\.py$', re.UNICODE)
 

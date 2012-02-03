@@ -10,6 +10,9 @@ is not expected.
 from nose2 import events
 
 
+__unittest = True
+
+
 class FailFast(events.Plugin):
     """Stop the test run after error or failure"""
     commandLineSwitch = (

@@ -26,3 +26,6 @@ try:
     unittest.installHandler
 except AttributeError:
     raise ImportError("Built-in unittest version too old, unittest2 is required")
+
+__unittest = True
+

@@ -18,6 +18,7 @@ from nose2.util import ln, parse_log_level
 
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class LogCapture(Plugin):

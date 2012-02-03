@@ -16,6 +16,7 @@ from nose2 import events
 
 
 INDENT = []
+__unittest = True
 
 
 class PrintHooks(events.Plugin):

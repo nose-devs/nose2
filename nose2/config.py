@@ -1,4 +1,5 @@
 TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
+__unittest = True
 
 
 class Config(object):

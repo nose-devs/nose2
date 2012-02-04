@@ -42,4 +42,4 @@ do
 done
 
 cd $root
-python -m nose2.__main__ $nargs
+nose2 $nargs

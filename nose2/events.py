@@ -157,7 +157,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
                 if six.callable(callback):
                     callback(values)
                 elif isinstance(callback, list):
-                    callback.append(values)
+                    callback.extend(values)
                 else:
                     raise ValueError("Invalid callback %s for plugin option %s",
                                      callback, option_string)
@@ -367,7 +367,9 @@ class StartTestRunEvent(Event):
 
     .. attribute :: suite
 
-       Top-level test suite to execute
+       Top-level test suite to execute. Plugins can filter this suite,
+       or set event.suite to change which tests execute (or how they
+       execute).
 
     .. attribute :: result
 

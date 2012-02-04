@@ -112,6 +112,9 @@ These hooks are called for registered plugins only.
    do, since that will allow other plugins to load their tests from
    the module as well.
 
+   See also :ref:`this warning <loading-from-module>` about test cases
+   not defined in the module.
+
 .. function :: loadTestsFromTestCase(self, event)
 
    :param event: A :class:`nose2.events.LoadFromTestCaseEvent` instance

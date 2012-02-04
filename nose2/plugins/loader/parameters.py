@@ -38,7 +38,7 @@ case you want to execute.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
-
+import functools
 import logging
 import types
 import unittest
@@ -145,10 +145,12 @@ class Parameters(Plugin):
         names = []
         for index, argSet in enumerate_params(method.paramList):
             method_name = util.name_from_args(name, index, argSet)
-            def _method(self, method=method, argSet=argSet):
-                return method(self, *argSet)
             if not hasattr(testCaseClass, method_name):
                 # not already generated
+                def _method(self, method=method, argSet=argSet):
+                    return method(self, *argSet)
+                _method = functools.update_wrapper(_method, method)
+                delattr(_method, 'paramList')
                 setattr(testCaseClass, method_name, _method)
             names.append(method_name)
         return names
@@ -164,6 +166,8 @@ class Parameters(Plugin):
         for index, argSet in enumerate_params(obj.paramList):
             def func(argSet=argSet, obj=obj):
                 return obj(*argSet)
+            func = functools.update_wrapper(func, obj)
+            delattr(func, 'paramList')
             name = '%s.%s' % (obj.__module__, obj.__name__)
             func_name = util.name_from_args(name, index, argSet)
             yield ParamsFunctionCase(func_name, func, **args)

@@ -24,6 +24,7 @@ generated case you want to execute.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import functools
 import logging
 import sys
 import types
@@ -148,6 +149,7 @@ class Generators(Plugin):
                 delattr(testCaseClass, method_name)
                 def method(func=func, args=args):
                     return func(*args)
+                method = functools.update_wrapper(method, func)
                 setattr(instance, method_name, method)
                 yield instance
         except:

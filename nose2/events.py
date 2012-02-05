@@ -293,7 +293,7 @@ class Event(object):
 
     """
     _attrs = ('handled',)
-    version = '0.1'
+    version = '0.2'
 
     def __init__(self, **metadata):
         self.handled = False

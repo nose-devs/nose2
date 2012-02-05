@@ -1,6 +1,6 @@
-===============
-Builtin Plugins
-===============
+================
+Built in Plugins
+================
 
 Loaded by Default
 =================
@@ -26,27 +26,36 @@ keyword argument.
    plugins/debugger
    plugins/failfast
    plugins/logcapture
-   plugins/outcomes
-   plugins/collect
-   plugins/testid
 
 
-Available
-=========
+Built in but *not* Loaded by Default
+====================================
 
 These plugins are available as part of the nose2 package but not
-loaded by default. To load these plugins, add the plugin module name
-to the ``plugins`` list in a config file's ``[unittest]`` section, or
-pass the plugin module with the ``--plugin`` argument on the command
-line. You can also pass plugin module names to a
+loaded by default. To load one of these plugins, add the plugin module
+name to the ``plugins`` list in a config file's ``[unittest]``
+section, or pass the plugin module with the ``--plugin`` argument on
+the command line. You can also pass plugin module names to a
 :class:`nose2.main.PluggableTestProgram` using the ``plugins`` keyword
 argument.
 
 .. toctree::
    :maxdepth: 2
 
+   plugins/junitxml
    plugins/attrib
    plugins/doctests
-   plugins/junitxml
+   plugins/outcomes
+   plugins/collect
+   plugins/testid
    plugins/prof
    plugins/printhooks
+
+
+Third-party Plugins
+===================
+
+If you are a plugin author, please add your plugin to the list on the
+`nose2 wiki`_. If you are looking for more plugins, check that list!
+
+.. _nose2 wiki : https://github.com/nose-devs/nose2/wiki/Plugins

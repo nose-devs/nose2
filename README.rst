@@ -3,11 +3,12 @@ Welcome to nose2
 
 .. warning ::
 
-   This is an early, pre-alpha release of nose2. It is not
-   feature-complete, and will mostly be of interest to plugin authors,
-   folks who want to contribute to nose2, and testing nerds. While of
-   course we want you to try it out, you should probably not use nose2
-   to run the test suite for your giant robot crane.
+   This is an alpha release of nose2. It is not feature-complete, and
+   will mostly be of interest to plugin authors, folks who want to
+   contribute to nose2, and testing nerds. While of course we want you
+   to try it out, you should probably not use nose2 to run the test
+   suite for your giant robot crane. Maybe a *small* robot crane
+   would be ok.
 
 nose2 is the next generation of nicer testing for Python, based
 on the plugins branch of unittest2. nose2 aims to improve on nose by:

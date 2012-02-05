@@ -2,6 +2,10 @@
 Selecting tests with attributes
 ===============================
 
+.. note ::
+
+   New in version 0.2
+
 Filter tests by attribute, excluding any tests whose attributes do not
 match any of the specified attributes.
 

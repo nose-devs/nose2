@@ -296,6 +296,10 @@ These hooks are called for registered plugins only.
 
    :param event: A :class:`nose2.events.StopTestRunEvent` instance
 
+   .. note ::
+
+      New in version 0.2
+
    Plugins can use this hook to take action *after* the end of a test
    run, such as printing summary reports like the builtin result
    reporter plugin :class:`nose2.plugins.result.ResultReporter`.

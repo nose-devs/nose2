@@ -31,8 +31,8 @@ keyword argument.
 Built in but *not* Loaded by Default
 ====================================
 
-These plugins are available as part of the nose2 package but not
-loaded by default. To load one of these plugins, add the plugin module
+These plugins are available as part of the nose2 package but *are not
+loaded by default*. To load one of these plugins, add the plugin module
 name to the ``plugins`` list in a config file's ``[unittest]``
 section, or pass the plugin module with the ``--plugin`` argument on
 the command line. You can also pass plugin module names to a

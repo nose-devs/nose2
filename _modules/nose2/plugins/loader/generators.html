@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.plugins.loader.generators &mdash; nose2 0.1 documentation</title>
+    <title>nose2.plugins.loader.generators &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../../../../index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" />
    
   
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">nose2 0.2 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -81,6 +81,7 @@
 <span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
 <span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
 
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">types</span>
@@ -92,6 +93,7 @@
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
 
 
 <div class="viewcode-block" id="Generators"><a class="viewcode-back" href="../../../../plugins/generators.html#nose2.plugins.loader.generators.Generators">[docs]</a><span class="k">class</span> <span class="nc">Generators</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
@@ -139,7 +141,11 @@
         <span class="sd">&quot;&quot;&quot;Load tests from generator named on command line&quot;&quot;&quot;</span>
         <span class="n">original_name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">failedLoadTests</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c"># we can&#39;t find it - let the default case handle it</span>
             <span class="k">return</span>
@@ -200,6 +206,7 @@
                 <span class="nb">delattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
                 <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">):</span>
                     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">update_wrapper</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
                 <span class="k">yield</span> <span class="n">instance</span>
         <span class="k">except</span><span class="p">:</span>
@@ -220,7 +227,8 @@
         <span class="k">if</span> <span class="n">tearDown</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">args</span><span class="p">[</span><span class="s">&#39;tearDown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tearDown</span>
         <span class="k">def</span> <span class="nf">createTest</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">GeneratorFunctionCase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">transplant_class</span><span class="p">(</span>
+                <span class="n">GeneratorFunctionCase</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__module__</span><span class="p">)(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGenerator</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">createTest</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">test</span>
 

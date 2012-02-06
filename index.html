@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to nose2 &mdash; nose2 0.1 documentation</title>
+    <title>Welcome to nose2 &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="#" />
+    <link rel="top" title="nose2 0.2 documentation" href="#" />
     <link rel="next" title="Getting started with nose2" href="getting_started.html" />
    
   
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started with nose2"
              accesskey="N">next</a> |</li>
-        <li><a href="#">nose2 0.1 documentation</a> &raquo;</li> 
+        <li><a href="#">nose2 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -62,11 +62,12 @@
 <h1>Welcome to nose2<a class="headerlink" href="#welcome-to-nose2" title="Permalink to this headline">¶</a></h1>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">This is an early, pre-alpha release of nose2. It is not
-feature-complete, and will mostly be of interest to plugin authors,
-folks who want to contribute to nose2, and testing nerds. While of
-course we want you to try it out, you should probably not use nose2
-to run the test suite for your giant robot crane.</p>
+<p class="last">This is an alpha release of nose2. It is not feature-complete, and
+will mostly be of interest to plugin authors, folks who want to
+contribute to nose2, and testing nerds. While of course we want you
+to try it out, you should probably not use nose2 to run the test
+suite for your giant robot crane. Maybe a <em>small</em> robot crane
+would be ok.</p>
 </div>
 <p>nose2 is the next generation of nicer testing for Python, based
 on the plugins branch of unittest2. nose2 aims to improve on nose by:</p>
@@ -112,23 +113,15 @@ new direction!</p>
 <li class="toctree-l2"><a class="reference internal" href="differences.html#nose2-is-not-exactly-unittest2-plugins">nose2 is not (exactly) unittest2/plugins</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plugins/discovery.html">Loader: Test discovery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/functions.html">Loader: Test Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/generators.html">Loader: Test Generators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/parameters.html">Loader: Parameterized Tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html">Loader: Test Cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html">Loader: Doctests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/result.html">Reporting test results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/buffer.html">Buffering test output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/debugger.html">Dropping Into the Debugger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/failfast.html">Stopping After the First Error or Failure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html">Capturing log messages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html">Mapping exceptions to test outcomes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/collect.html">Collecting tests without running them</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/testid.html">Using Test IDs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html">Tracing hook execution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugins for nose2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#built-in-and-loaded-by-default">Built in and Loaded by Default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#built-in-but-not-loaded-by-default">Built in but <em>not</em> Loaded by Default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#third-party-plugins">Third-party Plugins</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.1</a></li>
 </ul>
 </li>
 </ul>

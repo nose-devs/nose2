@@ -1,0 +1,293 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Outputting XML Test Reports &mdash; nose2 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Selecting tests with attributes" href="attrib.html" />
+    <link rel="prev" title="Capturing log messages" href="logcapture.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="attrib.html" title="Selecting tests with attributes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="logcapture.html" title="Capturing log messages"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="outputting-xml-test-reports">
+<h1>Outputting XML Test Reports<a class="headerlink" href="#outputting-xml-test-reports" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">New in version 0.2</p>
+</div>
+<span class="target" id="module-nose2.plugins.junitxml"></span><p>Output test reports in junit-xml format.</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#startTest" title="startTest"><tt class="xref py py-func docutils literal"><span class="pre">startTest()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> and
+<a class="reference internal" href="../dev/hook_reference.html#stopTestRun" title="stopTestRun"><tt class="xref py py-func docutils literal"><span class="pre">stopTestRun()</span></tt></a> to compile and then output a test report in
+junit-xml format. By default, the report is written to a file called
+<tt class="docutils literal"><span class="pre">nose2-junit.xml</span></tt> in the current working directory. You can
+configure the output filename by setting <tt class="docutils literal"><span class="pre">path</span></tt> in a <tt class="docutils literal"><span class="pre">[junit-xml]</span></tt>
+section in a config file.</p>
+<div class="section" id="configuration-junit-xml">
+<h2>Configuration [junit-xml]<a class="headerlink" href="#configuration-junit-xml" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-path">
+<tt class="descname">path</tt><a class="headerlink" href="#configvar-path" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">nose2-junit.xml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[junit-xml]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">path</span> <span class="o">=</span> <span class="s">nose2-junit.xml</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-X">
+<tt class="descname">-X</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--junit-xml</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate junit-xml output report</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.junitxml.JUnitXmlReporter">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.junitxml.</tt><tt class="descname">JUnitXmlReporter</tt><a class="reference internal" href="../_modules/nose2/plugins/junitxml.html#JUnitXmlReporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.junitxml.JUnitXmlReporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output junit-xml test report to file</p>
+<dl class="method">
+<dt id="nose2.plugins.junitxml.JUnitXmlReporter.startTest">
+<tt class="descname">startTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/junitxml.html#JUnitXmlReporter.startTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.junitxml.JUnitXmlReporter.startTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count test, record start time</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.junitxml.JUnitXmlReporter.stopTestRun">
+<tt class="descname">stopTestRun</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/junitxml.html#JUnitXmlReporter.stopTestRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.junitxml.JUnitXmlReporter.stopTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output xml tree to file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.junitxml.JUnitXmlReporter.testOutcome">
+<tt class="descname">testOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/junitxml.html#JUnitXmlReporter.testOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.junitxml.JUnitXmlReporter.testOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add test outcome to xml tree</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sample-output">
+<h2>Sample output<a class="headerlink" href="#sample-output" title="Permalink to this headline">¶</a></h2>
+<p>The XML test report for nose2&#8217;s sample scenario with tests in a package looks like this:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;testsuite</span> <span class="na">errors=</span><span class="s">&quot;1&quot;</span> <span class="na">failures=</span><span class="s">&quot;5&quot;</span> <span class="na">name=</span><span class="s">&quot;nose2-junit&quot;</span> <span class="na">skips=</span><span class="s">&quot;1&quot;</span> <span class="na">tests=</span><span class="s">&quot;25&quot;</span> <span class="na">time=</span><span class="s">&quot;0.004&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000141&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000093&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen:3&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000086&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen:4&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000086&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen:5&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000087&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_nose_style:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000085&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_nose_style:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000090&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_nose_style:3&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000085&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_nose_style:4&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000087&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_nose_style:5&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000086&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_func:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000093&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_func:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000098&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;failure</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/plugins/loader/parameters.py&quot;, line 162, in func
+    return obj(*argSet)
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 64, in test_params_func
+    assert a == 1
+AssertionError
+<span class="nt">&lt;/failure&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_func_multi_arg:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000094&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_func_multi_arg:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000089&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;failure</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/plugins/loader/parameters.py&quot;, line 162, in func
+    return obj(*argSet)
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 69, in test_params_func_multi_arg
+    assert a == b
+AssertionError
+<span class="nt">&lt;/failure&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_func_multi_arg:3&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000096&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;&quot;</span> <span class="na">name=</span><span class="s">&quot;test_fixt&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000091&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;&quot;</span> <span class="na">name=</span><span class="s">&quot;test_func&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000084&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_failed&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000113&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;failure</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 17, in test_failed
+    assert False, &quot;I failed&quot;
+AssertionError: I failed
+<span class="nt">&lt;/failure&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_ok&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000093&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_method:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000099&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_params_method:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000101&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;failure</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/plugins/loader/parameters.py&quot;, line 144, in _method
+    return method(self, *argSet)
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 29, in test_params_method
+    self.assertEqual(a, 1)
+AssertionError: 2 != 1
+<span class="nt">&lt;/failure&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_skippy&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000104&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;skipped</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_typeerr&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000096&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;error</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 13, in test_typeerr
+    raise TypeError(&quot;oops&quot;)
+TypeError: oops
+<span class="nt">&lt;/error&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_method:1&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000094&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;testcase</span> <span class="na">classname=</span><span class="s">&quot;pkg1.test.test_things.SomeTests&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gen_method:2&quot;</span> <span class="na">time=</span><span class="s">&quot;0.000090&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;failure</span> <span class="na">message=</span><span class="s">&quot;test failure&quot;</span><span class="nt">&gt;</span>Traceback (most recent call last):
+  File &quot;nose2/plugins/loader/generators.py&quot;, line 145, in method
+    return func(*args)
+  File &quot;nose2/tests/functional/support/scenario/tests_in_package/pkg1/test/test_things.py&quot;, line 24, in check
+    assert x == 1
+AssertionError
+<span class="nt">&lt;/failure&gt;</span>
+  <span class="nt">&lt;/testcase&gt;</span>
+<span class="nt">&lt;/testsuite&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Outputting XML Test Reports</a><ul>
+<li><a class="reference internal" href="#configuration-junit-xml">Configuration [junit-xml]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+<li><a class="reference internal" href="#sample-output">Sample output</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="logcapture.html" title="previous chapter">Capturing log messages</a></li>
+      <li>Next: <a href="attrib.html" title="next chapter">Selecting tests with attributes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/junitxml.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Hook reference &mdash; nose2 0.1 documentation</title>
+    <title>Hook reference &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
     <link rel="next" title="Session reference" href="session_reference.html" />
     <link rel="prev" title="Event reference" href="event_reference.html" />
    
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="event_reference.html" title="Event reference"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -227,6 +227,8 @@ prevent other plugins from loading from the module, set
 tests to <tt class="docutils literal"><span class="pre">event.extraTests</span></tt> &#8211; ususally that&#8217;s what you want to
 do, since that will allow other plugins to load their tests from
 the module as well.</p>
+<p>See also <a class="reference internal" href="writing_plugins.html#loading-from-module"><em>this warning</em></a> about test cases
+not defined in the module.</p>
 </dd></dl>
 
 <dl class="function">
@@ -555,6 +557,26 @@ running and reported its outcome.</p>
 </tbody>
 </table>
 <p>Plugins can use this hook to take action at the end of a test run.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="afterTestRun">
+<tt class="descname">afterTestRun</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#afterTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <a class="reference internal" href="event_reference.html#nose2.events.StopTestRunEvent" title="nose2.events.StopTestRunEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StopTestRunEvent</span></tt></a> instance</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">New in version 0.2</p>
+</div>
+<p>Plugins can use this hook to take action <em>after</em> the end of a test
+run, such as printing summary reports like the builtin result
+reporter plugin <a class="reference internal" href="../plugins/result.html#nose2.plugins.result.ResultReporter" title="nose2.plugins.result.ResultReporter"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.result.ResultReporter</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="function">

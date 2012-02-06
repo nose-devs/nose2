@@ -9,7 +9,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; nose2 0.1 documentation</title>
+    <title>Index &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="index.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
@@ -45,7 +45,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">nose2 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">nose2 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -68,6 +68,7 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -163,6 +164,17 @@
       </dl></dd>
       
   <dt>
+    -A DEFAULT, --attribute DEFAULT
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/attrib.html#cmdoption-A">command line option</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt>
     -B DEFAULT, --output-buffer DEFAULT
   </dt>
 
@@ -193,6 +205,17 @@
       <dd><dl>
         
   <dt><a href="plugins/debugger.html#cmdoption-D">command line option</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt>
+    -E DEFAULT, --eval-attribute DEFAULT
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/attrib.html#cmdoption-E">command line option</a>
   </dt>
 
       </dl></dd>
@@ -248,6 +271,17 @@
       <dd><dl>
         
   <dt><a href="usage.html#cmdoption-t">command line option</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt>
+    -X DEFAULT, --junit-xml DEFAULT
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/junitxml.html#cmdoption-X">command line option</a>
   </dt>
 
       </dl></dd>
@@ -307,12 +341,22 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/hook_reference.html#afterSummaryReport">afterSummaryReport() (built-in function)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="dev/hook_reference.html#afterTestRun">afterTestRun() (built-in function)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/result.html#nose2.plugins.result.ResultReporter.afterTestRun">(nose2.plugins.result.ResultReporter method)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt>
     always-on
@@ -320,7 +364,7 @@
 
       <dd><dl>
         
-  <dt><a href="plugins/outcomes.html#configvar-always-on">configvar</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/testcases.html#configvar-always-on">[13]</a>, <a href="plugins/buffer.html#configvar-always-on">[14]</a>
+  <dt><a href="plugins/outcomes.html#configvar-always-on">configvar</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/junitxml.html#configvar-always-on">[13]</a>, <a href="plugins/testcases.html#configvar-always-on">[14]</a>, <a href="plugins/buffer.html#configvar-always-on">[15]</a>
   </dt>
 
       </dl></dd>
@@ -354,6 +398,10 @@
 
       
   <dt><a href="dev/session_reference.html#nose2.config.Config.as_str">as_str() (nose2.config.Config method)</a>
+  </dt>
+
+      
+  <dt><a href="plugins/attrib.html#nose2.plugins.attrib.AttributeSelector">AttributeSelector (class in nose2.plugins.attrib)</a>
   </dt>
 
   </dl></td>
@@ -459,11 +507,19 @@
   </dt>
 
         
+  <dt><a href="plugins/attrib.html#cmdoption-A">-A DEFAULT, --attribute DEFAULT</a>
+  </dt>
+
+        
   <dt><a href="plugins/buffer.html#cmdoption-B">-B DEFAULT, --output-buffer DEFAULT</a>
   </dt>
 
         
   <dt><a href="plugins/debugger.html#cmdoption-D">-D DEFAULT, --debugger DEFAULT</a>
+  </dt>
+
+        
+  <dt><a href="plugins/attrib.html#cmdoption-E">-E DEFAULT, --eval-attribute DEFAULT</a>
   </dt>
 
         
@@ -476,6 +532,10 @@
 
         
   <dt><a href="plugins/prof.html#cmdoption-P">-P DEFAULT, --profile DEFAULT</a>
+  </dt>
+
+        
+  <dt><a href="plugins/junitxml.html#cmdoption-X">-X DEFAULT, --junit-xml DEFAULT</a>
   </dt>
 
         
@@ -524,7 +584,7 @@
 
       <dd><dl>
         
-  <dt><a href="plugins/outcomes.html#configvar-always-on">always-on</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/testcases.html#configvar-always-on">[13]</a>, <a href="plugins/buffer.html#configvar-always-on">[14]</a>
+  <dt><a href="plugins/outcomes.html#configvar-always-on">always-on</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/junitxml.html#configvar-always-on">[13]</a>, <a href="plugins/testcases.html#configvar-always-on">[14]</a>, <a href="plugins/buffer.html#configvar-always-on">[15]</a>
   </dt>
 
         
@@ -573,6 +633,10 @@
 
         
   <dt><a href="plugins/logcapture.html#configvar-log-level">log-level</a>
+  </dt>
+
+        
+  <dt><a href="plugins/junitxml.html#configvar-path">path</a>
   </dt>
 
         
@@ -903,6 +967,10 @@
   <dt><a href="dev/main.html#nose2.main.PluggableTestProgram.handleArgs">(nose2.main.PluggableTestProgram method)</a>
   </dt>
 
+        
+  <dt><a href="plugins/attrib.html#nose2.plugins.attrib.AttributeSelector.handleArgs">(nose2.plugins.attrib.AttributeSelector method)</a>
+  </dt>
+
       </dl></dd>
       
   <dt><a href="dev/main.html#nose2.main.PluggableTestProgram.handleCfgArgs">handleCfgArgs() (nose2.main.PluggableTestProgram method)</a>
@@ -979,6 +1047,16 @@
 
       
   <dt><a href="dev/event_reference.html#nose2.events.GetTestCaseNamesEvent.isTestMethod">isTestMethod (nose2.events.GetTestCaseNamesEvent attribute)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="plugins/junitxml.html#nose2.plugins.junitxml.JUnitXmlReporter">JUnitXmlReporter (class in nose2.plugins.junitxml)</a>
   </dt>
 
   </dl></td>
@@ -1293,6 +1371,10 @@
   </dt>
 
       
+  <dt><a href="plugins/attrib.html#module-nose2.plugins.attrib">nose2.plugins.attrib (module)</a>
+  </dt>
+
+      
   <dt><a href="plugins/buffer.html#module-nose2.plugins.buffer">nose2.plugins.buffer (module)</a>
   </dt>
 
@@ -1314,6 +1396,10 @@
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="plugins/junitxml.html#module-nose2.plugins.junitxml">nose2.plugins.junitxml (module)</a>
+  </dt>
+
       
   <dt><a href="plugins/discovery.html#module-nose2.plugins.loader.discovery">nose2.plugins.loader.discovery (module)</a>
   </dt>
@@ -1439,6 +1525,17 @@
   </dt>
 
       
+  <dt>
+    path
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/junitxml.html#configvar-path">configvar</a>
+  </dt>
+
+      </dl></dd>
+      
   <dt><a href="dev/event_reference.html#nose2.events.HandleFileEvent.path">path (nose2.events.HandleFileEvent attribute)</a>
   </dt>
 
@@ -1478,12 +1575,12 @@
   <dt><a href="dev/runner.html#nose2.runner.PluggableTestRunner">PluggableTestRunner (class in nose2.runner)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/plugin_class_reference.html#nose2.events.Plugin">Plugin (class in nose2.events)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/session_reference.html#Session.pluginargs">pluginargs (Session attribute)</a>
   </dt>
@@ -1819,6 +1916,10 @@
   </dt>
 
         
+  <dt><a href="plugins/junitxml.html#nose2.plugins.junitxml.JUnitXmlReporter.startTest">(nose2.plugins.junitxml.JUnitXmlReporter method)</a>
+  </dt>
+
+        
   <dt><a href="plugins/logcapture.html#nose2.plugins.logcapture.LogCapture.startTest">(nose2.plugins.logcapture.LogCapture method)</a>
   </dt>
 
@@ -1840,6 +1941,10 @@
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="plugins/attrib.html#nose2.plugins.attrib.AttributeSelector.startTestRun">(nose2.plugins.attrib.AttributeSelector method)</a>
+  </dt>
+
         
   <dt><a href="plugins/collect.html#nose2.plugins.collect.CollectOnly.startTestRun">(nose2.plugins.collect.CollectOnly method)</a>
   </dt>
@@ -1927,7 +2032,7 @@
 
       <dd><dl>
         
-  <dt><a href="plugins/result.html#nose2.plugins.result.ResultReporter.stopTestRun">(nose2.plugins.result.ResultReporter method)</a>
+  <dt><a href="plugins/junitxml.html#nose2.plugins.junitxml.JUnitXmlReporter.stopTestRun">(nose2.plugins.junitxml.JUnitXmlReporter method)</a>
   </dt>
 
         
@@ -2047,8 +2152,6 @@
   <dt><a href="plugins/testid.html#nose2.plugins.testid.TestId">TestId (class in nose2.plugins.testid)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/event_reference.html#nose2.events.GetTestCaseNamesEvent.testMethodPrefix">testMethodPrefix (nose2.events.GetTestCaseNamesEvent attribute)</a>
   </dt>
@@ -2059,6 +2162,8 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/exceptions.html#nose2.exceptions.TestNotFoundError">TestNotFoundError</a>
   </dt>
@@ -2074,6 +2179,10 @@
 
         
   <dt><a href="plugins/failfast.html#nose2.plugins.failfast.FailFast.testOutcome">(nose2.plugins.failfast.FailFast method)</a>
+  </dt>
+
+        
+  <dt><a href="plugins/junitxml.html#nose2.plugins.junitxml.JUnitXmlReporter.testOutcome">(nose2.plugins.junitxml.JUnitXmlReporter method)</a>
   </dt>
 
         
@@ -2095,6 +2204,10 @@
 
       
   <dt><a href="dev/event_reference.html#nose2.events.HandleFileEvent.topLevelDirectory">topLevelDirectory (nose2.events.HandleFileEvent attribute)</a>
+  </dt>
+
+      
+  <dt><a href="dev/utils.html#nose2.util.transplant_class">transplant_class() (in module nose2.util)</a>
   </dt>
 
       

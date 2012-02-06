@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Builtin Plugins &mdash; nose2 0.1 documentation</title>
+    <title>Plugins for nose2 &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="index.html" />
     <link rel="next" title="Loader: Test discovery" href="plugins/discovery.html" />
     <link rel="prev" title="Differences: nose2 vs nose vs unittest2" href="differences.html" />
    
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="differences.html" title="Differences: nose2 vs nose vs unittest2"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">nose2 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">nose2 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -60,8 +60,17 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="builtin-plugins">
-<h1>Builtin Plugins<a class="headerlink" href="#builtin-plugins" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="plugins-for-nose2">
+<h1>Plugins for nose2<a class="headerlink" href="#plugins-for-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="built-in-and-loaded-by-default">
+<h2>Built in and Loaded by Default<a class="headerlink" href="#built-in-and-loaded-by-default" title="Permalink to this headline">¶</a></h2>
+<p>These plugins are loaded by default. To exclude one of these plugins
+from loading, add the plugin&#8217;s module name to the <tt class="docutils literal"><span class="pre">exclude-plugins</span></tt>
+list in a config file&#8217;s <tt class="docutils literal"><span class="pre">[unittest]</span></tt> section, or pass the plugin
+module with the <tt class="docutils literal"><span class="pre">--exclude-plugin</span></tt> argument on the command line. You
+can also pass plugin module names to exclude to a
+<a class="reference internal" href="dev/main.html#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">nose2.main.PluggableTestProgram</span></tt></a> using the <tt class="docutils literal"><span class="pre">excludePlugins</span></tt>
+keyword argument.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="plugins/discovery.html">Loader: Test discovery</a><ul>
@@ -87,12 +96,6 @@
 <li class="toctree-l1"><a class="reference internal" href="plugins/testcases.html">Loader: Test Cases</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html#configuration-testcases">Configuration [testcases]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins/testcases.html#plugin-class-reference">Plugin class reference</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="plugins/doctests.html">Loader: Doctests</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#configuration-doctest">Configuration [doctest]</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#command-line-options">Command-line options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#plugin-class-reference">Plugin class reference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="plugins/result.html">Reporting test results</a><ul>
@@ -123,6 +126,38 @@
 <li class="toctree-l2"><a class="reference internal" href="plugins/logcapture.html#plugin-class-reference">Plugin class reference</a></li>
 </ul>
 </li>
+</ul>
+</div>
+</div>
+<div class="section" id="built-in-but-not-loaded-by-default">
+<h2>Built in but <em>not</em> Loaded by Default<a class="headerlink" href="#built-in-but-not-loaded-by-default" title="Permalink to this headline">¶</a></h2>
+<p>These plugins are available as part of the nose2 package but <em>are not
+loaded by default</em>. To load one of these plugins, add the plugin module
+name to the <tt class="docutils literal"><span class="pre">plugins</span></tt> list in a config file&#8217;s <tt class="docutils literal"><span class="pre">[unittest]</span></tt>
+section, or pass the plugin module with the <tt class="docutils literal"><span class="pre">--plugin</span></tt> argument on
+the command line. You can also pass plugin module names to a
+<a class="reference internal" href="dev/main.html#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">nose2.main.PluggableTestProgram</span></tt></a> using the <tt class="docutils literal"><span class="pre">plugins</span></tt> keyword
+argument.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugins/junitxml.html">Outputting XML Test Reports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/junitxml.html#configuration-junit-xml">Configuration [junit-xml]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/junitxml.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/junitxml.html#plugin-class-reference">Plugin class reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/junitxml.html#sample-output">Sample output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/attrib.html">Selecting tests with attributes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/attrib.html#select-tests-having-an-attribute">Select tests having an attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/attrib.html#select-tests-that-do-not-have-an-attribute">Select tests that do not have an attribute</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/doctests.html">Loader: Doctests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#configuration-doctest">Configuration [doctest]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/doctests.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plugins/outcomes.html">Mapping exceptions to test outcomes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html#configuration-outcomes">Configuration [outcomes]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins/outcomes.html#command-line-options">Command-line options</a></li>
@@ -141,6 +176,12 @@
 <li class="toctree-l2"><a class="reference internal" href="plugins/testid.html#plugin-class-reference">Plugin class reference</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="plugins/prof.html">Profiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#configuration-profiler">Configuration [profiler]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#command-line-options">Command-line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plugins/printhooks.html">Tracing hook execution</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#configuration-print-hooks">Configuration [print-hooks]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#command-line-options">Command-line options</a></li>
@@ -148,13 +189,13 @@
 <li class="toctree-l2"><a class="reference internal" href="plugins/printhooks.html#sample-output">Sample output</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="plugins/prof.html">Profiling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#configuration-profiler">Configuration [profiler]</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#command-line-options">Command-line options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins/prof.html#plugin-class-reference">Plugin class reference</a></li>
 </ul>
-</li>
-</ul>
+</div>
+</div>
+<div class="section" id="third-party-plugins">
+<h2>Third-party Plugins<a class="headerlink" href="#third-party-plugins" title="Permalink to this headline">¶</a></h2>
+<p>If you are a plugin author, please add your plugin to the list on the
+<a class="reference external" href="https://github.com/nose-devs/nose2/wiki/Plugins">nose2 wiki</a>. If you are looking for more plugins, check that list!</p>
 </div>
 </div>
 
@@ -163,7 +204,21 @@
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Plugins for nose2</a><ul>
+<li><a class="reference internal" href="#built-in-and-loaded-by-default">Built in and Loaded by Default</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#built-in-but-not-loaded-by-default">Built in but <em>not</em> Loaded by Default</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#third-party-plugins">Third-party Plugins</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="differences.html" title="previous chapter">Differences: nose2 vs nose vs unittest2</a></li>

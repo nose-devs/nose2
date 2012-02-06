@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.util &mdash; nose2 0.1 documentation</title>
+    <title>nose2.util &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
     <link rel="up" title="Internals" href="internals.html" />
     <link rel="prev" title="nose2.runner" href="runner.html" />
    
@@ -48,7 +48,7 @@
         <li class="right" >
           <a href="runner.html" title="nose2.runner"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
           <li><a href="internals.html" accesskey="U">Internals</a> &raquo;</li> 
       </ul>
     </div>  
@@ -142,6 +142,29 @@ respectively.</p>
 <dt id="nose2.util.test_from_name">
 <tt class="descclassname">nose2.util.</tt><tt class="descname">test_from_name</tt><big>(</big><em>name</em>, <em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#test_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.test_from_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import test from name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.transplant_class">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">transplant_class</tt><big>(</big><em>cls</em>, <em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#transplant_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.transplant_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make class appear to reside in <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cls</strong> &#8211; A class</li>
+<li><strong>module</strong> &#8211; A module name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A subclass of <tt class="docutils literal"><span class="pre">cls</span></tt> that appears to have been defined in <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The returned class&#8217;s <tt class="docutils literal"><span class="pre">__name__</span></tt> will be equal to
+<tt class="docutils literal"><span class="pre">cls.__name__</span></tt>, and its <tt class="docutils literal"><span class="pre">__module__</span></tt> equal to <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">

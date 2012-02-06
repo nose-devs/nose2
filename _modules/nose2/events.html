@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.events &mdash; nose2 0.1 documentation</title>
+    <title>nose2.events &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../../index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">nose2 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">nose2 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -69,6 +69,7 @@
 <span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">config</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
 
 <span class="c"># FIXME decide on a real rule for camelCase vs under_score and stick with it.</span>
 
@@ -213,7 +214,7 @@
                 <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
                     <span class="n">callback</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">callback</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                    <span class="n">callback</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Invalid callback </span><span class="si">%s</span><span class="s"> for plugin option </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
                                      <span class="n">callback</span><span class="p">,</span> <span class="n">option_string</span><span class="p">)</span>
@@ -299,7 +300,7 @@
         <span class="s">&#39;reportSuccess&#39;</span><span class="p">,</span> <span class="s">&#39;reportExpectedFailure&#39;</span><span class="p">,</span> <span class="s">&#39;reportUnexpectedSuccess&#39;</span><span class="p">,</span>
         <span class="s">&#39;reportOtherOutcome&#39;</span><span class="p">,</span> <span class="s">&#39;outcomeDetail&#39;</span><span class="p">,</span> <span class="s">&#39;beforeErrorList&#39;</span><span class="p">,</span>
         <span class="s">&#39;beforeSummaryReport&#39;</span><span class="p">,</span> <span class="s">&#39;afterSummaryReport&#39;</span><span class="p">,</span> <span class="s">&#39;beforeInteraction&#39;</span><span class="p">,</span>
-        <span class="s">&#39;afterInteraction&#39;</span><span class="p">,</span> <span class="s">&#39;createTests&#39;</span><span class="p">,</span>
+        <span class="s">&#39;afterInteraction&#39;</span><span class="p">,</span> <span class="s">&#39;createTests&#39;</span><span class="p">,</span> <span class="s">&#39;afterTestRun&#39;</span><span class="p">,</span>
         <span class="c"># ... etc?</span>
         <span class="p">)</span>
     <span class="n">hookClass</span> <span class="o">=</span> <span class="n">Hook</span>
@@ -349,7 +350,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_attrs</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;handled&#39;</span><span class="p">,)</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;0.1&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;0.2&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">False</span>
@@ -423,7 +424,9 @@
 
 <span class="sd">    .. attribute :: suite</span>
 
-<span class="sd">       Top-level test suite to execute</span>
+<span class="sd">       Top-level test suite to execute. Plugins can filter this suite,</span>
+<span class="sd">       or set event.suite to change which tests execute (or how they</span>
+<span class="sd">       execute).</span>
 
 <span class="sd">    .. attribute :: result</span>
 

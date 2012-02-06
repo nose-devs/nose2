@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Writing Plugins &mdash; nose2 0.1 documentation</title>
+    <title>Writing Plugins &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
     <link rel="next" title="Documenting plugins" href="documenting_plugins.html" />
-    <link rel="prev" title="Profiling" href="../plugins/prof.html" />
+    <link rel="prev" title="Changelog" href="../changelog.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
@@ -49,9 +49,9 @@
           <a href="documenting_plugins.html" title="Documenting plugins"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../plugins/prof.html" title="Profiling"
+          <a href="../changelog.html" title="Changelog"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -209,6 +209,20 @@ it and add it to the error report.</p>
 <p>Implement <a class="reference internal" href="hook_reference.html#handleFile" title="handleFile"><tt class="xref py py-func docutils literal"><span class="pre">handleFile()</span></tt></a>.</p>
 <p>Example: <a class="reference internal" href="../plugins/doctests.html#nose2.plugins.doctests.DocTestLoader" title="nose2.plugins.doctests.DocTestLoader"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.doctests.DocTestLoader</span></tt></a></p>
 </li>
+<li><p class="first">Writing a plugin that loads tests from python modules</p>
+<p>Implement at least <a class="reference internal" href="hook_reference.html#loadTestsFromModule" title="loadTestsFromModule"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromModule()</span></tt></a>.</p>
+<div class="admonition warning" id="loading-from-module">
+<p class="first admonition-title">Warning</p>
+<p class="last">One thing to beware of here is that if you return tests as
+dynamically-generated test cases, or instances of a testcase
+class that is defined <em>anywhere</em> but the module being loaded, you
+<em>must</em> use <a class="reference internal" href="utils.html#nose2.util.transplant_class" title="nose2.util.transplant_class"><tt class="xref py py-func docutils literal"><span class="pre">nose2.util.transplant_class()</span></tt></a> to make the test
+case class appear to have originated in that module. Otherwise,
+module-level fixtures will not work for that test, and may be
+ignored entirely for the module if there are no test cases that
+are or appear to be defined there.</p>
+</div>
+</li>
 <li><p class="first">Writing a plugin that prints a report</p>
 <p>Implement <a class="reference internal" href="hook_reference.html#beforeErrorList" title="beforeErrorList"><tt class="xref py py-func docutils literal"><span class="pre">beforeErrorList()</span></tt></a>, <a class="reference internal" href="hook_reference.html#beforeSummaryReport" title="beforeSummaryReport"><tt class="xref py py-func docutils literal"><span class="pre">beforeSummaryReport()</span></tt></a> or
 <a class="reference internal" href="hook_reference.html#afterSummaryReport" title="afterSummaryReport"><tt class="xref py py-func docutils literal"><span class="pre">afterSummaryReport()</span></tt></a></p>
@@ -250,7 +264,7 @@ it and add it to the error report.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../plugins/prof.html" title="previous chapter">Profiling</a></li>
+      <li>Previous: <a href="../changelog.html" title="previous chapter">Changelog</a></li>
       <li>Next: <a href="documenting_plugins.html" title="next chapter">Documenting plugins</a></li>
   </ul></li>
 </ul>

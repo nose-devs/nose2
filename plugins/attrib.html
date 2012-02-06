@@ -1,0 +1,292 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Selecting tests with attributes &mdash; nose2 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Loader: Doctests" href="doctests.html" />
+    <link rel="prev" title="Outputting XML Test Reports" href="junitxml.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="doctests.html" title="Loader: Doctests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="junitxml.html" title="Outputting XML Test Reports"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="selecting-tests-with-attributes">
+<h1>Selecting tests with attributes<a class="headerlink" href="#selecting-tests-with-attributes" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">New in version 0.2</p>
+</div>
+<p>Filter tests by attribute, excluding any tests whose attributes do not
+match any of the specified attributes.</p>
+<p>Attributes may be simple values or lists, and may be attributes of a
+test method (or function), a test case class, or the callable yielded
+by a generator test.</p>
+<p>Given the following test module, the attrib plugin can be used to
+select tests in the following ways (and others!):</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>All examples assume the attrib plugin has been activated in a config file:</p>
+<div class="last highlight-ini"><div class="highlight"><pre><span class="k">[unittest]</span>
+<span class="na">plugins</span> <span class="o">=</span> <span class="s">nose2.plugins.attrib</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">unittest</span>
+
+
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_fast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">test_fast</span><span class="o">.</span><span class="n">fast</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">test_fast</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">test_fast</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">test_faster</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">test_faster</span><span class="o">.</span><span class="n">fast</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">test_faster</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">test_faster</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;red&#39;</span><span class="p">,</span> <span class="s">&#39;green&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">test_slow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">test_slow</span><span class="o">.</span><span class="n">fast</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">test_slow</span><span class="o">.</span><span class="n">slow</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">test_slow</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">test_slower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">test_slower</span><span class="o">.</span><span class="n">slow</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">test_slower</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">test_slower</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="s">&#39;red&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="select-tests-having-an-attribute">
+<h2>Select tests having an attribute<a class="headerlink" href="#select-tests-having-an-attribute" title="Permalink to this headline">¶</a></h2>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>nose2 -v -A fast</pre>
+</div>
+<p>Runs these tests:</p>
+<div class="highlight-python"><pre>test_fast (attrib_example.Test) ... ok
+test_faster (attrib_example.Test) ... ok</pre>
+</div>
+<p>This selects all tests that define the attribute as any True value.</p>
+</div>
+<div class="section" id="select-tests-that-do-not-have-an-attribute">
+<h2>Select tests that do not have an attribute<a class="headerlink" href="#select-tests-that-do-not-have-an-attribute" title="Permalink to this headline">¶</a></h2>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>nose2 -v -A '!fast'</pre>
+</div>
+<p>Runs these tests:</p>
+<div class="highlight-python"><pre>test_slow (attrib_example.Test) ... ok
+test_slower (attrib_example.Test) ... ok</pre>
+</div>
+<p>This selects all tests that define the attribute as a False value,
+<em>and those tests that do not have the attribute at all</em>.</p>
+<div class="section" id="select-tests-having-an-attribute-with-a-particular-value">
+<h3>Select tests having an attribute with a particular value<a class="headerlink" href="#select-tests-having-an-attribute-with-a-particular-value" title="Permalink to this headline">¶</a></h3>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>nose2 -v -A layer=2</pre>
+</div>
+<p>Runs these tests:</p>
+<div class="highlight-python"><pre>test_fast (attrib_example.Test) ... ok
+test_slow (attrib_example.Test) ... ok</pre>
+</div>
+<p>This selects all tests that define the attribute with a matching
+value. The attribute value of each test case is converted to a string
+before comparison with the specified value. Comparison is
+case-insensitive.</p>
+</div>
+<div class="section" id="select-tests-having-a-value-in-a-list-attribute">
+<h3>Select tests having a value in a list attribute<a class="headerlink" href="#select-tests-having-a-value-in-a-list-attribute" title="Permalink to this headline">¶</a></h3>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>nose2 -v -A flags=red</pre>
+</div>
+<p>Runs these tests:</p>
+<div class="highlight-python"><pre>test_faster (attrib_example.Test) ... ok
+test_slower (attrib_example.Test) ... ok</pre>
+</div>
+<p>Since the <tt class="docutils literal"><span class="pre">flags</span></tt> attribute is a list, this test selects all tests
+with the value <tt class="docutils literal"><span class="pre">red</span></tt> in their <tt class="docutils literal"><span class="pre">flags</span></tt> attribute. Comparison done
+after string conversion and is case-insensitive.</p>
+</div>
+<div class="section" id="select-tests-that-do-not-have-a-value-in-a-list-attribute">
+<h3>Select tests that do not have a value in a list attribute<a class="headerlink" href="#select-tests-that-do-not-have-a-value-in-a-list-attribute" title="Permalink to this headline">¶</a></h3>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>nose2 -v -A '!flags=red'</pre>
+</div>
+<p>Runs these tests:</p>
+<div class="highlight-python"><pre>test_fast (attrib_example.Test) ... ok</pre>
+</div>
+<p>The result in this case can be somewhat counter-intuitive. What the
+attrib plugin selects when you negate an attribute that is in a list
+are only those tests that <em>have the list attribute</em> but <em>without the
+value</em> specified. Tests that do not have the attribute at all are
+<em>not</em> selected.</p>
+</div>
+<div class="section" id="select-tests-using-python-expressions">
+<h3>Select tests using Python expressions<a class="headerlink" href="#select-tests-using-python-expressions" title="Permalink to this headline">¶</a></h3>
+<p>For more complex cases, you can use the <a class="reference internal" href="#cmdoption-E"><em class="xref std std-option">-E</em></a> command-line
+option to pass a Python expression that will be evaluated in the
+context of each test case. Only those test cases where the expression
+evaluates to True (and doesn&#8217;t raise an exception) will be selected.</p>
+<p>Running nose2 like this:</p>
+<div class="highlight-python"><pre>-nose2 -v -E '"blue" in flags and layer &gt; 2'</pre>
+</div>
+<p>Runs only one test:</p>
+<div class="highlight-python"><pre>test_slower (attrib_example.Test) ... ok</pre>
+</div>
+<span class="target" id="module-nose2.plugins.attrib"></span><div class="section" id="command-line-options">
+<h4>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h4>
+<dl class="cmdoption">
+<dt id="cmdoption-A">
+<tt class="descname">-A</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--attribute</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select tests with matching attribute</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-E">
+<tt class="descname">-E</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--eval-attribute</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-E" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select tests for whose attributes the given Python expression evalures to True</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h4>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h4>
+<dl class="class">
+<dt id="nose2.plugins.attrib.AttributeSelector">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.attrib.</tt><tt class="descname">AttributeSelector</tt><a class="reference internal" href="../_modules/nose2/plugins/attrib.html#AttributeSelector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.attrib.AttributeSelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter tests by attribute</p>
+<dl class="method">
+<dt id="nose2.plugins.attrib.AttributeSelector.handleArgs">
+<tt class="descname">handleArgs</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/attrib.html#AttributeSelector.handleArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.attrib.AttributeSelector.handleArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register if any attribs defined</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.attrib.AttributeSelector.startTestRun">
+<tt class="descname">startTestRun</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/attrib.html#AttributeSelector.startTestRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.attrib.AttributeSelector.startTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter event.suite by specified attributes</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Selecting tests with attributes</a><ul>
+<li><a class="reference internal" href="#select-tests-having-an-attribute">Select tests having an attribute</a></li>
+<li><a class="reference internal" href="#select-tests-that-do-not-have-an-attribute">Select tests that do not have an attribute</a><ul>
+<li><a class="reference internal" href="#select-tests-having-an-attribute-with-a-particular-value">Select tests having an attribute with a particular value</a></li>
+<li><a class="reference internal" href="#select-tests-having-a-value-in-a-list-attribute">Select tests having a value in a list attribute</a></li>
+<li><a class="reference internal" href="#select-tests-that-do-not-have-a-value-in-a-list-attribute">Select tests that do not have a value in a list attribute</a></li>
+<li><a class="reference internal" href="#select-tests-using-python-expressions">Select tests using Python expressions</a><ul>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="junitxml.html" title="previous chapter">Outputting XML Test Reports</a></li>
+      <li>Next: <a href="doctests.html" title="next chapter">Loader: Doctests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/attrib.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tracing hook execution &mdash; nose2 0.1 documentation</title>
+    <title>Tracing hook execution &mdash; nose2 0.2 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,10 +24,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.1 documentation" href="../index.html" />
-    <link rel="up" title="Builtin Plugins" href="../plugins.html" />
-    <link rel="next" title="Profiling" href="prof.html" />
-    <link rel="prev" title="Using Test IDs" href="testid.html" />
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="Profiling" href="prof.html" />
    
   
   <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
@@ -47,13 +47,13 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="prof.html" title="Profiling"
+          <a href="../changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="testid.html" title="Using Test IDs"
+          <a href="prof.html" title="Profiling"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.1 documentation</a> &raquo;</li>
-          <li><a href="../plugins.html" accesskey="U">Builtin Plugins</a> &raquo;</li> 
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -129,59 +129,58 @@ noisier objects.</p>
 <p>PrintHooks output for a test run that discovers one standard TestCase
 test in a python module.</p>
 <p>Hooks that appear indented are called from within other hooks.</p>
-<div class="highlight-python"><pre>handleArgs: CommandLineArgsEvent(handled=False, args=Namespace(collect_only=None, config=['unittest.cfg', 'nose2.cfg'], debugger=None, fail_fast=None, load_plugins=True, log_capture=None, output_buffer=None, print_hooks=None, start_dir='.', testNames=[], top_level_directory=None, user_config=True, verbose=0))
+<div class="highlight-python"><pre>handleArgs: CommandLineArgsEvent(handled=False, args=Namespace(collect_only=None, config=['unittest.cfg', 'nose2.cfg'], debugger=None, fail_fast=None, load_plugins=True, log_level=30, print_hooks=None, profile=None, start_dir='.', testNames=[], top_level_directory=None, user_config=True, verbose=0, with_id=None))
 
-createTests: CreateTestsEvent(loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testNames=[], module=&lt;module '__main__' from '/home/jpellerin/code/nose2-gh/nose2/__main__.py'&gt;)
+createTests: CreateTestsEvent(loader=&lt;PluggableTestLoader&gt;, testNames=[], module=&lt;module '__main__' from 'bin/nose2'&gt;)
 
 loadTestsFromNames: LoadFromNames(names=[], module=None)
 
-  handleFile: HandleFileEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, name='tests.py', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py', topLevelDirectory='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test')
+  handleFile: HandleFileEvent(handled=False, loader=&lt;PluggableTestLoader&gt;, name='tests.py', path='nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py', topLevelDirectory='nose2/tests/functional/support/scenario/one_test')
 
-  matchPath: MatchPathEvent(handled=False, name='tests.py', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py')
+  matchPath: MatchPathEvent(handled=False, name='tests.py', path='nose2/tests/functional/support/scenario/one_test/tests.py', pattern='test*.py')
 
-  loadTestsFromModule: LoadFromModuleEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, module=&lt;module 'tests' from '/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.pyc'&gt;, extraTests=[])
+  loadTestsFromModule: LoadFromModuleEvent(handled=False, loader=&lt;PluggableTestLoader&gt;, module=&lt;module 'tests' from 'nose2/tests/functional/support/scenario/one_test/tests.py'&gt;, extraTests=[])
 
-    loadTestsFromTestCase: LoadFromTestCaseEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testCase=&lt;class 'tests.Test'&gt;, extraTests=[])
+    loadTestsFromTestCase: LoadFromTestCaseEvent(handled=False, loader=&lt;PluggableTestLoader&gt;, testCase=&lt;class 'tests.Test'&gt;, extraTests=[])
 
-    getTestCaseNames: GetTestCaseNamesEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, testCase=&lt;class 'tests.Test'&gt;, testMethodPrefix=None, extraNames=[], excludedNames=[], isTestMethod=&lt;function isTestMethod at 0x18fb668&gt;)
+    getTestCaseNames: GetTestCaseNamesEvent(handled=False, loader=&lt;PluggableTestLoader&gt;, testCase=&lt;class 'tests.Test'&gt;, testMethodPrefix=None, extraNames=[], excludedNames=[], isTestMethod=&lt;function isTestMethod at 0x1fccc80&gt;)
 
-  handleFile: HandleFileEvent(handled=False, loader=&lt;nose2.loader.PluggableTestLoader object at 0x1843210&gt;, name='tests.pyc', path='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test/tests.pyc', pattern='test*.py', topLevelDirectory='/home/jpellerin/code/nose2-gh/nose2/tests/functional/support/scenario/one_test')
+  handleFile: HandleFileEvent(handled=False, loader=&lt;PluggableTestLoader&gt;, name='tests.pyc', path='nose2/tests/functional/support/scenario/one_test/tests.pyc', pattern='test*.py', topLevelDirectory='nose2/tests/functional/support/scenario/one_test')
 
-runnerCreated: RunnerCreatedEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;)
+runnerCreated: RunnerCreatedEvent(handled=False, runner=&lt;PluggableTestRunner&gt;)
 
-resultCreated: ResultCreatedEvent(handled=False, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;)
+resultCreated: ResultCreatedEvent(handled=False, result=&lt;PluggableTestResult&gt;)
 
-startTestRun: StartTestRunEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;, suite=&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;tests.Test testMethod=test&gt;]&gt;]&gt;]&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, startTime=1326751525.980829, executeTests=&lt;function &lt;lambda&gt; at 0x18fbaa0&gt;)
+startTestRun: StartTestRunEvent(handled=False, runner=&lt;PluggableTestRunner&gt;, suite=&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;unittest2.suite.TestSuite tests=[&lt;tests.Test testMethod=test&gt;]&gt;]&gt;]&gt;, result=&lt;PluggableTestResult&gt;, startTime=1327346684.77457, executeTests=&lt;function &lt;lambda&gt; at 0x1fccf50&gt;)
 
-startTest: StartTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, startTime=1326751525.9809561)
+startTest: StartTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;PluggableTestResult&gt;, startTime=1327346684.774765)
 
-  reportStartTest: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.StartTestEvent object at 0x1934690&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;)
+  reportStartTest: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.StartTestEvent object at 0x1fcd650&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x1f97a10&gt;)
 
-  describeTest: DescribeTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, description=None)
-test (tests.Test) ...
-testOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
+setTestOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;PluggableTestResult&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
 
-  setTestOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
+testOutcome: TestOutcomeEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;PluggableTestResult&gt;, outcome='passed', exc_info=None, reason=None, expected=True, shortLabel=None, longLabel=None)
 
-  reportSuccess: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.TestOutcomeEvent object at 0x1934690&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;)
-ok
+  reportSuccess: ReportTestEvent(handled=False, testEvent=&lt;nose2.events.TestOutcomeEvent object at 0x1fcd650&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x1f97a10&gt;)
+.
+stopTest: StopTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;PluggableTestResult&gt;, stopTime=1327346684.775064)
 
-stopTest: StopTestEvent(handled=False, test=&lt;tests.Test testMethod=test&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, stopTime=1326751525.9812191)
+stopTestRun: StopTestRunEvent(handled=False, runner=&lt;PluggableTestRunner&gt;, result=&lt;PluggableTestResult&gt;, stopTime=1327346684.77513, timeTaken=0.00056004524230957031)
 
-stopTestRun: StopTestRunEvent(handled=False, runner=&lt;nose2.runner.PluggableTestRunner object at 0x1843450&gt;, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, stopTime=1326751525.9812679, timeTaken=0.00043892860412597656)
+afterTestRun: StopTestRunEvent(handled=False, runner=&lt;PluggableTestRunner&gt;, result=&lt;PluggableTestResult&gt;, stopTime=1327346684.77513, timeTaken=0.00056004524230957031)
 
 
-  beforeErrorList: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
+  beforeErrorList: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x1eb0d90&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x1f97a10&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
 ----------------------------------------------------------------------
 
-  beforeSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
-Ran 1 test in 0.000s
+  beforeSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x1eb0d90&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x1f97a10&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})
+Ran 1 test in 0.001s
 
 
-  wasSuccessful: ResultSuccessEvent(handled=False, result=&lt;nose2.result.PluggableTestResult object at 0x1847850&gt;, success=False)
+  wasSuccessful: ResultSuccessEvent(handled=False, result=&lt;PluggableTestResult&gt;, success=False)
 OK
 
-  afterSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x18f4b10&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x18f4990&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})</pre>
+  afterSummaryReport: ReportSummaryEvent(handled=False, stopTestEvent=&lt;nose2.events.StopTestRunEvent object at 0x1eb0d90&gt;, stream=&lt;nose2.util._WritelnDecorator object at 0x1f97a10&gt;, reportCategories={'failures': [], 'skipped': [], 'errors': [], 'unexpectedSuccesses': [], 'expectedFailures': []})</pre>
 </div>
 </div>
 </div>
@@ -208,9 +207,9 @@ OK
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../plugins.html">Builtin Plugins</a><ul>
-      <li>Previous: <a href="testid.html" title="previous chapter">Using Test IDs</a></li>
-      <li>Next: <a href="prof.html" title="next chapter">Profiling</a></li>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="prof.html" title="previous chapter">Profiling</a></li>
+      <li>Next: <a href="../changelog.html" title="next chapter">Changelog</a></li>
   </ul></li>
   </ul></li>
 </ul>

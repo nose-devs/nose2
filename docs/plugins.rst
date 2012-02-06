@@ -1,9 +1,9 @@
-================
-Built in Plugins
-================
-
-Loaded by Default
 =================
+Plugins for nose2
+=================
+
+Built in and Loaded by Default
+==============================
 
 These plugins are loaded by default. To exclude one of these plugins
 from loading, add the plugin's module name to the ``exclude-plugins``

@@ -67,6 +67,9 @@ class Parameters(Plugin):
     alwaysOn = True
     configSection = 'parameters'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def getTestCaseNames(self, event):
         """Generate test case names for all parameterized methods"""
         log.debug('getTestCaseNames %s', event)

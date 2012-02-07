@@ -44,6 +44,9 @@ class Generators(Plugin):
     alwaysOn = True
     configSection = 'generators'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def unpack(self, generator):
         for index, func_args in enumerate(generator):
             try:

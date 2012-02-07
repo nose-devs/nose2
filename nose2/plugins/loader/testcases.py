@@ -27,6 +27,9 @@ class TestCaseLoader(events.Plugin):
     alwaysOn = True
     configSection = 'testcases'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def loadTestsFromModule(self, event):
         """Load tests in :class:`unittest.TestCase` subclasses"""
         module = event.module

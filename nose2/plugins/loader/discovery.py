@@ -36,6 +36,9 @@ class DiscoveryLoader(events.Plugin):
     alwaysOn = True
     configSection = 'discovery'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name

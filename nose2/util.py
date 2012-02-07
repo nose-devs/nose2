@@ -179,16 +179,19 @@ def exc_info_to_string(err, test):
 def format_traceback(test, err):
     """Converts a sys.exc_info()-style tuple of values into a string."""
     exctype, value, tb = err
-    # Skip test runner traceback levels
-    while tb and _is_relevant_tb_level(tb):
-        tb = tb.tb_next
-    failure = getattr(test, 'failureException', AssertionError)
-    if exctype is failure:
-        # Skip assert*() traceback levels
-        length = _count_relevant_tb_levels(tb)
-        msgLines = traceback.format_exception(exctype, value, tb, length)
+    if not hasattr(tb, 'tb_next'):
+        msgLines = tb
     else:
-        msgLines = traceback.format_exception(exctype, value, tb)
+        # Skip test runner traceback levels
+        while tb and _is_relevant_tb_level(tb):
+            tb = tb.tb_next
+        failure = getattr(test, 'failureException', AssertionError)
+        if exctype is failure:
+            # Skip assert*() traceback levels
+            length = _count_relevant_tb_levels(tb)
+            msgLines = traceback.format_exception(exctype, value, tb, length)
+        else:
+            msgLines = traceback.format_exception(exctype, value, tb)
     return ''.join(msgLines)
 
 

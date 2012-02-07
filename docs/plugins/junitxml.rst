@@ -2,6 +2,10 @@
 Outputting XML Test Reports
 ===========================
 
+.. note ::
+
+   New in version 0.2
+
 .. autoplugin :: nose2.plugins.junitxml.JUnitXmlReporter
 
 Sample output

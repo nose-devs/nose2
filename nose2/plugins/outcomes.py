@@ -20,6 +20,10 @@ to be treated as failures or skips instead:
 
 from nose2.events import Plugin
 
+
+__unittest = True
+
+
 class Outcomes(Plugin):
     """Map exceptions to other test outcomes"""
 

@@ -165,14 +165,14 @@ class NotReallyAProc(object):
         return False
 
     def communicate(self):
-        self.__enter__()
-        try:
-            self.result = main.PluggableTestProgram(
-                argv=('nose2',) + self.args, exit=False,
-                **self.kwargs)
+        with self:
+            try:
+                self.result = main.PluggableTestProgram(
+                    argv=('nose2',) + self.args, exit=False,
+                    **self.kwargs)
+            except SystemExit as e:
+                return "", "EXIT CODE %s" % str(e)
             return self.stdout.getvalue(), self.stderr.getvalue()
-        finally:
-            self.__exit__(None, None, None)
 
     @property
     def pid(self):

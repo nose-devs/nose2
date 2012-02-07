@@ -8,6 +8,7 @@ from nose2 import config, events, util
 
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class Session(object):

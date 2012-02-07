@@ -184,6 +184,23 @@ Recipes
 
   Example: :class:`nose2.plugins.doctests.DocTestLoader`
 
+* Writing a plugin that loads tests from python modules
+
+  Implement at least :func:`loadTestsFromModule`.
+
+  .. _loading-from-module:
+
+  .. warning ::
+
+     One thing to beware of here is that if you return tests as
+     dynamically-generated test cases, or instances of a testcase
+     class that is defined *anywhere* but the module being loaded, you
+     *must* use :func:`nose2.util.transplant_class` to make the test
+     case class appear to have originated in that module. Otherwise,
+     module-level fixtures will not work for that test, and may be
+     ignored entirely for the module if there are no test cases that
+     are or appear to be defined there.
+
 * Writing a plugin that prints a report
 
   Implement :func:`beforeErrorList`, :func:`beforeSummaryReport` or

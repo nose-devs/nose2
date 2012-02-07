@@ -8,6 +8,9 @@ import time
 from nose2 import events, result
 
 
+__unittest = True
+
+
 class PluggableTestRunner(object):
     """Test runner that defers most work to plugins.
 

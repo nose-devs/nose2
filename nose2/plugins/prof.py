@@ -21,6 +21,8 @@ import tempfile
 from nose2 import events, util
 
 log = logging.getLogger(__name__)
+__unittest = True
+
 
 class Profiler(events.Plugin):
     """Profile the test run"""

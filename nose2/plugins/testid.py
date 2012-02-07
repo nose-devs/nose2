@@ -17,6 +17,9 @@ import re
 from nose2.events import Plugin
 
 
+__unittest = True
+
+
 class TestId(Plugin):
     """Allow easy test select with ids"""
 

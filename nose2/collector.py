@@ -2,6 +2,7 @@ import sys
 import unittest
 
 from nose2 import main, loader, runner, session
+__unittest = True
 
 
 def collector():

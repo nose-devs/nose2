@@ -22,6 +22,9 @@ from nose2 import events
 from nose2.util import ln
 
 
+__unittest = True
+
+
 class _Buffer(object):
     def __init__(self, stream):
         self._stream = stream

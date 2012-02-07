@@ -12,6 +12,7 @@ from nose2.compat import unittest
 
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class PluggableTestLoader(object):

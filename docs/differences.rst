@@ -112,11 +112,10 @@ Missing Plugins
 ^^^^^^^^^^^^^^^
 
 *nose2 does not (yet) include some of the more commonly-used plugins
-in nose*, including test coverage, xunit output and filtering tests
-using attributes. Most of these should arrive in future
-releases. However, some of nose's builtin plugins cannot be ported to
-nose2 due to differences in internals. See: :doc:`plugins` for
-information on the plugins built in to nose2.
+in nose*. Most of these should arrive in future releases. However,
+some of nose's builtin plugins cannot be ported to nose2 due to
+differences in internals. See: :doc:`plugins` for information on the
+plugins built in to nose2.
 
 Internals
 ^^^^^^^^^

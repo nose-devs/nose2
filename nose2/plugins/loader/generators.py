@@ -24,6 +24,7 @@ generated case you want to execute.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import functools
 import logging
 import sys
 import types
@@ -35,6 +36,7 @@ from nose2.compat import unittest as ut2
 
 
 log = logging.getLogger(__name__)
+__unittest = True
 
 
 class Generators(Plugin):
@@ -147,6 +149,7 @@ class Generators(Plugin):
                 delattr(testCaseClass, method_name)
                 def method(func=func, args=args):
                     return func(*args)
+                method = functools.update_wrapper(method, func)
                 setattr(instance, method_name, method)
                 yield instance
         except:
@@ -167,7 +170,8 @@ class Generators(Plugin):
         if tearDown is not None:
             args['tearDown'] = tearDown
         def createTest(name):
-            return GeneratorFunctionCase(name, **args)
+            return util.transplant_class(
+                GeneratorFunctionCase, obj.__module__)(name, **args)
         for test in self._testsFromGenerator(event, name, extras, createTest):
             yield test
 

@@ -6,6 +6,7 @@ from nose2 import events, session, util
 
 
 AD = u'<autodoc>'
+__unittest = True
 
 
 class AutoPlugin(Directive):

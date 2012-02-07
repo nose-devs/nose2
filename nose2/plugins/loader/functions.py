@@ -26,6 +26,9 @@ from nose2.events import Plugin
 from nose2.compat import unittest
 
 
+__unittest = True
+
+
 class Functions(Plugin):
     """Loader plugin that loads test functions"""
     alwaysOn = True
@@ -97,6 +100,7 @@ class Functions(Plugin):
         if paramList is not None or isGenerator:
             return tests
         else:
-            case = unittest.FunctionTestCase(obj, **args)
+            case = util.transplant_class(
+                unittest.FunctionTestCase, obj.__module__)(obj, **args)
             tests.append(case)
         return tests

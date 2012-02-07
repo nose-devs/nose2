@@ -82,6 +82,9 @@ class Session(object):
         self.verbosity = 1
         self.startDir = '.'
         self.topLevelDir = None
+        self.testResult = None
+        self.testLoader = None
+        self.logLevel = logging.WARN
 
     def get(self, section):
         """Get a config section.

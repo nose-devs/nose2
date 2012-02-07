@@ -58,6 +58,7 @@ class PluggableTestRunner(object):
         result = self.resultClass(self.session)
         event = events.ResultCreatedEvent(result)
         self.session.hooks.resultCreated(event)
+        self.session.testResult = event.result
         return event.result
 
     def __repr__(self):

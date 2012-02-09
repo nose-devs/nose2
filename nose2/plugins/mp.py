@@ -21,12 +21,13 @@ class MultiProcess(events.Plugin):
 
     ## pluginsLoaded -- add mp hooks
     def pluginsLoaded(self, event):
-        self.session.hooks.addMethod('registerInSubprocess')
-        self.session.hooks.addMethod('startSubprocess')
-        self.session.hooks.addMethod('stopSubprocess')
+        methods = ('registerInSubprocess', 'startSubprocess', 'stopSubprocess')
+        for method in methods:
+            self.session.hooks.addMethod(method)
         for plugin in event.pluginsLoaded:
-            if plugin.registered and hasattr(plugin, 'registerInSubprocess'):
-                self.session.hooks.register('registerInSubprocess', plugin)
+            for method in methods:
+                if plugin.registered and hasattr(plugin, method):
+                    self.session.hooks.register(method, plugin)
 
     def startTestRun(self, event):
         event.executeTests = self._runmp
@@ -42,7 +43,6 @@ class MultiProcess(events.Plugin):
                 if not flat:
                     break
                 caseid = flat.pop(0)
-                print "))) %s ---> %s" % (caseid, proc)
                 conn.send(caseid)
 
         # None is the 'done' flag
@@ -54,10 +54,6 @@ class MultiProcess(events.Plugin):
         rdrs = [conn for proc, conn in procs
                 if proc.is_alive()]
         while rdrs:
-            print "+++", rdrs
-            # FIXME landing here w/dead connections, then
-            # sitting until testRunTimeout. need to detect
-            # earlier that proc conns are dead
             ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
             for conn in ready:
                 # XXX proc could be dead
@@ -66,8 +62,9 @@ class MultiProcess(events.Plugin):
                 except EOFError:
                     # probably dead
                     log.warning("Subprocess connection closed unexpectedly")
+                    rdrs.remove(conn)
                     continue # XXX or die?
-                print ">>>>>>>>>>>>>>>", remote_events
+
                 if remote_events is None:
                     # XXX proc is done, how to mark it dead?
                     rdrs.remove(conn)
@@ -112,7 +109,6 @@ class MultiProcess(events.Plugin):
                     testid = testid.split('\n')[0] # FIXME refactor
                 flat.append(testid)
                 self.cases[testid] = test
-        print "******", len(flat)
         return flat
 
     def _waiting(self):
@@ -134,8 +130,6 @@ class MultiProcess(events.Plugin):
         if hasattr(event, 'test') and event.test in self.cases:
             # remote event.case is the test id
             event.test = self.cases[event.test]
-        elif isinstance(event.test, basestring):
-            import pdb; pdb.set_trace()
 
     def _exportSession(self):
         # argparse isn't pickleable
@@ -157,19 +151,17 @@ class MultiProcess(events.Plugin):
 
 
 def procserver(session_export, conn):
-    rlog = logging.getLogger('%s:remote' % __name__)
+    # init logging system
+    rlog = multiprocessing.log_to_stderr()
+    rlog.setLevel(session_export['logLevel'])
+
     # make a real session from the "session" we got
     ssn = session.Session()
-    ssn.argparse = None # FIXME
-    ssn.pluginargs = None # FIXME
     ssn.config = session_export['config']
     ssn.hooks = RecordingPluginInterface()
     ssn.verbosity = session_export['verbosity']
     ssn.startDir = session_export['startDir']
     ssn.topLevelDir = session_export['topLevelDir']
-
-    # init logging system
-    logging.basicConfig(level=logging.DEBUG) # level=session_export['logLevel'])
     loader_ = loader.PluggableTestLoader(ssn)
     ssn.testLoader = loader_
     result_ = result.PluggableTestResult(ssn)
@@ -188,6 +180,7 @@ def procserver(session_export, conn):
     res = ssn.hooks.startSubprocess(event)
     if event.handled and not res:
         return
+    # receive and run tests
     executor = event.executeTests
     for testid in gentests(conn):
         if testid is None:
@@ -199,15 +192,11 @@ def procserver(session_export, conn):
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)
         events = [e for e in ssn.hooks.flush()]
-        print conn
-        print testid
-        print events
         conn.send((testid, events))
         rlog.debug("Log for %s returned", testid)
     conn.send(None)
     conn.close()
     ssn.hooks.stopSubprocess(event)
-    print "***** FINISHED! *****"
 
 
 # test generator
@@ -262,7 +251,6 @@ class RecordingPluginInterface(events.PluginInterface):
         self.events = []
 
     def log(self, method, event):
-        print "log called", method, event
         if getattr(event, 'nolog', False):
             return
         if method.startswith('loadTest'):
@@ -271,32 +259,10 @@ class RecordingPluginInterface(events.PluginInterface):
         self.events.append((method, event))
 
     def flush(self):
-        print "flush called"
         events = self.events[:]
         self.events = []
         # XXX make pickle safe?
         return events
-
-    def _fix(self, events):
-        return events
-        # for method, event in events:
-        #     newevent = event.copy()
-        #     if hasattr(event, 'case'):
-        #         newevent.case = event.case.id()
-        #     if hasattr(event, 'exc_info'):
-        #         ec, ev, tb = event.exc_info
-        #         newevent.exc_info = (ec, ev, util.format_traceback(tb))
-        #     if hasattr(event, 'result'):
-        #         newevent.result = None
-        #     if hasattr(event, 'loader'):
-        #         newevent.loader = None
-        #     if hasattr(event, 'runner'):
-        #         newevent.runner = None
-        #     for attr in dir(event):
-        #         item = getattr(event, attr)
-        #         if isinstance(item, types.FunctionType):
-        #             setattr(newevent, attr, None)
-        #     yield (method, newevent)
 
     def register(self, method, plugin):
         """Register a plugin for a method.
@@ -309,7 +275,6 @@ class RecordingPluginInterface(events.PluginInterface):
             method, self.hookClass(method, self)).append(plugin)
 
     def __getattr__(self, attr):
-        print "getattr", attr
         if attr.startswith('__'):
             raise AttributeError('No %s in %s' % (attr, self))
         return self.hooks.setdefault(attr, self.hookClass(attr, self))

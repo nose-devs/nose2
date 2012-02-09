@@ -41,6 +41,12 @@ class LogCapture(Plugin):
         self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
                                        self.filters)
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
+    def startSubprocess(self, event):
+        self._setupLoghandler()
+
     def startTestRun(self, event):
         """Set up logging handler"""
         self._setupLoghandler()
@@ -91,7 +97,10 @@ class LogCapture(Plugin):
     def _addCapturedLogs(self, event):
         format = self.handler.format
         records = [format(r) for r in self.handler.buffer]
-        event.metadata['logs'] = records
+        if 'logs' in event.metadata:
+            event.metadata['logs'].extend(records)
+        else:
+            event.metadata['logs'] = records
 
 
 class FilterSet(object):

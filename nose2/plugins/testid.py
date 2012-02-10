@@ -15,6 +15,7 @@ import pickle
 import re
 
 from nose2.events import Plugin
+from nose2 import util
 
 
 __unittest = True
@@ -44,7 +45,7 @@ class TestId(Plugin):
 
     def reportStartTest(self, event):
         """Record and possibly output test id"""
-        testid = event.testEvent.test.id().split('\n')[0]
+        testid = util.test_name(event.testEvent.test)
         if testid not in self.tests:
             id_ = self.nextId()
             self.ids[id_] = testid

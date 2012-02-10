@@ -124,6 +124,18 @@ def name_from_args(name, index, args):
     return '%s:%s\n%s' % (name, index + 1, summary[:79])
 
 
+def test_name(test):
+    # XXX does not work for test funcs, test.id() lacks module
+    if hasattr(test, '_funcName'):
+        tid = test._funcName
+    elif hasattr(test, '_testFunc'):
+        tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
+    else:
+        tid = test.id()
+    if '\n' in tid:
+        tid = tid.split('\n')[0]
+    return tid
+
 def ispackage(path):
     """Is this path a package directory?"""
     if os.path.isdir(path):
@@ -150,6 +162,21 @@ def isgenerator(obj):
     """is this object a generator?"""
     return (isgeneratorfunction(obj)
             or getattr(obj, 'testGenerator', None) is not None)
+
+
+def has_module_fixtures(test):
+    """Does this test live in a module with module fixtures?"""
+    modname = test.__class__.__module__
+    try:
+        mod = sys.modules[modname]
+    except KeyError:
+        return
+    return hasattr(mod, 'setUpModule') or hasattr(mod, 'tearDownModule')
+
+
+def has_class_fixtures(test):
+    return ('setUpClass' in test.__class__.__dict__ or
+            'tearDownClass' in test.__class__.__dict__)
 
 
 def safe_decode(string):

@@ -112,7 +112,7 @@ class Generators(Plugin):
             # generator method
             instance = parent(obj.__name__)
             tests = list(
-                self._testsFromGenerator(event, name, obj(instance), parent)
+                self._testsFromGenerator(event, obj.__name__, obj(instance), parent)
                     )
         else:
             # generator func
@@ -181,13 +181,13 @@ class Generators(Plugin):
 
 class GeneratorFunctionCase(ut2.FunctionTestCase):
     def __init__(self, name, **args):
-        self._name = name
+        self._funcName = name
         ut2.FunctionTestCase.__init__(self, None, **args)
 
-    _testFunc = property(lambda self: getattr(self, self._name),
+    _testFunc = property(lambda self: getattr(self, self._funcName),
                          lambda self, func: None)
 
     def __repr__(self):
-        return self._name
+        return self._funcName
 
     id = __str__ = __repr__

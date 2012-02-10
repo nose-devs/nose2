@@ -3,7 +3,7 @@ import multiprocessing
 import select
 import unittest
 
-from nose2 import events, loader, result, runner, session
+from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
 
@@ -14,6 +14,7 @@ class MultiProcess(events.Plugin):
     def __init__(self):
         self.addArgument(self.setProcs, 'N', '--processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
+        self.cases = {}
 
     def setProcs(self, num):
         self.procs = int(num[0]) # FIXME
@@ -33,8 +34,7 @@ class MultiProcess(events.Plugin):
         event.executeTests = self._runmp
 
     def _runmp(self, test, result):
-        self.cases = {}
-        flat = self._flatten(test)
+        flat = list(self._flatten(test))
         procs = self._startProcs()
 
         # distribute tests more-or-less evenly among processes
@@ -94,22 +94,34 @@ class MultiProcess(events.Plugin):
 
     def _flatten(self, suite):
         # XXX
-        # really: examine suite tests to find out if they have class
+        # examine suite tests to find out if they have class
         # or module fixtures and group them that way into names
         # of test classes or modules
-        # ALSO record all test cases in self._cases
-        flat = []
-        for test in suite:
-            if isinstance(test, unittest.TestSuite):
-                flat.extend(self._flatten(test))
-            else:
-                # XXX does not work for test funcs
-                testid = test.id()
-                if '\n' in testid:
-                    testid = testid.split('\n')[0] # FIXME refactor
-                flat.append(testid)
-                self.cases[testid] = test
-        return flat
+        # ALSO record all test cases in self.cases
+        mods = {}
+        classes = {}
+        stack = [suite]
+        while stack:
+            suite = stack.pop()
+            for test in suite:
+                if isinstance(test, unittest.TestSuite):
+                    stack.append(test)
+                else:
+                    testid = util.test_name(test)
+                    self.cases[testid] = test
+                    if util.has_module_fixtures(test):
+                        mods.setdefault(test.__class__.__module__, []).append(
+                            testid)
+                    elif util.has_class_fixtures(test):
+                        classes.setdefault("%s.%s" % (test.__class__.__module__,
+                                                      test.__class__.__name__),
+                                           []).append(testid)
+                    else:
+                        yield testid
+        for cls in classes.keys():
+            yield cls
+        for mod in mods.keys():
+            yield mod
 
     def _waiting(self):
         for r in self.results.values():
@@ -124,12 +136,18 @@ class MultiProcess(events.Plugin):
         if hasattr(event, 'result'):
             event.result = self.session.testResult
         if hasattr(event, 'loader'):
-            event.loaded = self.session.testLoader
+            event.loader = self.session.testLoader
         if hasattr(event, 'runner'):
             event.runner = self.session.testRunner
-        if hasattr(event, 'test') and event.test in self.cases:
+        if hasattr(event, 'test') and isinstance(event.test, basestring):
             # remote event.case is the test id
-            event.test = self.cases[event.test]
+            try:
+                event.test = self.cases[event.test]
+            except KeyError:
+                event.test = self.session.testLoader.failedLoadTests(
+                    'test_not_found',
+                    RuntimeError("Unable to locate test case for %s in "
+                                 "main process" % event.test))._tests[0]
 
     def _exportSession(self):
         # argparse isn't pickleable
@@ -162,6 +180,7 @@ def procserver(session_export, conn):
     ssn.verbosity = session_export['verbosity']
     ssn.startDir = session_export['startDir']
     ssn.topLevelDir = session_export['topLevelDir']
+    ssn.prepareSysPath()
     loader_ = loader.PluggableTestLoader(ssn)
     ssn.testLoader = loader_
     result_ = result.PluggableTestResult(ssn)
@@ -251,7 +270,11 @@ class RecordingPluginInterface(events.PluginInterface):
         self.events = []
 
     def log(self, method, event):
-        if getattr(event, 'nolog', False):
+        # skip sending back events that don't make sense
+        # some apply only to subprocesses, some are only
+        # for reloading of tests.
+        if (getattr(event, 'nolog', False) or
+            isinstance(event, events.GetTestCaseNamesEvent)):
             return
         if method.startswith('loadTest'):
             # do not want to replay loading

@@ -313,11 +313,9 @@ class Event(object):
 
     def __getstate__(self):
         state = self.__dict__
+        # FIXME fails for loadTestsFailure
         if 'test' in state:
-            testid = state['test'].id()
-            if '\n' in testid:
-                testid = testid.split('\n')[0] # FIXME refactor
-            state['test'] = testid
+            state['test'] = util.test_name(state['test'])
         if 'executeTests' in state:
             state['executeTests'] = None
         if 'exc_info' in state and state['exc_info'] is not None:

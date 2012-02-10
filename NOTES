@@ -1,5 +1,8 @@
 == mp ==
 
+- param method tests get module + class double-prepended when loaded via
+  load by name
+
 - logging config in subprocess seems broken
 - code cleanup!
 - many debug prints to remove

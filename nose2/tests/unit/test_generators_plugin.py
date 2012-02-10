@@ -1,4 +1,4 @@
-from nose2 import events, loader, session
+from nose2 import events, loader, session, util
 from nose2.plugins.loader import generators, testcases
 from nose2.tests._common import TestCase
 
@@ -43,7 +43,7 @@ class TestGeneratorUnpack(TestCase):
 
     def test_can_load_tests_from_generator_functions(self):
         class Mod(object):
-            pass
+            __name__ = 'themod'
         def check(x):
             assert x == 1
         def test():
@@ -51,9 +51,15 @@ class TestGeneratorUnpack(TestCase):
             yield check, 2
         m = Mod()
         m.test = test
+        test.__module__ = m.__name__
         event = events.LoadFromModuleEvent(self.loader, m)
         self.session.hooks.loadTestsFromModule(event)
         self.assertEqual(len(event.extraTests), 2)
+        # check that test names are sensible
+        self.assertEqual(util.test_name(event.extraTests[0]),
+                         'themod.test:1')
+        self.assertEqual(util.test_name(event.extraTests[1]),
+                         'themod.test:2')
 
     def test_can_load_tests_from_generator_methods(self):
         class Mod(object):

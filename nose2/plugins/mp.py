@@ -14,10 +14,11 @@ class MultiProcess(events.Plugin):
     def __init__(self):
         self.addArgument(self.setProcs, 'N', '--processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
+        self.procs = self.config.as_int('processes', multiprocessing.cpu_count())
         self.cases = {}
 
     def setProcs(self, num):
-        self.procs = int(num[0]) # FIXME
+        self.procs = int(num[0]) # FIXME merge n fix
         self.register()
 
     ## pluginsLoaded -- add mp hooks
@@ -239,14 +240,12 @@ class SubprocessEvent(events.Event):
         self.plugins = plugins
         self.connection = connection
         self.executeTests = lambda test, result: test(result)
-        self.nolog = True
         super(SubprocessEvent, self).__init__(**metadata)
 
 
 class RegisterInSubprocessEvent(events.Event):
     def __init__(self, **metadata):
         self.pluginClasses = []
-        self.nolog = True
         super(RegisterInSubprocessEvent, self).__init__(**metadata)
 
 
@@ -264,27 +263,19 @@ class RecordingHook(events.Hook):
 
 class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
+    noLogMethods = set(['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
+                        'registerInSubprocess'])
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()
         self.events = []
 
     def log(self, method, event):
-        # skip sending back events that don't make sense
-        # some apply only to subprocesses, some are only
-        # for reloading of tests.
-        if (getattr(event, 'nolog', False) or
-            isinstance(event, events.GetTestCaseNamesEvent)):
-            return
-        if method.startswith('loadTest'):
-            # do not want to replay loading
-            return
         self.events.append((method, event))
 
     def flush(self):
         events = self.events[:]
         self.events = []
-        # XXX make pickle safe?
         return events
 
     def register(self, method, plugin):
@@ -294,10 +285,24 @@ class RecordingPluginInterface(events.PluginInterface):
         :param plugin: A plugin instance
 
         """
-        self.hooks.setdefault(
-            method, self.hookClass(method, self)).append(plugin)
+        self._hookForMethod(method).append(plugin)
 
     def __getattr__(self, attr):
         if attr.startswith('__'):
             raise AttributeError('No %s in %s' % (attr, self))
-        return self.hooks.setdefault(attr, self.hookClass(attr, self))
+        return self._hookForMethod(attr)
+
+    def _hookForMethod(self, method):
+        # return recording hook for most hooks, normal hook for those
+        # (like test loading and subprocess events) that we don't want
+        # to send back to the main process.
+        try:
+            return self.hooks[method]
+        except KeyError:
+            if method in self.noLogMethods or method.startswith('loadTest'):
+                hook = events.Hook(method)
+            else:
+                hook = self.hookClass(method, self)
+        self.hooks[method] = hook
+        return hook
+

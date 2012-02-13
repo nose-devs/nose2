@@ -39,6 +39,18 @@ class _Buffer(object):
             raise AttributeError("No _buffer yet")
         return getattr(self._buffer, attr)
 
+    def __le__(self, obj):
+        return self._buffer.getvalue() == obj
+
+    def __eq__(self, obj):
+        return self._buffer.getvalue() == obj
+
+    def __str__(self):
+        return self._buffer.getvalue()
+
+    def __repr__(self):
+        return repr(self._buffer.getvalue())
+
 
 class OutputBufferPlugin(events.Plugin):
     """Buffer output during test execution"""

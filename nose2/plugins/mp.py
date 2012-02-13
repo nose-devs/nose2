@@ -3,6 +3,8 @@ import multiprocessing
 import select
 import unittest
 
+import six
+
 from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
@@ -124,12 +126,6 @@ class MultiProcess(events.Plugin):
         for mod in mods.keys():
             yield mod
 
-    def _waiting(self):
-        for r in self.results.values():
-            if r is None:
-                return True
-        return False
-
     def _localize(self, event):
         # XXX set loader, case, result etc to local ones, if present in event
         # (event case will be just the id)
@@ -140,7 +136,7 @@ class MultiProcess(events.Plugin):
             event.loader = self.session.testLoader
         if hasattr(event, 'runner'):
             event.runner = self.session.testRunner
-        if hasattr(event, 'test') and isinstance(event.test, basestring):
+        if hasattr(event, 'test') and isinstance(event.test, six.string_types):
             # remote event.case is the test id
             try:
                 event.test = self.cases[event.test]
@@ -199,6 +195,9 @@ def procserver(session_export, conn):
     event = SubprocessEvent(loader_, result_, runner_, ssn.plugins, conn)
     res = ssn.hooks.startSubprocess(event)
     if event.handled and not res:
+        conn.send(None)
+        conn.close()
+        ssn.hooks.stopSubprocess(event)
         return
     # receive and run tests
     executor = event.executeTests
@@ -206,8 +205,6 @@ def procserver(session_export, conn):
         if testid is None:
             break
         test = event.loader.loadTestsFromName(testid)
-        if event.handled:
-            continue
         # xxx try/except?
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)

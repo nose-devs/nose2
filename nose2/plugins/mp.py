@@ -230,6 +230,35 @@ def gentests(conn):
 
 # custom event classes
 class SubprocessEvent(events.Event):
+    """Event fired at start and end of subprocess execution.
+
+    .. attribute :: loader
+
+       Test loader instance
+
+    .. attribute :: result
+
+       Test result
+
+    .. attribute :: plugins
+
+       List of plugins loaded in the subprocess.
+
+    .. attribute :: connection
+
+       The :class:`multiprocessing.Connection` instance that the
+       subprocess uses for communication with the main process.
+
+    .. attribute :: executeTests
+
+       Callable that will be used to execute tests.  Plugins may set
+       this attribute to wrap or otherwise change test execution. The
+       callable must match the signature::
+
+         def execute(suite, result):
+             ...
+
+    """
     def __init__(self, loader, result, runner, plugins, connection, **metadata):
         self.loader = loader
         self.result = result
@@ -241,6 +270,18 @@ class SubprocessEvent(events.Event):
 
 
 class RegisterInSubprocessEvent(events.Event):
+    """Event fired to notify plugins that multiprocess testing will occur
+
+    .. attribute :: pluginClasses
+
+       Add a plugin class to this list to cause the plugin to be
+       instantiated in each test-running subprocess. The most common
+       thing to do, for plugins that need to run in subprocesses, is::
+
+         def registerInSubprocess(self, event):
+             event.pluginClasses.append(self.__class__)
+
+    """
     def __init__(self, **metadata):
         self.pluginClasses = []
         super(RegisterInSubprocessEvent, self).__init__(**metadata)

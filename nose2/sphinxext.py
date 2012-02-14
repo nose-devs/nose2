@@ -32,7 +32,7 @@ class AutoPlugin(Directive):
 
         obj = plugin(session=ssn)
         try:
-            obj.pluginsLoaded(events.PluginsLoadedEvent())
+            obj.pluginsLoaded(events.PluginsLoadedEvent([obj]))
         except AttributeError:
             pass
 

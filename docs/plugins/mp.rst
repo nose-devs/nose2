@@ -102,6 +102,8 @@ tests or care about something that happens *during* test execution.
 New Methods
 ~~~~~~~~~~~
 
+XXX discuss
+
 .. function :: registerInSubprocess(self, event)
 
    :param event: :class:`nose2.plugins.mp.RegisterInSubprocessEvent`
@@ -147,6 +149,8 @@ New Methods
 New Events
 ~~~~~~~~~~
 
+XXX discuss
+
 .. autoclass :: nose2.plugins.mp.RegisterInSubprocessEvent
    :members:
 
@@ -156,16 +160,66 @@ New Events
 Stern Warning
 ~~~~~~~~~~~~~
 
-* all event fields incl. event.metadata must be pickleable
+All event attributes, *including ``event.metadata``, must be
+pickleable*. If your plugin sets any event attributes or puts anything
+into ``event.metadata``, it is your responsibility to ensure that
+anything you can possibly put in is pickleable.
 
 Do I Really Care?
 ~~~~~~~~~~~~~~~~~
 
-do you capture something that happens during test execution?
+If you answer *yes* to any of the following questions, then your
+plugin will not work with multiprocess testing without modification:
 
-do you load tests?
+* Does your plugin load tests?
+* Does your plugin capture something that happens during test execution?
+* Does your plugin require user interaction during test execution?
+* Does your plugin set executeTests in startTestRun?
 
-do you set executeTests in startTestRun?
+Here's how to handle each of those cases.
+
+Loading Tests
+^^^^^^^^^^^^^
+
+* Implement :func:`registerInSubprocess` as suggested to enable your
+  plugin in the test runner processes.
+
+Capturing Test Execution State
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Implement :func:`registerInSubprocess` as suggested to enable your
+  plugin in the test runner processes.
+
+* Be wary of setting ``event.metadata`` unconditionally. Your plugin
+  will execute in the main process and in the test runner processes,
+  and will see :func:`setTestOutcome` and :func:`testOutcome` events
+  *in both processes*. If you unconditionally set a key in
+  ``event.metadata``, the plugin instance in the main process will
+  overwrite anything set in that key by the instance in the
+  subprocess.
+
+* If you need to write something to a file, implement
+  :func:`stopSubprocess` to write a file in each test runner process.
+
+Overriding Test Execution
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Implement :func:`registerInSubprocess` as suggested to enable your
+  plugin in the test runner processes and make a note that your plugin
+  is running under a multiprocess session.
+
+* When running multiprocess, *do not* set ``event.executeTests`` in
+  :func:`startTestRun` -- instead, set it in :func:`startSubprocess`
+  instead. This will allow the multiprocess plugin to install its test
+  executor in the main process, while your plugin takes over test
+  execution in the test runner subprocesses.
+
+Interacting with Users
+^^^^^^^^^^^^^^^^^^^^^^
+
+* Implement :func:`registerInSubprocess` to disable your plugin during
+  multiprocess test runs, unless you can safely and sanely interact
+  with the user from multiple tests at the same time.
 
 Reference
 ---------

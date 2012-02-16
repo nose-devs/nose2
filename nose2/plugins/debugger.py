@@ -10,13 +10,14 @@ It fires :func:`beforeInteraction` before launching pdb and
 prevent this plugin from launching pdb.
 
 """
-
+import logging
 import pdb
 
 from nose2 import events
 
 
 __unittest = True
+log = logging.getLogger(__name__)
 
 
 class Debugger(events.Plugin):
@@ -32,12 +33,22 @@ class Debugger(events.Plugin):
     commandLineSwitch = ('D', 'debugger', 'Enter pdb on test fail or error')
     # allow easy mocking and replacment of pdb
     pdb = pdb
+    _mpmode = False
 
     def __init__(self):
         self.errorsOnly = self.config.as_bool('errors-only', default=False)
 
+    def registerInSubprocess(self, event):
+        self._mpmode = True
+        log.warn("Disabled during multiprocess test run")
+
     def testOutcome(self, event):
         """Drop into pdb on unexpected errors or failures"""
+        if self._mpmode:
+            # can't interact with users during multiprocess runs
+            log.warn("Skipping pdb for %s during multiprocess test run", event)
+            return
+
         if not event.exc_info or event.expected:
             # skipped tests, unexpected successes, expected failures
             return

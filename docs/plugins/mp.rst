@@ -217,9 +217,13 @@ Overriding Test Execution
 Interacting with Users
 ^^^^^^^^^^^^^^^^^^^^^^
 
-* Implement :func:`registerInSubprocess` to disable your plugin during
-  multiprocess test runs, unless you can safely and sanely interact
-  with the user from multiple tests at the same time.
+* You are probably safe because as a responsible plugin author you are
+  already firing the interaction hooks (:func:`beforeInteraction`,
+  :func:`afterInteraction`) around your interactive bits, and skipping
+  them when the :func:`beforeInteraction` hook returns false and sets
+  ``event.handled``.
+
+  If you're not doing that, start!
 
 Reference
 ---------

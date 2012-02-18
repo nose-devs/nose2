@@ -36,6 +36,11 @@ class MultiProcess(events.Plugin):
     def startTestRun(self, event):
         event.executeTests = self._runmp
 
+    def beforeInteraction(self, event):
+        # prevent interactive plugins from running
+        event.handled = True
+        return False
+
     def _runmp(self, test, result):
         flat = list(self._flatten(test))
         procs = self._startProcs()

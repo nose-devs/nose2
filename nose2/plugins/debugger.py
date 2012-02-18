@@ -33,22 +33,12 @@ class Debugger(events.Plugin):
     commandLineSwitch = ('D', 'debugger', 'Enter pdb on test fail or error')
     # allow easy mocking and replacment of pdb
     pdb = pdb
-    _mpmode = False
 
     def __init__(self):
         self.errorsOnly = self.config.as_bool('errors-only', default=False)
 
-    def registerInSubprocess(self, event):
-        self._mpmode = True
-        log.warn("Disabled during multiprocess test run")
-
     def testOutcome(self, event):
         """Drop into pdb on unexpected errors or failures"""
-        if self._mpmode:
-            # can't interact with users during multiprocess runs
-            log.warn("Skipping pdb for %s during multiprocess test run", event)
-            return
-
         if not event.exc_info or event.expected:
             # skipped tests, unexpected successes, expected failures
             return
@@ -57,11 +47,12 @@ class Debugger(events.Plugin):
         test = event.test
         if self.errorsOnly and isinstance(value, test.failureException):
             return
-        event = events.UserInteractionEvent()
-        result = self.session.hooks.beforeInteraction(event)
-        if not result and event.handled:
-            return
+        evt = events.UserInteractionEvent()
+        result = self.session.hooks.beforeInteraction(evt)
         try:
+            if not result and evt.handled:
+                log.warn("Skipping pdb for %s, user interaction not allowed", event)
+                return
             self.pdb.post_mortem(tb)
         finally:
-            self.session.hooks.afterInteraction(event)
+            self.session.hooks.afterInteraction(evt)

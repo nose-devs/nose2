@@ -82,7 +82,7 @@ class PluggableTestResult(object):
         Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.
 
         """
-        event = events.TestOutcomeEvent(test, self, SKIP)
+        event = events.TestOutcomeEvent(test, self, SKIP, reason=reason)
         self.session.hooks.setTestOutcome(event)
         self.session.hooks.testOutcome(event)
 

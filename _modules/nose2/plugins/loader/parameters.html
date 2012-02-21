@@ -110,11 +110,11 @@
 
 <span class="k">class</span> <span class="nc">ParamsFunctionCase</span><span class="p">(</span><span class="n">ut2</span><span class="o">.</span><span class="n">FunctionTestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_funcName</span> <span class="o">=</span> <span class="n">name</span>
         <span class="n">ut2</span><span class="o">.</span><span class="n">FunctionTestCase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcName</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">__str__</span> <span class="o">=</span> <span class="n">__repr__</span>
 
@@ -123,6 +123,9 @@
     <span class="sd">&quot;&quot;&quot;Loader plugin that loads parameterized tests&quot;&quot;&quot;</span>
     <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;parameters&#39;</span>
+
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Parameters.getTestCaseNames"><a class="viewcode-back" href="../../../../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters.getTestCaseNames">[docs]</a>    <span class="k">def</span> <span class="nf">getTestCaseNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate test case names for all parameterized methods&quot;&quot;&quot;</span>
@@ -167,7 +170,7 @@
             <span class="c"># we can&#39;t find it - let the default case handle it</span>
             <span class="k">return</span>
 
-        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fqname</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">result</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">):</span>
             <span class="k">return</span>
 
@@ -181,7 +184,7 @@
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
             <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)):</span>
             <span class="c"># generator method</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
             <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c"># generator func</span>

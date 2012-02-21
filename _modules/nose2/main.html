@@ -157,6 +157,7 @@
 
         <span class="c"># XXX force these? or can it be avoided?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaderClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testLoader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span>
 
         <span class="c"># Parse initial arguments like config file paths, verbosity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setInitialArguments</span><span class="p">()</span>
@@ -224,7 +225,8 @@
 <span class="sd">        command line.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">util</span><span class="o">.</span><span class="n">parse_log_level</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">log_level</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">logLevel</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">parse_log_level</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">logLevel</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;logging initialized </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">+=</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">verbose</span>
@@ -298,6 +300,7 @@
         <span class="n">runner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runnerClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
         <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">RunnerCreatedEvent</span><span class="p">(</span><span class="n">runner</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">runnerCreated</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testRunner</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">runner</span>
         <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">runner</span>
 
 </div>

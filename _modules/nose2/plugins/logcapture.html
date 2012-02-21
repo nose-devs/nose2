@@ -98,6 +98,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="n">MyMemoryHandler</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logformat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logdatefmt</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">startSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setupLoghandler</span><span class="p">()</span>
+
 <div class="viewcode-block" id="LogCapture.startTestRun"><a class="viewcode-back" href="../../../plugins/logcapture.html#nose2.plugins.logcapture.LogCapture.startTestRun">[docs]</a>    <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set up logging handler&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setupLoghandler</span><span class="p">()</span>
@@ -148,7 +154,10 @@
     <span class="k">def</span> <span class="nf">_addCapturedLogs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">format</span>
         <span class="n">records</span> <span class="o">=</span> <span class="p">[</span><span class="n">format</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">buffer</span><span class="p">]</span>
-        <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;logs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">records</span>
+        <span class="k">if</span> <span class="s">&#39;logs&#39;</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;logs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;logs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">records</span>
 
 </div>
 <span class="k">class</span> <span class="nc">FilterSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

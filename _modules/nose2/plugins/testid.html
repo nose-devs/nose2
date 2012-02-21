@@ -72,6 +72,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">nose2.events</span> <span class="kn">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">util</span>
 
 
 <span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
@@ -101,7 +102,7 @@
 </div>
 <div class="viewcode-block" id="TestId.reportStartTest"><a class="viewcode-back" href="../../../plugins/testid.html#nose2.plugins.testid.TestId.reportStartTest">[docs]</a>    <span class="k">def</span> <span class="nf">reportStartTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Record and possibly output test id&quot;&quot;&quot;</span>
-        <span class="n">testid</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">testEvent</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">testid</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">testEvent</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">testid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
             <span class="n">id_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextId</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">testid</span>

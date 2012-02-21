@@ -93,6 +93,9 @@
     <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;discovery&#39;</span>
 
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
 <div class="viewcode-block" id="DiscoveryLoader.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/discovery.html#nose2.plugins.loader.discovery.DiscoveryLoader.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load tests from module named by event.name&quot;&quot;&quot;</span>
         <span class="c"># turn name into path or module name</span>

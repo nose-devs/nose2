@@ -91,7 +91,22 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="c"># this happens on unpickling</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s">&#39;_buffer&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;No _buffer yet&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="o">==</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span> <span class="o">==</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
 
 
 <div class="viewcode-block" id="OutputBufferPlugin"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin">[docs]</a><span class="k">class</span> <span class="nc">OutputBufferPlugin</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
@@ -105,6 +120,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bufStdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bufStderr</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">realStdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">realStderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disable</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+        <span class="c"># turn off in this process: the subproc will run the tests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disable</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">startSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">realStdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">realStderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span>
 
 <div class="viewcode-block" id="OutputBufferPlugin.startTest"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin.startTest">[docs]</a>    <span class="k">def</span> <span class="nf">startTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Start buffering selected stream(s)&quot;&quot;&quot;</span>
@@ -116,9 +141,11 @@
 </div>
 <div class="viewcode-block" id="OutputBufferPlugin.setTestOutcome"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin.setTestOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">setTestOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Attach buffer(s) to event.metadata&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStdout</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStdout</span> <span class="ow">and</span> <span class="s">&#39;stdout&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
             <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bufStdout</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStderr</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStderr</span> <span class="ow">and</span> <span class="s">&#39;stderr&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
             <span class="n">event</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;stderr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bufStderr</span>
 </div>
 <div class="viewcode-block" id="OutputBufferPlugin.outcomeDetail"><a class="viewcode-back" href="../../../plugins/buffer.html#nose2.plugins.buffer.OutputBufferPlugin.outcomeDetail">[docs]</a>    <span class="k">def</span> <span class="nf">outcomeDetail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
@@ -140,13 +167,20 @@
         <span class="sd">&quot;&quot;&quot;Start buffering again (does not clear buffers)&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">(</span><span class="n">fresh</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </div>
+    <span class="k">def</span> <span class="nf">stopSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_restore</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">_restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStdout</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">realStdout</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStderr</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">realStderr</span>
 
     <span class="k">def</span> <span class="nf">_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fresh</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">captureStdout</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">fresh</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">bufStdout</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bufStdout</span> <span class="o">=</span> <span class="n">_Buffer</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>

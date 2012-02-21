@@ -184,8 +184,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt>
     -c CONFIG, --config CONFIG
@@ -197,6 +195,8 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt>
     -D DEFAULT, --debugger DEFAULT
@@ -238,6 +238,17 @@
       <dd><dl>
         
   <dt><a href="plugins/testid.html#cmdoption-I">command line option</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt>
+    -N DEFAULT, ----processes DEFAULT
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/mp.html#cmdoption-N">command line option</a>
   </dt>
 
       </dl></dd>
@@ -364,7 +375,7 @@
 
       <dd><dl>
         
-  <dt><a href="plugins/outcomes.html#configvar-always-on">configvar</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/junitxml.html#configvar-always-on">[13]</a>, <a href="plugins/testcases.html#configvar-always-on">[14]</a>, <a href="plugins/buffer.html#configvar-always-on">[15]</a>
+  <dt><a href="plugins/outcomes.html#configvar-always-on">configvar</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/mp.html#configvar-always-on">[6]</a>, <a href="plugins/debugger.html#configvar-always-on">[7]</a>, <a href="plugins/functions.html#configvar-always-on">[8]</a>, <a href="plugins/prof.html#configvar-always-on">[9]</a>, <a href="plugins/collect.html#configvar-always-on">[10]</a>, <a href="plugins/generators.html#configvar-always-on">[11]</a>, <a href="plugins/parameters.html#configvar-always-on">[12]</a>, <a href="plugins/result.html#configvar-always-on">[13]</a>, <a href="plugins/junitxml.html#configvar-always-on">[14]</a>, <a href="plugins/testcases.html#configvar-always-on">[15]</a>, <a href="plugins/buffer.html#configvar-always-on">[16]</a>
   </dt>
 
       </dl></dd>
@@ -531,6 +542,10 @@
   </dt>
 
         
+  <dt><a href="plugins/mp.html#cmdoption-N">-N DEFAULT, ----processes DEFAULT</a>
+  </dt>
+
+        
   <dt><a href="plugins/prof.html#cmdoption-P">-P DEFAULT, --profile DEFAULT</a>
   </dt>
 
@@ -559,12 +574,12 @@
   <dt><a href="dev/plugin_class_reference.html#Plugin.commandLineOption">commandLineOption (Plugin attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/session_reference.html#nose2.config.Config">Config (class in nose2.config)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/plugin_class_reference.html#Plugin.config">config (Plugin attribute)</a>
   </dt>
@@ -584,7 +599,7 @@
 
       <dd><dl>
         
-  <dt><a href="plugins/outcomes.html#configvar-always-on">always-on</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/debugger.html#configvar-always-on">[6]</a>, <a href="plugins/functions.html#configvar-always-on">[7]</a>, <a href="plugins/prof.html#configvar-always-on">[8]</a>, <a href="plugins/collect.html#configvar-always-on">[9]</a>, <a href="plugins/generators.html#configvar-always-on">[10]</a>, <a href="plugins/parameters.html#configvar-always-on">[11]</a>, <a href="plugins/result.html#configvar-always-on">[12]</a>, <a href="plugins/junitxml.html#configvar-always-on">[13]</a>, <a href="plugins/testcases.html#configvar-always-on">[14]</a>, <a href="plugins/buffer.html#configvar-always-on">[15]</a>
+  <dt><a href="plugins/outcomes.html#configvar-always-on">always-on</a>, <a href="plugins/printhooks.html#configvar-always-on">[1]</a>, <a href="plugins/discovery.html#configvar-always-on">[2]</a>, <a href="plugins/doctests.html#configvar-always-on">[3]</a>, <a href="plugins/logcapture.html#configvar-always-on">[4]</a>, <a href="plugins/testid.html#configvar-always-on">[5]</a>, <a href="plugins/mp.html#configvar-always-on">[6]</a>, <a href="plugins/debugger.html#configvar-always-on">[7]</a>, <a href="plugins/functions.html#configvar-always-on">[8]</a>, <a href="plugins/prof.html#configvar-always-on">[9]</a>, <a href="plugins/collect.html#configvar-always-on">[10]</a>, <a href="plugins/generators.html#configvar-always-on">[11]</a>, <a href="plugins/parameters.html#configvar-always-on">[12]</a>, <a href="plugins/result.html#configvar-always-on">[13]</a>, <a href="plugins/junitxml.html#configvar-always-on">[14]</a>, <a href="plugins/testcases.html#configvar-always-on">[15]</a>, <a href="plugins/buffer.html#configvar-always-on">[16]</a>
   </dt>
 
         
@@ -644,6 +659,10 @@
   </dt>
 
         
+  <dt><a href="plugins/mp.html#configvar-processes">processes</a>
+  </dt>
+
+        
   <dt><a href="plugins/prof.html#configvar-restrict">restrict</a>
   </dt>
 
@@ -668,6 +687,10 @@
   </dt>
 
         
+  <dt><a href="plugins/mp.html#configvar-test-run-timeout">test-run-timeout</a>
+  </dt>
+
+        
   <dt><a href="plugins/outcomes.html#configvar-treat-as-fail">treat-as-fail</a>
   </dt>
 
@@ -676,6 +699,10 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="plugins/mp.html#SubprocessEvent.connection">connection (SubprocessEvent attribute)</a>
+  </dt>
+
       
   <dt><a href="dev/hook_reference.html#createTests">createTests() (built-in function)</a>
   </dt>
@@ -802,6 +829,12 @@
   <dt><a href="dev/event_reference.html#nose2.events.StartTestRunEvent.executeTests">executeTests (nose2.events.StartTestRunEvent attribute)</a>
   </dt>
 
+      <dd><dl>
+        
+  <dt><a href="plugins/mp.html#SubprocessEvent.executeTests">(SubprocessEvent attribute)</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="dev/event_reference.html#nose2.events.TestOutcomeEvent.expected">expected (nose2.events.TestOutcomeEvent attribute)</a>
   </dt>
@@ -990,10 +1023,14 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="dev/event_reference.html#nose2.events.HandleFileEvent">HandleFileEvent (class in nose2.events)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="dev/event_reference.html#nose2.events.HandleFileEvent">HandleFileEvent (class in nose2.events)</a>
+  <dt><a href="dev/utils.html#nose2.util.has_module_fixtures">has_module_fixtures() (in module nose2.util)</a>
   </dt>
 
       
@@ -1082,6 +1119,10 @@
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="plugins/mp.html#SubprocessEvent.loader">(SubprocessEvent attribute)</a>
+  </dt>
+
         
   <dt><a href="dev/event_reference.html#nose2.events.GetTestCaseNamesEvent.loader">(nose2.events.GetTestCaseNamesEvent attribute)</a>
   </dt>
@@ -1276,12 +1317,12 @@
   <dt><a href="dev/event_reference.html#nose2.events.Event.metadata">metadata (nose2.events.Event attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/plugin_class_reference.html#Hook.method">method (Hook attribute)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/plugin_class_reference.html#PluginInterface.methods">methods (PluginInterface attribute)</a>
   </dt>
@@ -1306,6 +1347,10 @@
       </dl></dd>
       
   <dt><a href="dev/utils.html#nose2.util.module_from_name">module_from_name() (in module nose2.util)</a>
+  </dt>
+
+      
+  <dt><a href="plugins/mp.html#nose2.plugins.mp.MultiProcess">MultiProcess (class in nose2.plugins.mp)</a>
   </dt>
 
   </dl></td>
@@ -1422,6 +1467,10 @@
 
       
   <dt><a href="plugins/logcapture.html#module-nose2.plugins.logcapture">nose2.plugins.logcapture (module)</a>
+  </dt>
+
+      
+  <dt><a href="plugins/mp.html#module-nose2.plugins.mp">nose2.plugins.mp (module)</a>
   </dt>
 
       
@@ -1575,14 +1624,18 @@
   <dt><a href="dev/runner.html#nose2.runner.PluggableTestRunner">PluggableTestRunner (class in nose2.runner)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/plugin_class_reference.html#nose2.events.Plugin">Plugin (class in nose2.events)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/session_reference.html#Session.pluginargs">pluginargs (Session attribute)</a>
+  </dt>
+
+      
+  <dt><a href="plugins/mp.html#RegisterInSubprocessEvent.pluginClasses">pluginClasses (RegisterInSubprocessEvent attribute)</a>
   </dt>
 
       
@@ -1607,6 +1660,10 @@
       <dd><dl>
         
   <dt><a href="dev/session_reference.html#Session.plugins">(Session attribute)</a>
+  </dt>
+
+        
+  <dt><a href="plugins/mp.html#SubprocessEvent.plugins">(SubprocessEvent attribute)</a>
   </dt>
 
       </dl></dd>
@@ -1634,6 +1691,17 @@
   <dt><a href="plugins/printhooks.html#nose2.plugins.printhooks.PrintHooks">PrintHooks (class in nose2.plugins.printhooks)</a>
   </dt>
 
+      
+  <dt>
+    processes
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/mp.html#configvar-processes">configvar</a>
+  </dt>
+
+      </dl></dd>
       
   <dt><a href="plugins/prof.html#nose2.plugins.prof.Profiler">Profiler (class in nose2.plugins.prof)</a>
   </dt>
@@ -1666,6 +1734,14 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="plugins/mp.html#registerInSubprocess">registerInSubprocess() (built-in function)</a>
+  </dt>
+
+      
+  <dt><a href="plugins/mp.html#nose2.plugins.mp.RegisterInSubprocessEvent">RegisterInSubprocessEvent (class in nose2.plugins.mp)</a>
+  </dt>
+
       
   <dt><a href="dev/session_reference.html#nose2.session.Session.registerPlugin">registerPlugin() (nose2.session.Session method)</a>
   </dt>
@@ -1720,6 +1796,8 @@
   <dt><a href="dev/hook_reference.html#reportUnexpectedSuccess">reportUnexpectedSuccess() (built-in function)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt>
     restrict
@@ -1731,13 +1809,15 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/event_reference.html#nose2.events.ResultCreatedEvent.result">result (nose2.events.ResultCreatedEvent attribute)</a>
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="plugins/mp.html#SubprocessEvent.result">(SubprocessEvent attribute)</a>
+  </dt>
+
         
   <dt><a href="dev/event_reference.html#nose2.events.ResultStopEvent.result">(nose2.events.ResultStopEvent attribute)</a>
   </dt>
@@ -1907,6 +1987,10 @@
   </dt>
 
       
+  <dt><a href="plugins/mp.html#startSubprocess">startSubprocess() (built-in function)</a>
+  </dt>
+
+      
   <dt><a href="dev/hook_reference.html#startTest">startTest() (built-in function)</a>
   </dt>
 
@@ -2001,6 +2085,10 @@
   </dt>
 
       
+  <dt><a href="plugins/mp.html#stopSubprocess">stopSubprocess() (built-in function)</a>
+  </dt>
+
+      
   <dt><a href="dev/hook_reference.html#stopTest">stopTest() (built-in function)</a>
   </dt>
 
@@ -2065,6 +2153,10 @@
 
       </dl></dd>
       
+  <dt><a href="plugins/mp.html#nose2.plugins.mp.SubprocessEvent">SubprocessEvent (class in nose2.plugins.mp)</a>
+  </dt>
+
+      
   <dt><a href="dev/event_reference.html#nose2.events.ResultSuccessEvent.success">success (nose2.events.ResultSuccessEvent attribute)</a>
   </dt>
 
@@ -2123,6 +2215,17 @@
 
       </dl></dd>
       
+  <dt>
+    test-run-timeout
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="plugins/mp.html#configvar-test-run-timeout">configvar</a>
+  </dt>
+
+      </dl></dd>
+      
   <dt><a href="dev/utils.html#nose2.util.test_from_name">test_from_name() (in module nose2.util)</a>
   </dt>
 
@@ -2152,6 +2255,8 @@
   <dt><a href="plugins/testid.html#nose2.plugins.testid.TestId">TestId (class in nose2.plugins.testid)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/event_reference.html#nose2.events.GetTestCaseNamesEvent.testMethodPrefix">testMethodPrefix (nose2.events.GetTestCaseNamesEvent attribute)</a>
   </dt>
@@ -2162,8 +2267,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="dev/exceptions.html#nose2.exceptions.TestNotFoundError">TestNotFoundError</a>
   </dt>

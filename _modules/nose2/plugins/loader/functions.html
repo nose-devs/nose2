@@ -91,6 +91,9 @@
     <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;functions&#39;</span>
 
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Functions.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/functions.html#nose2.plugins.loader.functions.Functions.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load test if event.name is the name of a test function&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>

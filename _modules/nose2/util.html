@@ -181,6 +181,18 @@
     <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">summary</span><span class="p">[:</span><span class="mi">79</span><span class="p">])</span>
 
 </div>
+<span class="k">def</span> <span class="nf">test_name</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="c"># XXX does not work for test funcs, test.id() lacks module</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;_funcName&#39;</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">_funcName</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;_testFunc&#39;</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">_testFunc</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">_testFunc</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">in</span> <span class="n">tid</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">tid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tid</span>
+
 <div class="viewcode-block" id="ispackage"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.ispackage">[docs]</a><span class="k">def</span> <span class="nf">ispackage</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Is this path a package directory?&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -209,6 +221,21 @@
             <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;testGenerator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
 
 </div>
+<div class="viewcode-block" id="has_module_fixtures"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.has_module_fixtures">[docs]</a><span class="k">def</span> <span class="nf">has_module_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Does this test live in a module with module fixtures?&quot;&quot;&quot;</span>
+    <span class="n">modname</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">modname</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&#39;setUpModule&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&#39;tearDownModule&#39;</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">has_class_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s">&#39;setUpClass&#39;</span> <span class="ow">in</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__dict__</span> <span class="ow">or</span>
+            <span class="s">&#39;tearDownClass&#39;</span> <span class="ow">in</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="safe_decode"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.safe_decode">[docs]</a><span class="k">def</span> <span class="nf">safe_decode</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Safely decode a byte string into unicode&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">string</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -237,16 +264,19 @@
 <div class="viewcode-block" id="format_traceback"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.format_traceback">[docs]</a><span class="k">def</span> <span class="nf">format_traceback</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Converts a sys.exc_info()-style tuple of values into a string.&quot;&quot;&quot;</span>
     <span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">err</span>
-    <span class="c"># Skip test runner traceback levels</span>
-    <span class="k">while</span> <span class="n">tb</span> <span class="ow">and</span> <span class="n">_is_relevant_tb_level</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
-        <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span>
-    <span class="n">failure</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;failureException&#39;</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">exctype</span> <span class="ow">is</span> <span class="n">failure</span><span class="p">:</span>
-        <span class="c"># Skip assert*() traceback levels</span>
-        <span class="n">length</span> <span class="o">=</span> <span class="n">_count_relevant_tb_levels</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
-        <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tb</span><span class="p">,</span> <span class="s">&#39;tb_next&#39;</span><span class="p">):</span>
+        <span class="n">msgLines</span> <span class="o">=</span> <span class="n">tb</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+        <span class="c"># Skip test runner traceback levels</span>
+        <span class="k">while</span> <span class="n">tb</span> <span class="ow">and</span> <span class="n">_is_relevant_tb_level</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span>
+        <span class="n">failure</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;failureException&#39;</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exctype</span> <span class="ow">is</span> <span class="n">failure</span><span class="p">:</span>
+            <span class="c"># Skip assert*() traceback levels</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">_count_relevant_tb_levels</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+            <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
     <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msgLines</span><span class="p">)</span>
 
 </div>

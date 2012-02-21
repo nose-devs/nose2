@@ -74,11 +74,21 @@
     <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;collect-only&#39;</span>
     <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;collect-only&#39;</span><span class="p">,</span>
                          <span class="s">&#39;Collect and output test names, do not run any tests&#39;</span><span class="p">)</span>
+    <span class="n">_mpmode</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mpmode</span> <span class="o">=</span> <span class="bp">True</span>
 
 <div class="viewcode-block" id="CollectOnly.startTestRun"><a class="viewcode-back" href="../../../plugins/collect.html#nose2.plugins.collect.CollectOnly.startTestRun">[docs]</a>    <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Replace event.executeTests&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpmode</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="n">event</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collectTests</span>
 </div>
+    <span class="k">def</span> <span class="nf">startSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collectTests</span>
+
 <div class="viewcode-block" id="CollectOnly.collectTests"><a class="viewcode-back" href="../../../plugins/collect.html#nose2.plugins.collect.CollectOnly.collectTests">[docs]</a>    <span class="k">def</span> <span class="nf">collectTests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Collect tests but don&#39;t run them&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">suite</span><span class="p">:</span>

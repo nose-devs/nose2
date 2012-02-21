@@ -1,0 +1,517 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Running Tests in Parallel with Multiple Processes &mdash; nose2 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Loader: Doctests" href="doctests.html" />
+    <link rel="prev" title="Selecting tests with attributes" href="attrib.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="doctests.html" title="Loader: Doctests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="attrib.html" title="Selecting tests with attributes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="running-tests-in-parallel-with-multiple-processes">
+<h1>Running Tests in Parallel with Multiple Processes<a class="headerlink" href="#running-tests-in-parallel-with-multiple-processes" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">New in version 0.3</p>
+</div>
+<p>Use the <tt class="docutils literal"><span class="pre">mp</span></tt> plugin to enable distribution of tests across multiple
+processes. Doing his may speed up your test run if your tests are
+heavily IO or CPU bound. But it <em>imposes an overhead cost</em> that is not
+trivial, and it <em>complicates the use of test fixtures</em> and may <em>conflict
+with plugins that are not designed to work with it</em>.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>To activate the plugin, include the plugin module in the plugins list
+in <tt class="docutils literal"><span class="pre">[unittest]</span></tt> section in a config file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">unittest</span><span class="p">]</span>
+<span class="n">plugins</span> <span class="o">=</span> <span class="n">nose2</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">mp</span>
+</pre></div>
+</div>
+<p>Or pass the module with the <em class="xref std std-option">--plugin</em> command-line option:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nose2</span> <span class="o">--</span><span class="n">plugin</span><span class="o">=</span><span class="n">nose2</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">mp</span>
+</pre></div>
+</div>
+<p>Then configure the number of processes to run. You can do that either
+with the <a class="reference internal" href="#cmdoption-N"><em class="xref std std-option">-N</em></a> option:</p>
+<div class="highlight-python"><pre>nose2 -N 2</pre>
+</div>
+<p>or by setting <tt class="docutils literal"><span class="pre">processes</span></tt> in the <tt class="docutils literal"><span class="pre">[multiprocess]</span></tt> section of a
+config file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">multiprocess</span><span class="p">]</span>
+<span class="n">processes</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you make the plugin always active by setting <tt class="docutils literal"><span class="pre">always-on</span></tt> in
+the <tt class="docutils literal"><span class="pre">[multiprocess]</span></tt> section of a config file, but do not set
+<tt class="docutils literal"><span class="pre">processes</span></tt> or pass <a class="reference internal" href="#cmdoption-N"><em class="xref std std-option">-N</em></a>, the number of processes
+defaults to the number of cpus available.</p>
+</div>
+</div>
+<div class="section" id="guidelines-for-test-authors">
+<h2>Guidelines for Test Authors<a class="headerlink" href="#guidelines-for-test-authors" title="Permalink to this headline">¶</a></h2>
+<p>Not every test suite will work well, or work at all, when run in
+parallel. For some test suites, parallel execution makes no sense. For
+others, it will expose bugs and ordering dependencies test cases and
+test modules.</p>
+<div class="section" id="overhead-cost">
+<h3>Overhead Cost<a class="headerlink" href="#overhead-cost" title="Permalink to this headline">¶</a></h3>
+<p>Starting subprocesses and dispatching tests takes time. A test run
+that includes a relatively small number of tests that are not IO or
+CPU bound (or calling time.sleep()) is likely to be <em>slower</em> when run
+in parallel. As of this writing, for instance, nose2&#8217;s test suite
+takes about 10 times as long to run when using multiprocessing, due to
+the overhead cost.</p>
+</div>
+<div class="section" id="shared-fixtures">
+<h3>Shared Fixtures<a class="headerlink" href="#shared-fixtures" title="Permalink to this headline">¶</a></h3>
+<p>The individual test processes do not share state or data after
+launch. This means <em>tests that share a fixture</em> &#8211; tests that are loaded
+from modules where <tt class="docutils literal"><span class="pre">setUpModule</span></tt> is defined, and tests in test
+classes that define <tt class="docutils literal"><span class="pre">setUpClass</span></tt> &#8211; <em>must all be dispatched to the
+same process at the same time</em>. So if you use these kinds of fixtures,
+your test runs may be less parallel than you expect.</p>
+</div>
+<div class="section" id="tests-load-twice">
+<h3>Tests Load Twice<a class="headerlink" href="#tests-load-twice" title="Permalink to this headline">¶</a></h3>
+<p>Test cases may not be pickleable, so nose2 can&#8217;t transmit them
+directly to its test runner processes. Tests are distributed by
+name. This means that <em>tests always load twice</em> &#8211; once in the main
+process, during initial collection, and then again in the test runner
+process, where they are loaded by name. This may be problematic for
+some test suites.</p>
+</div>
+<div class="section" id="random-execution-order">
+<h3>Random Execution Order<a class="headerlink" href="#random-execution-order" title="Permalink to this headline">¶</a></h3>
+<p>Tests do not execute in the same order when run in parallel. Results
+will be returned in effectively random order, and tests in the same
+module (<em>as long as they do not share fixtures</em>) may execute in any
+order and in different processes. Some tests suites have ordering
+dependencies, intentional or not, and those that do will fail randomly
+when run with this plugin.</p>
+</div>
+</div>
+<div class="section" id="guidelines-for-plugin-authors">
+<h2>Guidelines for Plugin Authors<a class="headerlink" href="#guidelines-for-plugin-authors" title="Permalink to this headline">¶</a></h2>
+<p>The MultiProcess plugin is designed to work with other plugins. But
+other plugins may have to return the favor, especially if they load
+tests or care about something that happens <em>during</em> test execution.</p>
+<div class="section" id="new-methods">
+<h3>New Methods<a class="headerlink" href="#new-methods" title="Permalink to this headline">¶</a></h3>
+<p>The MultiProcess plugin adds a few plugin hooks that other plugins can
+use to set themselves up for multiprocess test runs. Plugins don&#8217;t
+have to do anything special to register for these hooks, just
+implement the methods as normal.</p>
+<dl class="function">
+<dt id="registerInSubprocess">
+<tt class="descname">registerInSubprocess</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#registerInSubprocess" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; <a class="reference internal" href="#nose2.plugins.mp.RegisterInSubprocessEvent" title="nose2.plugins.mp.RegisterInSubprocessEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.mp.RegisterInSubprocessEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">registerInSubprocess</span></tt> hook is called after plugin
+registration to enable plugins that need to run in subprocesses to
+register that fact. The most common thing to do, for plugins that
+need to run in subprocesses, is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is not required that plugins append their own class. If for some
+reason there is a different plugin class, or set of classes, that
+should run in the test-running subprocesses, add that class or
+those classes instead.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="startSubprocess">
+<tt class="descname">startSubprocess</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#startSubprocess" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; <a class="reference internal" href="#nose2.plugins.mp.SubprocessEvent" title="nose2.plugins.mp.SubprocessEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.mp.SubprocessEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">startSubprocess</span></tt> hook fires in each test-running subprocess
+after it has loaded its plugins but before any tests are executed.</p>
+<p>Plugins can customize test execution here in the same was as in
+<a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a>, by setting <tt class="docutils literal"><span class="pre">event.executeTests</span></tt>, and
+prevent test execution by setting <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and
+returning False.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="stopSubprocess">
+<tt class="descname">stopSubprocess</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#stopSubprocess" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; <a class="reference internal" href="#nose2.plugins.mp.SubprocessEvent" title="nose2.plugins.mp.SubprocessEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.mp.SubprocessEvent</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">stopSubprocess</span></tt> event fires just before each test running
+subprocess shuts down. Plugins can use this hook for any
+per-process finalization that they may need to do.</p>
+<p>The same event instance is passed to <tt class="docutils literal"><span class="pre">startSubprocess</span></tt> and
+<tt class="docutils literal"><span class="pre">stopSubprocess</span></tt>, which enables plugins to use that event&#8217;s
+metadata to communicate state or other information from the
+start to the stop hooks, if needed.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="new-events">
+<h3>New Events<a class="headerlink" href="#new-events" title="Permalink to this headline">¶</a></h3>
+<p>The MultiProcess plugin&#8217;s new hooks come with custom event classes.</p>
+<dl class="class">
+<dt id="nose2.plugins.mp.RegisterInSubprocessEvent">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.mp.</tt><tt class="descname">RegisterInSubprocessEvent</tt><big>(</big><em>**metadata</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/mp.html#RegisterInSubprocessEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.mp.RegisterInSubprocessEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to notify plugins that multiprocess testing will occur</p>
+<dl class="attribute">
+<dt id="RegisterInSubprocessEvent.pluginClasses">
+<tt class="descname">pluginClasses</tt><a class="headerlink" href="#RegisterInSubprocessEvent.pluginClasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a plugin class to this list to cause the plugin to be
+instantiated in each test-running subprocess. The most common
+thing to do, for plugins that need to run in subprocesses, is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.plugins.mp.SubprocessEvent">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.mp.</tt><tt class="descname">SubprocessEvent</tt><big>(</big><em>loader</em>, <em>result</em>, <em>runner</em>, <em>plugins</em>, <em>connection</em>, <em>**metadata</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/mp.html#SubprocessEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.mp.SubprocessEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired at start and end of subprocess execution.</p>
+<dl class="attribute">
+<dt id="SubprocessEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#SubprocessEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="SubprocessEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#SubprocessEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="SubprocessEvent.plugins">
+<tt class="descname">plugins</tt><a class="headerlink" href="#SubprocessEvent.plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of plugins loaded in the subprocess.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="SubprocessEvent.connection">
+<tt class="descname">connection</tt><a class="headerlink" href="#SubprocessEvent.connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="http://docs.python.org/library/multiprocessing.html#multiprocessing.Connection" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">multiprocessing.Connection</span></tt></a> instance that the
+subprocess uses for communication with the main process.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="SubprocessEvent.executeTests">
+<tt class="descname">executeTests</tt><a class="headerlink" href="#SubprocessEvent.executeTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable that will be used to execute tests.  Plugins may set
+this attribute to wrap or otherwise change test execution. The
+callable must match the signature:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="stern-warning">
+<h3>Stern Warning<a class="headerlink" href="#stern-warning" title="Permalink to this headline">¶</a></h3>
+<p>All event attributes, <em>including ``event.metadata``, must be
+pickleable</em>. If your plugin sets any event attributes or puts anything
+into <tt class="docutils literal"><span class="pre">event.metadata</span></tt>, it is your responsibility to ensure that
+anything you can possibly put in is pickleable.</p>
+</div>
+<div class="section" id="do-i-really-care">
+<h3>Do I Really Care?<a class="headerlink" href="#do-i-really-care" title="Permalink to this headline">¶</a></h3>
+<p>If you answer <em>yes</em> to any of the following questions, then your
+plugin will not work with multiprocess testing without modification:</p>
+<ul class="simple">
+<li>Does your plugin load tests?</li>
+<li>Does your plugin capture something that happens during test execution?</li>
+<li>Does your plugin require user interaction during test execution?</li>
+<li>Does your plugin set executeTests in startTestRun?</li>
+</ul>
+<p>Here&#8217;s how to handle each of those cases.</p>
+<div class="section" id="loading-tests">
+<h4>Loading Tests<a class="headerlink" href="#loading-tests" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Implement <a class="reference internal" href="#registerInSubprocess" title="registerInSubprocess"><tt class="xref py py-func docutils literal"><span class="pre">registerInSubprocess()</span></tt></a> as suggested to enable your
+plugin in the test runner processes.</li>
+</ul>
+</div>
+<div class="section" id="capturing-test-execution-state">
+<h4>Capturing Test Execution State<a class="headerlink" href="#capturing-test-execution-state" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Implement <a class="reference internal" href="#registerInSubprocess" title="registerInSubprocess"><tt class="xref py py-func docutils literal"><span class="pre">registerInSubprocess()</span></tt></a> as suggested to enable your
+plugin in the test runner processes.</li>
+<li>Be wary of setting <tt class="docutils literal"><span class="pre">event.metadata</span></tt> unconditionally. Your plugin
+will execute in the main process and in the test runner processes,
+and will see <a class="reference internal" href="../dev/hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a> and <a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> events
+<em>in both processes</em>. If you unconditionally set a key in
+<tt class="docutils literal"><span class="pre">event.metadata</span></tt>, the plugin instance in the main process will
+overwrite anything set in that key by the instance in the
+subprocess.</li>
+<li>If you need to write something to a file, implement
+<a class="reference internal" href="#stopSubprocess" title="stopSubprocess"><tt class="xref py py-func docutils literal"><span class="pre">stopSubprocess()</span></tt></a> to write a file in each test runner process.</li>
+</ul>
+</div>
+<div class="section" id="overriding-test-execution">
+<h4>Overriding Test Execution<a class="headerlink" href="#overriding-test-execution" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>Implement <a class="reference internal" href="#registerInSubprocess" title="registerInSubprocess"><tt class="xref py py-func docutils literal"><span class="pre">registerInSubprocess()</span></tt></a> as suggested to enable your
+plugin in the test runner processes and make a note that your plugin
+is running under a multiprocess session.</li>
+<li>When running multiprocess, <em>do not</em> set <tt class="docutils literal"><span class="pre">event.executeTests</span></tt> in
+<a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a> &#8211; instead, set it in <a class="reference internal" href="#startSubprocess" title="startSubprocess"><tt class="xref py py-func docutils literal"><span class="pre">startSubprocess()</span></tt></a>
+instead. This will allow the multiprocess plugin to install its test
+executor in the main process, while your plugin takes over test
+execution in the test runner subprocesses.</li>
+</ul>
+</div>
+<div class="section" id="interacting-with-users">
+<h4>Interacting with Users<a class="headerlink" href="#interacting-with-users" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p class="first">You are probably safe because as a responsible plugin author you are
+already firing the interaction hooks (<a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a>,
+<a class="reference internal" href="../dev/hook_reference.html#afterInteraction" title="afterInteraction"><tt class="xref py py-func docutils literal"><span class="pre">afterInteraction()</span></tt></a>) around your interactive bits, and skipping
+them when the <a class="reference internal" href="../dev/hook_reference.html#beforeInteraction" title="beforeInteraction"><tt class="xref py py-func docutils literal"><span class="pre">beforeInteraction()</span></tt></a> hook returns false and sets
+<tt class="docutils literal"><span class="pre">event.handled</span></tt>.</p>
+<p>If you&#8217;re not doing that, start!</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="module-nose2.plugins.mp">
+<span id="reference"></span><h2>Reference<a class="headerlink" href="#module-nose2.plugins.mp" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configuration-multiprocess">
+<h3>Configuration [multiprocess]<a class="headerlink" href="#configuration-multiprocess" title="Permalink to this headline">¶</a></h3>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-processes">
+<tt class="descname">processes</tt><a class="headerlink" href="#configvar-processes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">4</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-test-run-timeout">
+<tt class="descname">test-run-timeout</tt><a class="headerlink" href="#configvar-test-run-timeout" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">60.0</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h4>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h4>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[multiprocess]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">processes</span> <span class="o">=</span> <span class="s">4</span>
+<span class="na">test-run-timeout</span> <span class="o">=</span> <span class="s">60.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h3>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h3>
+<dl class="cmdoption">
+<dt id="cmdoption-N">
+<tt class="descname">-N</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">----processes</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-N" title="Permalink to this definition">¶</a></dt>
+<dd><p># o procs</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h3>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="nose2.plugins.mp.MultiProcess">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.mp.</tt><tt class="descname">MultiProcess</tt><a class="reference internal" href="../_modules/nose2/plugins/mp.html#MultiProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.mp.MultiProcess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Running Tests in Parallel with Multiple Processes</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#guidelines-for-test-authors">Guidelines for Test Authors</a><ul>
+<li><a class="reference internal" href="#overhead-cost">Overhead Cost</a></li>
+<li><a class="reference internal" href="#shared-fixtures">Shared Fixtures</a></li>
+<li><a class="reference internal" href="#tests-load-twice">Tests Load Twice</a></li>
+<li><a class="reference internal" href="#random-execution-order">Random Execution Order</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#guidelines-for-plugin-authors">Guidelines for Plugin Authors</a><ul>
+<li><a class="reference internal" href="#new-methods">New Methods</a></li>
+<li><a class="reference internal" href="#new-events">New Events</a></li>
+<li><a class="reference internal" href="#stern-warning">Stern Warning</a></li>
+<li><a class="reference internal" href="#do-i-really-care">Do I Really Care?</a><ul>
+<li><a class="reference internal" href="#loading-tests">Loading Tests</a></li>
+<li><a class="reference internal" href="#capturing-test-execution-state">Capturing Test Execution State</a></li>
+<li><a class="reference internal" href="#overriding-test-execution">Overriding Test Execution</a></li>
+<li><a class="reference internal" href="#interacting-with-users">Interacting with Users</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-nose2.plugins.mp">Reference</a><ul>
+<li><a class="reference internal" href="#configuration-multiprocess">Configuration [multiprocess]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="attrib.html" title="previous chapter">Selecting tests with attributes</a></li>
+      <li>Next: <a href="doctests.html" title="next chapter">Loader: Doctests</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/mp.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

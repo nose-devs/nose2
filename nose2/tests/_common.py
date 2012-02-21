@@ -180,3 +180,25 @@ class NotReallyAProc(object):
 
     def poll(self):
         return not self.result.result.wasSuccessful()
+
+
+# mock multprocessing Connection
+class Conn(object):
+    def __init__(self, items):
+        self.items = items
+        self.sent = []
+        self.closed = False
+
+    def recv(self):
+        if self.closed:
+            raise EOFError("closed")
+        try:
+            return self.items.pop(0)
+        except:
+            raise EOFError("EOF")
+
+    def send(self, item):
+        self.sent.append(item)
+
+    def close(self):
+        self.closed = True

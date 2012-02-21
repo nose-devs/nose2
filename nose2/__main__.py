@@ -7,4 +7,6 @@ if sys.argv[0].endswith("__main__.py"):
 __unittest = True
 
 from nose2.main import main_
-main_()
+
+if __name__ == '__main__':
+    main_()

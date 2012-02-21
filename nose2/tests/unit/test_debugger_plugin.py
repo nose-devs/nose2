@@ -1,6 +1,13 @@
+import logging
+
 from nose2.tests._common import TestCase
 from nose2.plugins import debugger
 from nose2 import events, result, session
+
+
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
 
 
 class StubPdb(object):
@@ -70,6 +77,8 @@ class TestDebugger(TestCase):
             "pdb was called on failure when errorsOnly set"
 
     def test_other_plugins_can_prevent_interaction(self):
+        # prevent 'no logger for x' warnings
+        debugger.log.addHandler(NullHandler())
         nono = NoInteraction(session=self.session)
         nono.register()
         test = self.case('test_err')

@@ -17,9 +17,19 @@ class CollectOnly(Plugin):
     configSection = 'collect-only'
     commandLineSwitch = (None, 'collect-only',
                          'Collect and output test names, do not run any tests')
+    _mpmode = False
+
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+        self._mpmode = True
 
     def startTestRun(self, event):
         """Replace event.executeTests"""
+        if self._mpmode:
+            return
+        event.executeTests = self.collectTests
+
+    def startSubprocess(self, event):
         event.executeTests = self.collectTests
 
     def collectTests(self, suite, result):

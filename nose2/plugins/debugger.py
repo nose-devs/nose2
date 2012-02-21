@@ -10,13 +10,14 @@ It fires :func:`beforeInteraction` before launching pdb and
 prevent this plugin from launching pdb.
 
 """
-
+import logging
 import pdb
 
 from nose2 import events
 
 
 __unittest = True
+log = logging.getLogger(__name__)
 
 
 class Debugger(events.Plugin):
@@ -46,11 +47,12 @@ class Debugger(events.Plugin):
         test = event.test
         if self.errorsOnly and isinstance(value, test.failureException):
             return
-        event = events.UserInteractionEvent()
-        result = self.session.hooks.beforeInteraction(event)
-        if not result and event.handled:
-            return
+        evt = events.UserInteractionEvent()
+        result = self.session.hooks.beforeInteraction(evt)
         try:
+            if not result and evt.handled:
+                log.warn("Skipping pdb for %s, user interaction not allowed", event)
+                return
             self.pdb.post_mortem(tb)
         finally:
-            self.session.hooks.afterInteraction(event)
+            self.session.hooks.afterInteraction(evt)

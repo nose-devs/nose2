@@ -9,7 +9,7 @@ import logging
 import argparse
 import six
 
-from nose2 import config
+from nose2 import config, util
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -92,7 +92,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
     """
     alwaysOn = False
-
+    registered = False
     def register(self):
         """Register with appropriate hooks.
 
@@ -103,6 +103,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
             log.warning("Unable to register %s, no session", self)
             return
         self.session.registerPlugin(self)
+        self.registered = True
 
     def _register_cb(self, *_):
         self.register()
@@ -303,9 +304,28 @@ class Event(object):
     def __str__(self):
         return '%s(%s)' % (self.__class__.__name__, self._format())
 
+    def __repr__(self):
+        return str(self)
+
     def _format(self):
         return ', '.join(['%s=%r' % (k, getattr(self, k, None))
                           for k in self._attrs])
+
+    def __getstate__(self):
+        state = self.__dict__
+        # FIXME fails for loadTestsFailure
+        if 'test' in state:
+            state['test'] = util.test_name(state['test'])
+        if 'executeTests' in state:
+            state['executeTests'] = None
+        if 'exc_info' in state and state['exc_info'] is not None:
+            ec, ev, tb = state['exc_info']
+            state['exc_info'] = (ec, ev, util.format_traceback(None, (ec, ev, tb)))
+        clear = ('loader', 'result', 'runner')
+        for attr in clear:
+            if attr in state:
+                state[attr] = None
+        return state
 
 
 class PluginsLoadedEvent(Event):

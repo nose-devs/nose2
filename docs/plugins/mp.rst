@@ -40,11 +40,11 @@ config file::
 
    If you make the plugin always active by setting ``always-on`` in
    the ``[multiprocess]`` section of a config file, but do not set
-   ``processes`` or pass :option:`-N`, the number of processes default
-   to the number of cpus available.
+   ``processes`` or pass :option:`-N`, the number of processes
+   defaults to the number of cpus available.
 
-Caveats for Test Authors
-------------------------
+Guidelines for Test Authors
+---------------------------
 
 Not every test suite will work well, or work at all, when run in
 parallel. For some test suites, parallel execution makes no sense. For
@@ -102,7 +102,10 @@ tests or care about something that happens *during* test execution.
 New Methods
 ~~~~~~~~~~~
 
-XXX discuss
+The MultiProcess plugin adds a few plugin hooks that other plugins can
+use to set themselves up for multiprocess test runs. Plugins don't
+have to do anything special to register for these hooks, just
+implement the methods as normal.
 
 .. function :: registerInSubprocess(self, event)
 
@@ -128,7 +131,7 @@ XXX discuss
    The ``startSubprocess`` hook fires in each test-running subprocess
    after it has loaded its plugins but before any tests are executed.
 
-   Plugins can customize test execution here in the same was as in
+   Plugins can customize test execution here in the same way as in
    :func:`startTestRun`, by setting ``event.executeTests``, and
    prevent test execution by setting ``event.handled`` to True and
    returning False.
@@ -149,7 +152,7 @@ XXX discuss
 New Events
 ~~~~~~~~~~
 
-XXX discuss
+The MultiProcess plugin's new hooks come with custom event classes.
 
 .. autoclass :: nose2.plugins.mp.RegisterInSubprocessEvent
    :members:

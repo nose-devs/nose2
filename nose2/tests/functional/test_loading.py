@@ -237,7 +237,7 @@ class TestTestClassLoading(FunctionalTestCase):
             'scenario/test_classes',
             '-v',
             'test_classes.Test')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 6 tests')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 8 tests')
         self.assertEqual(proc.poll(), 0)
 
     def test_load_testclass_method_by_name(self):
@@ -256,10 +256,18 @@ class TestTestClassLoading(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)
 
+    def test_load_testclass_params_method_by_name(self):
+        proc = self.runIn(
+            'scenario/test_classes',
+            '-v',
+            'test_classes.Test.test_params')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+        self.assertEqual(proc.poll(), 0)
+
     def test_class_level_fixtures_supported(self):
         proc = self.runIn(
             'scenario/test_classes',
             '-v',
             'test_fixtures')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)

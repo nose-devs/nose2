@@ -7,3 +7,7 @@ class Test(object):
             pass
         for i in range(0, 5):
             yield check, i
+
+    def test_params(self, a):
+        pass
+    test_params.paramList = (1, 2)

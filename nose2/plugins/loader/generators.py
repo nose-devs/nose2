@@ -129,8 +129,7 @@ class Generators(Plugin):
                 self._testsFromGenerator(event, name, obj(instance), parent)
                 )
         elif (parent and
-              isinstance(parent, type) and not
-              isinstance(parent, unittest.TestCase)):
+              isinstance(parent, type)):
               # generator method in test class
             method = obj
             instance = parent()

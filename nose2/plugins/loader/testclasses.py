@@ -1,3 +1,74 @@
+"""
+Load tests from classes that are *not* :class:`unittest.TestCase` subclasses.
+
+This plugin responds to :func:`loadTestsFromModule` by adding test
+cases for test methods found in classes in the module that are *not*
+sublcasses of :class:`unittest.TestCase`, but whose names (lowercased)
+match the configured test method prefix.
+
+Test class methods that are generators or have param lists are not
+loaded here, but by the :class:`nose2.plugins.loader.generators.Generators` and
+:class:`nose2.plugins.loader.parameters.Parameters` plugins.
+
+This plugin also implements :func:`loadTestsFromName` to enable
+loading tests from dotted class and method names passed on the command
+line.
+
+This plugin makes two additional plugin hooks available for other
+test loaders to use:
+
+.. function :: loadTestsFromTestClass(self, event)
+
+   :param event: A :class:`LoadFromTestClassEvent` instance
+
+   Plugins can use this hook to load tests from a class that is not a
+   :class:`unittest.TestCase` subclass. To prevent other plugins from
+   loading tests from the test class, set ``event.handled`` to True and
+   return a test suite. Plugins can also append tests to
+   ``event.extraTests`` -- ususally that's what you want to do, since
+   that will allow other plugins to load their tests from the test
+   case as well.
+
+.. function :: getTestMethodNames(self, event)
+
+   :param event: A :class:`GetTestMethodNamesEvent` instance
+
+   Plugins can use this hook to limit or extend the list of test case
+   names that will be loaded from a class that is not a
+   :class:`unittest.TestCase` subclass by the standard nose2 test
+   loader plugins (and other plugins that respect the results of the
+   hook). To force a specific list of names, set ``event.handled`` to
+   True and return a list: this exact list will be the only test case
+   names loaded from the test case. Plugins can also extend the list
+   of names by appending test names to ``event.extraNames``, and
+   exclude names by appending test names to ``event.excludedNames``.
+
+About Test Classes
+------------------
+
+Test classes are classes that look test-like but are not subclasses of
+:class:`unittest.TestCase`. Test classes support all of the same test
+types and fixtures as test cases.
+
+To "look test-like" a class must have a name that, lowercased, matches
+the configured test method prefix -- "test" by default. Test classes
+must also be able to be instantiated without arguments.
+
+What are they useful for? Mostly the case where a test class can't for
+some reason subclass :class:`unittest.TestCase`. Otherwise, test class
+tests and test cases are functionally equivalent in nose2, and test
+cases have broader support and all of those helpful *assert\** methods
+-- so when in doubt, you should use a :class:`unittest.TestCase`.
+
+Here's an example of a test class::
+
+  class TestSomething(object):
+
+      def test(self):
+          assert self.something(), "Something failed!"
+
+"""
+
 import unittest
 
 from nose2 import events, util
@@ -6,14 +77,24 @@ from nose2.compat import unittest as ut2
 __unittest = True
 
 
-class TestClasses(events.Plugin):
+class TestClassLoader(events.Plugin):
+    """Loader plugin that loads test functions"""
     alwaysOn = True
     configSection = 'test-classes'
 
     def pluginsLoaded(self, event):
+        """Install extra hooks
+
+        Adds the new plugin hooks:
+
+        - loadTestsFromTestClass
+        - getTestMethodNames
+
+        """
         self.addMethods('loadTestsFromTestClass', 'getTestMethodNames')
 
     def loadTestsFromModule(self, event):
+        """Load test classes from event.module"""
         module = event.module
         for name in dir(module):
             obj = getattr(module, name)
@@ -25,7 +106,7 @@ class TestClasses(events.Plugin):
                     self._loadTestsFromTestClass(event, obj))
 
     def loadTestsFromName(self, event):
-        """Load tests from event.name if it names a test case/method"""
+        """Load tests from event.name if it names a test class/method"""
         name = event.name
         module = event.module
         try:
@@ -130,11 +211,10 @@ def MethodTestCase(cls):
 
 #
 # Event classes
-# FIXME docs
 #
 class LoadFromTestClassEvent(events.LoadFromTestCaseEvent):
-    pass
+    """Bare subclass of :class:`nose2.events.LoadFromTestCaseEvent`"""
 
 
 class GetTestMethodNamesEvent(events.GetTestCaseNamesEvent):
-    pass
+    """Bare subclass of :class:`nose2.events.GetTestCaseNamesEvent`"""

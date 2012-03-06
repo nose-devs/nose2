@@ -229,3 +229,29 @@ class TestLoadingErrors(FunctionalTestCase):
             'test_import_err.Test.test')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 1)
+
+
+class TestTestClassLoading(FunctionalTestCase):
+    def test_load_testclass_by_name(self):
+        proc = self.runIn(
+            'scenario/test_classes',
+            '-v',
+            'test_classes.Test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 6 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_load_testclass_method_by_name(self):
+        proc = self.runIn(
+            'scenario/test_classes',
+            '-v',
+            'test_classes.Test.test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_load_testclass_generator_method_by_name(self):
+        proc = self.runIn(
+            'scenario/test_classes',
+            '-v',
+            'test_classes.Test.test_gen')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+        self.assertEqual(proc.poll(), 0)

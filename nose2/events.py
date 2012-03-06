@@ -92,6 +92,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
     """
     alwaysOn = False
+    registered = False
 
     def register(self):
         """Register with appropriate hooks.
@@ -103,6 +104,22 @@ class Plugin(six.with_metaclass(PluginMeta)):
             log.warning("Unable to register %s, no session", self)
             return
         self.session.registerPlugin(self)
+        self.registered = True
+
+    def addMethods(self, *methods):
+        """Add new plugin methods to hooks registry
+
+        Any plugins that are already registered and implement
+        a method added here will be registered for that
+        method as well.
+
+        """
+        for method in methods:
+            self.session.hooks.addMethod(method)
+        for plugin in self.session.plugins:
+            for method in methods:
+                if plugin.registered and hasattr(plugin, method):
+                    self.session.hooks.register(method, plugin)
 
     def _register_cb(self, *_):
         self.register()

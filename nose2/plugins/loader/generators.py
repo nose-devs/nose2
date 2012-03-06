@@ -213,12 +213,13 @@ class Generators(Plugin):
             args['setUp'] = setUp
         if tearDown is not None:
             args['tearDown'] = tearDown
-        # FIXME classSetUp/classTearDown
         def createTest(name):
             return util.transplant_class(
-                GeneratorFunctionCase, instance.__class__.__module__)(name, **args)
+                GeneratorMethodCase(instance.__class__),
+                instance.__class__.__module__)(name, **args)
         for test in self._testsFromGenerator(event, name, extras, createTest):
             yield test
+
 
 
 class GeneratorFunctionCase(ut2.FunctionTestCase):
@@ -233,3 +234,17 @@ class GeneratorFunctionCase(ut2.FunctionTestCase):
         return self._name
 
     id = __str__ = __repr__
+
+
+def GeneratorMethodCase(cls):
+    class _GeneratorMethodCase(GeneratorFunctionCase):
+        @classmethod
+        def setUpClass(klass):
+            if hasattr(cls, 'setUpClass'):
+                cls.setUpClass()
+
+        @classmethod
+        def tearDownClass(klass):
+            if hasattr(cls, 'tearDownClass'):
+                cls.tearDownClass()
+    return _GeneratorMethodCase

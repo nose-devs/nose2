@@ -46,7 +46,7 @@ class TestClasses(events.Plugin):
             # name is a single test method
             event.extraTests.append(
                 util.transplant_class(
-                    MethodTestCase(), parent.__module__)(parent, obj.__name__))
+                    MethodTestCase(parent), parent.__module__)(obj.__name__))
 
     def _loadTestsFromTestClass(self, event, cls):
         # ... fire event for others to load from
@@ -58,7 +58,7 @@ class TestClasses(events.Plugin):
             names = self._getTestMethodNames(event, cls)
             loaded_suite = event.loader.suiteClass(
                 [util.transplant_class(
-                        MethodTestCase(), cls.__module__)(cls, name)
+                        MethodTestCase(cls), cls.__module__)(name)
                  for name in names])
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
@@ -93,22 +93,39 @@ class TestClasses(events.Plugin):
 
 # to prevent unit2 discover from running this as a test, need to
 # hide it inside of a factory func. ugly!
-def MethodTestCase():
+def MethodTestCase(cls):
     class _MethodTestCase(ut2.TestCase):
-        def __init__(self, cls, method):
-            self.cls = cls
+        def __init__(self, method):
             self.method = method
             self._name = "%s.%s.%s" % (cls.__module__, cls.__name__, method)
+            self.obj = cls()
             ut2.TestCase.__init__(self, 'runTest')
+
+        @classmethod
+        def setUpClass(klass):
+            if hasattr(cls, 'setUpClass'):
+                cls.setUpClass()
+
+        @classmethod
+        def tearDownClass(klass):
+            if hasattr(cls, 'tearDownClass'):
+                cls.tearDownClass()
+
+        def setUp(self):
+            if hasattr(self.obj, 'setUp'):
+                self.obj.setUp()
+
+        def tearDown(self):
+            if hasattr(self.obj, 'tearDown'):
+                self.obj.tearDown()
 
         def __repr__(self):
             return self._name
         id = __str__ = __repr__
 
         def runTest(self):
-            getattr(self.cls(), self.method)()
+            getattr(self.obj, self.method)()
 
-    # FIXME setup, teardown, class setup, class teardown
     return _MethodTestCase
 
 #

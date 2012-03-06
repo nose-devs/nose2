@@ -255,3 +255,11 @@ class TestTestClassLoading(FunctionalTestCase):
             'test_classes.Test.test_gen')
         self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_class_level_fixtures_supported(self):
+        proc = self.runIn(
+            'scenario/test_classes',
+            '-v',
+            'test_fixtures')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
+        self.assertEqual(proc.poll(), 0)

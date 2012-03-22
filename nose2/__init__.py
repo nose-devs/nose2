@@ -1,1 +1,1 @@
-from nose2.main import main_
+from nose2.main import discover, main

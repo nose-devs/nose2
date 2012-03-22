@@ -64,8 +64,8 @@ else:
 
     params['entry_points'] = {
         'console_scripts': [
-            '%s = nose2:main_' % SCRIPT1,
-            '%s = nose2:main_' % SCRIPT2,
+            '%s = nose2:discover' % SCRIPT1,
+            '%s = nose2:discover' % SCRIPT2,
         ],
     }
     params['install_requires'] = REQS

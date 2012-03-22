@@ -215,10 +215,6 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def createTests(self):
         """Create top-level test suite"""
-        # XXX belongs in init?
-        if self.module and '__unittest' in dir(self.module):
-            self.module = None
-
         event = events.CreateTestsEvent(
            self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
@@ -244,4 +240,9 @@ class PluggableTestProgram(unittest.TestProgram):
         return event.runner
 
 
-main_ = PluggableTestProgram
+main = PluggableTestProgram
+
+
+def discover(*args, **kwargs):
+    kwargs['module'] = None
+    return main(*args, **kwargs)

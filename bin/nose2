@@ -2,6 +2,6 @@
 
 __unittest = True
 
-from nose2.main import main_
+from nose2 import discover
 
-main_()
+discover()

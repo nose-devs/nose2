@@ -3,12 +3,11 @@ import os.path
 import tempfile
 import shutil
 import sys
-import subprocess
 
 import six
 
 from nose2.compat import unittest
-from nose2 import main, util
+from nose2 import discover, util
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -167,7 +166,7 @@ class NotReallyAProc(object):
     def communicate(self):
         with self:
             try:
-                self.result = main.PluggableTestProgram(
+                self.result = discover(
                     argv=('nose2',) + self.args, exit=False,
                     **self.kwargs)
             except SystemExit as e:

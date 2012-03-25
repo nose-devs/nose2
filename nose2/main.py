@@ -29,6 +29,10 @@ class PluggableTestProgram(unittest.TestProgram):
     :param buffer: *IGNORED*
     :param plugins: List of additional plugin modules to load
     :param excludePlugins: List of plugin modules to exclude
+    :param hooks: List of hook names and plugin *instances* to
+                  register with the session's hooks system. Each
+                  item in the list must be a 2-tuple of
+                  (hook name, plugin instance)
 
     .. attribute :: sessionClass
 
@@ -83,8 +87,10 @@ class PluggableTestProgram(unittest.TestProgram):
     def __init__(self, **kw):
         plugins = kw.pop('plugins', [])
         exclude = kw.pop('excludePlugins', [])
+        hooks = kw.pop('hooks', [])
         self.defaultPlugins = list(self.defaultPlugins)
         self.excludePlugins = list(self.excludePlugins)
+        self.hooks = hooks
         self.defaultPlugins.extend(plugins)
         self.excludePlugins.extend(exclude)
         super(PluggableTestProgram, self).__init__(**kw)
@@ -211,8 +217,23 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.hooks.handleArgs(events.CommandLineArgsEvent(args=args))
 
     def loadPlugins(self):
-        """Load available plugins"""
+        """Load available plugins
+
+
+        ``self.defaultPlugins`` and ``self.excludePlugins`` are passed
+        to the session to alter the list of plugins that will be
+        loaded.
+
+        This method also registers any (hook, plugin) pairs set in
+        ``self.hooks``. This is a good way to inject plugins that fall
+        outside of the normal loading procedure, for example, plugins
+        that need some runtime information that can't easily be
+        passed to them through the configuration system.
+
+        """
         self.session.loadPlugins(self.defaultPlugins, self.excludePlugins)
+        for method_name, plugin in self.hooks:
+            self.session.hooks.register(method_name, plugin)
 
     def createTests(self):
         """Create top-level test suite"""

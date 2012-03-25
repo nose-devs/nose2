@@ -110,7 +110,7 @@ Examples:
                     nose2.plugins.outcomes
 
 
-Configuring plugins
+Configuring Plugins
 -------------------
 
 Most plugins specify a config file section that may be used to
@@ -131,3 +131,70 @@ these options somewhere. Plugins that want to make use of nose2's
 methods.
 
 .. _Sphinx : http://sphinx.pocoo.org/
+
+
+Test Runner Tips and Tweaks
+---------------------------
+
+Running Tests in a Single Module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use ``nose2.main`` in the same way that ``unittest.main`` (and
+``unittest2.main``) have historically worked: to run the tests in a
+single module. Just put a block like the following at the end of the
+module::
+
+  if __name__ == '__main__':
+      import nose2
+      nose2.main()
+
+Then *run the module directly* -- In other words, do not run the
+``nose2`` script.
+
+Rolling Your Own Runner
+~~~~~~~~~~~~~~~~~~~~~~~
+
+You can take more control over the test runner by foregoing the
+``nose2`` script and rolling your own. To do that, you just need to
+write a script that calls ``nose2.discover``, for instance::
+
+  if __name__ == '__main__':
+    import nose2
+    nose2.discover()
+
+You can pass several keyword arguments to ``nose2.discover``, all of
+which are detailed in the documentation for
+:class:`nose2.main.PluggableTestProgram`.
+
+Altering the Default Plugin Set
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To add plugin *modules* to the list of those automatically loaded, you
+can pass a list of module names to add (the ``plugins``) argument or
+exclude (``excludedPlugins``). You can also subclass
+:class:`nose2.main.PluggableTestProgram` and set the class-level
+``defaultPlugins`` and ``excludePlugins`` attributes to alter plugin
+loading.
+
+Setting Extra Hooks
+^^^^^^^^^^^^^^^^^^^
+
+**None of which will help** if you need to register a plugin *instance*
+that you've loaded yourself. For that, use the ``hooks`` keyword
+argument to ``nose2.discover``. Here, you pass in a list of 2-tuples,
+each of which contains a hook name and a plugin *instance* to register
+for that hook. This allows you to register plugins that need runtime
+configuration that is not easily passed in through normal channels --
+and also to register *objects that are not nose2 plugins* as hook
+targets. Here's a trivial example:
+
+  if __name__ == '__main__':
+    import nose2
+
+    class Hello(object):
+        def startTestRun(self, event):
+            print("hello!")
+
+    nose2.discover(hooks=[('startTestRun', Hello())])
+
+This can come in handy when integrating with other systems that expect ...

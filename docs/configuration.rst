@@ -186,7 +186,7 @@ each of which contains a hook name and a plugin *instance* to register
 for that hook. This allows you to register plugins that need runtime
 configuration that is not easily passed in through normal channels --
 and also to register *objects that are not nose2 plugins* as hook
-targets. Here's a trivial example:
+targets. Here's a trivial example::
 
   if __name__ == '__main__':
     import nose2
@@ -197,4 +197,6 @@ targets. Here's a trivial example:
 
     nose2.discover(hooks=[('startTestRun', Hello())])
 
-This can come in handy when integrating with other systems that expect ...
+This can come in handy when integrating with other systems that expect
+you to provide a test runner that they execute, rather than executing
+tests yourself (django, for instance).

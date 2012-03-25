@@ -21,6 +21,7 @@ keyword argument.
    plugins/generators
    plugins/parameters
    plugins/testcases
+   plugins/testclasses
    plugins/result
    plugins/buffer
    plugins/debugger

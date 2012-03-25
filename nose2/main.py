@@ -68,6 +68,7 @@ class PluggableTestProgram(unittest.TestProgram):
     defaultPlugins = ('nose2.plugins.loader.discovery',
                       'nose2.plugins.loader.testcases',
                       'nose2.plugins.loader.functions',
+                      'nose2.plugins.loader.testclasses',
                       'nose2.plugins.loader.generators',
                       'nose2.plugins.loader.parameters',
                       'nose2.plugins.result',

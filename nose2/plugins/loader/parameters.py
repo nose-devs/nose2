@@ -46,6 +46,8 @@ import unittest
 from nose2 import exceptions, util
 from nose2.events import Plugin
 from nose2.compat import unittest as ut2
+from nose2.plugins.loader.testclasses import MethodTestCase
+
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -82,6 +84,9 @@ class Parameters(Plugin):
             # generate the methods to be loaded by the testcase loader
             self._generate(event, name, method, testCaseClass)
 
+    def getTestMethodNames(self, event):
+        return self.getTestCaseNames(event)
+
     def loadTestsFromModule(self, event):
         """Load tests from parameterized test functions in the module"""
         module = event.module
@@ -114,18 +119,22 @@ class Parameters(Plugin):
         if not hasattr(obj, 'paramList'):
             return
 
-        if (index is None
-            and not isinstance(parent, type)
-            and not isinstance(obj, types.FunctionType)):
+        if (index is None and not
+            isinstance(parent, type) and not
+            isinstance(obj, types.FunctionType)):
             log.debug("Don't know how to load parameterized tests from %s", obj)
             return
 
-        if (parent
-            and isinstance(parent, type)
-            and issubclass(parent, unittest.TestCase)):
+        if (parent and
+            isinstance(parent, type) and
+            issubclass(parent, unittest.TestCase)):
             # generator method
             names = self._generate(event, name, obj, parent)
             tests = [parent(n) for n in names]
+        elif (parent and
+              isinstance(parent, type)):
+            names = self._generate(event, name, obj, parent)
+            tests = [MethodTestCase(parent)(name) for name in names]
         else:
             # generator func
             tests = list(self._generateFuncTests(obj))

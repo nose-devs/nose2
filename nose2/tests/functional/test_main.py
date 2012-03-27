@@ -14,7 +14,8 @@ class TestPluggableTestProgram(FunctionalTestCase):
                 self.ran = True
 
         check = Check()
-        proc = self.runIn('scenario/no_tests', hooks=[('startTestRun', check)])
+        proc = self.runIn('scenario/no_tests',
+                          extraHooks=[('startTestRun', check)])
         stdout, stderr = proc.communicate()
         self.assertEqual(proc.poll(), 0, stderr)
         assert check.ran, "Extra hook did not execute"

@@ -176,11 +176,11 @@ exclude (``excludedPlugins``). You can also subclass
 ``defaultPlugins`` and ``excludePlugins`` attributes to alter plugin
 loading.
 
-Setting Extra Hooks
-^^^^^^^^^^^^^^^^^^^
+When Loading Plugins from Modules is not Enough
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **None of which will help** if you need to register a plugin *instance*
-that you've loaded yourself. For that, use the ``hooks`` keyword
+that you've loaded yourself. For that, use the ``extraHooks`` keyword
 argument to ``nose2.discover``. Here, you pass in a list of 2-tuples,
 each of which contains a hook name and a plugin *instance* to register
 for that hook. This allows you to register plugins that need runtime
@@ -195,7 +195,7 @@ targets. Here's a trivial example::
         def startTestRun(self, event):
             print("hello!")
 
-    nose2.discover(hooks=[('startTestRun', Hello())])
+    nose2.discover(extraHooks=[('startTestRun', Hello())])
 
 This can come in handy when integrating with other systems that expect
 you to provide a test runner that they execute, rather than executing

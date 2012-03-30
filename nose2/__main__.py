@@ -6,5 +6,7 @@ if sys.argv[0].endswith("__main__.py"):
 
 __unittest = True
 
-from nose2 import discover
-discover()
+
+if __name__ == '__main__':
+    from nose2 import discover
+    discover()

@@ -1,5 +1,19 @@
-- need a log-level command line arg for doing basic logging config,
-  in the absence of logcapture
+== mp ==
+
+- param method tests get module + class double-prepended when loaded via
+  load by name
+
+- logging config in subprocess seems broken
+- code cleanup!
+- many debug prints to remove
+- error handling (processes die)
+- tests
+- docs
+
+- debug plugin -- what to do there? let it run in subproc ideally, can it?
+
+
+== other ==
 
 - order of events in loading from test cases prevents other plugins
   from excluding test cases from being loaded by generator

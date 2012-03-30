@@ -34,7 +34,22 @@ class _Buffer(object):
         return self._stream.fileno()
 
     def __getattr__(self, attr):
+        # this happens on unpickling
+        if attr == '_buffer':
+            raise AttributeError("No _buffer yet")
         return getattr(self._buffer, attr)
+
+    def __le__(self, obj):
+        return self._buffer.getvalue() == obj
+
+    def __eq__(self, obj):
+        return self._buffer.getvalue() == obj
+
+    def __str__(self):
+        return self._buffer.getvalue()
+
+    def __repr__(self):
+        return repr(self._buffer.getvalue())
 
 
 class OutputBufferPlugin(events.Plugin):
@@ -48,6 +63,16 @@ class OutputBufferPlugin(events.Plugin):
         self.bufStdout = self.bufStderr = None
         self.realStdout = sys.__stdout__
         self.realStderr = sys.__stderr__
+        self._disable = False
+
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+        # turn off in this process: the subproc will run the tests
+        self._disable = True
+
+    def startSubprocess(self, event):
+        self.realStdout = sys.__stdout__
+        self.realStderr = sys.__stderr__
 
     def startTest(self, event):
         """Start buffering selected stream(s)"""
@@ -59,9 +84,11 @@ class OutputBufferPlugin(events.Plugin):
 
     def setTestOutcome(self, event):
         """Attach buffer(s) to event.metadata"""
-        if self.captureStdout:
+        if self._disable:
+            return
+        if self.captureStdout and 'stdout' not in event.metadata:
             event.metadata['stdout'] = self.bufStdout
-        if self.captureStderr:
+        if self.captureStderr and 'stderr' not in event.metadata:
             event.metadata['stderr'] = self.bufStderr
 
     def outcomeDetail(self, event):
@@ -83,13 +110,20 @@ class OutputBufferPlugin(events.Plugin):
         """Start buffering again (does not clear buffers)"""
         self._buffer(fresh=False)
 
+    def stopSubprocess(self, event):
+        self._restore()
+
     def _restore(self):
+        if self._disable:
+            return
         if self.captureStdout:
             sys.stdout = self.realStdout
         if self.captureStderr:
             sys.stderr = self.realStderr
 
     def _buffer(self, fresh=True):
+        if self._disable:
+            return
         if self.captureStdout:
             if fresh or self.bufStdout is None:
                 self.bufStdout = _Buffer(sys.stdout)

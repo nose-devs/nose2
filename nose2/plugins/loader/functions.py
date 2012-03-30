@@ -34,6 +34,9 @@ class Functions(Plugin):
     alwaysOn = True
     configSection = 'functions'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def loadTestsFromName(self, event):
         """Load test if event.name is the name of a test function"""
         name = event.name

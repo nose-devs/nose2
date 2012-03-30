@@ -55,11 +55,11 @@ __unittest = True
 
 class ParamsFunctionCase(ut2.FunctionTestCase):
     def __init__(self, name, func, **args):
-        self._name = name
+        self._funcName = name
         ut2.FunctionTestCase.__init__(self, func, **args)
 
     def __repr__(self):
-        return self._name
+        return self._funcName
 
     id = __str__ = __repr__
 
@@ -68,6 +68,9 @@ class Parameters(Plugin):
     """Loader plugin that loads parameterized tests"""
     alwaysOn = True
     configSection = 'parameters'
+
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
 
     def getTestCaseNames(self, event):
         """Generate test case names for all parameterized methods"""
@@ -115,7 +118,7 @@ class Parameters(Plugin):
             # we can't find it - let the default case handle it
             return
 
-        parent, obj, name, index = result
+        parent, obj, fqname, index = result
         if not hasattr(obj, 'paramList'):
             return
 
@@ -129,7 +132,7 @@ class Parameters(Plugin):
             isinstance(parent, type) and
             issubclass(parent, unittest.TestCase)):
             # generator method
-            names = self._generate(event, name, obj, parent)
+            names = self._generate(event, obj.__name__, obj, parent)
             tests = [parent(n) for n in names]
         elif (parent and
               isinstance(parent, type)):

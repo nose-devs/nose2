@@ -107,6 +107,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
         # XXX force these? or can it be avoided?
         self.testLoader = self.loaderClass(self.session)
+        self.session.testLoader = self.testLoader
 
         # Parse initial arguments like config file paths, verbosity
         self.setInitialArguments()
@@ -174,7 +175,8 @@ class PluggableTestProgram(unittest.TestProgram):
         command line.
 
         """
-        logging.basicConfig(level=util.parse_log_level(cfg_args.log_level))
+        self.session.logLevel = util.parse_log_level(cfg_args.log_level)
+        logging.basicConfig(level=self.session.logLevel)
         log.debug('logging initialized %s', cfg_args.log_level)
         if cfg_args.verbose:
             self.session.verbosity += cfg_args.verbose
@@ -259,6 +261,7 @@ class PluggableTestProgram(unittest.TestProgram):
         runner = self.runnerClass(self.session)
         event = events.RunnerCreatedEvent(runner)
         self.session.hooks.runnerCreated(event)
+        self.session.testRunner = event.runner
         return event.runner
 
 

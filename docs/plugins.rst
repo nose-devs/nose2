@@ -45,6 +45,7 @@ argument.
 
    plugins/junitxml
    plugins/attrib
+   plugins/mp
    plugins/doctests
    plugins/outcomes
    plugins/collect

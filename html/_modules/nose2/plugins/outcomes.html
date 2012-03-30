@@ -1,0 +1,159 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.outcomes &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.outcomes</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Map exceptions to test outcomes.</span>
+
+<span class="sd">This plugin implements :func:`setTestOutcome` to enable simple mapping</span>
+<span class="sd">of exception classes to existing test outcomes.</span>
+
+<span class="sd">By setting a list of exception classes in a nose2 config file, you can</span>
+<span class="sd">configure exceptions that would otherwise be treated as test errors,</span>
+<span class="sd">to be treated as failures or skips instead:</span>
+
+<span class="sd">.. code-block :: ini</span>
+
+<span class="sd">  [outcomes]</span>
+<span class="sd">  always-on = True</span>
+<span class="sd">  treat-as-fail = NotImplementedError</span>
+<span class="sd">  treat-as-skip = TodoError</span>
+<span class="sd">                  IOError</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">nose2.events</span> <span class="kn">import</span> <span class="n">Plugin</span>
+
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="Outcomes"><a class="viewcode-back" href="../../../plugins/outcomes.html#nose2.plugins.outcomes.Outcomes">[docs]</a><span class="k">class</span> <span class="nc">Outcomes</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map exceptions to other test outcomes&quot;&quot;&quot;</span>
+
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;outcomes&#39;</span>
+    <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;set-outcomes&#39;</span><span class="p">,</span>
+                         <span class="s">&#39;Treat some configured exceptions as failure or skips&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treatAsFail</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;treat-as-fail&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treatAsSkip</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;treat-as-skip&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+
+<div class="viewcode-block" id="Outcomes.setTestOutcome"><a class="viewcode-back" href="../../../plugins/outcomes.html#nose2.plugins.outcomes.Outcomes.setTestOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">setTestOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update outcome, exc_info and reason based on configured mappings&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">exc_info</span><span class="p">:</span>
+            <span class="n">ec</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">exc_info</span>
+            <span class="n">classname</span> <span class="o">=</span> <span class="n">ec</span><span class="o">.</span><span class="n">__name__</span>
+            <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatAsFail</span><span class="p">:</span>
+                <span class="n">short</span><span class="p">,</span> <span class="n">long_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">classname</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;failed&#39;</span><span class="p">,</span> <span class="n">short</span><span class="p">,</span> <span class="n">long_</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">classname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">treatAsSkip</span><span class="p">:</span>
+                <span class="n">short</span><span class="p">,</span> <span class="n">long_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">classname</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setOutcome</span><span class="p">(</span>
+                    <span class="n">event</span><span class="p">,</span> <span class="s">&#39;skipped&#39;</span><span class="p">,</span> <span class="n">short</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">long_</span><span class="p">,</span> <span class="n">ev</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">ev</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">upper</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">short</span> <span class="o">=</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">short</span><span class="p">,</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">_setOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">shortLabel</span><span class="p">,</span> <span class="n">longLabel</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="n">outcome</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">shortLabel</span> <span class="o">=</span> <span class="n">shortLabel</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">longLabel</span> <span class="o">=</span> <span class="n">longLabel</span>
+        <span class="k">if</span> <span class="n">reason</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">exc_info</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">reason</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

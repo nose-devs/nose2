@@ -1,0 +1,148 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Stopping After the First Error or Failure &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Capturing log messages" href="logcapture.html" />
+    <link rel="prev" title="Dropping Into the Debugger" href="debugger.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="logcapture.html" title="Capturing log messages"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="debugger.html" title="Dropping Into the Debugger"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.failfast">
+<span id="stopping-after-the-first-error-or-failure"></span><h1>Stopping After the First Error or Failure<a class="headerlink" href="#module-nose2.plugins.failfast" title="Permalink to this headline">¶</a></h1>
+<p>Stop the test run after the first error or failure.</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#testOutcome" title="testOutcome"><tt class="xref py py-func docutils literal"><span class="pre">testOutcome()</span></tt></a> and sets
+<tt class="docutils literal"><span class="pre">event.result.shouldStop</span></tt> if it sees an outcome with exc_info that
+is not expected.</p>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-F">
+<tt class="descname">-F</tt><tt class="descclassname"> DEFAULT</tt><tt class="descclassname">, </tt><tt class="descname">--fail-fast</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption-F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the test run after the first error or failure</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.failfast.FailFast">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.failfast.</tt><tt class="descname">FailFast</tt><a class="reference internal" href="../_modules/nose2/plugins/failfast.html#FailFast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.failfast.FailFast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the test run after error or failure</p>
+<dl class="method">
+<dt id="nose2.plugins.failfast.FailFast.testOutcome">
+<tt class="descname">testOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/failfast.html#FailFast.testOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.failfast.FailFast.testOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop on unexpected error or failure</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Stopping After the First Error or Failure</a><ul>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="debugger.html" title="previous chapter">Dropping Into the Debugger</a></li>
+      <li>Next: <a href="logcapture.html" title="next chapter">Capturing log messages</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/failfast.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.prof &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.prof</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Profile test execution using hotshot.</span>
+
+<span class="sd">This plugin implements :func:`startTestRun` and replaces</span>
+<span class="sd">``event.executeTests`` with :meth:`hotshot.Profile.runcall`. It</span>
+<span class="sd">implements :func:`beforeSummaryReport` to output profiling information</span>
+<span class="sd">before the final test summary time. Config file options ``filename``,</span>
+<span class="sd">``sort`` and ``restrict`` can be used to change where profiling</span>
+<span class="sd">information is saved and how it is presented.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">hotshot</span>
+    <span class="kn">from</span> <span class="nn">hotshot</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">hotshot</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">util</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="Profiler"><a class="viewcode-back" href="../../../plugins/prof.html#nose2.plugins.prof.Profiler">[docs]</a><span class="k">class</span> <span class="nc">Profiler</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Profile the test run&quot;&quot;&quot;</span>
+
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;profiler&#39;</span>
+    <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;P&#39;</span><span class="p">,</span> <span class="s">&#39;profile&#39;</span><span class="p">,</span> <span class="s">&#39;Run tests under profiler&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_str</span><span class="p">(</span><span class="s">&#39;filename&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_str</span><span class="p">(</span><span class="s">&#39;sort&#39;</span><span class="p">,</span> <span class="s">&#39;cumulative&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restrict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_list</span><span class="p">(</span><span class="s">&#39;restrict&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileno</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Profiler.register"><a class="viewcode-back" href="../../../plugins/prof.html#nose2.plugins.prof.Profiler.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Don&#39;t register if hotshot is not found&quot;&quot;&quot;</span>
+        <span class="k">if</span>  <span class="n">hotshot</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unable to profile: hotshot module not available&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Profiler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Profiler.startTestRun"><a class="viewcode-back" href="../../../plugins/prof.html#nose2.plugins.prof.Profiler.startTestRun">[docs]</a>    <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up the profiler&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createPfile</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prof</span> <span class="o">=</span> <span class="n">hotshot</span><span class="o">.</span><span class="n">Profile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pfile</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prof</span><span class="o">.</span><span class="n">runcall</span>
+</div>
+<div class="viewcode-block" id="Profiler.beforeSummaryReport"><a class="viewcode-back" href="../../../plugins/prof.html#nose2.plugins.prof.Profiler.beforeSummaryReport">[docs]</a>    <span class="k">def</span> <span class="nf">beforeSummaryReport</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Output profiling results&quot;&quot;&quot;</span>
+        <span class="c"># write prof output to stream</span>
+        <span class="k">class</span> <span class="nc">Stream</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prof</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">prof_stats</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pfile</span><span class="p">)</span>
+        <span class="n">prof_stats</span><span class="o">.</span><span class="n">sort_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">ln</span><span class="p">(</span><span class="s">&quot;Profiling results&quot;</span><span class="p">))</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">prof_stats</span><span class="o">.</span><span class="n">stream</span>
+        <span class="n">prof_stats</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restrict</span><span class="p">:</span>
+                <span class="n">prof_stats</span><span class="o">.</span><span class="n">print_stats</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">restrict</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prof_stats</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">prof_stats</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">tmp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prof</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileno</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fileno</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pfile</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">createPfile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pfile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileno</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pfile</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clean</span> <span class="o">=</span> <span class="bp">True</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

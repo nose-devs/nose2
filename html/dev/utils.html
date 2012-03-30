@@ -1,0 +1,225 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.util &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="up" title="Internals" href="internals.html" />
+    <link rel="prev" title="nose2.runner" href="runner.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="runner.html" title="nose2.runner"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="internals.html" accesskey="U">Internals</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.util">
+<span id="nose2-util"></span><h1>nose2.util<a class="headerlink" href="#module-nose2.util" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="nose2.util.ensure_importable">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">ensure_importable</tt><big>(</big><em>dirname</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#ensure_importable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.ensure_importable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure a directory is on sys.path</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.exc_info_to_string">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">exc_info_to_string</tt><big>(</big><em>err</em>, <em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#exc_info_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.exc_info_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format exception info for output</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.format_traceback">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">format_traceback</tt><big>(</big><em>test</em>, <em>err</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#format_traceback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.format_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a sys.exc_info()-style tuple of values into a string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.has_module_fixtures">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">has_module_fixtures</tt><big>(</big><em>test</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#has_module_fixtures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.has_module_fixtures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this test live in a module with module fixtures?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.isgenerator">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">isgenerator</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#isgenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.isgenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>is this object a generator?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.ispackage">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">ispackage</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#ispackage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.ispackage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this path a package directory?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.ln">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">ln</tt><big>(</big><em>label</em>, <em>char='-'</em>, <em>width=70</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#ln"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.ln" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a divider, with label in the middle.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ln</span><span class="p">(</span><span class="s">&#39;hello there&#39;</span><span class="p">)</span>
+<span class="go">&#39;---------------------------- hello there -----------------------------&#39;</span>
+</pre></div>
+</div>
+<p>Width and divider char may be specified. Defaults are 70 and &#8216;-&#8216;
+respectively.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.module_from_name">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">module_from_name</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#module_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.module_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import module from name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.name_from_args">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">name_from_args</tt><big>(</big><em>name</em>, <em>index</em>, <em>args</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#name_from_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.name_from_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create test name from test args</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.name_from_path">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">name_from_path</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#name_from_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.name_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate path into module name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.object_from_name">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">object_from_name</tt><big>(</big><em>name</em>, <em>module=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#object_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.object_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import object from name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.parse_log_level">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">parse_log_level</tt><big>(</big><em>lvl</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#parse_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.parse_log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return numeric log level given a string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.safe_decode">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">safe_decode</tt><big>(</big><em>string</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#safe_decode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.safe_decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Safely decode a byte string into unicode</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.test_from_name">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">test_from_name</tt><big>(</big><em>name</em>, <em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#test_from_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.test_from_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import test from name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.transplant_class">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">transplant_class</tt><big>(</big><em>cls</em>, <em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#transplant_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.transplant_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make class appear to reside in <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cls</strong> &#8211; A class</li>
+<li><strong>module</strong> &#8211; A module name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A subclass of <tt class="docutils literal"><span class="pre">cls</span></tt> that appears to have been defined in <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The returned class&#8217;s <tt class="docutils literal"><span class="pre">__name__</span></tt> will be equal to
+<tt class="docutils literal"><span class="pre">cls.__name__</span></tt>, and its <tt class="docutils literal"><span class="pre">__module__</span></tt> equal to <tt class="docutils literal"><span class="pre">module</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.util.valid_module_name">
+<tt class="descclassname">nose2.util.</tt><tt class="descname">valid_module_name</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="../_modules/nose2/util.html#valid_module_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.util.valid_module_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is path a valid module name?</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="internals.html">Internals</a><ul>
+      <li>Previous: <a href="runner.html" title="previous chapter">nose2.runner</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

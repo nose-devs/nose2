@@ -1,0 +1,317 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.loader.testclasses &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.loader.testclasses</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Load tests from classes that are *not* :class:`unittest.TestCase` subclasses.</span>
+
+<span class="sd">This plugin responds to :func:`loadTestsFromModule` by adding test</span>
+<span class="sd">cases for test methods found in classes in the module that are *not*</span>
+<span class="sd">sublcasses of :class:`unittest.TestCase`, but whose names (lowercased)</span>
+<span class="sd">match the configured test method prefix.</span>
+
+<span class="sd">Test class methods that are generators or have param lists are not</span>
+<span class="sd">loaded here, but by the :class:`nose2.plugins.loader.generators.Generators` and</span>
+<span class="sd">:class:`nose2.plugins.loader.parameters.Parameters` plugins.</span>
+
+<span class="sd">This plugin also implements :func:`loadTestsFromName` to enable</span>
+<span class="sd">loading tests from dotted class and method names passed on the command</span>
+<span class="sd">line.</span>
+
+<span class="sd">This plugin makes two additional plugin hooks available for other</span>
+<span class="sd">test loaders to use:</span>
+
+<span class="sd">.. function :: loadTestsFromTestClass(self, event)</span>
+
+<span class="sd">   :param event: A :class:`LoadFromTestClassEvent` instance</span>
+
+<span class="sd">   Plugins can use this hook to load tests from a class that is not a</span>
+<span class="sd">   :class:`unittest.TestCase` subclass. To prevent other plugins from</span>
+<span class="sd">   loading tests from the test class, set ``event.handled`` to True and</span>
+<span class="sd">   return a test suite. Plugins can also append tests to</span>
+<span class="sd">   ``event.extraTests`` -- ususally that&#39;s what you want to do, since</span>
+<span class="sd">   that will allow other plugins to load their tests from the test</span>
+<span class="sd">   case as well.</span>
+
+<span class="sd">.. function :: getTestMethodNames(self, event)</span>
+
+<span class="sd">   :param event: A :class:`GetTestMethodNamesEvent` instance</span>
+
+<span class="sd">   Plugins can use this hook to limit or extend the list of test case</span>
+<span class="sd">   names that will be loaded from a class that is not a</span>
+<span class="sd">   :class:`unittest.TestCase` subclass by the standard nose2 test</span>
+<span class="sd">   loader plugins (and other plugins that respect the results of the</span>
+<span class="sd">   hook). To force a specific list of names, set ``event.handled`` to</span>
+<span class="sd">   True and return a list: this exact list will be the only test case</span>
+<span class="sd">   names loaded from the test case. Plugins can also extend the list</span>
+<span class="sd">   of names by appending test names to ``event.extraNames``, and</span>
+<span class="sd">   exclude names by appending test names to ``event.excludedNames``.</span>
+
+<span class="sd">About Test Classes</span>
+<span class="sd">------------------</span>
+
+<span class="sd">Test classes are classes that look test-like but are not subclasses of</span>
+<span class="sd">:class:`unittest.TestCase`. Test classes support all of the same test</span>
+<span class="sd">types and fixtures as test cases.</span>
+
+<span class="sd">To &quot;look test-like&quot; a class must have a name that, lowercased, matches</span>
+<span class="sd">the configured test method prefix -- &quot;test&quot; by default. Test classes</span>
+<span class="sd">must also be able to be instantiated without arguments.</span>
+
+<span class="sd">What are they useful for? Mostly the case where a test class can&#39;t for</span>
+<span class="sd">some reason subclass :class:`unittest.TestCase`. Otherwise, test class</span>
+<span class="sd">tests and test cases are functionally equivalent in nose2, and test</span>
+<span class="sd">cases have broader support and all of those helpful *assert\** methods</span>
+<span class="sd">-- so when in doubt, you should use a :class:`unittest.TestCase`.</span>
+
+<span class="sd">Here&#39;s an example of a test class::</span>
+
+<span class="sd">  class TestSomething(object):</span>
+
+<span class="sd">      def test(self):</span>
+<span class="sd">          assert self.something(), &quot;Something failed!&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">nose2.compat</span> <span class="kn">import</span> <span class="n">unittest</span> <span class="k">as</span> <span class="n">ut2</span>
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="TestClassLoader"><a class="viewcode-back" href="../../../../plugins/testclasses.html#nose2.plugins.loader.testclasses.TestClassLoader">[docs]</a><span class="k">class</span> <span class="nc">TestClassLoader</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loader plugin that loads test functions&quot;&quot;&quot;</span>
+    <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;test-classes&#39;</span>
+
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestClassLoader.pluginsLoaded"><a class="viewcode-back" href="../../../../plugins/testclasses.html#nose2.plugins.loader.testclasses.TestClassLoader.pluginsLoaded">[docs]</a>    <span class="k">def</span> <span class="nf">pluginsLoaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Install extra hooks</span>
+
+<span class="sd">        Adds the new plugin hooks:</span>
+
+<span class="sd">        - loadTestsFromTestClass</span>
+<span class="sd">        - getTestMethodNames</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addMethods</span><span class="p">(</span><span class="s">&#39;loadTestsFromTestClass&#39;</span><span class="p">,</span> <span class="s">&#39;getTestMethodNames&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TestClassLoader.loadTestsFromModule"><a class="viewcode-back" href="../../../../plugins/testclasses.html#nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromModule">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromModule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load test classes from event.module&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testMethodPrefix</span><span class="p">)):</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_loadTestsFromTestClass</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="TestClassLoader.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/testclasses.html#nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load tests from event.name if it names a test class/method&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">failedLoadTests</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+            <span class="c"># name is a test case class</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loadTestsFromTestClass</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+              <span class="n">util</span><span class="o">.</span><span class="n">isgenerator</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+              <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">)):</span>
+            <span class="c"># name is a single test method</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">util</span><span class="o">.</span><span class="n">transplant_class</span><span class="p">(</span>
+                    <span class="n">MethodTestCase</span><span class="p">(</span><span class="n">parent</span><span class="p">),</span> <span class="n">parent</span><span class="o">.</span><span class="n">__module__</span><span class="p">)(</span><span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+</div>
+    <span class="k">def</span> <span class="nf">_loadTestsFromTestClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
+        <span class="c"># ... fire event for others to load from</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">LoadFromTestClassEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">loadTestsFromTestClass</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="n">loaded_suite</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">suiteClass</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getTestMethodNames</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+            <span class="n">loaded_suite</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">suiteClass</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">transplant_class</span><span class="p">(</span>
+                        <span class="n">MethodTestCase</span><span class="p">(</span><span class="n">cls</span><span class="p">),</span> <span class="n">cls</span><span class="o">.</span><span class="n">__module__</span><span class="p">)(</span><span class="n">name</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">extraTests</span><span class="p">:</span>
+            <span class="n">loaded_suite</span><span class="o">.</span><span class="n">addTests</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">extraTests</span><span class="p">)</span>
+        <span class="c"># ... add extra tests</span>
+        <span class="k">return</span> <span class="n">loaded_suite</span>
+
+    <span class="k">def</span> <span class="nf">_getTestMethodNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
+        <span class="c"># ... give others a chance to modify list</span>
+        <span class="n">excluded</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">isTestMethod</span><span class="p">(</span><span class="n">attrname</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="n">cls</span><span class="p">,</span> <span class="n">excluded</span><span class="o">=</span><span class="n">excluded</span><span class="p">):</span>
+            <span class="c"># FIXME allow plugs to change prefix</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testMethodPrefix</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">attrname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">attrname</span><span class="p">),</span> <span class="s">&#39;__call__&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">attrname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded</span>
+                <span class="p">)</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">GetTestMethodNamesEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">isTestMethod</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">getTestMethodNames</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="n">test_names</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">excluded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">excludedNames</span><span class="p">)</span>
+
+            <span class="n">test_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="n">isTestMethod</span><span class="p">(</span><span class="n">entry</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">sortTestMethodsUsing</span><span class="p">:</span>
+            <span class="n">test_names</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">sortTestMethodsUsing</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">test_names</span>
+
+
+<span class="c"># to prevent unit2 discover from running this as a test, need to</span>
+<span class="c"># hide it inside of a factory func. ugly!</span></div>
+<span class="k">def</span> <span class="nf">MethodTestCase</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">_MethodTestCase</span><span class="p">(</span><span class="n">ut2</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">cls</span><span class="p">()</span>
+            <span class="n">ut2</span><span class="o">.</span><span class="n">TestCase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;runTest&#39;</span><span class="p">)</span>
+
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;setUpClass&#39;</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;tearDownClass&#39;</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;setUp&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;tearDown&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">__str__</span> <span class="o">=</span> <span class="n">__repr__</span>
+
+        <span class="k">def</span> <span class="nf">runTest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)()</span>
+
+    <span class="k">return</span> <span class="n">_MethodTestCase</span>
+
+<span class="c">#</span>
+<span class="c"># Event classes</span>
+<span class="c">#</span>
+<span class="k">class</span> <span class="nc">LoadFromTestClassEvent</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">LoadFromTestCaseEvent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bare subclass of :class:`nose2.events.LoadFromTestCaseEvent`&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">GetTestMethodNamesEvent</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">GetTestCaseNamesEvent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bare subclass of :class:`nose2.events.GetTestCaseNamesEvent`&quot;&quot;&quot;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

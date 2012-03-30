@@ -1,0 +1,438 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.mp &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.mp</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">select</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">six</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">util</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MultiProcess"><a class="viewcode-back" href="../../../plugins/mp.html#nose2.plugins.mp.MultiProcess">[docs]</a><span class="k">class</span> <span class="nc">MultiProcess</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;multiprocess&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addArgument</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setProcs</span><span class="p">,</span> <span class="s">&#39;N&#39;</span><span class="p">,</span> <span class="s">&#39;--processes&#39;</span><span class="p">,</span> <span class="s">&#39;# o procs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testRunTimeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_float</span><span class="p">(</span><span class="s">&#39;test-run-timeout&#39;</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_int</span><span class="p">(</span><span class="s">&#39;processes&#39;</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cases</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">setProcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">procs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c"># FIXME merge n fix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pluginsLoaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addMethods</span><span class="p">(</span><span class="s">&#39;registerInSubprocess&#39;</span><span class="p">,</span> <span class="s">&#39;startSubprocess&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;stopSubprocess&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runmp</span>
+
+    <span class="k">def</span> <span class="nf">beforeInteraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c"># prevent interactive plugins from running</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_runmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+        <span class="n">procs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startProcs</span><span class="p">()</span>
+
+        <span class="c"># distribute tests more-or-less evenly among processes</span>
+        <span class="k">while</span> <span class="n">flat</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">proc</span><span class="p">,</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">procs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">flat</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">caseid</span> <span class="o">=</span> <span class="n">flat</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caseid</span><span class="p">)</span>
+
+        <span class="c"># None is the &#39;done&#39; flag</span>
+        <span class="k">for</span> <span class="n">proc</span><span class="p">,</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">procs</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+        <span class="c"># wait for results</span>
+        <span class="n">procs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">procs</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()]</span>
+        <span class="n">rdrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">conn</span> <span class="k">for</span> <span class="n">proc</span><span class="p">,</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">procs</span>
+                <span class="k">if</span> <span class="n">proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()]</span>
+        <span class="k">while</span> <span class="n">rdrs</span><span class="p">:</span>
+            <span class="n">ready</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">rdrs</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="bp">self</span><span class="o">.</span><span class="n">testRunTimeout</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">ready</span><span class="p">:</span>
+                <span class="c"># XXX proc could be dead</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">remote_events</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">EOFError</span><span class="p">:</span>
+                    <span class="c"># probably dead</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Subprocess connection closed unexpectedly&quot;</span><span class="p">)</span>
+                    <span class="n">rdrs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+                    <span class="k">continue</span> <span class="c"># XXX or die?</span>
+
+                <span class="k">if</span> <span class="n">remote_events</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="c"># XXX proc is done, how to mark it dead?</span>
+                    <span class="n">rdrs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="c"># replay events</span>
+                <span class="n">testid</span><span class="p">,</span> <span class="n">events</span> <span class="o">=</span> <span class="n">remote_events</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Received results for </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">testid</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">hook</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Received </span><span class="si">%s</span><span class="s">(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="p">,</span> <span class="n">hook</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_localize</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="p">,</span> <span class="n">hook</span><span class="p">)(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">proc</span><span class="p">,</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">procs</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_startProcs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># XXX create session export</span>
+        <span class="n">session_export</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exportSession</span><span class="p">()</span>
+        <span class="n">procs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">procs</span><span class="p">):</span>
+            <span class="n">parent_conn</span><span class="p">,</span> <span class="n">child_conn</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pipe</span><span class="p">()</span>
+            <span class="n">proc</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="n">procserver</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">session_export</span><span class="p">,</span> <span class="n">child_conn</span><span class="p">))</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">procs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">proc</span><span class="p">,</span> <span class="n">parent_conn</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">procs</span>
+
+    <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suite</span><span class="p">):</span>
+        <span class="c"># XXX</span>
+        <span class="c"># examine suite tests to find out if they have class</span>
+        <span class="c"># or module fixtures and group them that way into names</span>
+        <span class="c"># of test classes or modules</span>
+        <span class="c"># ALSO record all test cases in self.cases</span>
+        <span class="n">mods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">suite</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">suite</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">suite</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">):</span>
+                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">testid</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">testid</span><span class="p">]</span> <span class="o">=</span> <span class="n">test</span>
+                    <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">has_module_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+                        <span class="n">mods</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">testid</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">util</span><span class="o">.</span><span class="n">has_class_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+                        <span class="n">classes</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span>
+                                                      <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">),</span>
+                                           <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">testid</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">yield</span> <span class="n">testid</span>
+        <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">cls</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">mods</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">mod</span>
+
+    <span class="k">def</span> <span class="nf">_localize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c"># XXX set loader, case, result etc to local ones, if present in event</span>
+        <span class="c"># (event case will be just the id)</span>
+        <span class="c"># (traceback in exc_info if any won&#39;t be real!)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">):</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testResult</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;loader&#39;</span><span class="p">):</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testLoader</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;runner&#39;</span><span class="p">):</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">runner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testRunner</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="c"># remote event.case is the test id</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cases</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">test</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testLoader</span><span class="o">.</span><span class="n">failedLoadTests</span><span class="p">(</span>
+                    <span class="s">&#39;test_not_found&#39;</span><span class="p">,</span>
+                    <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Unable to locate test case for </span><span class="si">%s</span><span class="s"> in &quot;</span>
+                                 <span class="s">&quot;main process&quot;</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">test</span><span class="p">))</span><span class="o">.</span><span class="n">_tests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_exportSession</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># argparse isn&#39;t pickleable</span>
+        <span class="c"># no plugin instances</span>
+        <span class="c"># no hooks</span>
+        <span class="n">export</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                  <span class="s">&#39;verbosity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span><span class="p">,</span>
+                  <span class="s">&#39;startDir&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">startDir</span><span class="p">,</span>
+                  <span class="s">&#39;topLevelDir&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">topLevelDir</span><span class="p">,</span>
+                  <span class="s">&#39;logLevel&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">logLevel</span><span class="p">,</span>
+                  <span class="c"># XXX classes or modules?</span>
+                  <span class="s">&#39;pluginClasses&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="c"># XXX fire registerInSubprocess -- add those plugin classes</span>
+        <span class="c"># (classes must be pickleable!)</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">RegisterInSubprocessEvent</span><span class="p">()</span> <span class="c"># FIXME should be own event type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">registerInSubprocess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="n">export</span><span class="p">[</span><span class="s">&#39;pluginClasses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">export</span>
+
+</div>
+<span class="k">def</span> <span class="nf">procserver</span><span class="p">(</span><span class="n">session_export</span><span class="p">,</span> <span class="n">conn</span><span class="p">):</span>
+    <span class="c"># init logging system</span>
+    <span class="n">rlog</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">log_to_stderr</span><span class="p">()</span>
+    <span class="n">rlog</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">session_export</span><span class="p">[</span><span class="s">&#39;logLevel&#39;</span><span class="p">])</span>
+
+    <span class="c"># make a real session from the &quot;session&quot; we got</span>
+    <span class="n">ssn</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">session_export</span><span class="p">[</span><span class="s">&#39;config&#39;</span><span class="p">]</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">hooks</span> <span class="o">=</span> <span class="n">RecordingPluginInterface</span><span class="p">()</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="n">session_export</span><span class="p">[</span><span class="s">&#39;verbosity&#39;</span><span class="p">]</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">startDir</span> <span class="o">=</span> <span class="n">session_export</span><span class="p">[</span><span class="s">&#39;startDir&#39;</span><span class="p">]</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">topLevelDir</span> <span class="o">=</span> <span class="n">session_export</span><span class="p">[</span><span class="s">&#39;topLevelDir&#39;</span><span class="p">]</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">prepareSysPath</span><span class="p">()</span>
+    <span class="n">loader_</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">PluggableTestLoader</span><span class="p">(</span><span class="n">ssn</span><span class="p">)</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">testLoader</span> <span class="o">=</span> <span class="n">loader_</span>
+    <span class="n">result_</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">PluggableTestResult</span><span class="p">(</span><span class="n">ssn</span><span class="p">)</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">testResult</span> <span class="o">=</span> <span class="n">result_</span>
+    <span class="n">runner_</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">PluggableTestRunner</span><span class="p">(</span><span class="n">ssn</span><span class="p">)</span> <span class="c"># needed??</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">testRunner</span> <span class="o">=</span> <span class="n">runner_</span>
+    <span class="c"># load and register plugins</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">plugin</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">ssn</span><span class="p">)</span> <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">session_export</span><span class="p">[</span><span class="s">&#39;pluginClasses&#39;</span><span class="p">]]</span>
+    <span class="n">rlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Plugins loaded: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">ssn</span><span class="o">.</span><span class="n">plugins</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">ssn</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
+        <span class="n">plugin</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+        <span class="n">rlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Registered </span><span class="si">%s</span><span class="s"> in subprocess&quot;</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+
+    <span class="n">event</span> <span class="o">=</span> <span class="n">SubprocessEvent</span><span class="p">(</span><span class="n">loader_</span><span class="p">,</span> <span class="n">result_</span><span class="p">,</span> <span class="n">runner_</span><span class="p">,</span> <span class="n">ssn</span><span class="o">.</span><span class="n">plugins</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">ssn</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">startSubprocess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">ssn</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">stopSubprocess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c"># receive and run tests</span>
+    <span class="n">executor</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">executeTests</span>
+    <span class="k">for</span> <span class="n">testid</span> <span class="ow">in</span> <span class="n">gentests</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">testid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">loadTestsFromName</span><span class="p">(</span><span class="n">testid</span><span class="p">)</span>
+        <span class="c"># xxx try/except?</span>
+        <span class="n">rlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Execute test </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span><span class="p">,</span> <span class="n">testid</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+        <span class="n">executor</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ssn</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">flush</span><span class="p">()]</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">testid</span><span class="p">,</span> <span class="n">events</span><span class="p">))</span>
+        <span class="n">rlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Log for </span><span class="si">%s</span><span class="s"> returned&quot;</span><span class="p">,</span> <span class="n">testid</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">ssn</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">stopSubprocess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+
+<span class="c"># test generator</span>
+<span class="k">def</span> <span class="nf">gentests</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">testid</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">testid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">yield</span> <span class="n">testid</span>
+        <span class="k">except</span> <span class="ne">EOFError</span><span class="p">:</span>
+            <span class="k">return</span>
+
+
+<span class="c"># custom event classes</span>
+<div class="viewcode-block" id="SubprocessEvent"><a class="viewcode-back" href="../../../plugins/mp.html#nose2.plugins.mp.SubprocessEvent">[docs]</a><span class="k">class</span> <span class="nc">SubprocessEvent</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired at start and end of subprocess execution.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: plugins</span>
+
+<span class="sd">       List of plugins loaded in the subprocess.</span>
+
+<span class="sd">    .. attribute :: connection</span>
+
+<span class="sd">       The :class:`multiprocessing.Connection` instance that the</span>
+<span class="sd">       subprocess uses for communication with the main process.</span>
+
+<span class="sd">    .. attribute :: executeTests</span>
+
+<span class="sd">       Callable that will be used to execute tests.  Plugins may set</span>
+<span class="sd">       this attribute to wrap or otherwise change test execution. The</span>
+<span class="sd">       callable must match the signature::</span>
+
+<span class="sd">         def execute(suite, result):</span>
+<span class="sd">             ...</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">plugins</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runner</span> <span class="o">=</span> <span class="n">runner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="n">plugins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SubprocessEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="RegisterInSubprocessEvent"><a class="viewcode-back" href="../../../plugins/mp.html#nose2.plugins.mp.RegisterInSubprocessEvent">[docs]</a><span class="k">class</span> <span class="nc">RegisterInSubprocessEvent</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to notify plugins that multiprocess testing will occur</span>
+
+<span class="sd">    .. attribute :: pluginClasses</span>
+
+<span class="sd">       Add a plugin class to this list to cause the plugin to be</span>
+<span class="sd">       instantiated in each test-running subprocess. The most common</span>
+<span class="sd">       thing to do, for plugins that need to run in subprocesses, is::</span>
+
+<span class="sd">         def registerInSubprocess(self, event):</span>
+<span class="sd">             event.pluginClasses.append(self.__class__)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginClasses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RegisterInSubprocessEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">metadata</span><span class="p">)</span>
+
+
+<span class="c"># custom hook system that records calls and events</span></div>
+<span class="k">class</span> <span class="nc">RecordingHook</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Hook</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">interface</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RecordingHook</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">interface</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">RecordingHook</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interface</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="k">class</span> <span class="nc">RecordingPluginInterface</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">PluginInterface</span><span class="p">):</span>
+    <span class="n">hookClass</span> <span class="o">=</span> <span class="n">RecordingHook</span>
+    <span class="n">noLogMethods</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;getTestCaseNames&#39;</span><span class="p">,</span> <span class="s">&#39;startSubprocess&#39;</span><span class="p">,</span> <span class="s">&#39;stopSubprocess&#39;</span><span class="p">,</span>
+                        <span class="s">&#39;registerInSubprocess&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RecordingPluginInterface</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">method</span><span class="p">,</span> <span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">events</span>
+
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a plugin for a method.</span>
+
+<span class="sd">        :param method: A method name</span>
+<span class="sd">        :param plugin: A plugin instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hookForMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;__&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&#39;No </span><span class="si">%s</span><span class="s"> in </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hookForMethod</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_hookForMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="c"># return recording hook for most hooks, normal hook for those</span>
+        <span class="c"># (like test loading and subprocess events) that we don&#39;t want</span>
+        <span class="c"># to send back to the main process.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">noLogMethods</span> <span class="ow">or</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;loadTest&#39;</span><span class="p">):</span>
+                <span class="n">hook</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">Hook</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hookClass</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">hook</span>
+        <span class="k">return</span> <span class="n">hook</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

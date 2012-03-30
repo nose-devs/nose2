@@ -1,0 +1,171 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Contributing to nose2 &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="next" title="Internals" href="internals.html" />
+    <link rel="prev" title="Plugin class reference" href="plugin_class_reference.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="internals.html" title="Internals"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plugin_class_reference.html" title="Plugin class reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="contributing-to-nose2">
+<h1>Contributing to nose2<a class="headerlink" href="#contributing-to-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="exhortation">
+<h2>Exhortation<a class="headerlink" href="#exhortation" title="Permalink to this headline">¶</a></h2>
+<p>Please do! nose2 cannot move forward without contributions from the
+testing community.</p>
+</div>
+<div class="section" id="the-basics">
+<h2>The Basics<a class="headerlink" href="#the-basics" title="Permalink to this headline">¶</a></h2>
+<p>nose2 is hosted on <a class="reference external" href="https://github.com/">github</a>. Our home there is
+<a class="reference external" href="https://github.com/nose-devs/nose2">https://github.com/nose-devs/nose2</a>. We use github&#8217;s issue tracking and
+collaboration tools <em>exclusively</em> for managing nose2&#8217;s
+development. This means:</p>
+<ul class="simple">
+<li>Please report issues here: <a class="reference external" href="https://github.com/nose-devs/nose2/issues">https://github.com/nose-devs/nose2/issues</a></li>
+<li>Please make feature requests in the same place.</li>
+<li>Please submit all patches as github pull requests.</li>
+</ul>
+</div>
+<div class="section" id="get-started">
+<h2>Get started<a class="headerlink" href="#get-started" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">bootstrap.sh</span></tt> script in the root of the nose2 distribution can be
+used to get a new local clone up and running quickly. It requires that
+you have <a class="reference external" href="http://pypi.python.org/pypi/virtualenvwrapper">virtualenvwrapper</a> installed. Run this script once to set
+up a nose2 virtualenv, install nose2&#8217;s dependencies, and set up the
+git submodule that pulls in the <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> theme that the docs use.</p>
+</div>
+<div class="section" id="coding-guidelines">
+<h2>Coding Guidelines<a class="headerlink" href="#coding-guidelines" title="Permalink to this headline">¶</a></h2>
+<p>Our style is <a class="reference external" href="http://www.python.org/dev/peps/pep-0008/">pep8</a> except: for consistency with unittest, please use CamelCase
+for class names, methods, attributes and function parameters that map
+directly to class attributes.</p>
+<p>Beyond style, the main rule is: <em>any patch that touches code must
+include tests.</em> And of course all tests must pass under all supported
+versions of Python.</p>
+<p>Fortunately that&#8217;s easy to check: nose2 uses <a class="reference external" href="http://pypi.python.org/pypi/tox">tox</a> to manage its test
+scenarios, so simply running <tt class="docutils literal"><span class="pre">tox</span></tt> in nose2&#8217;s root directory will
+run all of the tests with all supported python versions. When your
+patch gets all green, send a pull request!</p>
+</div>
+<div class="section" id="merging-guidelines">
+<h2>Merging Guidelines<a class="headerlink" href="#merging-guidelines" title="Permalink to this headline">¶</a></h2>
+<p>The github Merge Button(tm) should be used only for trivial
+changes. Other merges, even those that can be automatically merged,
+should be merged manually, so that you have an opportunity to run
+tests on the merged changes before pushing them. When you merge
+manually, please use <tt class="docutils literal"><span class="pre">--no-ff</span></tt> so that we have a record of all
+merges.</p>
+<p>Also, core devs should not merge their own work &#8211; again, unless it&#8217;s
+trivial &#8211; without giving other developers a chance to review it. The
+basic worfklow should be to do the work in a topic branch in your fork
+then post a pull request for that branch, whether you&#8217;re a core
+developer or other contributor.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Contributing to nose2</a><ul>
+<li><a class="reference internal" href="#exhortation">Exhortation</a></li>
+<li><a class="reference internal" href="#the-basics">The Basics</a></li>
+<li><a class="reference internal" href="#get-started">Get started</a></li>
+<li><a class="reference internal" href="#coding-guidelines">Coding Guidelines</a></li>
+<li><a class="reference internal" href="#merging-guidelines">Merging Guidelines</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="plugin_class_reference.html" title="previous chapter">Plugin class reference</a></li>
+      <li>Next: <a href="internals.html" title="next chapter">Internals</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/contributing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

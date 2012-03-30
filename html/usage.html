@@ -1,0 +1,247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using nose2 &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="index.html" />
+    <link rel="next" title="Configuring nose2" href="configuration.html" />
+    <link rel="prev" title="Getting started with nose2" href="getting_started.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuring nose2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started with nose2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-nose2">
+<h1>Using nose2<a class="headerlink" href="#using-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-tests">
+<h2>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
+<p>In the simplest case, go to the directory that includes your project
+source and run <tt class="docutils literal"><span class="pre">nose2</span></tt> there:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nose2</span>
+</pre></div>
+</div>
+<p>This will discover tests in packages and test directories under that
+directory, load them, and run them, then output something like:</p>
+<div class="highlight-python"><pre>.............................................................................
+----------------------------------------------------------------------
+Ran 77 tests in 1.897s
+
+OK</pre>
+</div>
+<p>&#8220;Test directories&#8221; means any directories whose names start with
+&#8220;test&#8221;. Within test directories and within any Python packages found
+in the starting directory and any source directories in the starting
+directory, nose2 will discover test modules and load tests from
+them. &#8220;Test modules&#8221; means any modules whose names start with &#8220;test&#8221;.</p>
+<p>Within test modules, nose2 will load tests from
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> subclasses, and from test functions
+(functions whose names begin with &#8220;test&#8221;).</p>
+<p>To change the place discovery starts, or to change the top-level
+importable directory of the project, use the <a class="reference internal" href="#cmdoption-s"><em class="xref std std-option">-s</em></a> and
+<a class="reference internal" href="#cmdoption-t"><em class="xref std std-option">-t</em></a> options.</p>
+<dl class="cmdoption">
+<dt id="cmdoption-s">
+<tt class="descname">-s</tt><tt class="descclassname"> START_DIR</tt><tt class="descclassname">, </tt><tt class="descname">--start-dir</tt><tt class="descclassname"> START_DIR</tt><a class="headerlink" href="#cmdoption-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory to start discovery. Defaults to the current working
+directory. This directory is where nose2 will start looking for
+tests.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-t">
+<tt class="descname">-t</tt><tt class="descclassname"> TOP_LEVEL_DIRECTORY</tt><tt class="descclassname">, </tt><tt class="descname">--top-level-directory</tt><tt class="descclassname"> TOP_LEVEL_DIRECTORY</tt><tt class="descclassname">, </tt><tt class="descname">--project-directory</tt><tt class="descclassname"> TOP_LEVEL_DIRECTORY</tt><a class="headerlink" href="#cmdoption-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Top-level directory of the project. Defaults to the starting
+directory. This is the directory containing importable modules and
+packages, and is always prepended to sys.path before test discovery
+begins.</p>
+</dd></dl>
+
+<div class="section" id="specifying-tests-to-run">
+<h3>Specifying Tests to Run<a class="headerlink" href="#specifying-tests-to-run" title="Permalink to this headline">¶</a></h3>
+<p>Pass <em>test names</em> to nose2 on the command line to run individual test
+modules, classes, or tests.</p>
+<p>A test name consists of a <em>python object part</em> and, for generator or
+parameterized tests, an <em>argument part</em>. The <em>python object part</em> is a
+dotted name, such as
+<tt class="docutils literal"><span class="pre">pkg1.tests.test_things.SomeTests.test_ok</span></tt>. The argument
+part is separated from the python object part by a colon (&#8221;:&#8221;) and
+specifies the <em>index</em> of the generated test to select, <em>starting from
+1</em>. For example, <tt class="docutils literal"><span class="pre">pkg1.test.test_things.test_params_func:1</span></tt> would
+select the <em>first</em> test generated from the parameterized test
+<tt class="docutils literal"><span class="pre">test_params_func</span></tt>.</p>
+<p>Plugins may provide other means of test selection.</p>
+</div>
+<div class="section" id="running-tests-with-python-setup-py-test">
+<h3>Running Tests with <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt><a class="headerlink" href="#running-tests-with-python-setup-py-test" title="Permalink to this headline">¶</a></h3>
+<p>nose2 supports distribute/setuptools&#8217; <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt>
+standard for running tests. To use nose2 to run your package&#8217;s tests,
+add the following to your setup.py:</p>
+<div class="highlight-python"><pre>setup(...
+      test_suite='nose2.collector.collector',
+      ...
+      )</pre>
+</div>
+<p>(Not literally. Don&#8217;t put the &#8216;...&#8217; parts in.)</p>
+<p>Two warnings about running tests this way.</p>
+<p>One: because the setuptools test command is limited, nose2 returns a &#8220;test
+suite&#8221; that actually takes over the test running process completely,
+bypassing the test result and test runner that call it. This may be
+incompatible with some packages.</p>
+<p>Two: because the command line arguments to the test command may not
+match up properly with nose2&#8217;s arguments, the nose2 instance started
+by the collector <em>does not accept any command line arguments</em>. This
+means that it always runs all tests, and that you cannot configure
+plugins on the command line when running tests this way. As a
+workaround, when running under the test command, nose2 will read
+configuration from <tt class="docutils literal"><span class="pre">setup.cfg</span></tt> if it is present, in addition to
+<tt class="docutils literal"><span class="pre">unittest.cfg</span></tt> and <tt class="docutils literal"><span class="pre">nose2.cfg</span></tt>. This enables you to put
+configuration specific to the setuptools test command in <tt class="docutils literal"><span class="pre">setup.cfg</span></tt>
+&#8211; for instance to activate plugins that you would otherwise activate
+via the command line.</p>
+</div>
+</div>
+<div class="section" id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<p>Run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nose2</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>to get help for nose2 itself and all loaded plugins.</p>
+<div class="highlight-python"><pre>usage: nose2 [-s START_DIR] [-t TOP_LEVEL_DIRECTORY] [--config [CONFIG]]
+             [--no-user-config] [--no-plugins] [--verbose] [--quiet] [-B] [-D]
+             [--collect-only] [--log-capture] [-P] [-h]
+             [testNames [testNames ...]]
+
+positional arguments:
+  testNames
+
+optional arguments:
+  -s START_DIR, --start-dir START_DIR
+                        Directory to start discovery ('.' default)
+  -t TOP_LEVEL_DIRECTORY, --top-level-directory TOP_LEVEL_DIRECTORY, --project-directory TOP_LEVEL_DIRECTORY
+                        Top level directory of project (defaults to start dir)
+  --config [CONFIG], -c [CONFIG]
+                        Config files to load, if they exist. ('unittest.cfg'
+                        and 'nose2.cfg' in start directory default)
+  --no-user-config      Do not load user config files
+  --no-plugins          Do not load any plugins. Warning: nose2 does not do
+                        anything if no plugins are loaded
+  --verbose, -v
+  --quiet
+  -h, --help            Show this help message and exit
+
+plugin arguments:
+  Command-line arguments added by plugins:
+
+  -B, --output-buffer   Enable output buffer
+  -D, --debugger        Enter pdb on test fail or error
+  --collect-only        Collect and output test names, do not run any tests
+  --log-capture         Enable log capture
+  -P, --print-hooks     Print names of hooks in order of execution</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using nose2</a><ul>
+<li><a class="reference internal" href="#running-tests">Running Tests</a><ul>
+<li><a class="reference internal" href="#specifying-tests-to-run">Specifying Tests to Run</a></li>
+<li><a class="reference internal" href="#running-tests-with-python-setup-py-test">Running Tests with <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="getting_started.html" title="previous chapter">Getting started with nose2</a></li>
+      <li>Next: <a href="configuration.html" title="next chapter">Configuring nose2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/usage.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

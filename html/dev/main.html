@@ -1,0 +1,273 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.main &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="up" title="Internals" href="internals.html" />
+    <link rel="next" title="nose2.compat" href="compat.html" />
+    <link rel="prev" title="Internals" href="internals.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="compat.html" title="nose2.compat"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="internals.html" title="Internals"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="internals.html" accesskey="U">Internals</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.main">
+<span id="nose2-main"></span><h1>nose2.main<a class="headerlink" href="#module-nose2.main" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="nose2.main.PluggableTestProgram">
+<em class="property">class </em><tt class="descclassname">nose2.main.</tt><tt class="descname">PluggableTestProgram</tt><big>(</big><em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram" title="Permalink to this definition">¶</a></dt>
+<dd><p>TestProgram that enables plugins.</p>
+<p>Accepts the same parameters as <tt class="xref py py-class docutils literal"><span class="pre">unittest.TestProgram</span></tt>,
+but most of them are ignored as their functions are
+handled by plugins.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>module</strong> &#8211; Module in which to run tests. Default: __main__</li>
+<li><strong>defaultTest</strong> &#8211; Default test name. Default: None</li>
+<li><strong>argv</strong> &#8211; Command line args. Default: sys.argv</li>
+<li><strong>testRunner</strong> &#8211; <em>IGNORED</em></li>
+<li><strong>testLoader</strong> &#8211; <em>IGNORED</em></li>
+<li><strong>exit</strong> &#8211; Exit after running tests?</li>
+<li><strong>verbosity</strong> &#8211; Base verbosity</li>
+<li><strong>failfast</strong> &#8211; <em>IGNORED</em></li>
+<li><strong>catchbreak</strong> &#8211; <em>IGNORED</em></li>
+<li><strong>buffer</strong> &#8211; <em>IGNORED</em></li>
+<li><strong>plugins</strong> &#8211; List of additional plugin modules to load</li>
+<li><strong>excludePlugins</strong> &#8211; List of plugin modules to exclude</li>
+<li><strong>extraHooks</strong> &#8211; List of hook names and plugin <em>instances</em> to
+register with the session&#8217;s hooks system. Each
+item in the list must be a 2-tuple of
+(hook name, plugin instance)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="nose2.main.PluggableTestProgram.sessionClass">
+<tt class="descname">sessionClass</tt><a class="headerlink" href="#nose2.main.PluggableTestProgram.sessionClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class to instantiate to create a test run configuration
+session. Default: <a class="reference internal" href="session_reference.html#nose2.session.Session" title="nose2.session.Session"><tt class="xref py py-class docutils literal"><span class="pre">nose2.session.Session</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.main.PluggableTestProgram.loaderClass">
+<tt class="descname">loaderClass</tt><a class="headerlink" href="#nose2.main.PluggableTestProgram.loaderClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class to instantiate to create a test loader. Default:
+<a class="reference internal" href="loader.html#nose2.loader.PluggableTestLoader" title="nose2.loader.PluggableTestLoader"><tt class="xref py py-class docutils literal"><span class="pre">nose2.loader.PluggableTestLoader</span></tt></a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Overriding this attribute is the only way to customize
+the test loader class. Passing a test loader to
+<tt class="docutils literal"><span class="pre">__init__</span></tt> does not work.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.main.PluggableTestProgram.runnerClass">
+<tt class="descname">runnerClass</tt><a class="headerlink" href="#nose2.main.PluggableTestProgram.runnerClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class to instantiate to create a test runner.  Default:
+<a class="reference internal" href="runner.html#nose2.runner.PluggableTestRunner" title="nose2.runner.PluggableTestRunner"><tt class="xref py py-class docutils literal"><span class="pre">nose2.runner.PluggableTestRunner</span></tt></a>.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Overriding this attribute is the only way to customize
+the test runner class. Passing a test runner to
+<tt class="docutils literal"><span class="pre">__init__</span></tt> does not work.</p>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.main.PluggableTestProgram.defaultPlugins">
+<tt class="descname">defaultPlugins</tt><a class="headerlink" href="#nose2.main.PluggableTestProgram.defaultPlugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of default plugin modules to load.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.createTests">
+<tt class="descname">createTests</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.createTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.createTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create top-level test suite</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.findConfigFiles">
+<tt class="descname">findConfigFiles</tt><big>(</big><em>cfg_args</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.findConfigFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.findConfigFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find available config files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.handleArgs">
+<tt class="descname">handleArgs</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.handleArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.handleArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle further arguments.</p>
+<p>Handle arguments parsed out of command line after plugins have
+been loaded (and injected their argument configuration).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.handleCfgArgs">
+<tt class="descname">handleCfgArgs</tt><big>(</big><em>cfg_args</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.handleCfgArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.handleCfgArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle initial arguments.</p>
+<p>Handle the initial, pre-plugin arguments parsed out of the
+command line.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.loadPlugins">
+<tt class="descname">loadPlugins</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.loadPlugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.loadPlugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load available plugins</p>
+<p><tt class="docutils literal"><span class="pre">self.defaultPlugins</span></tt> and <tt class="docutils literal"><span class="pre">self.excludePlugins</span></tt> are passed
+to the session to alter the list of plugins that will be
+loaded.</p>
+<p>This method also registers any (hook, plugin) pairs set in
+<tt class="docutils literal"><span class="pre">self.hooks</span></tt>. This is a good way to inject plugins that fall
+outside of the normal loading procedure, for example, plugins
+that need some runtime information that can&#8217;t easily be
+passed to them through the configuration system.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">loaderClass</tt></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">PluggableTestLoader</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.parseArgs">
+<tt class="descname">parseArgs</tt><big>(</big><em>argv</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.parseArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.parseArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse command line args</p>
+<p>Parses arguments and creates a configuration session,
+then calls createTests.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.runTests">
+<tt class="descname">runTests</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.runTests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.runTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run tests</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">runnerClass</tt></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">PluggableTestRunner</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">sessionClass</tt></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.main.PluggableTestProgram.setInitialArguments">
+<tt class="descname">setInitialArguments</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#PluggableTestProgram.setInitialArguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.PluggableTestProgram.setInitialArguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set pre-plugin command-line arguments.</p>
+<p>This set of arguments is parsed out of the command line
+before plugins are loaded.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.main.main">
+<tt class="descclassname">nose2.main.</tt><tt class="descname">main</tt><a class="headerlink" href="#nose2.main.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">PluggableTestProgram</span></tt></a></p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="internals.html">Internals</a><ul>
+      <li>Previous: <a href="internals.html" title="previous chapter">Internals</a></li>
+      <li>Next: <a href="compat.html" title="next chapter">nose2.compat</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/main.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

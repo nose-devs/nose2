@@ -1,0 +1,825 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Event reference &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="next" title="Hook reference" href="hook_reference.html" />
+    <link rel="prev" title="Documenting plugins" href="documenting_plugins.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hook_reference.html" title="Hook reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="documenting_plugins.html" title="Documenting plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.events">
+<span id="event-reference"></span><h1>Event reference<a class="headerlink" href="#module-nose2.events" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="nose2.events.CommandLineArgsEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">CommandLineArgsEvent</tt><big>(</big><em>args</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#CommandLineArgsEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.CommandLineArgsEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired after parsing of command line arguments.</p>
+<p>Plugins can respond to this event by configuring themselves or other plugins
+or modifying the parsed arguments.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Many plugins register options with callbacks. By the time this event
+fires, those callbacks have already fired. So you can&#8217;t use this
+event to reliably influence all plugins.</p>
+</div>
+<dl class="attribute">
+<dt id="nose2.events.CommandLineArgsEvent.args">
+<tt class="descname">args</tt><a class="headerlink" href="#nose2.events.CommandLineArgsEvent.args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args object returned by argparse.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.CreateTestsEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">CreateTestsEvent</tt><big>(</big><em>loader</em>, <em>testNames</em>, <em>module</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#CreateTestsEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.CreateTestsEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired before test loading.</p>
+<p>Plugins can take over test loading by returning a test suite and setting
+<tt class="docutils literal"><span class="pre">handled</span></tt> on this event.</p>
+<dl class="attribute">
+<dt id="nose2.events.CreateTestsEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.CreateTestsEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.CreateTestsEvent.names">
+<tt class="descname">names</tt><a class="headerlink" href="#nose2.events.CreateTestsEvent.names" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of test names. May be empty or None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.CreateTestsEvent.module">
+<tt class="descname">module</tt><a class="headerlink" href="#nose2.events.CreateTestsEvent.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Module to load from. May be None. If not None, names should be
+considered relative to this module.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.DescribeTestEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">DescribeTestEvent</tt><big>(</big><em>test</em>, <em>description=None</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#DescribeTestEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.DescribeTestEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to get test description.</p>
+<dl class="attribute">
+<dt id="nose2.events.DescribeTestEvent.test">
+<tt class="descname">test</tt><a class="headerlink" href="#nose2.events.DescribeTestEvent.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>The test case</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.DescribeTestEvent.description">
+<tt class="descname">description</tt><a class="headerlink" href="#nose2.events.DescribeTestEvent.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description of the test case. Plugins can set this to change
+how tests are described in output to users.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.Event">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">Event</tt><big>(</big><em>**metadata</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all events.</p>
+<dl class="attribute">
+<dt id="nose2.events.Event.metadata">
+<tt class="descname">metadata</tt><a class="headerlink" href="#nose2.events.Event.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Storage for arbitrary information attached to an event.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.Event.handled">
+<tt class="descname">handled</tt><a class="headerlink" href="#nose2.events.Event.handled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to True to indicate that a plugin has handled the event,
+and no other plugins or core systems should process it further.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.Event.version">
+<tt class="descname">version</tt><a class="headerlink" href="#nose2.events.Event.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version of the event API. This will be incremented with each
+release of nose2 that changes the API.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descname">version</tt><em class="property"> = '0.2'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.GetTestCaseNamesEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">GetTestCaseNamesEvent</tt><big>(</big><em>loader</em>, <em>testCase</em>, <em>isTestMethod</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#GetTestCaseNamesEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to find test case names in a test case.</p>
+<p>Plugins may return a list of names and set <tt class="docutils literal"><span class="pre">handled</span></tt> on this
+event to force test case name selection.</p>
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.testCase">
+<tt class="descname">testCase</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.testCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> instance being loaded.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.testMethodPrefix">
+<tt class="descname">testMethodPrefix</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.testMethodPrefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this to change the test method prefix. Unless set by a plugin,
+it is None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.extraNames">
+<tt class="descname">extraNames</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.extraNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra test names to load from the test case. To cause
+extra tests to be loaded from the test case, append the names
+to this list. Note that the names here must be attributes of
+the test case.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.excludedNames">
+<tt class="descname">excludedNames</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.excludedNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of names to exclude from test loading. Add names to this
+list to prevent other plugins from loading the named tests.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.GetTestCaseNamesEvent.isTestMethod">
+<tt class="descname">isTestMethod</tt><a class="headerlink" href="#nose2.events.GetTestCaseNamesEvent.isTestMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable that plugins can use to examine test case attributes to determine
+whether nose2 thinks they are test methods.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.HandleFileEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">HandleFileEvent</tt><big>(</big><em>loader</em>, <em>name</em>, <em>path</em>, <em>pattern</em>, <em>topLevelDirectory</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#HandleFileEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.HandleFileEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when a non-test file is examined.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This event is <em>not</em> fired for python modules that
+match the test file pattern.</p>
+</div>
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.name">
+<tt class="descname">name</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>File basename</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.path">
+<tt class="descname">path</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to file</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.pattern">
+<tt class="descname">pattern</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current test file match pattern</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.topLevelDirectory">
+<tt class="descname">topLevelDirectory</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.topLevelDirectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Top-level directory of the test run</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.HandleFileEvent.extraTests">
+<tt class="descname">extraTests</tt><a class="headerlink" href="#nose2.events.HandleFileEvent.extraTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra tests loaded from the file. To load tests
+from a file without interfering with other plugins&#8217;
+loading activities, append tests to extraTests.</p>
+</dd></dl>
+
+<p>Plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event and return a test suite
+to prevent other plugins from loading tests from the file. If
+any plugin sets <tt class="docutils literal"><span class="pre">handled</span></tt> to True, <tt class="docutils literal"><span class="pre">extraTests</span></tt> will be
+ignored.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.LoadFromModuleEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">LoadFromModuleEvent</tt><big>(</big><em>loader</em>, <em>module</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#LoadFromModuleEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.LoadFromModuleEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when a test module is loaded.</p>
+<dl class="attribute">
+<dt id="nose2.events.LoadFromModuleEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.LoadFromModuleEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromModuleEvent.module">
+<tt class="descname">module</tt><a class="headerlink" href="#nose2.events.LoadFromModuleEvent.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>The module whose tests are to be loaded</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromModuleEvent.extraTests">
+<tt class="descname">extraTests</tt><a class="headerlink" href="#nose2.events.LoadFromModuleEvent.extraTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra tests loaded from the module. To load tests
+from a module without interfering with other plugins&#8217; loading
+activities, append tests to extraTests.</p>
+</dd></dl>
+
+<p>Plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event and return a test suite
+to prevent other plugins from loading tests from the module. If
+any plugin sets <tt class="docutils literal"><span class="pre">handled</span></tt> to True, <tt class="docutils literal"><span class="pre">extraTests</span></tt> will be
+ignored.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.LoadFromNameEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">LoadFromNameEvent</tt><big>(</big><em>loader</em>, <em>name</em>, <em>module</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#LoadFromNameEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.LoadFromNameEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to load tests from test names.</p>
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNameEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.LoadFromNameEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNameEvent.name">
+<tt class="descname">name</tt><a class="headerlink" href="#nose2.events.LoadFromNameEvent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test name to load</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNameEvent.module">
+<tt class="descname">module</tt><a class="headerlink" href="#nose2.events.LoadFromNameEvent.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Module to load from. May be None. If not None, names should be
+considered relative to this module.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNameEvent.extraTests">
+<tt class="descname">extraTests</tt><a class="headerlink" href="#nose2.events.LoadFromNameEvent.extraTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra tests loaded from the name. To load tests
+from a test name without interfering with other plugins&#8217;
+loading activities, append tests to extraTests.</p>
+</dd></dl>
+
+<p>Plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event and return a test suite
+to prevent other plugins from loading tests from the test name. If
+any plugin sets <tt class="docutils literal"><span class="pre">handled</span></tt> to True, <tt class="docutils literal"><span class="pre">extraTests</span></tt> will be
+ignored.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.LoadFromNamesEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">LoadFromNamesEvent</tt><big>(</big><em>loader</em>, <em>names</em>, <em>module</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#LoadFromNamesEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.LoadFromNamesEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to load tests from test names.</p>
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNamesEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.LoadFromNamesEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNamesEvent.names">
+<tt class="descname">names</tt><a class="headerlink" href="#nose2.events.LoadFromNamesEvent.names" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of test names. May be empty or None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNamesEvent.module">
+<tt class="descname">module</tt><a class="headerlink" href="#nose2.events.LoadFromNamesEvent.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Module to load from. May be None. If not None, names should be
+considered relative to this module.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromNamesEvent.extraTests">
+<tt class="descname">extraTests</tt><a class="headerlink" href="#nose2.events.LoadFromNamesEvent.extraTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra tests loaded from the tests named. To load
+tests from test names without interfering with other plugins&#8217;
+loading activities, append tests to extraTests.</p>
+</dd></dl>
+
+<p>Plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event and return a test suite
+to prevent other plugins from loading tests from the test names. If
+any plugin sets <tt class="docutils literal"><span class="pre">handled</span></tt> to True, <tt class="docutils literal"><span class="pre">extraTests</span></tt> will be
+ignored.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.LoadFromTestCaseEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">LoadFromTestCaseEvent</tt><big>(</big><em>loader</em>, <em>testCase</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#LoadFromTestCaseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.LoadFromTestCaseEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when tests are loaded from a test case.</p>
+<dl class="attribute">
+<dt id="nose2.events.LoadFromTestCaseEvent.loader">
+<tt class="descname">loader</tt><a class="headerlink" href="#nose2.events.LoadFromTestCaseEvent.loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test loader instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromTestCaseEvent.testCase">
+<tt class="descname">testCase</tt><a class="headerlink" href="#nose2.events.LoadFromTestCaseEvent.testCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> instance being loaded.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.LoadFromTestCaseEvent.extraTests">
+<tt class="descname">extraTests</tt><a class="headerlink" href="#nose2.events.LoadFromTestCaseEvent.extraTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of extra tests loaded from the module. To load tests
+from a test case without interfering with other plugins&#8217;
+loading activities, append tests to extraTests.</p>
+</dd></dl>
+
+<p>Plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event and return a test suite
+to prevent other plugins from loading tests from the test case. If
+any plugin sets <tt class="docutils literal"><span class="pre">handled</span></tt> to True, <tt class="docutils literal"><span class="pre">extraTests</span></tt> will be
+ignored.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.MatchPathEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">MatchPathEvent</tt><big>(</big><em>name</em>, <em>path</em>, <em>pattern</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#MatchPathEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.MatchPathEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired during file matching.</p>
+<p>Plugins may return False and set <tt class="docutils literal"><span class="pre">handled</span></tt> on this event to prevent
+a file from being matched as a test file, regardless of other system
+settings.</p>
+<dl class="attribute">
+<dt id="nose2.events.MatchPathEvent.path">
+<tt class="descname">path</tt><a class="headerlink" href="#nose2.events.MatchPathEvent.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full path to the file</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.MatchPathEvent.name">
+<tt class="descname">name</tt><a class="headerlink" href="#nose2.events.MatchPathEvent.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>File basename</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.MatchPathEvent.pattern">
+<tt class="descname">pattern</tt><a class="headerlink" href="#nose2.events.MatchPathEvent.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current test file match pattern</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.OutcomeDetailEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">OutcomeDetailEvent</tt><big>(</big><em>outcomeEvent</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#OutcomeDetailEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.OutcomeDetailEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to acquire additional details about test outcome.</p>
+<dl class="attribute">
+<dt id="nose2.events.OutcomeDetailEvent.outcomeEvent">
+<tt class="descname">outcomeEvent</tt><a class="headerlink" href="#nose2.events.OutcomeDetailEvent.outcomeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#nose2.events.TestOutcomeEvent" title="nose2.events.TestOutcomeEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.TestOutcomeEvent</span></tt></a> instance holding
+the test outcome to be described.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.OutcomeDetailEvent.extraDetail">
+<tt class="descname">extraDetail</tt><a class="headerlink" href="#nose2.events.OutcomeDetailEvent.extraDetail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extra detail lines to be appended to test outcome
+output. Plugins can append lines (of strings) to this list to
+include their extra information in the error list report.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.PluginsLoadedEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">PluginsLoadedEvent</tt><big>(</big><em>pluginsLoaded</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#PluginsLoadedEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.PluginsLoadedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired after all plugin classes are loaded.</p>
+<dl class="attribute">
+<dt id="nose2.events.PluginsLoadedEvent.pluginsLoaded">
+<tt class="descname">pluginsLoaded</tt><a class="headerlink" href="#nose2.events.PluginsLoadedEvent.pluginsLoaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all loaded plugin classes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.ReportSummaryEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">ReportSummaryEvent</tt><big>(</big><em>stopTestEvent</em>, <em>stream</em>, <em>reportCategories</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#ReportSummaryEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.ReportSummaryEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired before and after summary report.</p>
+<dl class="attribute">
+<dt id="nose2.events.ReportSummaryEvent.stopTestEvent">
+<tt class="descname">stopTestEvent</tt><a class="headerlink" href="#nose2.events.ReportSummaryEvent.stopTestEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#nose2.events.StopTestEvent" title="nose2.events.StopTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StopTestEvent</span></tt></a> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.ReportSummaryEvent.stream">
+<tt class="descname">stream</tt><a class="headerlink" href="#nose2.events.ReportSummaryEvent.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The output stream. Plugins can set this to change or capture
+output.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.ReportSummaryEvent.reportCategories">
+<tt class="descname">reportCategories</tt><a class="headerlink" href="#nose2.events.ReportSummaryEvent.reportCategories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of report category and test events captured in that
+category. Default categories include &#8216;errors&#8217;, &#8216;failures&#8217;,
+&#8216;skipped&#8217;, &#8216;expectedFails&#8217;, and &#8216;unexpectedSuccesses&#8217;. Plugins
+may add their own categories.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.ReportTestEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">ReportTestEvent</tt><big>(</big><em>testEvent</em>, <em>stream</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#ReportTestEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.ReportTestEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired to report a test event.</p>
+<p>Plugins can respond to this event by producing output for the user.</p>
+<dl class="attribute">
+<dt id="nose2.events.ReportTestEvent.testEvent">
+<tt class="descname">testEvent</tt><a class="headerlink" href="#nose2.events.ReportTestEvent.testEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A test event. In most cases, a
+<a class="reference internal" href="#nose2.events.TestOutcomeEvent" title="nose2.events.TestOutcomeEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.TestOutcomeEvent</span></tt></a> instance. For startTest,
+a <a class="reference internal" href="#nose2.events.StartTestEvent" title="nose2.events.StartTestEvent"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.StartTestEvent</span></tt></a> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.ReportTestEvent.stream">
+<tt class="descname">stream</tt><a class="headerlink" href="#nose2.events.ReportTestEvent.stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The output stream. Plugins can set this to change or capture
+output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.ResultCreatedEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">ResultCreatedEvent</tt><big>(</big><em>result</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#ResultCreatedEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.ResultCreatedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when test result handler is created.</p>
+<dl class="attribute">
+<dt id="nose2.events.ResultCreatedEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.ResultCreatedEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result handler instance. Plugins may replace the test
+result by setting this attribute to a new test result instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.ResultStopEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">ResultStopEvent</tt><big>(</big><em>result</em>, <em>shouldStop</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#ResultStopEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.ResultStopEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when a test run is told to stop.</p>
+<p>Plugins can use this event to prevent other plugins from stopping
+a test run.</p>
+<dl class="attribute">
+<dt id="nose2.events.ResultStopEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.ResultStopEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.ResultStopEvent.shouldStop">
+<tt class="descname">shouldStop</tt><a class="headerlink" href="#nose2.events.ResultStopEvent.shouldStop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to True to indicate that the test run should stop.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.ResultSuccessEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">ResultSuccessEvent</tt><big>(</big><em>result</em>, <em>success</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#ResultSuccessEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.ResultSuccessEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired at end of test run to determine success.</p>
+<p>This event fires at the end of the test run and allows
+plugins to determine whether the test run was successful.</p>
+<dl class="attribute">
+<dt id="nose2.events.ResultSuccessEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.ResultSuccessEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.ResultSuccessEvent.success">
+<tt class="descname">success</tt><a class="headerlink" href="#nose2.events.ResultSuccessEvent.success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this to True to indicate that the test run was
+successful. If no plugin sets the <tt class="docutils literal"><span class="pre">success</span></tt> to
+True, the test run fails.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.RunnerCreatedEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">RunnerCreatedEvent</tt><big>(</big><em>runner</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#RunnerCreatedEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.RunnerCreatedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when test runner is created.</p>
+<dl class="attribute">
+<dt id="nose2.events.RunnerCreatedEvent.runner">
+<tt class="descname">runner</tt><a class="headerlink" href="#nose2.events.RunnerCreatedEvent.runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test runner instance. Plugins may replace the test runner by
+setting this attribute to a new test runner instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.StartTestEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">StartTestEvent</tt><big>(</big><em>test</em>, <em>result</em>, <em>startTime</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#StartTestEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.StartTestEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired before a test is executed.</p>
+<dl class="attribute">
+<dt id="nose2.events.StartTestEvent.test">
+<tt class="descname">test</tt><a class="headerlink" href="#nose2.events.StartTestEvent.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>The test case</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.StartTestEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestEvent.startTime">
+<tt class="descname">startTime</tt><a class="headerlink" href="#nose2.events.StartTestEvent.startTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp of test start</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.StartTestRunEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">StartTestRunEvent</tt><big>(</big><em>runner</em>, <em>suite</em>, <em>result</em>, <em>startTime</em>, <em>executeTests</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#StartTestRunEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.StartTestRunEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when test run is about to start.</p>
+<p>Test collection is complete before this event fires, but
+no tests have yet been executed.</p>
+<dl class="attribute">
+<dt id="nose2.events.StartTestRunEvent.runner">
+<tt class="descname">runner</tt><a class="headerlink" href="#nose2.events.StartTestRunEvent.runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test runner</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestRunEvent.suite">
+<tt class="descname">suite</tt><a class="headerlink" href="#nose2.events.StartTestRunEvent.suite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Top-level test suite to execute. Plugins can filter this suite,
+or set event.suite to change which tests execute (or how they
+execute).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestRunEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.StartTestRunEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestRunEvent.startTime">
+<tt class="descname">startTime</tt><a class="headerlink" href="#nose2.events.StartTestRunEvent.startTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp of test run start</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StartTestRunEvent.executeTests">
+<tt class="descname">executeTests</tt><a class="headerlink" href="#nose2.events.StartTestRunEvent.executeTests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callable that will be used to execute tests.  Plugins may set
+this attribute to wrap or otherwise change test execution. The
+callable must match the signature:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>To prevent normal test execution, plugins may set <tt class="docutils literal"><span class="pre">handled</span></tt> on
+this event to True. When <tt class="docutils literal"><span class="pre">handled</span></tt> is true, the test executor
+does not run at all.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.StopTestEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">StopTestEvent</tt><big>(</big><em>test</em>, <em>result</em>, <em>stopTime</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#StopTestEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.StopTestEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired after a test is executed.</p>
+<dl class="attribute">
+<dt id="nose2.events.StopTestEvent.test">
+<tt class="descname">test</tt><a class="headerlink" href="#nose2.events.StopTestEvent.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>The test case</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StopTestEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.StopTestEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StopTestEvent.stopTime">
+<tt class="descname">stopTime</tt><a class="headerlink" href="#nose2.events.StopTestEvent.stopTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp of test stop</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.StopTestRunEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">StopTestRunEvent</tt><big>(</big><em>runner</em>, <em>result</em>, <em>stopTime</em>, <em>timeTaken</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#StopTestRunEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.StopTestRunEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when test run has stopped.</p>
+<dl class="attribute">
+<dt id="nose2.events.StopTestRunEvent.runner">
+<tt class="descname">runner</tt><a class="headerlink" href="#nose2.events.StopTestRunEvent.runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test runner</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StopTestRunEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.StopTestRunEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StopTestRunEvent.stopTime">
+<tt class="descname">stopTime</tt><a class="headerlink" href="#nose2.events.StopTestRunEvent.stopTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamp of test run stop</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.StopTestRunEvent.timeTaken">
+<tt class="descname">timeTaken</tt><a class="headerlink" href="#nose2.events.StopTestRunEvent.timeTaken" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of seconds test run took to execute</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.TestOutcomeEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">TestOutcomeEvent</tt><big>(</big><em>test</em>, <em>result</em>, <em>outcome</em>, <em>exc_info=None</em>, <em>reason=None</em>, <em>expected=False</em>, <em>shortLabel=None</em>, <em>longLabel=None</em>, <em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#TestOutcomeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.TestOutcomeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired when a test completes.</p>
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.test">
+<tt class="descname">test</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>The test case</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.result">
+<tt class="descname">result</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test result</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.outcome">
+<tt class="descname">outcome</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.outcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description of test outcome. Typically will be one of &#8216;error&#8217;,
+&#8216;failed&#8217;, &#8216;skipped&#8217;, or &#8216;passed&#8217;.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.exc_info">
+<tt class="descname">exc_info</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.exc_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the test resulted in an exception, the tuple of (exception
+class, exception value, traceback) as returned by
+sys.exc_info(). If the test did not result in an exception,
+None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.reason">
+<tt class="descname">reason</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.reason" title="Permalink to this definition">¶</a></dt>
+<dd><p>For test outcomes that include a reason (Skips, for example),
+the reason.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.expected">
+<tt class="descname">expected</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.expected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean indicating whether the test outcome was expected. In
+general, all tests are expected to pass, and any other outcome
+will have expected as False. The exceptions to that rule are
+unexpected successes and expected failures.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.shortLabel">
+<tt class="descname">shortLabel</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.shortLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A short label describing the test outcome. (For example, &#8216;E&#8217;
+for errors).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.events.TestOutcomeEvent.longLabel">
+<tt class="descname">longLabel</tt><a class="headerlink" href="#nose2.events.TestOutcomeEvent.longLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A long label describing the test outcome (for example, &#8216;ERROR&#8217;
+for errors).</p>
+</dd></dl>
+
+<p>Plugins may influence how the rest of the system sees the test
+outcome by setting <tt class="docutils literal"><span class="pre">outcome</span></tt> or <tt class="docutils literal"><span class="pre">exc_info</span></tt> or <tt class="docutils literal"><span class="pre">expected</span></tt>. They
+may influence how the test outcome is reported to the user by
+setting <tt class="docutils literal"><span class="pre">shortLabel</span></tt> or <tt class="docutils literal"><span class="pre">longLabel</span></tt>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nose2.events.UserInteractionEvent">
+<em class="property">class </em><tt class="descclassname">nose2.events.</tt><tt class="descname">UserInteractionEvent</tt><big>(</big><em>**kw</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#UserInteractionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.UserInteractionEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event fired before and after user interaction.</p>
+<p>Plugins that capture stdout or otherwise prevent user interaction
+should respond to this event.</p>
+<p>To prevent the user interaction from occurring, return False and
+set <tt class="docutils literal"><span class="pre">handled</span></tt>. Otherwise, turn off whatever you are doing that
+prevents users from typing/clicking/touching/psionics/whatever.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="documenting_plugins.html" title="previous chapter">Documenting plugins</a></li>
+      <li>Next: <a href="hook_reference.html" title="next chapter">Hook reference</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/event_reference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

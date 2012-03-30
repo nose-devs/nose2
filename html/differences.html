@@ -1,0 +1,284 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Differences: nose2 vs nose vs unittest2 &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="index.html" />
+    <link rel="next" title="Plugins for nose2" href="plugins.html" />
+    <link rel="prev" title="Configuring nose2" href="configuration.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugins.html" title="Plugins for nose2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuring nose2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="differences-nose2-vs-nose-vs-unittest2">
+<h1>Differences: nose2 vs nose vs unittest2<a class="headerlink" href="#differences-nose2-vs-nose-vs-unittest2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nose2-is-not-nose">
+<h2>nose2 is not nose<a class="headerlink" href="#nose2-is-not-nose" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="what-s-different">
+<h3>What&#8217;s Different<a class="headerlink" href="#what-s-different" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="python-versions">
+<h4>Python Versions<a class="headerlink" href="#python-versions" title="Permalink to this headline">¶</a></h4>
+<p>nose supports Python 2.4 and above, but nose2 <em>only supports Python
+2.6, 2.7, 3.2 and pypy</em>. Unfortunately, supporting Pythons older than
+2.6 along with Python 3 in the same codebase is not practical. Since
+that is one of the core goals of nose2, support for older versions of
+Python had to be sacrificed.</p>
+</div>
+<div class="section" id="test-discovery-and-loading">
+<h4>Test Discovery and Loading<a class="headerlink" href="#test-discovery-and-loading" title="Permalink to this headline">¶</a></h4>
+<p>nose loads test modules lazily: tests in the first-loaded module are
+executed before the second module is imported. <em>nose2 loads all tests
+first, then begins test execution</em>. This has some important
+implications.</p>
+<p>First, it means that nose2 does not need a custom importer. nose2
+imports test modules with <a class="reference external" href="http://docs.python.org/library/functions.html#__import__" title="(in Python v2.7)"><tt class="xref py py-func docutils literal"><span class="pre">__import__()</span></tt></a>.</p>
+<p>Second, it means that <em>nose2 does not support all of the test project
+layouts that nose does</em>. Specifically, projects that look like this
+will fail to load tests correctly with nose2:</p>
+<div class="highlight-python"><pre>.
+`-- tests
+    |-- more_tests
+    |   `-- test.py
+    `-- test.py</pre>
+</div>
+<p>To nose&#8217;s loader, those two test modules look like different
+modules. But to nose2&#8217;s loader, they look the same, and will not load
+correctly.</p>
+</div>
+<div class="section" id="test-fixtures">
+<h4>Test Fixtures<a class="headerlink" href="#test-fixtures" title="Permalink to this headline">¶</a></h4>
+<p>nose2 supports only the <em>same levels of fixtures as unittest2</em>. This
+means class level fixtures and module level fixtures are supported,
+but <em>package-level fixtures are not</em>. In addition, unlike nose, nose2
+does not attempt to order tests named on the command-line to group
+those with the same fixtures together.</p>
+</div>
+<div class="section" id="parameterized-and-generator-tests">
+<h4>Parameterized and Generator Tests<a class="headerlink" href="#parameterized-and-generator-tests" title="Permalink to this headline">¶</a></h4>
+<p>nose2 supports <em>more kinds of parameterized and generator tests than
+nose</em>, and supports all test generators in test functions, test
+classes, and in unittest TestCase subclasses. nose supports them only
+in test fuctions and test classes that do not subclass
+unittest.TestCase. See: <a class="reference internal" href="plugins/generators.html"><em>Loader: Test Generators</em></a> and
+<a class="reference internal" href="plugins/parameters.html"><em>Loader: Parameterized Tests</em></a> for more.</p>
+</div>
+<div class="section" id="configuration">
+<h4>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h4>
+<p>nose expects plugins to make all of their configuration parameters
+available as command-line options. <em>nose2 expects almost all
+configuration to be done via configuration files</em>. Plugins should
+generally have only one command-line option: the option to activate
+the plugin. Other configuration parameters should be loaded from
+config files. This allows more repeatable test runs and keeps the set
+of command-line options small enough for humans to read. See:
+<a class="reference internal" href="configuration.html"><em>Configuring nose2</em></a> for more.</p>
+</div>
+<div class="section" id="plugin-loading">
+<h4>Plugin Loading<a class="headerlink" href="#plugin-loading" title="Permalink to this headline">¶</a></h4>
+<p>nose uses setuptools entry points to find and load plugins. nose2
+does not. Instead, <em>nose2 requires that all plugins be listed in config
+files</em>. This ensures that no plugin is loaded into a test system just
+by virtue of being installed somewhere, and makes it easier to include
+plugins that are part of the project under test. See:
+<a class="reference internal" href="configuration.html"><em>Configuring nose2</em></a> for more.</p>
+</div>
+<div class="section" id="limited-support-for-python-setup-py-test">
+<h4>Limited support for <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt><a class="headerlink" href="#limited-support-for-python-setup-py-test" title="Permalink to this headline">¶</a></h4>
+<p>nose2 supports setuptools&#8217; <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.test</span></tt> command, but via very
+different means than nose. To avoid the internal complexity forced on
+nose by the fact that the setuptools test command can&#8217;t be configured
+with a custom test runner, when run this way, <em>nose2 essentially
+hijacks the test running process</em>. The &#8220;test suite&#8221; that
+<tt class="xref py py-func docutils literal"><span class="pre">nose2.collector.collector()</span></tt> returns actually <em>is</em> a test runner,
+cloaked inside of a test case. It loads and runs tests as normal,
+setting up its own test runner and test result, and calls sys.exit()
+itself &#8211; completely bypassing the test runner and test result that
+setuptools/unittest create. This may be incompatible with some
+projects.</p>
+</div>
+<div class="section" id="new-plugin-api">
+<h4>New Plugin API<a class="headerlink" href="#new-plugin-api" title="Permalink to this headline">¶</a></h4>
+<p>nose2 implements a new plugin API based on the work done by Michael
+Foord in unittest2&#8217;s plugins branch. This API is greatly superior to
+the one in nose, especially in how it allows plugins to interact with
+each other. But it is different enough from the API in nose that
+supporting nose plugins in nose2 will not be practical: <em>plugins must
+be rewritten to work with nose2</em>. See: <a class="reference internal" href="dev/writing_plugins.html"><em>Writing Plugins</em></a> for more.</p>
+</div>
+<div class="section" id="missing-plugins">
+<h4>Missing Plugins<a class="headerlink" href="#missing-plugins" title="Permalink to this headline">¶</a></h4>
+<p><em>nose2 does not (yet) include some of the more commonly-used plugins
+in nose</em>. Most of these should arrive in future releases. However,
+some of nose&#8217;s builtin plugins cannot be ported to nose2 due to
+differences in internals. See: <a class="reference internal" href="plugins.html"><em>Plugins for nose2</em></a> for information on the
+plugins built in to nose2.</p>
+</div>
+<div class="section" id="internals">
+<h4>Internals<a class="headerlink" href="#internals" title="Permalink to this headline">¶</a></h4>
+<p>nose wraps or replaces everything in unittest. nose2 does a bit less:
+<em>it does not wrap TestCases</em>, and does not wrap the test result class
+with a result proxy. nose2 does subclass TestProgram, and install its
+own loader, runner and result classes. It does this unconditionally,
+rather than allowing arguments to TestProgram.__init__() to specify
+the test loader and runner. See <a class="reference internal" href="dev/internals.html"><em>Internals</em></a> for more
+information.</p>
+</div>
+<div class="section" id="license">
+<h4>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h4>
+<p>While nose was LGPL, nose2 is BSD licensed. This change was made at
+the request of the majority of nose contributors.</p>
+</div>
+</div>
+<div class="section" id="what-s-the-same">
+<h3>What&#8217;s the Same<a class="headerlink" href="#what-s-the-same" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="philosophy">
+<h4>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h4>
+<p>nose2 has the same goals as nose: to extend unittest to make testing
+nicer and easier to understand. It aims to give developers
+flexibility, power and transparency, so that common test scenarios
+require no extra work, and uncommon test scenarios can be supported
+with minimal fuss and magic.</p>
+</div>
+<div class="section" id="people">
+<h4>People<a class="headerlink" href="#people" title="Permalink to this headline">¶</a></h4>
+<p>nose2 is being developed by the same people who maintain nose.</p>
+</div>
+</div>
+</div>
+<div class="section" id="nose2-is-not-exactly-unittest2-plugins">
+<h2>nose2 is not (exactly) unittest2/plugins<a class="headerlink" href="#nose2-is-not-exactly-unittest2-plugins" title="Permalink to this headline">¶</a></h2>
+<p>nose2 is based on the unittest2 plugins branch, but differs from it in
+several substantial ways. The <em>event api not exactly the same</em> because
+nose2 can&#8217;t replace unittest.TestCase, and <em>does not configure the test
+run or plugin set globally</em>. nose2 also has a <em>wholly different
+reporting API</em> from unittest2&#8217;s plugins, one which we feel better
+supports some common cases (like adding extra information to error
+output). nose2 also <em>defers more work to plugins</em> than unittest2: the
+test loader, runner and result are just plugin callers, and all of the
+logic of test discovery, running and reporting is implemented in
+plugins. This means that unlike unittest2, <em>nose2 includes a
+substantial set of plugins that are active by default</em>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Differences: nose2 vs nose vs unittest2</a><ul>
+<li><a class="reference internal" href="#nose2-is-not-nose">nose2 is not nose</a><ul>
+<li><a class="reference internal" href="#what-s-different">What&#8217;s Different</a><ul>
+<li><a class="reference internal" href="#python-versions">Python Versions</a></li>
+<li><a class="reference internal" href="#test-discovery-and-loading">Test Discovery and Loading</a></li>
+<li><a class="reference internal" href="#test-fixtures">Test Fixtures</a></li>
+<li><a class="reference internal" href="#parameterized-and-generator-tests">Parameterized and Generator Tests</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#plugin-loading">Plugin Loading</a></li>
+<li><a class="reference internal" href="#limited-support-for-python-setup-py-test">Limited support for <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt></a></li>
+<li><a class="reference internal" href="#new-plugin-api">New Plugin API</a></li>
+<li><a class="reference internal" href="#missing-plugins">Missing Plugins</a></li>
+<li><a class="reference internal" href="#internals">Internals</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-s-the-same">What&#8217;s the Same</a><ul>
+<li><a class="reference internal" href="#philosophy">Philosophy</a></li>
+<li><a class="reference internal" href="#people">People</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nose2-is-not-exactly-unittest2-plugins">nose2 is not (exactly) unittest2/plugins</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="configuration.html" title="previous chapter">Configuring nose2</a></li>
+      <li>Next: <a href="plugins.html" title="next chapter">Plugins for nose2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/differences.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

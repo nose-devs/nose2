@@ -1,0 +1,152 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.debugger &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.debugger</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Start a :func:`pdb.post_mortem` on errors and failures.</span>
+
+<span class="sd">This plugin implements :func:`testOutcome` and will drop into pdb</span>
+<span class="sd">whenever it sees a test outcome that includes exc_info.</span>
+
+<span class="sd">It fires :func:`beforeInteraction` before launching pdb and</span>
+<span class="sd">:func:`afterInteraction` after. Other plugins may implement</span>
+<span class="sd">:func:`beforeInteraction` to return False and set event.handled to</span>
+<span class="sd">prevent this plugin from launching pdb.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span>
+
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Debugger"><a class="viewcode-back" href="../../../plugins/debugger.html#nose2.plugins.debugger.Debugger">[docs]</a><span class="k">class</span> <span class="nc">Debugger</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enter pdb on test error or failure</span>
+
+<span class="sd">    .. attribute :: pdb</span>
+
+<span class="sd">       For ease of mocking and using different pdb implementations, pdb</span>
+<span class="sd">       is aliased as a class attribute.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;debugger&#39;</span>
+    <span class="n">commandLineSwitch</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="s">&#39;debugger&#39;</span><span class="p">,</span> <span class="s">&#39;Enter pdb on test fail or error&#39;</span><span class="p">)</span>
+    <span class="c"># allow easy mocking and replacment of pdb</span>
+    <span class="n">pdb</span> <span class="o">=</span> <span class="n">pdb</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errorsOnly</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_bool</span><span class="p">(</span><span class="s">&#39;errors-only&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Debugger.testOutcome"><a class="viewcode-back" href="../../../plugins/debugger.html#nose2.plugins.debugger.Debugger.testOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">testOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop into pdb on unexpected errors or failures&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">exc_info</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">expected</span><span class="p">:</span>
+            <span class="c"># skipped tests, unexpected successes, expected failures</span>
+            <span class="k">return</span>
+
+        <span class="n">value</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">exc_info</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">test</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">errorsOnly</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">failureException</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">UserInteractionEvent</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">beforeInteraction</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Skipping pdb for </span><span class="si">%s</span><span class="s">, user interaction not allowed&quot;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">post_mortem</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">afterInteraction</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

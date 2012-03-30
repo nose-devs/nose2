@@ -1,0 +1,164 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting started with nose2 &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="index.html" />
+    <link rel="next" title="Using nose2" href="usage.html" />
+    <link rel="prev" title="Welcome to nose2" href="index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Using nose2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to nose2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started-with-nose2">
+<h1>Getting started with nose2<a class="headerlink" href="#getting-started-with-nose2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The recommended way to install nose2 is with <a class="reference external" href="http://pypi.python.org/pypi/pip/1.0.2">pip</a></p>
+<div class="highlight-python"><pre>pip install nose2</pre>
+</div>
+<p>You can also install from source by downloading the source
+distribution from <a class="reference external" href="http://pypi.python.org/pypi">pypi</a>, un-taring it, and running
+<tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt> in the source directory. Note that if you
+install this way, and do not have distribute or setuptools installed,
+you must install nose2&#8217;s dependencies manually.</p>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<p>For Python 2.7, Python 3.2 and pypy, nose2 requires <a class="reference external" href="http://pypi.python.org/pypi/six/1.1.0">six</a> version
+1.1. For Python 2.6, nose2 also requires <a class="reference external" href="http://pypi.python.org/pypi/argparse/1.2.1">argparse</a> version 1.2.1 and
+<a class="reference external" href="http://pypi.python.org/pypi/unittest2/0.5.1">unittest2</a> version 0.5.1. When installing with pip, distribute or
+setuptools, these dependencies will be installed automatically.</p>
+</div>
+<div class="section" id="development-version">
+<h3>Development version<a class="headerlink" href="#development-version" title="Permalink to this headline">¶</a></h3>
+<p>You can install the development version of nose2 from github with <a class="reference external" href="http://pypi.python.org/pypi/pip/1.0.2">pip</a>:</p>
+<div class="highlight-python"><pre>pip install -e git+git://github.com/nose-devs/nose2.git#egg=nose2</pre>
+</div>
+<p>You can also download a package from github, or clone the source and install
+from there with <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="running-tests">
+<h2>Running tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h2>
+<p>To run tests in a project, use the <tt class="docutils literal"><span class="pre">nose2</span></tt> script that is installed
+with nose2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nose2</span>
+</pre></div>
+</div>
+<p>This will find and run tests in all packages in the current working
+directory, and any sub-directories of the current working directory
+whose names start with &#8216;test&#8217;.</p>
+<p>To find tests, nose2 looks for modules whose names start with
+&#8216;test&#8217;. In those modules, nose2 will load tests from all
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> subclasses, as well as functions whose
+names start with &#8216;test&#8217;.</p>
+<p>The <tt class="docutils literal"><span class="pre">nose2</span></tt> script supports a number of command-line options, as
+well as extensive configuration via config files. For more information
+see <a class="reference internal" href="usage.html"><em>Using nose2</em></a> and <a class="reference internal" href="configuration.html"><em>Configuring nose2</em></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting started with nose2</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#development-version">Development version</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-tests">Running tests</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to nose2</a></li>
+      <li>Next: <a href="usage.html" title="next chapter">Using nose2</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/getting_started.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

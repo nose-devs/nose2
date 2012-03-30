@@ -1,0 +1,367 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.main &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.main</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">nose2.compat</span> <span class="kn">import</span> <span class="n">unittest</span>
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">util</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="PluggableTestProgram"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram">[docs]</a><span class="k">class</span> <span class="nc">PluggableTestProgram</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestProgram</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;TestProgram that enables plugins.</span>
+
+<span class="sd">    Accepts the same parameters as :class:`unittest.TestProgram`,</span>
+<span class="sd">    but most of them are ignored as their functions are</span>
+<span class="sd">    handled by plugins.</span>
+
+<span class="sd">    :param module: Module in which to run tests. Default: __main__</span>
+<span class="sd">    :param defaultTest: Default test name. Default: None</span>
+<span class="sd">    :param argv: Command line args. Default: sys.argv</span>
+<span class="sd">    :param testRunner: *IGNORED*</span>
+<span class="sd">    :param testLoader: *IGNORED*</span>
+<span class="sd">    :param exit: Exit after running tests?</span>
+<span class="sd">    :param verbosity: Base verbosity</span>
+<span class="sd">    :param failfast: *IGNORED*</span>
+<span class="sd">    :param catchbreak: *IGNORED*</span>
+<span class="sd">    :param buffer: *IGNORED*</span>
+<span class="sd">    :param plugins: List of additional plugin modules to load</span>
+<span class="sd">    :param excludePlugins: List of plugin modules to exclude</span>
+<span class="sd">    :param extraHooks: List of hook names and plugin *instances* to</span>
+<span class="sd">                       register with the session&#39;s hooks system. Each</span>
+<span class="sd">                       item in the list must be a 2-tuple of</span>
+<span class="sd">                       (hook name, plugin instance)</span>
+
+<span class="sd">    .. attribute :: sessionClass</span>
+
+<span class="sd">       The class to instantiate to create a test run configuration</span>
+<span class="sd">       session. Default: :class:`nose2.session.Session`</span>
+
+<span class="sd">    .. attribute :: loaderClass</span>
+
+<span class="sd">       The class to instantiate to create a test loader. Default:</span>
+<span class="sd">       :class:`nose2.loader.PluggableTestLoader`.</span>
+
+<span class="sd">       .. warning ::</span>
+
+<span class="sd">          Overriding this attribute is the only way to customize</span>
+<span class="sd">          the test loader class. Passing a test loader to</span>
+<span class="sd">          ``__init__`` does not work.</span>
+
+<span class="sd">    .. attribute :: runnerClass</span>
+
+<span class="sd">       The class to instantiate to create a test runner.  Default:</span>
+<span class="sd">       :class:`nose2.runner.PluggableTestRunner`.</span>
+
+<span class="sd">       .. warning ::</span>
+
+<span class="sd">          Overriding this attribute is the only way to customize</span>
+<span class="sd">          the test runner class. Passing a test runner to</span>
+<span class="sd">          ``__init__`` does not work.</span>
+
+<span class="sd">    .. attribute :: defaultPlugins</span>
+
+<span class="sd">       List of default plugin modules to load.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sessionClass</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">Session</span>
+    <span class="n">loaderClass</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">PluggableTestLoader</span>
+    <span class="n">runnerClass</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">PluggableTestRunner</span>
+    <span class="n">defaultPlugins</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;nose2.plugins.loader.discovery&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.testcases&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.functions&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.testclasses&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.generators&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.parameters&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.result&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.logcapture&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.buffer&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.failfast&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.debugger&#39;</span><span class="p">,</span>
+                      <span class="p">)</span>
+    <span class="n">excludePlugins</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="c"># XXX override __init__ to warn that testLoader and testRunner are ignored?</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">plugins</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;plugins&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;excludePlugins&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;extraHooks&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraHooks</span> <span class="o">=</span> <span class="n">hooks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">plugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PluggableTestProgram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PluggableTestProgram.parseArgs"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.parseArgs">[docs]</a>    <span class="k">def</span> <span class="nf">parseArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">argv</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parse command line args</span>
+
+<span class="sd">        Parses arguments and creates a configuration session,</span>
+<span class="sd">        then calls createTests.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessionClass</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">argparse</span> <span class="c"># for convenience</span>
+
+        <span class="c"># XXX force these? or can it be avoided?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaderClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testLoader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span>
+
+        <span class="c"># Parse initial arguments like config file paths, verbosity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setInitialArguments</span><span class="p">()</span>
+        <span class="c"># FIXME -h here makes processing stop.</span>
+        <span class="n">cfg_args</span><span class="p">,</span> <span class="n">argv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handleCfgArgs</span><span class="p">(</span><span class="n">cfg_args</span><span class="p">)</span>
+
+        <span class="c"># Parse arguments for plugins (if any) and test names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;testNames&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+        <span class="c"># add help arg now so -h will also print plugin opts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-h&#39;</span><span class="p">,</span> <span class="s">&#39;--help&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;help&#39;</span><span class="p">,</span>
+                                   <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;Show this help message and exit&#39;</span><span class="p">))</span>
+        <span class="n">args</span><span class="p">,</span> <span class="n">argv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">argv</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unrecognized arguments: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argv</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handleArgs</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createTests</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.setInitialArguments"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.setInitialArguments">[docs]</a>    <span class="k">def</span> <span class="nf">setInitialArguments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set pre-plugin command-line arguments.</span>
+
+<span class="sd">        This set of arguments is parsed out of the command line</span>
+<span class="sd">        before plugins are loaded.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;--start-dir&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Directory to start discovery (&#39;.&#39; default)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;-t&#39;</span><span class="p">,</span> <span class="s">&#39;--top-level-directory&#39;</span><span class="p">,</span> <span class="s">&#39;--project-directory&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Top level directory of project (defaults to start dir)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--config&#39;</span><span class="p">,</span> <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;append&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;unittest.cfg&#39;</span><span class="p">,</span> <span class="s">&#39;nose2.cfg&#39;</span><span class="p">],</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Config files to load, if they exist. (&#39;unittest.cfg&#39; &quot;</span>
+            <span class="s">&quot;and &#39;nose2.cfg&#39; in start directory default)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--no-user-config&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s">&#39;user_config&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Do not load user config files&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--no-plugins&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s">&#39;load_plugins&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Do not load any plugins. Warning: nose2 does not &quot;</span>
+            <span class="s">&quot;do anything if no plugins are loaded&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--plugin&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;append&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s">&#39;plugins&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Load this plugin module.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--exclude-plugin&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;append&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s">&#39;exclude_plugins&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Do not load this plugin module&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--quiet&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span>
+                                 <span class="n">dest</span><span class="o">=</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">argparse</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;--log-level&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Set logging level for message logged to console.&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.handleCfgArgs"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.handleCfgArgs">[docs]</a>    <span class="k">def</span> <span class="nf">handleCfgArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle initial arguments.</span>
+
+<span class="sd">        Handle the initial, pre-plugin arguments parsed out of the</span>
+<span class="sd">        command line.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">logLevel</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">parse_log_level</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">logLevel</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;logging initialized </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">+=</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">startDir</span> <span class="o">=</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">start_dir</span>
+        <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">top_level_directory</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">topLevelDir</span> <span class="o">=</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">top_level_directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">loadConfigFiles</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">findConfigFiles</span><span class="p">(</span><span class="n">cfg_args</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">prepareSysPath</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">load_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">plugins</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">exclude_plugins</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loadPlugins</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">plugins</span> <span class="ow">or</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">exclude_plugins</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Both &#39;--no-plugins&#39; and &#39;--plugin&#39; or &#39;--exclude-plugin&#39; &quot;</span>
+                     <span class="s">&quot;specified. No plugins were loaded.&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.findConfigFiles"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.findConfigFiles">[docs]</a>    <span class="k">def</span> <span class="nf">findConfigFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find available config files&quot;&quot;&quot;</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">config</span><span class="p">[:]</span>
+        <span class="n">proj_opts</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;unittest.cfg&#39;</span><span class="p">,</span> <span class="s">&#39;nose2.cfg&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">proj_opts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">top_level_directory</span><span class="p">:</span>
+                <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg_args</span><span class="o">.</span><span class="n">top_level_directory</span><span class="p">,</span> <span class="n">fn</span><span class="p">))</span>
+            <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg_args</span><span class="o">.</span><span class="n">user_config</span><span class="p">:</span>
+            <span class="n">user_opts</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;~/.unittest.cfg&#39;</span><span class="p">,</span> <span class="s">&#39;~/.nose2.cfg&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">user_opts</span><span class="p">:</span>
+                <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">fn</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">filenames</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.handleArgs"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.handleArgs">[docs]</a>    <span class="k">def</span> <span class="nf">handleArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle further arguments.</span>
+
+<span class="sd">        Handle arguments parsed out of command line after plugins have</span>
+<span class="sd">        been loaded (and injected their argument configuration).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">testNames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">handleArgs</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">CommandLineArgsEvent</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.loadPlugins"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.loadPlugins">[docs]</a>    <span class="k">def</span> <span class="nf">loadPlugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load available plugins</span>
+
+
+<span class="sd">        ``self.defaultPlugins`` and ``self.excludePlugins`` are passed</span>
+<span class="sd">        to the session to alter the list of plugins that will be</span>
+<span class="sd">        loaded.</span>
+
+<span class="sd">        This method also registers any (hook, plugin) pairs set in</span>
+<span class="sd">        ``self.hooks``. This is a good way to inject plugins that fall</span>
+<span class="sd">        outside of the normal loading procedure, for example, plugins</span>
+<span class="sd">        that need some runtime information that can&#39;t easily be</span>
+<span class="sd">        passed to them through the configuration system.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">loadPlugins</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extraHooks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method_name</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.createTests"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.createTests">[docs]</a>    <span class="k">def</span> <span class="nf">createTests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create top-level test suite&quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">CreateTestsEvent</span><span class="p">(</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">createTests</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Create tests from </span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span><span class="o">.</span><span class="n">loadTestsFromNames</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PluggableTestProgram.runTests"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.runTests">[docs]</a>    <span class="k">def</span> <span class="nf">runTests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run tests&quot;&quot;&quot;</span>
+        <span class="c"># fire plugin hook</span>
+        <span class="n">runner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_makeRunner</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">())</span>
+</div>
+    <span class="k">def</span> <span class="nf">_makeRunner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">runner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runnerClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">RunnerCreatedEvent</span><span class="p">(</span><span class="n">runner</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">runnerCreated</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testRunner</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">runner</span>
+        <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">runner</span>
+
+</div>
+<span class="n">main</span> <span class="o">=</span> <span class="n">PluggableTestProgram</span>
+
+
+<span class="k">def</span> <span class="nf">discover</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

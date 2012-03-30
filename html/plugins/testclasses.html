@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Loader: Test Classes &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Reporting test results" href="result.html" />
+    <link rel="prev" title="Loader: Test Cases" href="testcases.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="result.html" title="Reporting test results"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="testcases.html" title="Loader: Test Cases"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-nose2.plugins.loader.testclasses">
+<span id="loader-test-classes"></span><h1>Loader: Test Classes<a class="headerlink" href="#module-nose2.plugins.loader.testclasses" title="Permalink to this headline">¶</a></h1>
+<p>Load tests from classes that are <em>not</em> <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> subclasses.</p>
+<p>This plugin responds to <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromModule" title="loadTestsFromModule"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromModule()</span></tt></a> by adding test
+cases for test methods found in classes in the module that are <em>not</em>
+sublcasses of <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a>, but whose names (lowercased)
+match the configured test method prefix.</p>
+<p>Test class methods that are generators or have param lists are not
+loaded here, but by the <a class="reference internal" href="generators.html#nose2.plugins.loader.generators.Generators" title="nose2.plugins.loader.generators.Generators"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.loader.generators.Generators</span></tt></a> and
+<a class="reference internal" href="parameters.html#nose2.plugins.loader.parameters.Parameters" title="nose2.plugins.loader.parameters.Parameters"><tt class="xref py py-class docutils literal"><span class="pre">nose2.plugins.loader.parameters.Parameters</span></tt></a> plugins.</p>
+<p>This plugin also implements <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a> to enable
+loading tests from dotted class and method names passed on the command
+line.</p>
+<p>This plugin makes two additional plugin hooks available for other
+test loaders to use:</p>
+<dl class="function">
+<dt id="nose2.plugins.loader.testclasses.loadTestsFromTestClass">
+<tt class="descclassname">nose2.plugins.loader.testclasses.</tt><tt class="descname">loadTestsFromTestClass</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#nose2.plugins.loader.testclasses.loadTestsFromTestClass" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <tt class="xref py py-class docutils literal"><span class="pre">LoadFromTestClassEvent</span></tt> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to load tests from a class that is not a
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> subclass. To prevent other plugins from
+loading tests from the test class, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and
+return a test suite. Plugins can also append tests to
+<tt class="docutils literal"><span class="pre">event.extraTests</span></tt> &#8211; ususally that&#8217;s what you want to do, since
+that will allow other plugins to load their tests from the test
+case as well.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nose2.plugins.loader.testclasses.getTestMethodNames">
+<tt class="descclassname">nose2.plugins.loader.testclasses.</tt><tt class="descname">getTestMethodNames</tt><big>(</big><em>self</em>, <em>event</em><big>)</big><a class="headerlink" href="#nose2.plugins.loader.testclasses.getTestMethodNames" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> &#8211; A <tt class="xref py py-class docutils literal"><span class="pre">GetTestMethodNamesEvent</span></tt> instance</td>
+</tr>
+</tbody>
+</table>
+<p>Plugins can use this hook to limit or extend the list of test case
+names that will be loaded from a class that is not a
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a> subclass by the standard nose2 test
+loader plugins (and other plugins that respect the results of the
+hook). To force a specific list of names, set <tt class="docutils literal"><span class="pre">event.handled</span></tt> to
+True and return a list: this exact list will be the only test case
+names loaded from the test case. Plugins can also extend the list
+of names by appending test names to <tt class="docutils literal"><span class="pre">event.extraNames</span></tt>, and
+exclude names by appending test names to <tt class="docutils literal"><span class="pre">event.excludedNames</span></tt>.</p>
+</dd></dl>
+
+<div class="section" id="about-test-classes">
+<h2>About Test Classes<a class="headerlink" href="#about-test-classes" title="Permalink to this headline">¶</a></h2>
+<p>Test classes are classes that look test-like but are not subclasses of
+<a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a>. Test classes support all of the same test
+types and fixtures as test cases.</p>
+<p>To &#8220;look test-like&#8221; a class must have a name that, lowercased, matches
+the configured test method prefix &#8211; &#8220;test&#8221; by default. Test classes
+must also be able to be instantiated without arguments.</p>
+<p>What are they useful for? Mostly the case where a test class can&#8217;t for
+some reason subclass <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a>. Otherwise, test class
+tests and test cases are functionally equivalent in nose2, and test
+cases have broader support and all of those helpful <em>assert*</em> methods
+&#8211; so when in doubt, you should use a <a class="reference external" href="http://docs.python.org/library/unittest.html#unittest.TestCase" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">unittest.TestCase</span></tt></a>.</p>
+<p>Here&#8217;s an example of a test class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">TestSomething</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">something</span><span class="p">(),</span> <span class="s">&quot;Something failed!&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration-test-classes">
+<h2>Configuration [test-classes]<a class="headerlink" href="#configuration-test-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[test-classes]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.loader.testclasses.TestClassLoader">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.loader.testclasses.</tt><tt class="descname">TestClassLoader</tt><a class="reference internal" href="../_modules/nose2/plugins/loader/testclasses.html#TestClassLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.testclasses.TestClassLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loader plugin that loads test functions</p>
+<dl class="method">
+<dt id="nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromModule">
+<tt class="descname">loadTestsFromModule</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/testclasses.html#TestClassLoader.loadTestsFromModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load test classes from event.module</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromName">
+<tt class="descname">loadTestsFromName</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/testclasses.html#TestClassLoader.loadTestsFromName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.testclasses.TestClassLoader.loadTestsFromName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load tests from event.name if it names a test class/method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.loader.testclasses.TestClassLoader.pluginsLoaded">
+<tt class="descname">pluginsLoaded</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/loader/testclasses.html#TestClassLoader.pluginsLoaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.loader.testclasses.TestClassLoader.pluginsLoaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install extra hooks</p>
+<p>Adds the new plugin hooks:</p>
+<ul class="simple">
+<li>loadTestsFromTestClass</li>
+<li>getTestMethodNames</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Loader: Test Classes</a><ul>
+<li><a class="reference internal" href="#about-test-classes">About Test Classes</a></li>
+<li><a class="reference internal" href="#configuration-test-classes">Configuration [test-classes]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="testcases.html" title="previous chapter">Loader: Test Cases</a></li>
+      <li>Next: <a href="result.html" title="next chapter">Reporting test results</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/testclasses.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

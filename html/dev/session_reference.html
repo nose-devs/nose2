@@ -1,0 +1,348 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Session reference &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="next" title="Plugin class reference" href="plugin_class_reference.html" />
+    <link rel="prev" title="Hook reference" href="hook_reference.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plugin_class_reference.html" title="Plugin class reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="hook_reference.html" title="Hook reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="session-reference">
+<h1>Session reference<a class="headerlink" href="#session-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="session">
+<h2>Session<a class="headerlink" href="#session" title="Permalink to this headline">¶</a></h2>
+<p>In nose2, all configuration for a test run is encapsulated in a
+<tt class="docutils literal"><span class="pre">Session</span></tt> instance. Plugins always have the session available as
+<tt class="docutils literal"><span class="pre">self.session</span></tt>.</p>
+<dl class="class">
+<dt id="nose2.session.Session">
+<em class="property">class </em><tt class="descclassname">nose2.session.</tt><tt class="descname">Session</tt><a class="reference internal" href="../_modules/nose2/session.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configuration session.</p>
+<p>Encapsulates all configuration for a given test run.</p>
+<dl class="attribute">
+<dt id="Session.argparse">
+<tt class="descname">argparse</tt><a class="headerlink" href="#Session.argparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of <a class="reference external" href="http://docs.python.org/library/argparse.html#argparse.ArgumentParser" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></a>. Plugins can
+use this directly to add arguments and argument groups, but
+<em>must</em> do so in their <tt class="docutils literal"><span class="pre">__init__</span></tt> methods.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.pluginargs">
+<tt class="descname">pluginargs</tt><a class="headerlink" href="#Session.pluginargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The argparse argument group in which plugins (by default) place
+their command-line arguments. Plugins can use this directly to
+add arguments, but <em>must</em> do so in their <tt class="docutils literal"><span class="pre">__init__</span></tt> methods.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.hooks">
+<tt class="descname">hooks</tt><a class="headerlink" href="#Session.hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="plugin_class_reference.html#nose2.events.PluginInterface" title="nose2.events.PluginInterface"><tt class="xref py py-class docutils literal"><span class="pre">nose2.events.PluginInterface</span></tt></a> instance contains
+all available plugin methods and hooks.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.plugins">
+<tt class="descname">plugins</tt><a class="headerlink" href="#Session.plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of loaded &#8211; but not necessarily <em>active</em> &#8211; plugins.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.verbosity">
+<tt class="descname">verbosity</tt><a class="headerlink" href="#Session.verbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current verbosity level. Default: 1.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.startDir">
+<tt class="descname">startDir</tt><a class="headerlink" href="#Session.startDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start directory of test run. Test discovery starts
+here. Default: current working directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.topLevelDir">
+<tt class="descname">topLevelDir</tt><a class="headerlink" href="#Session.topLevelDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Top-level directory of test run. This directory is added to
+sys.path. Default: starting directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.libDirs">
+<tt class="descname">libDirs</tt><a class="headerlink" href="#Session.libDirs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Names of code directories, relative to starting
+directory. Default: [&#8216;lib&#8217;, &#8216;src&#8217;]. These directories are added
+to sys.path and discovery if the exist.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.testFilePattern">
+<tt class="descname">testFilePattern</tt><a class="headerlink" href="#Session.testFilePattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pattern used to discover test module files. Default: test*.py</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.testMethodPrefix">
+<tt class="descname">testMethodPrefix</tt><a class="headerlink" href="#Session.testMethodPrefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prefix used to discover test methods and functions: Default: &#8216;test&#8217;.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.unittest">
+<tt class="descname">unittest</tt><a class="headerlink" href="#Session.unittest" title="Permalink to this definition">¶</a></dt>
+<dd><p>The config section for nose2 itself.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nose2.session.Session.configClass">
+<tt class="descname">configClass</tt><a class="headerlink" href="#nose2.session.Session.configClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">Config</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.get">
+<tt class="descname">get</tt><big>(</big><em>section</em><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a config section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>section</strong> &#8211; The section name to retreive.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">instance of self.configClass.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.loadConfigFiles">
+<tt class="descname">loadConfigFiles</tt><big>(</big><em>*filenames</em><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.loadConfigFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.loadConfigFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load config files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filenames</strong> &#8211; Names of config files to load.</td>
+</tr>
+</tbody>
+</table>
+<p>Loads all names files that exist into <tt class="docutils literal"><span class="pre">self.config</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.loadPlugins">
+<tt class="descname">loadPlugins</tt><big>(</big><em>modules=None</em>, <em>exclude=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.loadPlugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.loadPlugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load plugins.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>modules</strong> &#8211; List of module names from which to load plugins.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.loadPluginsFromModule">
+<tt class="descname">loadPluginsFromModule</tt><big>(</big><em>module</em><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.loadPluginsFromModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.loadPluginsFromModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load plugins from a module.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>module</strong> &#8211; A python module containing zero or more plugin
+classes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.prepareSysPath">
+<tt class="descname">prepareSysPath</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.prepareSysPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.prepareSysPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add code directories to sys.path</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.session.Session.registerPlugin">
+<tt class="descname">registerPlugin</tt><big>(</big><em>plugin</em><big>)</big><a class="reference internal" href="../_modules/nose2/session.html#Session.registerPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.session.Session.registerPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a plugin.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>plugin</strong> &#8211; A <cite>nose2.events.Plugin</cite> instance.</td>
+</tr>
+</tbody>
+</table>
+<p>Register the plugin with all methods it implements.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="config">
+<h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>Configuration values loaded from config file sections are made
+available to plugins in <tt class="docutils literal"><span class="pre">Config</span></tt> instances. Plugins that set
+<tt class="docutils literal"><span class="pre">configSection</span></tt> will have a <tt class="docutils literal"><span class="pre">Config</span></tt> instance available as
+<tt class="docutils literal"><span class="pre">self.config</span></tt>.</p>
+<dl class="class">
+<dt id="nose2.config.Config">
+<em class="property">class </em><tt class="descclassname">nose2.config.</tt><tt class="descname">Config</tt><big>(</big><em>items</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configuration for a plugin or other entities.</p>
+<p>Encapsulates configuration for a single plugin or other element.
+Corresponds to a <tt class="xref py py-class docutils literal"><span class="pre">ConfigParser.Section</span></tt> but provides an
+extended interface for extracting items as a certain type.</p>
+<dl class="method">
+<dt id="nose2.config.Config.as_bool">
+<tt class="descname">as_bool</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.as_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.as_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value as boolean</p>
+<p>1, t, true, on, yes and y (case insensitive) are accepted as True
+values. All other values are False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.config.Config.as_float">
+<tt class="descname">as_float</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.as_float"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.as_float" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value as float</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.config.Config.as_int">
+<tt class="descname">as_int</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.as_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.as_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value as integer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.config.Config.as_list">
+<tt class="descname">as_list</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.as_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.as_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value as list.</p>
+<p>The value is split into lines and returned as a list. Lines
+are stripped of whitespace, and lines beginning with # are
+skipped.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.config.Config.as_str">
+<tt class="descname">as_str</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.as_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.as_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value as str</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.config.Config.get">
+<tt class="descname">get</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="../_modules/nose2/config.html#Config.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.config.Config.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get key value</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Session reference</a><ul>
+<li><a class="reference internal" href="#session">Session</a></li>
+<li><a class="reference internal" href="#config">Config</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="hook_reference.html" title="previous chapter">Hook reference</a></li>
+      <li>Next: <a href="plugin_class_reference.html" title="next chapter">Plugin class reference</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/session_reference.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

@@ -1,0 +1,1172 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.events &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.events</h1><div class="highlight"><pre>
+<span class="c"># Adapted from unittest2/events.py from the unittest2 plugins branch.</span>
+<span class="c"># This module contains some code copied from unittest2/events.py and other</span>
+<span class="c"># code developed in reference to that module and others within unittest2.</span>
+<span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
+<span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">six</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">util</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+<span class="c"># FIXME decide on a real rule for camelCase vs under_score and stick with it.</span>
+
+<span class="c"># XXX I&#39;d rather move this stuff to Plugin.__init__ and</span>
+<span class="c"># have __init__ call self.configure() or something after the</span>
+<span class="c"># initial setup, but that would further break compatibilty</span>
+<span class="c"># with the unittest2 plugins branch Plugin class.</span>
+<span class="k">class</span> <span class="nc">PluginMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;session&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">([])</span>
+
+        <span class="n">config_section</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&#39;configSection&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">switch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&#39;commandLineSwitch&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">config_section</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config_section</span><span class="p">)</span>
+
+        <span class="n">always_on</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_bool</span><span class="p">(</span>
+            <span class="s">&#39;always-on&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">alwaysOn</span><span class="p">)</span>
+
+        <span class="n">instance</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">always_on</span><span class="p">:</span>
+            <span class="n">instance</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">switch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help</span> <span class="o">=</span> <span class="n">switch</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">addOption</span><span class="p">(</span>
+                    <span class="n">instance</span><span class="o">.</span><span class="n">_register_cb</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+
+<div class="viewcode-block" id="Plugin"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin">[docs]</a><span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">PluginMeta</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for nose2 plugins</span>
+
+<span class="sd">    All nose2 plugins must subclass this class.</span>
+
+<span class="sd">    .. attribute :: session</span>
+
+<span class="sd">       The :class:`nose2.session.Session` under which the plugin</span>
+<span class="sd">       has been loaded.</span>
+
+<span class="sd">    .. attribute :: config</span>
+
+<span class="sd">       The :class:`nose2.config.Config` representing the plugin&#39;s</span>
+<span class="sd">       config section as loaded from the session&#39;s config files.</span>
+
+<span class="sd">    .. attribute :: commandLineOption</span>
+
+<span class="sd">       A tuple of (short opt, long opt, help text) that defines a command</span>
+<span class="sd">       line flag that activates this plugin. The short opt may be None. If</span>
+<span class="sd">       defined, it must be a single upper-case character. Both short and</span>
+<span class="sd">       long opt must *not* start with dashes.</span>
+
+<span class="sd">       Example::</span>
+
+<span class="sd">         commandLineOption = (&#39;B&#39;, &#39;buffer-output&#39;, &#39;Buffer output during tests&#39;)</span>
+
+<span class="sd">    .. attribute :: configSection</span>
+
+<span class="sd">       The name config file section to load into this plugin&#39;s config.</span>
+
+<span class="sd">    .. attribute :: alwaysOn</span>
+
+<span class="sd">       If this plugin should automatically register itself, set alwaysOn to</span>
+<span class="sd">       True. Default is False.</span>
+
+<span class="sd">    .. note ::</span>
+
+<span class="sd">       Plugins that use config values from config files and want to</span>
+<span class="sd">       use the nose2 sphinx extension to automatically generate</span>
+<span class="sd">       documentation *must* extract all config values from</span>
+<span class="sd">       ``self.config`` in ``__init__``. Otherwise the extension will</span>
+<span class="sd">       not be able to detect the config keys that the plugin uses.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">registered</span> <span class="o">=</span> <span class="bp">False</span>
+<div class="viewcode-block" id="Plugin.register"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register with appropriate hooks.</span>
+
+<span class="sd">        This activates the plugin and enables it to receive events.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Unable to register </span><span class="si">%s</span><span class="s">, no session&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">registerPlugin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Plugin.addMethods"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.addMethods">[docs]</a>    <span class="k">def</span> <span class="nf">addMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">methods</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add new plugin methods to hooks registry</span>
+
+<span class="sd">        Any plugins that are already registered and implement</span>
+<span class="sd">        a method added here will be registered for that</span>
+<span class="sd">        method as well.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">addMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">registered</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_register_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Plugin.addFlag"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.addFlag">[docs]</a>    <span class="k">def</span> <span class="nf">addFlag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add command-line flag that takes no arguments</span>
+
+<span class="sd">        :param callback: Callback function to run when flag is seen.</span>
+<span class="sd">                         The callback will receive one empty argument.</span>
+<span class="sd">        :param short_opt: Short option. Must be uppercase, no dashes.</span>
+<span class="sd">        :param long_opt: Long option. Must not start with dashes</span>
+<span class="sd">        :param help_text: Help text for users so they know what this</span>
+<span class="sd">                          flag does.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addOption</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Plugin.addArgument"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.addArgument">[docs]</a>    <span class="k">def</span> <span class="nf">addArgument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add command-line option that takes one argument.</span>
+
+<span class="sd">        :param callback: Callback function to run when flag is seen.</span>
+<span class="sd">                         The callback will receive one argument.</span>
+<span class="sd">        :param short_opt: Short option. Must be uppercase, no dashes.</span>
+<span class="sd">        :param long_opt: Long option. Must not start with dashes</span>
+<span class="sd">        :param help_text: Help text for users so they know what this</span>
+<span class="sd">                          flag does.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addOption</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help_text</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Plugin.addOption"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.addOption">[docs]</a>    <span class="k">def</span> <span class="nf">addOption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add command-line option.</span>
+
+<span class="sd">        :param callback: Callback function to run when flag is seen.</span>
+<span class="sd">                         The callback will receive one argument.</span>
+<span class="sd">                         The &quot;callback&quot; may also be a list, in which</span>
+<span class="sd">                         case values submitted on the command line</span>
+<span class="sd">                         will be appended to the list.</span>
+<span class="sd">        :param short_opt: Short option. Must be uppercase, no dashes.</span>
+<span class="sd">        :param long_opt: Long option. Must not start with dashes</span>
+<span class="sd">        :param help_text: Help text for users so they know what this</span>
+<span class="sd">                          flag does.</span>
+<span class="sd">        :param nargs: Number of arguments to consume from command line.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Unable to add option </span><span class="si">%s</span><span class="s">/</span><span class="si">%s</span><span class="s"> for </span><span class="si">%s</span><span class="s">, no session&quot;</span><span class="p">,</span>
+                        <span class="n">short_opt</span><span class="p">,</span> <span class="n">long_opt</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">class</span> <span class="nc">CB</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">callable</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">callback</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Invalid callback </span><span class="si">%s</span><span class="s"> for plugin option </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span>
+                                     <span class="n">callback</span><span class="p">,</span> <span class="n">option_string</span><span class="p">)</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">short_opt</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">short_opt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">short_opt</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s">&#39;Lowercase short options are reserved: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">short_opt</span><span class="p">)</span>
+            <span class="n">opts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="n">short_opt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">long_opt</span><span class="p">:</span>
+            <span class="n">opts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;--&#39;</span> <span class="o">+</span> <span class="n">long_opt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">pluginargs</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">opts</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">CB</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="n">help_text</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">nargs</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="Hook"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Hook">[docs]</a><span class="k">class</span> <span class="nc">Hook</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A plugin hook</span>
+
+<span class="sd">    Each plugin method in the :class:`nose2.events.PluginInterface` is</span>
+<span class="sd">    represented at runtime by a Hook instance that lists the plugins</span>
+<span class="sd">    that should be called by that hook.</span>
+
+<span class="sd">    .. attribute :: method</span>
+
+<span class="sd">       The name of the method that this Hook represents.</span>
+
+<span class="sd">    .. attribute :: plugins</span>
+
+<span class="sd">       The list of plugin instances bound to this hook.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">[:]:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">plugin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="PluginInterface"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.PluginInterface">[docs]</a><span class="k">class</span> <span class="nc">PluginInterface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Definition of plugin interface.</span>
+
+<span class="sd">    Instances of this class contain the methods that may be called,</span>
+<span class="sd">    and a dictionary of :class:`nose2.events.Hook` instances bound</span>
+<span class="sd">    to each method.</span>
+
+<span class="sd">    In a plugin, PluginInterface instance is typically available as</span>
+<span class="sd">    self.session.hooks, and plugin hooks may be called on it</span>
+<span class="sd">    directly::</span>
+
+<span class="sd">      event = events.LoadFromModuleEvent(module=the_module)</span>
+<span class="sd">      self.session.hooks.loadTestsFromModule(event)</span>
+
+<span class="sd">    .. attribute :: preRegistrationMethods</span>
+
+<span class="sd">       Tuple of methods that are called before registration.</span>
+
+<span class="sd">    .. attribute :: methods</span>
+
+<span class="sd">       Tuple of available plugin hook methods.</span>
+
+<span class="sd">    .. attribute :: hookClass</span>
+
+<span class="sd">       Class to instantiate for each hook. Default: :class:`nose2.events.Hook`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">preRegistrationMethods</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;pluginsLoaded&#39;</span><span class="p">,</span> <span class="s">&#39;handleArgs&#39;</span><span class="p">)</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;loadTestsFromModule&#39;</span><span class="p">,</span> <span class="s">&#39;loadTestsFromNames&#39;</span><span class="p">,</span>
+        <span class="s">&#39;handleFile&#39;</span><span class="p">,</span> <span class="s">&#39;startTestRun&#39;</span><span class="p">,</span> <span class="s">&#39;startTest&#39;</span><span class="p">,</span> <span class="s">&#39;stopTest&#39;</span><span class="p">,</span>
+        <span class="s">&#39;loadTestsFromName&#39;</span><span class="p">,</span> <span class="s">&#39;loadTestsFromTestCase&#39;</span><span class="p">,</span>
+        <span class="s">&#39;stopTestRun&#39;</span><span class="p">,</span> <span class="s">&#39;matchPath&#39;</span><span class="p">,</span> <span class="s">&#39;getTestCaseNames&#39;</span><span class="p">,</span>
+        <span class="s">&#39;runnerCreated&#39;</span><span class="p">,</span> <span class="s">&#39;resultCreated&#39;</span><span class="p">,</span> <span class="s">&#39;testOutcome&#39;</span><span class="p">,</span> <span class="s">&#39;wasSuccessful&#39;</span><span class="p">,</span>
+        <span class="s">&#39;resultStop&#39;</span><span class="p">,</span> <span class="s">&#39;setTestOutcome&#39;</span><span class="p">,</span> <span class="s">&#39;describeTest&#39;</span><span class="p">,</span>
+        <span class="s">&#39;reportStartTest&#39;</span><span class="p">,</span> <span class="s">&#39;reportError&#39;</span><span class="p">,</span> <span class="s">&#39;reportFailure&#39;</span><span class="p">,</span> <span class="s">&#39;reportSkip&#39;</span><span class="p">,</span>
+        <span class="s">&#39;reportSuccess&#39;</span><span class="p">,</span> <span class="s">&#39;reportExpectedFailure&#39;</span><span class="p">,</span> <span class="s">&#39;reportUnexpectedSuccess&#39;</span><span class="p">,</span>
+        <span class="s">&#39;reportOtherOutcome&#39;</span><span class="p">,</span> <span class="s">&#39;outcomeDetail&#39;</span><span class="p">,</span> <span class="s">&#39;beforeErrorList&#39;</span><span class="p">,</span>
+        <span class="s">&#39;beforeSummaryReport&#39;</span><span class="p">,</span> <span class="s">&#39;afterSummaryReport&#39;</span><span class="p">,</span> <span class="s">&#39;beforeInteraction&#39;</span><span class="p">,</span>
+        <span class="s">&#39;afterInteraction&#39;</span><span class="p">,</span> <span class="s">&#39;createTests&#39;</span><span class="p">,</span> <span class="s">&#39;afterTestRun&#39;</span><span class="p">,</span>
+        <span class="c"># ... etc?</span>
+        <span class="p">)</span>
+    <span class="n">hookClass</span> <span class="o">=</span> <span class="n">Hook</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="PluginInterface.addMethod"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.PluginInterface.addMethod">[docs]</a>    <span class="k">def</span> <span class="nf">addMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a method to the available method.</span>
+
+<span class="sd">        This allows plugins to register for this method.</span>
+
+<span class="sd">        :param method: A method name</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">+</span> <span class="p">(</span><span class="n">method</span><span class="p">,)</span>
+</div>
+<div class="viewcode-block" id="PluginInterface.register"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.PluginInterface.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register a plugin for a method.</span>
+
+<span class="sd">        :param method: A method name</span>
+<span class="sd">        :param plugin: A plugin instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hookClass</span><span class="p">(</span><span class="n">method</span><span class="p">))</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hookClass</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all events.</span>
+
+<span class="sd">    .. attribute :: metadata</span>
+
+<span class="sd">       Storage for arbitrary information attached to an event.</span>
+
+<span class="sd">    .. attribute :: handled</span>
+
+<span class="sd">       Set to True to indicate that a plugin has handled the event,</span>
+<span class="sd">       and no other plugins or core systems should process it further.</span>
+
+<span class="sd">    .. attribute :: version</span>
+
+<span class="sd">       Version of the event API. This will be incremented with each</span>
+<span class="sd">       release of nose2 that changes the API.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;handled&#39;</span><span class="p">,)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;0.2&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+                          <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span>
+        <span class="c"># FIXME fails for loadTestsFailure</span>
+        <span class="k">if</span> <span class="s">&#39;test&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s">&#39;test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_name</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s">&#39;test&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s">&#39;executeTests&#39;</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s">&#39;executeTests&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="s">&#39;exc_info&#39;</span> <span class="ow">in</span> <span class="n">state</span> <span class="ow">and</span> <span class="n">state</span><span class="p">[</span><span class="s">&#39;exc_info&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ec</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s">&#39;exc_info&#39;</span><span class="p">]</span>
+            <span class="n">state</span><span class="p">[</span><span class="s">&#39;exc_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">ec</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">util</span><span class="o">.</span><span class="n">format_traceback</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="p">(</span><span class="n">ec</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">tb</span><span class="p">)))</span>
+        <span class="n">clear</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;runner&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">clear</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">state</span><span class="p">:</span>
+                <span class="n">state</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+</div>
+<div class="viewcode-block" id="PluginsLoadedEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.PluginsLoadedEvent">[docs]</a><span class="k">class</span> <span class="nc">PluginsLoadedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired after all plugin classes are loaded.</span>
+
+<span class="sd">    .. attribute :: pluginsLoaded</span>
+
+<span class="sd">       List of all loaded plugin classes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;pluginsLoaded&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pluginsLoaded</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pluginsLoaded</span> <span class="o">=</span> <span class="n">pluginsLoaded</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PluginsLoadedEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="RunnerCreatedEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.RunnerCreatedEvent">[docs]</a><span class="k">class</span> <span class="nc">RunnerCreatedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when test runner is created.</span>
+
+<span class="sd">    .. attribute :: runner</span>
+
+<span class="sd">       Test runner instance. Plugins may replace the test runner by</span>
+<span class="sd">       setting this attribute to a new test runner instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;runner&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runner</span> <span class="o">=</span> <span class="n">runner</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RunnerCreatedEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ResultCreatedEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.ResultCreatedEvent">[docs]</a><span class="k">class</span> <span class="nc">ResultCreatedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when test result handler is created.</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result handler instance. Plugins may replace the test</span>
+<span class="sd">       result by setting this attribute to a new test result instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;result&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResultCreatedEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="StartTestRunEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.StartTestRunEvent">[docs]</a><span class="k">class</span> <span class="nc">StartTestRunEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when test run is about to start.</span>
+
+<span class="sd">    Test collection is complete before this event fires, but</span>
+<span class="sd">    no tests have yet been executed.</span>
+
+<span class="sd">    .. attribute :: runner</span>
+
+<span class="sd">       Test runner</span>
+
+<span class="sd">    .. attribute :: suite</span>
+
+<span class="sd">       Top-level test suite to execute. Plugins can filter this suite,</span>
+<span class="sd">       or set event.suite to change which tests execute (or how they</span>
+<span class="sd">       execute).</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: startTime</span>
+
+<span class="sd">       Timestamp of test run start</span>
+
+<span class="sd">    .. attribute :: executeTests</span>
+
+<span class="sd">       Callable that will be used to execute tests.  Plugins may set</span>
+<span class="sd">       this attribute to wrap or otherwise change test execution. The</span>
+<span class="sd">       callable must match the signature::</span>
+
+<span class="sd">         def execute(suite, result):</span>
+<span class="sd">             ...</span>
+
+<span class="sd">    To prevent normal test execution, plugins may set ``handled`` on</span>
+<span class="sd">    this event to True. When ``handled`` is true, the test executor</span>
+<span class="sd">    does not run at all.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;runner&#39;</span><span class="p">,</span> <span class="s">&#39;suite&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;startTime&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;executeTests&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">suite</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">startTime</span><span class="p">,</span> <span class="n">executeTests</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suite</span> <span class="o">=</span> <span class="n">suite</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runner</span> <span class="o">=</span> <span class="n">runner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startTime</span> <span class="o">=</span> <span class="n">startTime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executeTests</span> <span class="o">=</span> <span class="n">executeTests</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StartTestRunEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="StopTestRunEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.StopTestRunEvent">[docs]</a><span class="k">class</span> <span class="nc">StopTestRunEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when test run has stopped.</span>
+
+<span class="sd">    .. attribute :: runner</span>
+
+<span class="sd">       Test runner</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: stopTime</span>
+
+<span class="sd">       Timestamp of test run stop</span>
+
+<span class="sd">    .. attribute :: timeTaken</span>
+
+<span class="sd">       Number of seconds test run took to execute</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;runner&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;stopTime&#39;</span><span class="p">,</span> <span class="s">&#39;timeTaken&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">stopTime</span><span class="p">,</span> <span class="n">timeTaken</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runner</span> <span class="o">=</span> <span class="n">runner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopTime</span> <span class="o">=</span> <span class="n">stopTime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeTaken</span> <span class="o">=</span> <span class="n">timeTaken</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StopTestRunEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="StartTestEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.StartTestEvent">[docs]</a><span class="k">class</span> <span class="nc">StartTestEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired before a test is executed.</span>
+
+<span class="sd">    .. attribute :: test</span>
+
+<span class="sd">       The test case</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: startTime</span>
+
+<span class="sd">       Timestamp of test start</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;startTime&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">startTime</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startTime</span> <span class="o">=</span> <span class="n">startTime</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StartTestEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="StopTestEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.StopTestEvent">[docs]</a><span class="k">class</span> <span class="nc">StopTestEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired after a test is executed.</span>
+
+<span class="sd">    .. attribute :: test</span>
+
+<span class="sd">       The test case</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: stopTime</span>
+
+<span class="sd">       Timestamp of test stop</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;stopTime&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">stopTime</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopTime</span> <span class="o">=</span> <span class="n">stopTime</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StopTestEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TestOutcomeEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.TestOutcomeEvent">[docs]</a><span class="k">class</span> <span class="nc">TestOutcomeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when a test completes.</span>
+
+<span class="sd">    .. attribute :: test</span>
+
+<span class="sd">       The test case</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: outcome</span>
+
+<span class="sd">       Description of test outcome. Typically will be one of &#39;error&#39;,</span>
+<span class="sd">       &#39;failed&#39;, &#39;skipped&#39;, or &#39;passed&#39;.</span>
+
+<span class="sd">    .. attribute :: exc_info</span>
+
+<span class="sd">       If the test resulted in an exception, the tuple of (exception</span>
+<span class="sd">       class, exception value, traceback) as returned by</span>
+<span class="sd">       sys.exc_info(). If the test did not result in an exception,</span>
+<span class="sd">       None.</span>
+
+<span class="sd">    .. attribute :: reason</span>
+
+<span class="sd">       For test outcomes that include a reason (Skips, for example),</span>
+<span class="sd">       the reason.</span>
+
+<span class="sd">    .. attribute :: expected</span>
+
+<span class="sd">       Boolean indicating whether the test outcome was expected. In</span>
+<span class="sd">       general, all tests are expected to pass, and any other outcome</span>
+<span class="sd">       will have expected as False. The exceptions to that rule are</span>
+<span class="sd">       unexpected successes and expected failures.</span>
+
+<span class="sd">    .. attribute :: shortLabel</span>
+
+<span class="sd">       A short label describing the test outcome. (For example, &#39;E&#39;</span>
+<span class="sd">       for errors).</span>
+
+<span class="sd">    .. attribute :: longLabel</span>
+
+<span class="sd">       A long label describing the test outcome (for example, &#39;ERROR&#39;</span>
+<span class="sd">       for errors).</span>
+
+<span class="sd">    Plugins may influence how the rest of the system sees the test</span>
+<span class="sd">    outcome by setting ``outcome`` or ``exc_info`` or ``expected``. They</span>
+<span class="sd">    may influence how the test outcome is reported to the user by</span>
+<span class="sd">    setting ``shortLabel`` or ``longLabel``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;outcome&#39;</span><span class="p">,</span> <span class="s">&#39;exc_info&#39;</span><span class="p">,</span> <span class="s">&#39;reason&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;expected&#39;</span><span class="p">,</span> <span class="s">&#39;shortLabel&#39;</span><span class="p">,</span> <span class="s">&#39;longLabel&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">outcome</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">expected</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shortLabel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">longLabel</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcome</span> <span class="o">=</span> <span class="n">outcome</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exc_info</span> <span class="o">=</span> <span class="n">exc_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reason</span> <span class="o">=</span> <span class="n">reason</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected</span> <span class="o">=</span> <span class="n">expected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortLabel</span> <span class="o">=</span> <span class="n">shortLabel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">longLabel</span> <span class="o">=</span> <span class="n">longLabel</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestOutcomeEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LoadFromModuleEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.LoadFromModuleEvent">[docs]</a><span class="k">class</span> <span class="nc">LoadFromModuleEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when a test module is loaded.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: module</span>
+
+<span class="sd">       The module whose tests are to be loaded</span>
+
+<span class="sd">    .. attribute :: extraTests</span>
+
+<span class="sd">       A list of extra tests loaded from the module. To load tests</span>
+<span class="sd">       from a module without interfering with other plugins&#39; loading</span>
+<span class="sd">       activities, append tests to extraTests.</span>
+
+<span class="sd">    Plugins may set ``handled`` on this event and return a test suite</span>
+<span class="sd">    to prevent other plugins from loading tests from the module. If</span>
+<span class="sd">    any plugin sets ``handled`` to True, ``extraTests`` will be</span>
+<span class="sd">    ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="s">&#39;extraTests&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraTests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LoadFromModuleEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LoadFromTestCaseEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.LoadFromTestCaseEvent">[docs]</a><span class="k">class</span> <span class="nc">LoadFromTestCaseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when tests are loaded from a test case.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: testCase</span>
+
+<span class="sd">       The :class:`unittest.TestCase` instance being loaded.</span>
+
+<span class="sd">    .. attribute :: extraTests</span>
+
+<span class="sd">        A list of extra tests loaded from the module. To load tests</span>
+<span class="sd">        from a test case without interfering with other plugins&#39;</span>
+<span class="sd">        loading activities, append tests to extraTests.</span>
+
+<span class="sd">    Plugins may set ``handled`` on this event and return a test suite</span>
+<span class="sd">    to prevent other plugins from loading tests from the test case. If</span>
+<span class="sd">    any plugin sets ``handled`` to True, ``extraTests`` will be</span>
+<span class="sd">    ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;testCase&#39;</span><span class="p">,</span> <span class="s">&#39;extraTests&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">testCase</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testCase</span> <span class="o">=</span> <span class="n">testCase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraTests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LoadFromTestCaseEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LoadFromNamesEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.LoadFromNamesEvent">[docs]</a><span class="k">class</span> <span class="nc">LoadFromNamesEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to load tests from test names.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: names</span>
+
+<span class="sd">       List of test names. May be empty or None.</span>
+
+<span class="sd">    .. attribute :: module</span>
+
+<span class="sd">       Module to load from. May be None. If not None, names should be</span>
+<span class="sd">       considered relative to this module.</span>
+
+<span class="sd">    .. attribute :: extraTests</span>
+
+<span class="sd">        A list of extra tests loaded from the tests named. To load</span>
+<span class="sd">        tests from test names without interfering with other plugins&#39;</span>
+<span class="sd">        loading activities, append tests to extraTests.</span>
+
+<span class="sd">    Plugins may set ``handled`` on this event and return a test suite</span>
+<span class="sd">    to prevent other plugins from loading tests from the test names. If</span>
+<span class="sd">    any plugin sets ``handled`` to True, ``extraTests`` will be</span>
+<span class="sd">    ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;names&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="s">&#39;extraTests&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraTests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LoadFromNamesEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;LoadFromNames(names=</span><span class="si">%r</span><span class="s">, module=</span><span class="si">%r</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="LoadFromNameEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.LoadFromNameEvent">[docs]</a><span class="k">class</span> <span class="nc">LoadFromNameEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to load tests from test names.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: name</span>
+
+<span class="sd">       Test name to load</span>
+
+<span class="sd">    .. attribute :: module</span>
+
+<span class="sd">       Module to load from. May be None. If not None, names should be</span>
+<span class="sd">       considered relative to this module.</span>
+
+<span class="sd">    .. attribute :: extraTests</span>
+
+<span class="sd">        A list of extra tests loaded from the name. To load tests</span>
+<span class="sd">        from a test name without interfering with other plugins&#39;</span>
+<span class="sd">        loading activities, append tests to extraTests.</span>
+
+<span class="sd">    Plugins may set ``handled`` on this event and return a test suite</span>
+<span class="sd">    to prevent other plugins from loading tests from the test name. If</span>
+<span class="sd">    any plugin sets ``handled`` to True, ``extraTests`` will be</span>
+<span class="sd">    ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="s">&#39;extraTests&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraTests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LoadFromNameEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="HandleFileEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.HandleFileEvent">[docs]</a><span class="k">class</span> <span class="nc">HandleFileEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when a non-test file is examined.</span>
+
+<span class="sd">    .. note ::</span>
+
+<span class="sd">       This event is *not* fired for python modules that</span>
+<span class="sd">       match the test file pattern.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: name</span>
+
+<span class="sd">       File basename</span>
+
+<span class="sd">    .. attribute :: path</span>
+
+<span class="sd">       Full path to file</span>
+
+<span class="sd">    .. attribute :: pattern</span>
+
+<span class="sd">       Current test file match pattern</span>
+
+<span class="sd">    .. attribute :: topLevelDirectory</span>
+
+<span class="sd">       Top-level directory of the test run</span>
+
+<span class="sd">    .. attribute :: extraTests</span>
+
+<span class="sd">        A list of extra tests loaded from the file. To load tests</span>
+<span class="sd">        from a file without interfering with other plugins&#39;</span>
+<span class="sd">        loading activities, append tests to extraTests.</span>
+
+<span class="sd">    Plugins may set ``handled`` on this event and return a test suite</span>
+<span class="sd">    to prevent other plugins from loading tests from the file. If</span>
+<span class="sd">    any plugin sets ``handled`` to True, ``extraTests`` will be</span>
+<span class="sd">    ignored.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="s">&#39;pattern&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;topLevelDirectory&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">topLevelDirectory</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraTests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="c"># note: pattern may be None if not called during test discovery</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topLevelDirectory</span> <span class="o">=</span> <span class="n">topLevelDirectory</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HandleFileEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="MatchPathEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.MatchPathEvent">[docs]</a><span class="k">class</span> <span class="nc">MatchPathEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired during file matching.</span>
+
+<span class="sd">    Plugins may return False and set ``handled`` on this event to prevent</span>
+<span class="sd">    a file from being matched as a test file, regardless of other system</span>
+<span class="sd">    settings.</span>
+
+<span class="sd">    .. attribute :: path</span>
+
+<span class="sd">       Full path to the file</span>
+
+<span class="sd">    .. attribute :: name</span>
+
+<span class="sd">       File basename</span>
+
+<span class="sd">    .. attribute :: pattern</span>
+
+<span class="sd">       Current test file match pattern</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="s">&#39;pattern&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MatchPathEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="GetTestCaseNamesEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.GetTestCaseNamesEvent">[docs]</a><span class="k">class</span> <span class="nc">GetTestCaseNamesEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to find test case names in a test case.</span>
+
+<span class="sd">    Plugins may return a list of names and set ``handled`` on this</span>
+<span class="sd">    event to force test case name selection.</span>
+
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: testCase</span>
+
+<span class="sd">       The :class:`unittest.TestCase` instance being loaded.</span>
+
+<span class="sd">    .. attribute :: testMethodPrefix</span>
+
+<span class="sd">       Set this to change the test method prefix. Unless set by a plugin,</span>
+<span class="sd">       it is None.</span>
+
+<span class="sd">    .. attribute :: extraNames</span>
+
+<span class="sd">       A list of extra test names to load from the test case. To cause</span>
+<span class="sd">       extra tests to be loaded from the test case, append the names</span>
+<span class="sd">       to this list. Note that the names here must be attributes of</span>
+<span class="sd">       the test case.</span>
+
+<span class="sd">    .. attribute :: excludedNames</span>
+
+<span class="sd">       A list of names to exclude from test loading. Add names to this</span>
+<span class="sd">       list to prevent other plugins from loading the named tests.</span>
+
+<span class="sd">    .. attribute :: isTestMethod</span>
+
+<span class="sd">       Callable that plugins can use to examine test case attributes to determine</span>
+<span class="sd">       whether nose2 thinks they are test methods.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;testCase&#39;</span><span class="p">,</span> <span class="s">&#39;testMethodPrefix&#39;</span><span class="p">,</span>
+                             <span class="s">&#39;extraNames&#39;</span><span class="p">,</span> <span class="s">&#39;excludedNames&#39;</span><span class="p">,</span> <span class="s">&#39;isTestMethod&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">testCase</span><span class="p">,</span> <span class="n">isTestMethod</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testCase</span> <span class="o">=</span> <span class="n">testCase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testMethodPrefix</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excludedNames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isTestMethod</span> <span class="o">=</span> <span class="n">isTestMethod</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GetTestCaseNamesEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ResultSuccessEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.ResultSuccessEvent">[docs]</a><span class="k">class</span> <span class="nc">ResultSuccessEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired at end of test run to determine success.</span>
+
+<span class="sd">    This event fires at the end of the test run and allows</span>
+<span class="sd">    plugins to determine whether the test run was successful.</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: success</span>
+
+<span class="sd">       Set this to True to indicate that the test run was</span>
+<span class="sd">       successful. If no plugin sets the ``success`` to</span>
+<span class="sd">       True, the test run fails.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;success&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="n">success</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResultSuccessEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ResultStopEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.ResultStopEvent">[docs]</a><span class="k">class</span> <span class="nc">ResultStopEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired when a test run is told to stop.</span>
+
+<span class="sd">    Plugins can use this event to prevent other plugins from stopping</span>
+<span class="sd">    a test run.</span>
+
+<span class="sd">    .. attribute :: result</span>
+
+<span class="sd">       Test result</span>
+
+<span class="sd">    .. attribute :: shouldStop</span>
+
+<span class="sd">       Set to True to indicate that the test run should stop.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;result&#39;</span><span class="p">,</span> <span class="s">&#39;shouldStop&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">shouldStop</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shouldStop</span> <span class="o">=</span> <span class="n">shouldStop</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResultStopEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="DescribeTestEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.DescribeTestEvent">[docs]</a><span class="k">class</span> <span class="nc">DescribeTestEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to get test description.</span>
+
+
+<span class="sd">    .. attribute :: test</span>
+
+<span class="sd">       The test case</span>
+
+<span class="sd">    .. attribute :: description</span>
+
+<span class="sd">       Description of the test case. Plugins can set this to change</span>
+<span class="sd">       how tests are described in output to users.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="s">&#39;description&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DescribeTestEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="OutcomeDetailEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.OutcomeDetailEvent">[docs]</a><span class="k">class</span> <span class="nc">OutcomeDetailEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to acquire additional details about test outcome.</span>
+
+<span class="sd">    .. attribute :: outcomeEvent</span>
+
+<span class="sd">       A :class:`nose2.events.TestOutcomeEvent` instance holding</span>
+<span class="sd">       the test outcome to be described.</span>
+
+<span class="sd">    .. attribute :: extraDetail</span>
+
+<span class="sd">       Extra detail lines to be appended to test outcome</span>
+<span class="sd">       output. Plugins can append lines (of strings) to this list to</span>
+<span class="sd">       include their extra information in the error list report.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;outcomeEvent&#39;</span><span class="p">,</span> <span class="s">&#39;extraDetail&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomeEvent</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outcomeEvent</span> <span class="o">=</span> <span class="n">outcomeEvent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraDetail</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OutcomeDetailEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ReportSummaryEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.ReportSummaryEvent">[docs]</a><span class="k">class</span> <span class="nc">ReportSummaryEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired before and after summary report.</span>
+
+<span class="sd">    .. attribute :: stopTestEvent</span>
+
+<span class="sd">       A :class:`nose2.events.StopTestEvent` instance.</span>
+
+<span class="sd">    .. attribute :: stream</span>
+
+<span class="sd">       The output stream. Plugins can set this to change or capture</span>
+<span class="sd">       output.</span>
+
+<span class="sd">    .. attribute :: reportCategories</span>
+
+<span class="sd">       Dictionary of report category and test events captured in that</span>
+<span class="sd">       category. Default categories include &#39;errors&#39;, &#39;failures&#39;,</span>
+<span class="sd">       &#39;skipped&#39;, &#39;expectedFails&#39;, and &#39;unexpectedSuccesses&#39;. Plugins</span>
+<span class="sd">       may add their own categories.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;stopTestEvent&#39;</span><span class="p">,</span> <span class="s">&#39;stream&#39;</span><span class="p">,</span> <span class="s">&#39;reportCategories&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stopTestEvent</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">reportCategories</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopTestEvent</span> <span class="o">=</span> <span class="n">stopTestEvent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span> <span class="o">=</span> <span class="n">reportCategories</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReportSummaryEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ReportTestEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.ReportTestEvent">[docs]</a><span class="k">class</span> <span class="nc">ReportTestEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired to report a test event.</span>
+
+<span class="sd">    Plugins can respond to this event by producing output for the user.</span>
+
+<span class="sd">    .. attribute :: testEvent</span>
+
+<span class="sd">       A test event. In most cases, a</span>
+<span class="sd">       :class:`nose2.events.TestOutcomeEvent` instance. For startTest,</span>
+<span class="sd">       a :class:`nose2.events.StartTestEvent` instance.</span>
+
+<span class="sd">    .. attribute :: stream</span>
+
+<span class="sd">       The output stream. Plugins can set this to change or capture</span>
+<span class="sd">       output.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;testEvent&#39;</span><span class="p">,</span> <span class="s">&#39;stream&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testEvent</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testEvent</span> <span class="o">=</span> <span class="n">testEvent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReportTestEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UserInteractionEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.UserInteractionEvent">[docs]</a><span class="k">class</span> <span class="nc">UserInteractionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired before and after user interaction.</span>
+
+<span class="sd">    Plugins that capture stdout or otherwise prevent user interaction</span>
+<span class="sd">    should respond to this event.</span>
+
+<span class="sd">    To prevent the user interaction from occurring, return False and</span>
+<span class="sd">    set ``handled``. Otherwise, turn off whatever you are doing that</span>
+<span class="sd">    prevents users from typing/clicking/touching/psionics/whatever.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UserInteractionEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CommandLineArgsEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.CommandLineArgsEvent">[docs]</a><span class="k">class</span> <span class="nc">CommandLineArgsEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired after parsing of command line arguments.</span>
+
+<span class="sd">    Plugins can respond to this event by configuring themselves or other plugins</span>
+<span class="sd">    or modifying the parsed arguments.</span>
+
+<span class="sd">    .. note ::</span>
+
+<span class="sd">       Many plugins register options with callbacks. By the time this event</span>
+<span class="sd">       fires, those callbacks have already fired. So you can&#39;t use this</span>
+<span class="sd">       event to reliably influence all plugins.</span>
+
+<span class="sd">    .. attribute :: args</span>
+
+<span class="sd">       Args object returned by argparse.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;args&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CommandLineArgsEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CreateTestsEvent"><a class="viewcode-back" href="../../dev/event_reference.html#nose2.events.CreateTestsEvent">[docs]</a><span class="k">class</span> <span class="nc">CreateTestsEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Event fired before test loading.</span>
+
+<span class="sd">    Plugins can take over test loading by returning a test suite and setting</span>
+<span class="sd">    ``handled`` on this event.</span>
+
+<span class="sd">    .. attribute :: loader</span>
+
+<span class="sd">       Test loader instance</span>
+
+<span class="sd">    .. attribute :: names</span>
+
+<span class="sd">       List of test names. May be empty or None.</span>
+
+<span class="sd">    .. attribute :: module</span>
+
+<span class="sd">       Module to load from. May be None. If not None, names should be</span>
+<span class="sd">       considered relative to this module.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_attrs</span> <span class="o">=</span> <span class="n">Event</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;loader&#39;</span><span class="p">,</span> <span class="s">&#39;testNames&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">testNames</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span> <span class="o">=</span> <span class="n">testNames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CreateTestsEvent</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

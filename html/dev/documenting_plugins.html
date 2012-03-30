@@ -1,0 +1,128 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documenting plugins &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="next" title="Event reference" href="event_reference.html" />
+    <link rel="prev" title="Writing Plugins" href="writing_plugins.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="event_reference.html" title="Event reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="writing_plugins.html" title="Writing Plugins"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="documenting-plugins">
+<h1>Documenting plugins<a class="headerlink" href="#documenting-plugins" title="Permalink to this headline">¶</a></h1>
+<p>You should do it. Nobody will use your plugins if you don&#8217;t. Or if
+they do use them, they will curse you whenever things go wrong.</p>
+<p>One easy way to document your plugins is to use nose2&#8217;s <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a>
+extension, which provides an <tt class="docutils literal"><span class="pre">autoplugin</span></tt> directive that will
+produce decent reference documentation from your plugin classes.</p>
+<p>To use it, add &#8216;nose2.sphinxext&#8217; to the <tt class="docutils literal"><span class="pre">extensions</span></tt> list in the
+<tt class="docutils literal"><span class="pre">conf.py</span></tt> file in your docs directory.</p>
+<p>Then add an <tt class="docutils literal"><span class="pre">autoplugin</span></tt> directive to an rst file, like this:</p>
+<div class="highlight-python"><pre>.. autoplugin :: mypackage.plugins.PluginClass</pre>
+</div>
+<p>This will produce output that includes the config vars your plugin
+loads in <tt class="docutils literal"><span class="pre">__init__</span></tt>, as well as any command line options your plugin
+registers. This is why you <em>really</em> should extract config vars and
+register command-line options in <tt class="docutils literal"><span class="pre">__init__</span></tt>.</p>
+<p>The output will also include an <tt class="docutils literal"><span class="pre">autoclass</span></tt> section for your plugin
+class, so you can put more narrative documentation in the plugin&#8217;s
+docstring for users to read.</p>
+<p>Of course you can, and should, write some words before the reference
+docs explaining what your plugin does and how to use it. You can put
+those words in the rst file itself, or in the docstring of the module
+where your plugin lives.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="writing_plugins.html" title="previous chapter">Writing Plugins</a></li>
+      <li>Next: <a href="event_reference.html" title="next chapter">Event reference</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/dev/documenting_plugins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

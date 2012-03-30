@@ -1,0 +1,285 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Capturing log messages &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
+    <link rel="up" title="Plugins for nose2" href="../plugins.html" />
+    <link rel="next" title="Outputting XML Test Reports" href="junitxml.html" />
+    <link rel="prev" title="Stopping After the First Error or Failure" href="failfast.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="junitxml.html" title="Outputting XML Test Reports"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="failfast.html" title="Stopping After the First Error or Failure"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="capturing-log-messages">
+<h1>Capturing log messages<a class="headerlink" href="#capturing-log-messages" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-nose2.plugins.logcapture"></span><p>Capture log messages during test execution, appending them to the
+error reports of failed tests.</p>
+<p>This plugin implements <a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#startTest" title="startTest"><tt class="xref py py-func docutils literal"><span class="pre">startTest()</span></tt></a>,
+<a class="reference internal" href="../dev/hook_reference.html#stopTest" title="stopTest"><tt class="xref py py-func docutils literal"><span class="pre">stopTest()</span></tt></a>, <a class="reference internal" href="../dev/hook_reference.html#setTestOutcome" title="setTestOutcome"><tt class="xref py py-func docutils literal"><span class="pre">setTestOutcome()</span></tt></a>, and <a class="reference internal" href="../dev/hook_reference.html#outcomeDetail" title="outcomeDetail"><tt class="xref py py-func docutils literal"><span class="pre">outcomeDetail()</span></tt></a> to
+set up a logging configuration that captures log messages during test
+execution, and appends them to error reports for tests that fail or
+raise exceptions.</p>
+<div class="section" id="configuration-log-capture">
+<h2>Configuration [log-capture]<a class="headerlink" href="#configuration-log-capture" title="Permalink to this headline">¶</a></h2>
+<dl class="configvar">
+<dt id="configvar-always-on">
+<tt class="descname">always-on</tt><a class="headerlink" href="#configvar-always-on" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-clear-handlers">
+<tt class="descname">clear-handlers</tt><a class="headerlink" href="#configvar-clear-handlers" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">False</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-date-format">
+<tt class="descname">date-format</tt><a class="headerlink" href="#configvar-date-format" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">None</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-filter">
+<tt class="descname">filter</tt><a class="headerlink" href="#configvar-filter" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">[&#8216;-nose&#8217;]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-format">
+<tt class="descname">format</tt><a class="headerlink" href="#configvar-format" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">%(name)s: %(levelname)s: %(message)s</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="configvar">
+<dt id="configvar-log-level">
+<tt class="descname">log-level</tt><a class="headerlink" href="#configvar-log-level" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Default :</th><td class="field-body">NOTSET</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type :</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<div class="section" id="sample-configuration">
+<h3>Sample configuration<a class="headerlink" href="#sample-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The default configuration is equivalent to including the following in a unittest.cfg file.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[log-capture]</span>
+<span class="na">always-on</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">clear-handlers</span> <span class="o">=</span> <span class="s">False</span>
+<span class="na">date-format</span> <span class="o">=</span> <span class="s">None</span>
+<span class="na">filter</span> <span class="o">=</span> <span class="s">-nose</span>
+<span class="na">format</span> <span class="o">=</span> <span class="s">%(name)s: %(levelname)s: %(message)s</span>
+<span class="na">log-level</span> <span class="o">=</span> <span class="s">NOTSET</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-line-options">
+<h2>Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption--log-capture">
+<tt class="descname">--log-capture</tt><tt class="descclassname"> DEFAULT</tt><a class="headerlink" href="#cmdoption--log-capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable log capture</p>
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-class-reference">
+<h2>Plugin class reference<a class="headerlink" href="#plugin-class-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nose2.plugins.logcapture.LogCapture">
+<em class="property">class </em><tt class="descclassname">nose2.plugins.logcapture.</tt><tt class="descname">LogCapture</tt><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Capture log messages during test execution</p>
+<dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.outcomeDetail">
+<tt class="descname">outcomeDetail</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.outcomeDetail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.outcomeDetail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append captured log messages to <tt class="docutils literal"><span class="pre">event.extraDetail</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.setTestOutcome">
+<tt class="descname">setTestOutcome</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.setTestOutcome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.setTestOutcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store captured log messages in <tt class="docutils literal"><span class="pre">event.metadata</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.startTest">
+<tt class="descname">startTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.startTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.startTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up handler for new test</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.startTestRun">
+<tt class="descname">startTestRun</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.startTestRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.startTestRun" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up logging handler</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.plugins.logcapture.LogCapture.stopTest">
+<tt class="descname">stopTest</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="../_modules/nose2/plugins/logcapture.html#LogCapture.stopTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.plugins.logcapture.LogCapture.stopTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear captured messages, ready for next test</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Capturing log messages</a><ul>
+<li><a class="reference internal" href="#configuration-log-capture">Configuration [log-capture]</a><ul>
+<li><a class="reference internal" href="#sample-configuration">Sample configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#command-line-options">Command-line options</a></li>
+<li><a class="reference internal" href="#plugin-class-reference">Plugin class reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../plugins.html">Plugins for nose2</a><ul>
+      <li>Previous: <a href="failfast.html" title="previous chapter">Stopping After the First Error or Failure</a></li>
+      <li>Next: <a href="junitxml.html" title="next chapter">Outputting XML Test Reports</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/plugins/logcapture.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

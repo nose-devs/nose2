@@ -1,0 +1,141 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changelog &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="index.html" />
+    <link rel="next" title="Writing Plugins" href="dev/writing_plugins.html" />
+    <link rel="prev" title="Tracing hook execution" href="plugins/printhooks.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dev/writing_plugins.html" title="Writing Plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plugins/printhooks.html" title="Tracing hook execution"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">nose2 0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>0.2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New plugin: Added nose2.plugins.junitxml to support jUnit XML output.</li>
+<li>New plugin: Added nose2.plugins.attrib to support test filtering by
+attributes.</li>
+<li>New hook: Added afterTestRun hook, moved result report output calls
+to that hook. This prevents plugin ordering issues with the
+stopTestRun hook (which still exists, and fires before
+afterTestRun).</li>
+<li>Bug: Fixed bug in loading of tests by name that caused ImportErrors
+to be silently ignored.</li>
+<li>Bug: Fixed missing __unittest flag in several modules. Thanks to
+Wouter Overmeire for the patch.</li>
+<li>Bug: Fixed module fixture calls for function, generator and param tests.</li>
+<li>Bug: Fixed passing of command-line argument values to list
+options. Before this fix, lists of lists would be appended to the
+option target. Now, the option target list is extended with the new
+values. Thanks to memedough for the bug report.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.1<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Initial release.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#id1">0.2</a></li>
+<li><a class="reference internal" href="#id2">0.1</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="plugins/printhooks.html" title="previous chapter">Tracing hook execution</a></li>
+      <li>Next: <a href="dev/writing_plugins.html" title="next chapter">Writing Plugins</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/changelog.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

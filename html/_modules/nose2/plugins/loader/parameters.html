@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.loader.parameters &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.loader.parameters</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Load tests from parameterized functions and methods.</span>
+
+<span class="sd">This plugin implements :func:`getTestCaseNames`,</span>
+<span class="sd">:func:`loadTestsFromModule`, and :func:`loadTestsFromName` to support</span>
+<span class="sd">loading tests from parameterized test functions and methods.</span>
+
+<span class="sd">To parameterize a function or test case method, use :func:`nose2.tools.params`:</span>
+
+<span class="sd">.. code-block :: python</span>
+
+<span class="sd">  import unittest</span>
+
+<span class="sd">  from nose2.tools import params</span>
+
+
+<span class="sd">  @params(1, 2, 3)</span>
+<span class="sd">  def test_nums(num):</span>
+<span class="sd">      asset num &lt; 4</span>
+
+
+<span class="sd">  class Test(unittest.TestCase):</span>
+
+<span class="sd">      @params((1, 2), (2, 3), (4, 5))</span>
+<span class="sd">      def test_less_than(self, a, b):</span>
+<span class="sd">          assert a &lt; b</span>
+
+<span class="sd">Parameters in the list may be defined as simple values, or as</span>
+<span class="sd">tuples. To pass a tuple as a simple value, wrap it in another tuple.</span>
+
+<span class="sd">To address a particular parameterized test via a command-line test name,</span>
+<span class="sd">append a colon (&#39;:&#39;) followed by the index, *starting from 1*, of the</span>
+<span class="sd">case you want to execute.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># This module contains some code copied from unittest2 and other code</span>
+<span class="c"># developed in reference to unittest2.</span>
+<span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
+<span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">exceptions</span><span class="p">,</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">nose2.events</span> <span class="kn">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span> <span class="nn">nose2.compat</span> <span class="kn">import</span> <span class="n">unittest</span> <span class="k">as</span> <span class="n">ut2</span>
+<span class="kn">from</span> <span class="nn">nose2.plugins.loader.testclasses</span> <span class="kn">import</span> <span class="n">MethodTestCase</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<span class="k">class</span> <span class="nc">ParamsFunctionCase</span><span class="p">(</span><span class="n">ut2</span><span class="o">.</span><span class="n">FunctionTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_funcName</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">ut2</span><span class="o">.</span><span class="n">FunctionTestCase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcName</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">__str__</span> <span class="o">=</span> <span class="n">__repr__</span>
+
+
+<div class="viewcode-block" id="Parameters"><a class="viewcode-back" href="../../../../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters">[docs]</a><span class="k">class</span> <span class="nc">Parameters</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loader plugin that loads parameterized tests&quot;&quot;&quot;</span>
+    <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;parameters&#39;</span>
+
+    <span class="k">def</span> <span class="nf">registerInSubprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">pluginClasses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Parameters.getTestCaseNames"><a class="viewcode-back" href="../../../../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters.getTestCaseNames">[docs]</a>    <span class="k">def</span> <span class="nf">getTestCaseNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate test case names for all parameterized methods&quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;getTestCaseNames </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">isTestMethod</span><span class="p">,</span> <span class="nb">dir</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">testCase</span><span class="p">))</span>
+        <span class="n">testCaseClass</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">testCase</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">paramList</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">paramList</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c"># exclude this method from normal collection</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">excludedNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="c"># generate the methods to be loaded by the testcase loader</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">getTestMethodNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTestCaseNames</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Parameters.loadTestsFromModule"><a class="viewcode-back" href="../../../../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters.loadTestsFromModule">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromModule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load tests from parameterized test functions in the module&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="k">def</span> <span class="nf">is_test</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testMethodPrefix</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">))</span>
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_test</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">tests</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_generateFuncTests</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Parameters.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/parameters.html#nose2.plugins.loader.parameters.Parameters.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load parameterized test named on command line&quot;&quot;&quot;</span>
+        <span class="n">original_name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">module</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">failedLoadTests</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># we can&#39;t find it - let the default case handle it</span>
+            <span class="k">return</span>
+
+        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">fqname</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Don&#39;t know how to load parameterized tests from </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="ow">and</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)):</span>
+            <span class="c"># generator method</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">parent</span> <span class="ow">and</span>
+              <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)):</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">MethodTestCase</span><span class="p">(</span><span class="n">parent</span><span class="p">)(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># generator func</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_generateFuncTests</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">tests</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TestNotFoundError</span><span class="p">(</span><span class="n">original_name</span><span class="p">)</span>
+
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">suiteClass</span><span class="p">()</span>
+        <span class="n">suite</span><span class="o">.</span><span class="n">addTests</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">handled</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">suite</span>
+</div>
+    <span class="k">def</span> <span class="nf">_generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">testCaseClass</span><span class="p">):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span> <span class="ow">in</span> <span class="n">enumerate_params</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="n">paramList</span><span class="p">):</span>
+            <span class="n">method_name</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">name_from_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">method_name</span><span class="p">):</span>
+                <span class="c"># not already generated</span>
+                <span class="k">def</span> <span class="nf">_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">argSet</span><span class="o">=</span><span class="n">argSet</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">argSet</span><span class="p">)</span>
+                <span class="n">_method</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">update_wrapper</span><span class="p">(</span><span class="n">_method</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="n">_method</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">_method</span><span class="p">)</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">names</span>
+
+    <span class="k">def</span> <span class="nf">_generateFuncTests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">setUp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;setUp&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">tearDown</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;tearDown&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">setUp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s">&#39;setUp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">setUp</span>
+        <span class="k">if</span> <span class="n">tearDown</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s">&#39;tearDown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tearDown</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span> <span class="ow">in</span> <span class="n">enumerate_params</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">paramList</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">argSet</span><span class="o">=</span><span class="n">argSet</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">obj</span><span class="p">(</span><span class="o">*</span><span class="n">argSet</span><span class="p">)</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">update_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s">&#39;paramList&#39;</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">name_from_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">util</span><span class="o">.</span><span class="n">transplant_class</span><span class="p">(</span>
+                <span class="n">ParamsFunctionCase</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__module__</span><span class="p">)(</span><span class="n">func_name</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">enumerate_params</span><span class="p">(</span><span class="n">paramList</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paramList</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">argSet</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">argSet</span> <span class="o">=</span> <span class="p">(</span><span class="n">argSet</span><span class="p">,)</span>
+        <span class="k">yield</span> <span class="n">index</span><span class="p">,</span> <span class="n">argSet</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

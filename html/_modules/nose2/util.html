@@ -1,0 +1,375 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.util &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.util</h1><div class="highlight"><pre>
+<span class="c"># This module contains some code copied from unittest2/loader.py and other</span>
+<span class="c"># code developed in reference to that module and others within unittest2.</span>
+
+<span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
+<span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">compiler.consts</span> <span class="kn">import</span> <span class="n">CO_GENERATOR</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c"># IronPython doesn&#39;t have a complier module</span>
+    <span class="n">CO_GENERATOR</span><span class="o">=</span><span class="mh">0x20</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isgeneratorfunction</span> <span class="c"># new in 2.6</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="c"># backported from Python 2.6</span>
+    <span class="k">def</span> <span class="nf">isgeneratorfunction</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">((</span><span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">func</span><span class="p">))</span> <span class="ow">and</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">func_code</span><span class="o">.</span><span class="n">co_flags</span> <span class="o">&amp;</span> <span class="n">CO_GENERATOR</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">six</span>
+
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">IDENT_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;^[_a-zA-Z]\w*$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+<span class="n">VALID_MODULE_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;[_a-zA-Z]\w*\.py$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ln"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.ln">[docs]</a><span class="k">def</span> <span class="nf">ln</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">char</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">70</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Draw a divider, with label in the middle.</span>
+
+<span class="sd">    &gt;&gt;&gt; ln(&#39;hello there&#39;)</span>
+<span class="sd">    &#39;---------------------------- hello there -----------------------------&#39;</span>
+
+<span class="sd">    Width and divider char may be specified. Defaults are 70 and &#39;-&#39;</span>
+<span class="sd">    respectively.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">label_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">label_len</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">char</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">char</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pad</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="p">(</span><span class="n">char</span> <span class="o">*</span> <span class="n">pad</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+</div>
+<div class="viewcode-block" id="valid_module_name"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.valid_module_name">[docs]</a><span class="k">def</span> <span class="nf">valid_module_name</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Is path a valid module name?&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VALID_MODULE_RE</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="name_from_path"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.name_from_path">[docs]</a><span class="k">def</span> <span class="nf">name_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Translate path into module name&quot;&quot;&quot;</span>
+    <span class="c"># back up to find module root</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">candidate</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">candidate</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ispackage</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+            <span class="n">candidate</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="module_from_name"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.module_from_name">[docs]</a><span class="k">def</span> <span class="nf">module_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Import module from name&quot;&quot;&quot;</span>
+    <span class="nb">__import__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="test_from_name"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.test_from_name">[docs]</a><span class="k">def</span> <span class="nf">test_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Import test from name&quot;&quot;&quot;</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">pos</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">real_name</span><span class="p">,</span> <span class="n">digits</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="n">pos</span><span class="p">],</span> <span class="n">name</span><span class="p">[</span><span class="n">pos</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">real_name</span>
+    <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">object_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">index</span>
+
+</div>
+<div class="viewcode-block" id="object_from_name"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.object_from_name">[docs]</a><span class="k">def</span> <span class="nf">object_from_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Import object from name&quot;&quot;&quot;</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">parts_copy</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:]</span>
+        <span class="k">while</span> <span class="n">parts_copy</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts_copy</span><span class="p">))</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">parts_copy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">parts_copy</span><span class="p">:</span>
+                    <span class="k">raise</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">module</span>
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+        <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parent</span><span class="p">,</span> <span class="n">obj</span>
+
+</div>
+<div class="viewcode-block" id="name_from_args"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.name_from_args">[docs]</a><span class="k">def</span> <span class="nf">name_from_args</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create test name from test args&quot;&quot;&quot;</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">summary</span><span class="p">[:</span><span class="mi">79</span><span class="p">])</span>
+
+</div>
+<span class="k">def</span> <span class="nf">test_name</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="c"># XXX does not work for test funcs, test.id() lacks module</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;_funcName&#39;</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">_funcName</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;_testFunc&#39;</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">_testFunc</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">_testFunc</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">in</span> <span class="n">tid</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">tid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tid</span>
+
+<div class="viewcode-block" id="ispackage"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.ispackage">[docs]</a><span class="k">def</span> <span class="nf">ispackage</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Is this path a package directory?&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c"># at least the end of the path must be a legal python identifier</span>
+        <span class="c"># and __init__.py[co] must exist</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IDENT_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">end</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">init</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;__init__.py&#39;</span><span class="p">,</span> <span class="s">&#39;__init__.pyc&#39;</span><span class="p">,</span> <span class="s">&#39;__init__.pyo&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">init</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;java&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;__init__$py.class&#39;</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="ensure_importable"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.ensure_importable">[docs]</a><span class="k">def</span> <span class="nf">ensure_importable</span><span class="p">(</span><span class="n">dirname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ensure a directory is on sys.path&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dirname</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dirname</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="isgenerator"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.isgenerator">[docs]</a><span class="k">def</span> <span class="nf">isgenerator</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;is this object a generator?&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;testGenerator&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="has_module_fixtures"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.has_module_fixtures">[docs]</a><span class="k">def</span> <span class="nf">has_module_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Does this test live in a module with module fixtures?&quot;&quot;&quot;</span>
+    <span class="n">modname</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">modname</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&#39;setUpModule&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s">&#39;tearDownModule&#39;</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">has_class_fixtures</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s">&#39;setUpClass&#39;</span> <span class="ow">in</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__dict__</span> <span class="ow">or</span>
+            <span class="s">&#39;tearDownClass&#39;</span> <span class="ow">in</span> <span class="n">test</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="safe_decode"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.safe_decode">[docs]</a><span class="k">def</span> <span class="nf">safe_decode</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Safely decode a byte string into unicode&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">string</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">six</span><span class="o">.</span><span class="n">u</span><span class="p">(</span><span class="s">&#39;&lt;unable to decode&gt;&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="exc_info_to_string"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.exc_info_to_string">[docs]</a><span class="k">def</span> <span class="nf">exc_info_to_string</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Format exception info for output&quot;&quot;&quot;</span>
+    <span class="n">formatTraceback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;formatTraceback&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">formatTraceback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">test</span><span class="o">.</span><span class="n">formatTraceback</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">format_traceback</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="format_traceback"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.format_traceback">[docs]</a><span class="k">def</span> <span class="nf">format_traceback</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a sys.exc_info()-style tuple of values into a string.&quot;&quot;&quot;</span>
+    <span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">err</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tb</span><span class="p">,</span> <span class="s">&#39;tb_next&#39;</span><span class="p">):</span>
+        <span class="n">msgLines</span> <span class="o">=</span> <span class="n">tb</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Skip test runner traceback levels</span>
+        <span class="k">while</span> <span class="n">tb</span> <span class="ow">and</span> <span class="n">_is_relevant_tb_level</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span>
+        <span class="n">failure</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s">&#39;failureException&#39;</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exctype</span> <span class="ow">is</span> <span class="n">failure</span><span class="p">:</span>
+            <span class="c"># Skip assert*() traceback levels</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">_count_relevant_tb_levels</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+            <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msgLines</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msgLines</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="transplant_class"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.transplant_class">[docs]</a><span class="k">def</span> <span class="nf">transplant_class</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make class appear to reside in ``module``.</span>
+
+<span class="sd">    :param cls: A class</span>
+<span class="sd">    :param module: A module name</span>
+<span class="sd">    :returns: A subclass of ``cls`` that appears to have been defined in ``module``. </span>
+
+<span class="sd">    The returned class&#39;s ``__name__`` will be equal to</span>
+<span class="sd">    ``cls.__name__``, and its ``__module__`` equal to ``module``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">C</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">__module__</span> <span class="o">=</span> <span class="n">module</span>
+    <span class="n">C</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__name__</span>
+    <span class="k">return</span> <span class="n">C</span>
+
+</div>
+<div class="viewcode-block" id="parse_log_level"><a class="viewcode-back" href="../../dev/utils.html#nose2.util.parse_log_level">[docs]</a><span class="k">def</span> <span class="nf">parse_log_level</span><span class="p">(</span><span class="n">lvl</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return numeric log level given a string&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">lvl</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">lvl</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_is_relevant_tb_level</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&#39;__unittest&#39;</span> <span class="ow">in</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_globals</span>
+
+
+<span class="k">def</span> <span class="nf">_count_relevant_tb_levels</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">tb</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_relevant_tb_level</span><span class="p">(</span><span class="n">tb</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">tb</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">tb_next</span>
+    <span class="k">return</span> <span class="n">length</span>
+
+
+<span class="k">class</span> <span class="nc">_WritelnDecorator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used to decorate file-like objects with a handy &#39;writeln&#39; method&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;stream&#39;</span><span class="p">,</span> <span class="s">&#39;__getstate__&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">writeln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span> <span class="c"># text-mode streams translate to \r\n if needed</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

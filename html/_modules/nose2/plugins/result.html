@@ -1,0 +1,354 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>nose2.plugins.result &mdash; nose2 0.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="nose2 0.3 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+  
+  
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for nose2.plugins.result</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Collect and report test results.</span>
+
+<span class="sd">This plugin implements the primary user interface for nose2. It</span>
+<span class="sd">collects test outcomes and reports on them to the console, as well as</span>
+<span class="sd">firing several hooks for other plugins to do their own reporting.</span>
+
+<span class="sd">This plugin extends standard unittest console reporting slightly by</span>
+<span class="sd">allowing custom report categories. To put events into a custom</span>
+<span class="sd">reporting category, change the event.outcome to whatever you</span>
+<span class="sd">want. Note, however, that customer categories are *not* treated as</span>
+<span class="sd">errors or failures for the purposes of determining whether a test run</span>
+<span class="sd">has succeeded.</span>
+
+<span class="sd">Don&#39;t disable this plugin unless you a) have another one doing the</span>
+<span class="sd">same job or b) really don&#39;t want any test results (and want all test</span>
+<span class="sd">runs to exit(1))</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># This module contains some code copied from unittest2/runner.py and other</span>
+<span class="c"># code developed in reference to that module and others within unittest2.</span>
+<span class="c"># unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All</span>
+<span class="c"># Rights Reserved. See: http://docs.python.org/license.html</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">nose2</span> <span class="kn">import</span> <span class="n">events</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">util</span>
+
+<span class="n">__unittest</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="ResultReporter"><a class="viewcode-back" href="../../../plugins/result.html#nose2.plugins.result.ResultReporter">[docs]</a><span class="k">class</span> <span class="nc">ResultReporter</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Result plugin that implements standard unittest console reporting&quot;&quot;&quot;</span>
+    <span class="n">alwaysOn</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">configSection</span> <span class="o">=</span> <span class="s">&#39;test-result&#39;</span>
+    <span class="n">separator1</span> <span class="o">=</span> <span class="s">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">70</span>
+    <span class="n">separator2</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">70</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testsRun</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;failures&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                 <span class="s">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                 <span class="s">&#39;skipped&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                 <span class="s">&#39;expectedFailures&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                 <span class="s">&#39;unexpectedSuccesses&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dontReport</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">&#39;errors&#39;</span><span class="p">,</span> <span class="s">&#39;failures&#39;</span><span class="p">,</span> <span class="s">&#39;skipped&#39;</span><span class="p">,</span> <span class="s">&#39;passed&#39;</span><span class="p">,</span>
+                               <span class="s">&#39;expectedFailures&#39;</span><span class="p">,</span> <span class="s">&#39;unexpectedSuccesses&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">_WritelnDecorator</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">descriptions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">as_bool</span><span class="p">(</span><span class="s">&#39;descriptions&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ResultReporter.startTest"><a class="viewcode-back" href="../../../plugins/result.html#nose2.plugins.result.ResultReporter.startTest">[docs]</a>    <span class="k">def</span> <span class="nf">startTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle startTest hook</span>
+
+<span class="sd">        - prints test description if verbosity &gt; 1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">testsRun</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reportStartTest</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ResultReporter.testOutcome"><a class="viewcode-back" href="../../../plugins/result.html#nose2.plugins.result.ResultReporter.testOutcome">[docs]</a>    <span class="k">def</span> <span class="nf">testOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle testOutcome hook</span>
+
+<span class="sd">        - records test outcome in reportCategories</span>
+<span class="sd">        - prints test outcome label</span>
+<span class="sd">        - fires reporting hooks (:func:`reportSuccess`, :func:`reportFailure`,</span>
+<span class="sd">          etc)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">[</span><span class="s">&#39;errors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reportError</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">FAIL</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">expected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">[</span><span class="s">&#39;failures&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reportFailure</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">[</span><span class="s">&#39;expectedFailures&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reportExpectedFailure</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">SKIP</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">[</span><span class="s">&#39;skipped&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reportSkip</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">PASS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">expected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reportSuccess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">[</span><span class="s">&#39;unexpectedSuccesses&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reportUnexpectedSuccess</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># generic outcome handling</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">outcome</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reportOtherOutcome</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ResultReporter.afterTestRun"><a class="viewcode-back" href="../../../plugins/result.html#nose2.plugins.result.ResultReporter.afterTestRun">[docs]</a>    <span class="k">def</span> <span class="nf">afterTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle afterTestRun hook</span>
+
+<span class="sd">        - prints error lists</span>
+<span class="sd">        - prints summary</span>
+<span class="sd">        - fires summary reporting hooks (:func:`beforeErrorList`,</span>
+<span class="sd">          :func:`beforeSummaryReport`, etc)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reportSummary</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">wasSuccessful</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">events</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">ERROR</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">outcome</span> <span class="o">==</span> <span class="n">result</span><span class="o">.</span><span class="n">FAIL</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">expected</span><span class="p">)):</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">break</span>
+
+    <span class="k">def</span> <span class="nf">_reportStartTest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">ReportTestEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">reportStartTest</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># allow other plugins to override/spy on stream</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getDescription</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">test</span><span class="p">))</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; ... &#39;</span><span class="p">)</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_reportError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportError&#39;</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="s">&#39;ERROR&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportFailure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportFailure&#39;</span><span class="p">,</span> <span class="s">&#39;F&#39;</span><span class="p">,</span> <span class="s">&#39;FAIL&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportSkip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportSkip&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;skipped </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">event</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportExpectedFailure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportExpectedFailure&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;expected failure&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportUnexpectedSuccess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportUnexpectedSuccess&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;unexpected success&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportOtherOutcome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportOtherOutcome&#39;</span><span class="p">,</span> <span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="s">&#39;unknown outcome&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportSuccess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;reportSuccess&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;ok&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_reportSummary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="c"># let others print something</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">ReportSummaryEvent</span><span class="p">(</span>
+            <span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reportCategories</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">beforeErrorList</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="c"># allows other plugins to mess with report categories</span>
+        <span class="n">cats</span> <span class="o">=</span> <span class="n">evt</span><span class="o">.</span><span class="n">reportCategories</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">cats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;errors&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">failures</span> <span class="o">=</span> <span class="n">cats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;failures&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="c"># use evt.stream so plugins can replace/wrap/spy it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_printErrorList</span><span class="p">(</span><span class="s">&#39;ERROR&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="p">,</span> <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_printErrorList</span><span class="p">(</span><span class="s">&#39;FAIL&#39;</span><span class="p">,</span> <span class="n">failures</span><span class="p">,</span> <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">flavour</span><span class="p">,</span> <span class="n">events_</span> <span class="ow">in</span> <span class="n">cats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">flavour</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dontReport</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_printErrorList</span><span class="p">(</span><span class="n">flavour</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">events_</span><span class="p">,</span> <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_printSummary</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_printErrorList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flavour</span><span class="p">,</span> <span class="n">events_</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events_</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getDescription</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getOutcomeDetail</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator1</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">flavour</span><span class="p">,</span> <span class="n">desc</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator2</span><span class="p">)</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">err</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_printSummary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reportEvent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">separator2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">beforeSummaryReport</span><span class="p">(</span><span class="n">reportEvent</span><span class="p">)</span>
+
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">reportEvent</span><span class="o">.</span><span class="n">stream</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">testsRun</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s">&quot;Ran </span><span class="si">%d</span><span class="s"> test</span><span class="si">%s</span><span class="s"> in </span><span class="si">%.3f</span><span class="s">s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">run</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="s">&quot;s&quot;</span> <span class="ow">or</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">reportEvent</span><span class="o">.</span><span class="n">stopTestEvent</span><span class="o">.</span><span class="n">timeTaken</span><span class="p">))</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">infos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extraInfos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">reportEvent</span><span class="o">.</span><span class="n">stopTestEvent</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">():</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;OK&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;FAILED&quot;</span><span class="p">)</span>
+
+        <span class="n">failed</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;failures&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">errored</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;errors&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">skipped</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;skipped&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">expectedFails</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;expectedFails&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">unexpectedSuccesses</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;unexpectedSuccesses&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+
+        <span class="k">for</span> <span class="n">flavour</span><span class="p">,</span> <span class="n">results</span> <span class="ow">in</span> <span class="n">reportEvent</span><span class="o">.</span><span class="n">reportCategories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">flavour</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dontReport</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+                <span class="n">extraInfos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">flavour</span><span class="p">,</span> <span class="n">count</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">failed</span><span class="p">:</span>
+            <span class="n">infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;failures=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">failed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errored</span><span class="p">:</span>
+            <span class="n">infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;errors=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">errored</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">skipped</span><span class="p">:</span>
+            <span class="n">infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;skipped=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">skipped</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">expectedFails</span><span class="p">:</span>
+            <span class="n">infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;expected failures=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">expectedFails</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unexpectedSuccesses</span><span class="p">:</span>
+            <span class="n">infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;unexpected successes=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">unexpectedSuccesses</span><span class="p">)</span>
+        <span class="n">infos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">extraInfos</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">infos</span><span class="p">:</span>
+            <span class="n">reportEvent</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&quot; (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">infos</span><span class="p">),))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reportEvent</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">afterSummaryReport</span><span class="p">(</span><span class="n">reportEvent</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getDescription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">DescribeTestEvent</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">describeTest</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">description</span>
+        <span class="n">doc_first_line</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">shortDescription</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">descriptions</span> <span class="ow">and</span> <span class="n">doc_first_line</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="p">),</span> <span class="n">doc_first_line</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getOutcomeDetail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">OutcomeDetailEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">outcomeDetail</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="n">exc_info</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;exc_info&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exc_info</span><span class="p">:</span>
+            <span class="n">detail</span> <span class="o">=</span> <span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">exc_info_to_string</span><span class="p">(</span><span class="n">exc_info</span><span class="p">,</span> <span class="n">test</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">detail</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">extraDetail</span><span class="p">:</span>
+            <span class="n">detail</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">extraDetail</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">detail</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">hook</span><span class="p">,</span> <span class="n">shortLabel</span><span class="p">,</span> <span class="n">longLabel</span><span class="p">):</span>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">ReportTestEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="p">,</span> <span class="n">hook</span><span class="p">)(</span><span class="n">evt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">handled</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># event I fired has stream, event I received has labels</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">writeln</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;longLabel&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">longLabel</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">verbosity</span><span class="p">:</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;shortLabel&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">shortLabel</span><span class="p">)</span>
+            <span class="n">evt</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    &copy; Copyright 2010, Jason Pellerin.
+    Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  
+  </body>
+</html>

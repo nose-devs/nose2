@@ -23,15 +23,9 @@ class MultiProcess(events.Plugin):
         self.procs = int(num[0]) # FIXME merge n fix
         self.register()
 
-    ## pluginsLoaded -- add mp hooks
     def pluginsLoaded(self, event):
-        methods = ('registerInSubprocess', 'startSubprocess', 'stopSubprocess')
-        for method in methods:
-            self.session.hooks.addMethod(method)
-        for plugin in event.pluginsLoaded:
-            for method in methods:
-                if plugin.registered and hasattr(plugin, method):
-                    self.session.hooks.register(method, plugin)
+        self.addMethods('registerInSubprocess', 'startSubprocess',
+                        'stopSubprocess')
 
     def startTestRun(self, event):
         event.executeTests = self._runmp

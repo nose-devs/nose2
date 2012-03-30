@@ -73,9 +73,6 @@ class Generators(Plugin):
                         event, name, method(instance), testCaseClass)
                 )
 
-    def getTestMethodNames(self, event):
-        return self.getTestCaseNames(event)
-
     def loadTestsFromTestClass(self, event):
         testCaseClass = event.testCase
         for name in dir(testCaseClass):
@@ -88,7 +85,6 @@ class Generators(Plugin):
                     self._testsFromGeneratorMethod(
                         event, name, method, instance)
                 )
-        #... now what?
 
     def getTestCaseNames(self, event):
         """Get generator test case names from test case class"""
@@ -99,6 +95,9 @@ class Generators(Plugin):
             method = getattr(klass, name)
             if util.isgenerator(method):
                 event.excludedNames.append(name)
+
+    def getTestMethodNames(self, event):
+        return self.getTestCaseNames(event)
 
     def loadTestsFromName(self, event):
         """Load tests from generator named on command line"""

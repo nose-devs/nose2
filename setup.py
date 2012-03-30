@@ -2,7 +2,7 @@ import os
 import sys
 
 NAME = 'nose2'
-VERSION = '0.2'
+VERSION = '0.3'
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit']
 SCRIPTS = ['bin/nose2']

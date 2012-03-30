@@ -82,6 +82,9 @@ class TestClassLoader(events.Plugin):
     alwaysOn = True
     configSection = 'test-classes'
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
     def pluginsLoaded(self, event):
         """Install extra hooks
 

@@ -1,6 +1,25 @@
 Changelog
 =========
 
+0.3
+---
+
+* New plugin: Added nose2.plugins.mp to support distributing test runs
+  across multiple processes.
+
+* New plugin: Added nose2.plugins.testclasses to support loading tests
+  from ordinary classes that are not subclasses of unittest.TestCase.
+
+* The default script target was changed from ``nose2.main`` to ``nose2.discover``.
+  The former may still be used for running a single module of teststs,
+  unittest-style. The latter ignores the ``module`` argument. Thanks to
+  @dtcaciuc for the bug report (#32).
+
+* ``nose2.main.PluggableTestProgram`` now accepts an ``extraHooks`` keyword
+  argument, which allows attaching arbitrary objects to the hooks system.
+
+* Bug: Fixed bug that caused Skip reason to always be set to ``None``.
+
 0.2
 ---
 

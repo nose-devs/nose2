@@ -269,5 +269,12 @@ main = PluggableTestProgram
 
 
 def discover(*args, **kwargs):
+    """Main entry point for test discovery.
+
+    Running discover calls :class:`nose2.main.PluggableTestProgram`,
+    passing through all arguments and keyword arguments **except module**:
+    ``module`` is discarded, to force test discovery.
+
+    """
     kwargs['module'] = None
     return main(*args, **kwargs)

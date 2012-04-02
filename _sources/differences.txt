@@ -124,7 +124,7 @@ nose wraps or replaces everything in unittest. nose2 does a bit less:
 *it does not wrap TestCases*, and does not wrap the test result class
 with a result proxy. nose2 does subclass TestProgram, and install its
 own loader, runner and result classes. It does this unconditionally,
-rather than allowing arguments to TestProgram.__init__() to specify
+rather than allowing arguments to ``TestProgram.__init__()`` to specify
 the test loader and runner. See :doc:`dev/internals` for more
 information.
 

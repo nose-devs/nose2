@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.plugins.loader.generators &mdash; nose2 0.2 documentation</title>
+    <title>nose2.plugins.loader.generators &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../../../../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../../../../index.html" />
     <link rel="up" title="Module code" href="../../../index.html" />
    
   
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../../index.html">nose2 0.2 documentation</a> &raquo;</li>
+        <li><a href="../../../../index.html">nose2 0.3 documentation</a> &raquo;</li>
           <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -130,6 +130,19 @@
                         <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">testCaseClass</span><span class="p">)</span>
                 <span class="p">)</span>
 </div>
+    <span class="k">def</span> <span class="nf">loadTestsFromTestClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">testCaseClass</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">testCase</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">):</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">testMethodPrefix</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">testCaseClass</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s">&#39;__call__&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="n">util</span><span class="o">.</span><span class="n">isgenerator</span><span class="p">(</span><span class="n">method</span><span class="p">)):</span>
+                <span class="n">instance</span> <span class="o">=</span> <span class="n">testCaseClass</span><span class="p">()</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">extraTests</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGeneratorMethod</span><span class="p">(</span>
+                        <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+                <span class="p">)</span>
+
 <div class="viewcode-block" id="Generators.getTestCaseNames"><a class="viewcode-back" href="../../../../plugins/generators.html#nose2.plugins.loader.generators.Generators.getTestCaseNames">[docs]</a>    <span class="k">def</span> <span class="nf">getTestCaseNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get generator test case names from test case class&quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;getTestCaseNames </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">testCase</span><span class="p">)</span>
@@ -140,6 +153,9 @@
             <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">isgenerator</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
                 <span class="n">event</span><span class="o">.</span><span class="n">excludedNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 </div>
+    <span class="k">def</span> <span class="nf">getTestMethodNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTestCaseNames</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Generators.loadTestsFromName"><a class="viewcode-back" href="../../../../plugins/generators.html#nose2.plugins.loader.generators.Generators.loadTestsFromName">[docs]</a>    <span class="k">def</span> <span class="nf">loadTestsFromName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Load tests from generator named on command line&quot;&quot;&quot;</span>
         <span class="n">original_name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span>
@@ -157,20 +173,28 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">util</span><span class="o">.</span><span class="n">isgenerator</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="bp">None</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">)):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Don&#39;t know how to load generator tests from </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span>
-            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)):</span>
-            <span class="c"># generator method</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="ow">and</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">)):</span>
+            <span class="c"># generator method in test case</span>
             <span class="n">instance</span> <span class="o">=</span> <span class="n">parent</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
             <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGenerator</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">obj</span><span class="p">(</span><span class="n">instance</span><span class="p">),</span> <span class="n">parent</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">parent</span> <span class="ow">and</span>
+              <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="nb">type</span><span class="p">)):</span>
+              <span class="c"># generator method in test class</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">parent</span><span class="p">()</span>
+            <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGeneratorMethod</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c"># generator func</span>
             <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGeneratorFunc</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
@@ -235,6 +259,26 @@
         <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGenerator</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">createTest</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">test</span>
 
+    <span class="k">def</span> <span class="nf">_testsFromGeneratorMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">method</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> 
+                             <span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+                             <span class="n">method</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">setUp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&#39;setUp&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="n">tearDown</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s">&#39;tearDown&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">setUp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s">&#39;setUp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">setUp</span>
+        <span class="k">if</span> <span class="n">tearDown</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s">&#39;tearDown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tearDown</span>
+        <span class="k">def</span> <span class="nf">createTest</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">transplant_class</span><span class="p">(</span>
+                <span class="n">GeneratorMethodCase</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="p">),</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__module__</span><span class="p">)(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_testsFromGenerator</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">createTest</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">test</span>
+
+
 </div>
 <span class="k">class</span> <span class="nc">GeneratorFunctionCase</span><span class="p">(</span><span class="n">ut2</span><span class="o">.</span><span class="n">FunctionTestCase</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
@@ -248,6 +292,20 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcName</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">__str__</span> <span class="o">=</span> <span class="n">__repr__</span>
+
+
+<span class="k">def</span> <span class="nf">GeneratorMethodCase</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">_GeneratorMethodCase</span><span class="p">(</span><span class="n">GeneratorFunctionCase</span><span class="p">):</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;setUpClass&#39;</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&#39;tearDownClass&#39;</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">tearDownClass</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_GeneratorMethodCase</span>
 </pre></div>
 
           </div>

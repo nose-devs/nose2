@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Plugin class reference &mdash; nose2 0.2 documentation</title>
+    <title>Plugin class reference &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
     <link rel="next" title="Contributing to nose2" href="contributing.html" />
     <link rel="prev" title="Session reference" href="session_reference.html" />
    
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="session_reference.html" title="Session reference"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -161,6 +161,15 @@ flag does.</li>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="nose2.events.Plugin.addMethods">
+<tt class="descname">addMethods</tt><big>(</big><em>*methods</em><big>)</big><a class="reference internal" href="../_modules/nose2/events.html#Plugin.addMethods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.events.Plugin.addMethods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new plugin methods to hooks registry</p>
+<p>Any plugins that are already registered and implement
+a method added here will be registered for that
+method as well.</p>
 </dd></dl>
 
 <dl class="method">

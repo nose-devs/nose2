@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Configuring nose2 &mdash; nose2 0.2 documentation</title>
+    <title>Configuring nose2 &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="index.html" />
     <link rel="next" title="Differences: nose2 vs nose vs unittest2" href="differences.html" />
     <link rel="prev" title="Using nose2" href="usage.html" />
    
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="usage.html" title="Using nose2"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">nose2 0.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">nose2 0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -175,7 +175,7 @@ not the plugin <em>class</em>.</p>
 </div>
 </div>
 <div class="section" id="configuring-plugins">
-<h2>Configuring plugins<a class="headerlink" href="#configuring-plugins" title="Permalink to this headline">¶</a></h2>
+<h2>Configuring Plugins<a class="headerlink" href="#configuring-plugins" title="Permalink to this headline">¶</a></h2>
 <p>Most plugins specify a config file section that may be used to
 configure the plugin. If nothing else, any plugin that specifies a
 config file section can be set to automatically register by including
@@ -190,6 +190,70 @@ these options somewhere. Plugins that want to make use of nose2&#8217;s
 <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> extension as detailed in <a class="reference internal" href="dev/documenting_plugins.html"><em>Documenting plugins</em></a>
 <em>must</em> extract all of their config values in their <tt class="docutils literal"><span class="pre">__init__</span></tt>
 methods.</p>
+</div>
+<div class="section" id="test-runner-tips-and-tweaks">
+<h2>Test Runner Tips and Tweaks<a class="headerlink" href="#test-runner-tips-and-tweaks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-tests-in-a-single-module">
+<h3>Running Tests in a Single Module<a class="headerlink" href="#running-tests-in-a-single-module" title="Permalink to this headline">¶</a></h3>
+<p>You can use <tt class="docutils literal"><span class="pre">nose2.main</span></tt> in the same way that <tt class="docutils literal"><span class="pre">unittest.main</span></tt> (and
+<tt class="docutils literal"><span class="pre">unittest2.main</span></tt>) have historically worked: to run the tests in a
+single module. Just put a block like the following at the end of the
+module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">nose2</span>
+    <span class="n">nose2</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then <em>run the module directly</em> &#8211; In other words, do not run the
+<tt class="docutils literal"><span class="pre">nose2</span></tt> script.</p>
+</div>
+<div class="section" id="rolling-your-own-runner">
+<h3>Rolling Your Own Runner<a class="headerlink" href="#rolling-your-own-runner" title="Permalink to this headline">¶</a></h3>
+<p>You can take more control over the test runner by foregoing the
+<tt class="docutils literal"><span class="pre">nose2</span></tt> script and rolling your own. To do that, you just need to
+write a script that calls <tt class="docutils literal"><span class="pre">nose2.discover</span></tt>, for instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="kn">import</span> <span class="nn">nose2</span>
+  <span class="n">nose2</span><span class="o">.</span><span class="n">discover</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can pass several keyword arguments to <tt class="docutils literal"><span class="pre">nose2.discover</span></tt>, all of
+which are detailed in the documentation for
+<a class="reference internal" href="dev/main.html#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">nose2.main.PluggableTestProgram</span></tt></a>.</p>
+<div class="section" id="altering-the-default-plugin-set">
+<h4>Altering the Default Plugin Set<a class="headerlink" href="#altering-the-default-plugin-set" title="Permalink to this headline">¶</a></h4>
+<p>To add plugin <em>modules</em> to the list of those automatically loaded, you
+can pass a list of module names to add (the <tt class="docutils literal"><span class="pre">plugins</span></tt>) argument or
+exclude (<tt class="docutils literal"><span class="pre">excludedPlugins</span></tt>). You can also subclass
+<a class="reference internal" href="dev/main.html#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">nose2.main.PluggableTestProgram</span></tt></a> and set the class-level
+<tt class="docutils literal"><span class="pre">defaultPlugins</span></tt> and <tt class="docutils literal"><span class="pre">excludePlugins</span></tt> attributes to alter plugin
+loading.</p>
+</div>
+<div class="section" id="when-loading-plugins-from-modules-is-not-enough">
+<h4>When Loading Plugins from Modules is not Enough<a class="headerlink" href="#when-loading-plugins-from-modules-is-not-enough" title="Permalink to this headline">¶</a></h4>
+<p><strong>None of which will help</strong> if you need to register a plugin <em>instance</em>
+that you&#8217;ve loaded yourself. For that, use the <tt class="docutils literal"><span class="pre">extraHooks</span></tt> keyword
+argument to <tt class="docutils literal"><span class="pre">nose2.discover</span></tt>. Here, you pass in a list of 2-tuples,
+each of which contains a hook name and a plugin <em>instance</em> to register
+for that hook. This allows you to register plugins that need runtime
+configuration that is not easily passed in through normal channels &#8211;
+and also to register <em>objects that are not nose2 plugins</em> as hook
+targets. Here&#8217;s a trivial example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="kn">import</span> <span class="nn">nose2</span>
+
+  <span class="k">class</span> <span class="nc">Hello</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+      <span class="k">def</span> <span class="nf">startTestRun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+          <span class="k">print</span><span class="p">(</span><span class="s">&quot;hello!&quot;</span><span class="p">)</span>
+
+  <span class="n">nose2</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="n">extraHooks</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;startTestRun&#39;</span><span class="p">,</span> <span class="n">Hello</span><span class="p">())])</span>
+</pre></div>
+</div>
+<p>This can come in handy when integrating with other systems that expect
+you to provide a test runner that they execute, rather than executing
+tests yourself (django, for instance).</p>
+</div>
+</div>
 </div>
 </div>
 
@@ -207,7 +271,16 @@ methods.</p>
 <li><a class="reference internal" href="#specifying-plugins-to-load">Specifying Plugins to Load</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuring-plugins">Configuring plugins</a></li>
+<li><a class="reference internal" href="#configuring-plugins">Configuring Plugins</a></li>
+<li><a class="reference internal" href="#test-runner-tips-and-tweaks">Test Runner Tips and Tweaks</a><ul>
+<li><a class="reference internal" href="#running-tests-in-a-single-module">Running Tests in a Single Module</a></li>
+<li><a class="reference internal" href="#rolling-your-own-runner">Rolling Your Own Runner</a><ul>
+<li><a class="reference internal" href="#altering-the-default-plugin-set">Altering the Default Plugin Set</a></li>
+<li><a class="reference internal" href="#when-loading-plugins-from-modules-is-not-enough">When Loading Plugins from Modules is not Enough</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

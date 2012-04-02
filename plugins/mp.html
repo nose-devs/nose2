@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Running Tests in Parallel with Multiple Processes &mdash; nose2 0.2 documentation</title>
+    <title>Running Tests in Parallel with Multiple Processes &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
     <link rel="up" title="Plugins for nose2" href="../plugins.html" />
     <link rel="next" title="Loader: Doctests" href="doctests.html" />
     <link rel="prev" title="Selecting tests with attributes" href="attrib.html" />
@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="attrib.html" title="Selecting tests with attributes"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
           <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
       </ul>
     </div>  
@@ -195,7 +195,7 @@ those classes instead.</p>
 </table>
 <p>The <tt class="docutils literal"><span class="pre">startSubprocess</span></tt> hook fires in each test-running subprocess
 after it has loaded its plugins but before any tests are executed.</p>
-<p>Plugins can customize test execution here in the same was as in
+<p>Plugins can customize test execution here in the same way as in
 <a class="reference internal" href="../dev/hook_reference.html#startTestRun" title="startTestRun"><tt class="xref py py-func docutils literal"><span class="pre">startTestRun()</span></tt></a>, by setting <tt class="docutils literal"><span class="pre">event.executeTests</span></tt>, and
 prevent test execution by setting <tt class="docutils literal"><span class="pre">event.handled</span></tt> to True and
 returning False.</p>

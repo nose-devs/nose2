@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.main &mdash; nose2 0.2 documentation</title>
+    <title>nose2.main &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">nose2 0.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">nose2 0.3 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -86,6 +86,10 @@
 <span class="sd">    :param buffer: *IGNORED*</span>
 <span class="sd">    :param plugins: List of additional plugin modules to load</span>
 <span class="sd">    :param excludePlugins: List of plugin modules to exclude</span>
+<span class="sd">    :param extraHooks: List of hook names and plugin *instances* to</span>
+<span class="sd">                       register with the session&#39;s hooks system. Each</span>
+<span class="sd">                       item in the list must be a 2-tuple of</span>
+<span class="sd">                       (hook name, plugin instance)</span>
 
 <span class="sd">    .. attribute :: sessionClass</span>
 
@@ -125,6 +129,7 @@
     <span class="n">defaultPlugins</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;nose2.plugins.loader.discovery&#39;</span><span class="p">,</span>
                       <span class="s">&#39;nose2.plugins.loader.testcases&#39;</span><span class="p">,</span>
                       <span class="s">&#39;nose2.plugins.loader.functions&#39;</span><span class="p">,</span>
+                      <span class="s">&#39;nose2.plugins.loader.testclasses&#39;</span><span class="p">,</span>
                       <span class="s">&#39;nose2.plugins.loader.generators&#39;</span><span class="p">,</span>
                       <span class="s">&#39;nose2.plugins.loader.parameters&#39;</span><span class="p">,</span>
                       <span class="s">&#39;nose2.plugins.result&#39;</span><span class="p">,</span>
@@ -139,8 +144,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="n">plugins</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;plugins&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">exclude</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;excludePlugins&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;extraHooks&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraHooks</span> <span class="o">=</span> <span class="n">hooks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">plugins</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PluggableTestProgram</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
@@ -269,15 +276,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">handleArgs</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">CommandLineArgsEvent</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
 </div>
 <div class="viewcode-block" id="PluggableTestProgram.loadPlugins"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.loadPlugins">[docs]</a>    <span class="k">def</span> <span class="nf">loadPlugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load available plugins&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Load available plugins</span>
+
+
+<span class="sd">        ``self.defaultPlugins`` and ``self.excludePlugins`` are passed</span>
+<span class="sd">        to the session to alter the list of plugins that will be</span>
+<span class="sd">        loaded.</span>
+
+<span class="sd">        This method also registers any (hook, plugin) pairs set in</span>
+<span class="sd">        ``self.hooks``. This is a good way to inject plugins that fall</span>
+<span class="sd">        outside of the normal loading procedure, for example, plugins</span>
+<span class="sd">        that need some runtime information that can&#39;t easily be</span>
+<span class="sd">        passed to them through the configuration system.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">loadPlugins</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaultPlugins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">excludePlugins</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extraHooks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method_name</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="PluggableTestProgram.createTests"><a class="viewcode-back" href="../../dev/main.html#nose2.main.PluggableTestProgram.createTests">[docs]</a>    <span class="k">def</span> <span class="nf">createTests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create top-level test suite&quot;&quot;&quot;</span>
-        <span class="c"># XXX belongs in init?</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="ow">and</span> <span class="s">&#39;__unittest&#39;</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="bp">None</span>
-
         <span class="n">event</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">CreateTestsEvent</span><span class="p">(</span>
            <span class="bp">self</span><span class="o">.</span><span class="n">testLoader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">testNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">createTests</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -304,7 +322,19 @@
         <span class="k">return</span> <span class="n">event</span><span class="o">.</span><span class="n">runner</span>
 
 </div>
-<span class="n">main_</span> <span class="o">=</span> <span class="n">PluggableTestProgram</span>
+<span class="n">main</span> <span class="o">=</span> <span class="n">PluggableTestProgram</span>
+
+
+<div class="viewcode-block" id="discover"><a class="viewcode-back" href="../../dev/main.html#nose2.main.discover">[docs]</a><span class="k">def</span> <span class="nf">discover</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main entry point for test discovery.</span>
+
+<span class="sd">    Running discover calls :class:`nose2.main.PluggableTestProgram`,</span>
+<span class="sd">    passing through all arguments and keyword arguments **except module**:</span>
+<span class="sd">    ``module`` is discarded, to force test discovery.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">return</span> <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

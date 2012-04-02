@@ -131,7 +131,7 @@ implement the methods as normal.
    The ``startSubprocess`` hook fires in each test-running subprocess
    after it has loaded its plugins but before any tests are executed.
 
-   Plugins can customize test execution here in the same was as in
+   Plugins can customize test execution here in the same way as in
    :func:`startTestRun`, by setting ``event.executeTests``, and
    prevent test execution by setting ``event.handled`` to True and
    returning False.

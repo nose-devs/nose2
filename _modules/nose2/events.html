@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>nose2.events &mdash; nose2 0.2 documentation</title>
+    <title>nose2.events &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">nose2 0.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">nose2 0.3 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -161,6 +161,21 @@
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">registerPlugin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Plugin.addMethods"><a class="viewcode-back" href="../../dev/plugin_class_reference.html#nose2.events.Plugin.addMethods">[docs]</a>    <span class="k">def</span> <span class="nf">addMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">methods</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add new plugin methods to hooks registry</span>
+
+<span class="sd">        Any plugins that are already registered and implement</span>
+<span class="sd">        a method added here will be registered for that</span>
+<span class="sd">        method as well.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">addMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">plugins</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">plugin</span><span class="o">.</span><span class="n">registered</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">hooks</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">plugin</span><span class="p">)</span>
 </div>
     <span class="k">def</span> <span class="nf">_register_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>

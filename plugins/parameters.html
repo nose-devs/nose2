@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Loader: Parameterized Tests &mdash; nose2 0.2 documentation</title>
+    <title>Loader: Parameterized Tests &mdash; nose2 0.3 documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="nose2 0.2 documentation" href="../index.html" />
+    <link rel="top" title="nose2 0.3 documentation" href="../index.html" />
     <link rel="up" title="Plugins for nose2" href="../plugins.html" />
     <link rel="next" title="Loader: Test Cases" href="testcases.html" />
     <link rel="prev" title="Loader: Test Generators" href="generators.html" />
@@ -52,7 +52,7 @@
         <li class="right" >
           <a href="generators.html" title="Loader: Test Generators"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">nose2 0.2 documentation</a> &raquo;</li>
+        <li><a href="../index.html">nose2 0.3 documentation</a> &raquo;</li>
           <li><a href="../plugins.html" accesskey="U">Plugins for nose2</a> &raquo;</li> 
       </ul>
     </div>  
@@ -75,21 +75,22 @@
 <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromModule" title="loadTestsFromModule"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromModule()</span></tt></a>, and <a class="reference internal" href="../dev/hook_reference.html#loadTestsFromName" title="loadTestsFromName"><tt class="xref py py-func docutils literal"><span class="pre">loadTestsFromName()</span></tt></a> to support
 loading tests from parameterized test functions and methods.</p>
 <p>To parameterize a function or test case method, use <a class="reference internal" href="#nose2.tools.params" title="nose2.tools.params"><tt class="xref py py-func docutils literal"><span class="pre">nose2.tools.params()</span></tt></a>:</p>
-<div class="highlight-python"><pre>import unittest
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">unittest</span>
 
-from nose2.tools import params
-
-
-@params(1, 2, 3)
-def test_nums(num):
-    asset num &lt; 4
+<span class="kn">from</span> <span class="nn">nose2.tools</span> <span class="kn">import</span> <span class="n">params</span>
 
 
-class Test(unittest.TestCase):
+<span class="nd">@params</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_nums</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="n">asset</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">4</span>
 
-    @params((1, 2), (2, 3), (4, 5))
-    def test_less_than(self, a, b):
-        assert a &lt; b</pre>
+
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="nd">@params</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">test_less_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span>
+</pre></div>
 </div>
 <p>Parameters in the list may be defined as simple values, or as
 tuples. To pass a tuple as a simple value, wrap it in another tuple.</p>

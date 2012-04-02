@@ -325,9 +325,16 @@
 <span class="n">main</span> <span class="o">=</span> <span class="n">PluggableTestProgram</span>
 
 
-<span class="k">def</span> <span class="nf">discover</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="discover"><a class="viewcode-back" href="../../dev/main.html#nose2.main.discover">[docs]</a><span class="k">def</span> <span class="nf">discover</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main entry point for test discovery.</span>
+
+<span class="sd">    Running discover calls :class:`nose2.main.PluggableTestProgram`,</span>
+<span class="sd">    passing through all arguments and keyword arguments **except module**:</span>
+<span class="sd">    ``module`` is discarded, to force test discovery.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="k">return</span> <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

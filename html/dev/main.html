@@ -220,6 +220,15 @@ before plugins are loaded.</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="nose2.main.discover">
+<tt class="descclassname">nose2.main.</tt><tt class="descname">discover</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/nose2/main.html#discover"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nose2.main.discover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point for test discovery.</p>
+<p>Running discover calls <a class="reference internal" href="#nose2.main.PluggableTestProgram" title="nose2.main.PluggableTestProgram"><tt class="xref py py-class docutils literal"><span class="pre">nose2.main.PluggableTestProgram</span></tt></a>,
+passing through all arguments and keyword arguments <strong>except module</strong>:
+<tt class="docutils literal"><span class="pre">module</span></tt> is discarded, to force test discovery.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="nose2.main.main">
 <tt class="descclassname">nose2.main.</tt><tt class="descname">main</tt><a class="headerlink" href="#nose2.main.main" title="Permalink to this definition">¶</a></dt>

@@ -101,6 +101,12 @@ These hooks are called for registered plugins only.
    loader to skip the module. Set ``event.handled`` to True and return
    True to cause the loader to load the module.
 
+.. function :: generateModuleTests(self, event)
+
+   :param event: A :class:`nose2.events.GenerateModuleTestsEvent` instance
+
+   FIXME
+
 .. function :: loadTestsFromModule(self, event)
 
    :param event: A :class:`nose2.events.LoadFromModuleEvent` instance

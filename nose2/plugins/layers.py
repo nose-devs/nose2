@@ -1,7 +1,5 @@
-import inspect
-
 from nose2 import events
-from nose2.compat import unittest
+from nose2.suite import LayerSuite
 
 
 class Layers(events.Plugin):
@@ -15,6 +13,7 @@ class Layers(events.Plugin):
             event.suite, self.session.testLoader.suiteClass)
 
     def _sortByLayers(self, suite, suiteClass):
+        # FIXME pass session to all suites
         # top-level suite that we'll return
         top = suiteClass()
         # first find all of the layers mentioned
@@ -61,7 +60,6 @@ class Layers(events.Plugin):
                         layers[outer] = LayerSuite(layer=outer)
                     seen.add(inner)
 
-
         # finally build the top-level suite
         self._treeToSuite(tree, None, top, layers)
 
@@ -93,80 +91,3 @@ class Layers(events.Plugin):
         return out
 
 
-#
-# Layer suite class
-#
-class LayerSuite(unittest.BaseTestSuite):
-    def __init__(self, tests=(), layer=None):
-        super(LayerSuite, self).__init__(tests)
-        self.layer = layer
-        self.wasSetup = False
-
-    def run(self, result):
-        self.setUp()
-        try:
-            for test in self:
-                if result.shouldStop:
-                    break
-                self.setUpTest(test)
-                try:
-                    test(result)
-                finally:
-                    self.tearDownTest(test)
-        finally:
-            if self.wasSetup:
-                self.tearDown()
-
-    def setUp(self):
-        if self.layer is None:
-            return
-        setup = getattr(self.layer, 'setUp', None)
-        if setup:
-            setup()
-        self.wasSetup = True
-
-    def setUpTest(self, test):
-        if self.layer is None:
-            return
-        # skip suites, to ensure test setup only runs once around each test
-        # even for sub-layer suites inside this suite.
-        try:
-            iter(test)
-        except TypeError:
-            # ok, not a suite
-            pass
-        else:
-            # suite-like enough for skipping
-            return
-
-        setup = getattr(self.layer, 'testSetUp', None)
-        if setup:
-            if getattr(test, '_layer_wasSetUp', False):
-                return
-            args, _, _, _ = inspect.getargspec(setup)
-            if len(args) > 1:
-                setup(test)
-            else:
-                setup()
-        test._layer_wasSetUp = True
-
-    def tearDownTest(self, test):
-        if self.layer is None:
-            return
-        if not getattr(test, '_layer_wasSetUp', None):
-            return
-        teardown = getattr(self.layer, 'testTearDown', None)
-        if teardown:
-            args, _, _, _ = inspect.getargspec(teardown)
-            if len(args) > 1:
-                teardown(test)
-            else:
-                teardown()
-        delattr(test, '_layer_wasSetUp')
-
-    def tearDown(self):
-        if self.layer is None:
-            return
-        teardown = getattr(self.layer, 'tearDown', None)
-        if teardown:
-            teardown()

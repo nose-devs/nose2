@@ -9,6 +9,7 @@ User's Guide
    configuration
    differences
    plugins
+   tools
    changelog
 
 Plugin Developer's Guide

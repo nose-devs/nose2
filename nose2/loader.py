@@ -36,6 +36,8 @@ class PluggableTestLoader(object):
         Fires :func:`loadTestsFromModule` hook.
 
         """
+        gen = events.GenerateModuleTestsEvent(self, module)
+        self.session.hooks.generateModuleTests(gen)
         evt = events.LoadFromModuleEvent(self, module)
         result = self.session.hooks.loadTestsFromModule(evt)
         if evt.handled:

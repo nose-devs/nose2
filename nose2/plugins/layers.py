@@ -46,11 +46,6 @@ class Layers(events.Plugin):
                 # layer is top-level
                 self._addToTree(tree, ly, None)
             else:
-                #inner, outer = ly, deps.pop()
-                #self._addToTree(tree, inner, outer)
-                #if outer not in layers:
-                #    remaining.append(outer)
-                #    layers[outer] = LayerSuite(layer=outer)
                 outer = ly
                 while deps:
                     inner, outer = outer, deps.pop()

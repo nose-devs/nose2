@@ -260,7 +260,6 @@ class PluginInterface(object):
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
         'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
         'afterInteraction', 'createTests', 'afterTestRun',
-        'generateModuleTests',
         # ... etc?
         )
     hookClass = Hook
@@ -586,29 +585,6 @@ class TestOutcomeEvent(Event):
         self.longLabel = longLabel
         super(TestOutcomeEvent, self).__init__(**kw)
 
-
-class GenerateModuleTestsEvent(Event):
-    """Event fired before module tests are loaded.
-
-    .. attribute :: loader
-
-       Test loader instance
-
-    .. attribute :: module
-
-       The module whose tests are to be loaded
-
-    Plugins may set ``handled`` on this event to prevent other plugins
-    from manipulating the contents of the module.
-
-
-    """
-    _attrs = Event._attrs + ('loader', 'module')
-
-    def __init__(self, loader, module, **kw):
-        self.loader = loader
-        self.module = module
-        super(GenerateModuleTestsEvent, self).__init__(**kw)
 
 class LoadFromModuleEvent(Event):
     """Event fired when a test module is loaded.

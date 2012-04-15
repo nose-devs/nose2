@@ -1,0 +1,7 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+install: pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --use-mirrors
+script: python -m nose2.__main__

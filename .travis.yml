@@ -5,4 +5,4 @@ python:
   - "3.2"
   - "pypy"
 install: pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --use-mirrors
-script: ./bin/nose2
+script: python -m nose2.__main__

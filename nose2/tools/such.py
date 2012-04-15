@@ -48,10 +48,10 @@ class Scenario(object):
         return func
 
     def has_test_setup(self, func):
-        pass # FIXME
+        self._group.addTestSetUp(func)
 
     def has_test_teardown(self, func):
-        pass # FIXME
+        self._group.addTestTearDown(func)
 
     def should(self, desc):
         def decorator(f):
@@ -99,6 +99,28 @@ class Scenario(object):
             _test.description = case.description
             _test.case = case
             attr[name] = _test
+
+        setups = group._test_setups[:]
+        teardowns = group._test_teardowns[:]
+        if setups:
+            def setUp(self):
+                for func in setups:
+                    args, _, _, _ = inspect.getargspec(func)
+                    if args:
+                        func(self)
+                    else:
+                        func()
+            attr['setUp'] = setUp
+        if teardowns:
+            def tearDown(self):
+                for func in teardowns:
+                    args, _, _, _ = inspect.getargspec(func)
+                    if args:
+                        func(self)
+                    else:
+                        func()
+            attr['tearDown'] = tearDown
+
         return type(group.description, (unittest.TestCase,), attr)
 
     def _makeLayer(self, group, parent_layer=None):
@@ -137,6 +159,8 @@ class Group(object):
         self._cases = []
         self._setups = []
         self._teardowns = []
+        self._test_setups = []
+        self._test_teardowns = []
         self._children = []
 
     def addCase(self, case):
@@ -150,6 +174,12 @@ class Group(object):
 
     def addTeardown(self, func):
         self._teardowns.append(func)
+
+    def addTestSetUp(self, func):
+        self._test_setups.append(func)
+
+    def addTestTearDown(self, func):
+        self._test_teardowns.append(func)
 
     def fullDescription(self):
         d = []

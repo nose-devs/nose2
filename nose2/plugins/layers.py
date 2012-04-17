@@ -1,5 +1,11 @@
+import re
+
 from nose2 import events
 from nose2.suite import LayerSuite
+
+
+BRIGHT = r'\033[1m'
+RESET = r'\033[0m'
 
 
 class Layers(events.Plugin):
@@ -93,6 +99,7 @@ class LayerReporter(events.Plugin):
 
     def __init__(self):
         self.indent = self.config.as_str('indent', '  ')
+        self.colors = self.config.as_bool('colors', False)
         self.layersReported = set()
 
     def reportStartTest(self, event):
@@ -105,10 +112,26 @@ class LayerReporter(events.Plugin):
         for ix, lys in enumerate(self.ancestry(layer)):
             for layer in lys:
                 if layer not in self.layersReported:
-                    desc = getattr(layer, 'description', layer.__name__)
+                    desc = self.describeLayer(layer)
                     event.stream.writeln('%s%s' % (self.indent * ix, desc))
                     self.layersReported.add(layer)
         event.stream.write(self.indent * (ix+1))
+
+    def describeLayer(self, layer):
+        return self.format(getattr(layer, 'description', layer.__name__))
+
+    def format(self, st):
+        # FIXME
+        if self.colors:
+            return re.sub(r'\*([^*]+)\*', r'%s\1%s' % (BRIGHT, RESET), st)
+        return st
+
+    def describeTest(self, event):
+        if hasattr(event.test, 'methodDescription'):
+            event.description = self.format(event.test.methodDescription())
+        if event.errorList and hasattr(event.test, 'layer'):
+            # walk back layers to build full description
+            pass
 
     def ancestry(self, layer):
         layers = [[layer]]

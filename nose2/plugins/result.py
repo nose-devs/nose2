@@ -116,7 +116,7 @@ class ResultReporter(events.Plugin):
             return
         if self.session.verbosity > 1:
             # allow other plugins to override/spy on stream
-            evt.stream.write(self._getDescription(event.test))
+            evt.stream.write(self._getDescription(event.test, errorList=False))
             evt.stream.write(' ... ')
             evt.stream.flush()
 
@@ -163,7 +163,7 @@ class ResultReporter(events.Plugin):
 
     def _printErrorList(self, flavour, events_, stream):
         for event in events_:
-            desc = self._getDescription(event.test)
+            desc = self._getDescription(event.test, errorList=True)
             err = self._getOutcomeDetail(event)
             stream.writeln(self.separator1)
             stream.writeln("%s: %s" % (flavour, desc))
@@ -221,16 +221,16 @@ class ResultReporter(events.Plugin):
 
         self.session.hooks.afterSummaryReport(reportEvent)
 
-    def _getDescription(self, test):
-        event = events.DescribeTestEvent(test)
-        self.session.hooks.describeTest(event)
-        if event.description:
-            return event.description
+    def _getDescription(self, test, errorList):
         doc_first_line = test.shortDescription()
         if self.descriptions and doc_first_line:
-            return '\n'.join((str(test), doc_first_line))
+            desc = '\n'.join((str(test), doc_first_line))
         else:
-            return str(test)
+            desc = str(test)
+        event = events.DescribeTestEvent(
+            test, description=desc, errorlist=errorList)
+        self.session.hooks.describeTest(event)
+        return event.description
 
     def _getOutcomeDetail(self, event):
         evt = events.OutcomeDetailEvent(event)

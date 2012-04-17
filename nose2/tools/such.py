@@ -1,6 +1,5 @@
 from contextlib import contextmanager
 import inspect
-import re
 
 from nose2.compat import unittest
 
@@ -9,8 +8,19 @@ __unittest = True
 
 
 @contextmanager
-def A(description, colors=True):
-    yield Scenario(description, colors)
+def A(description):
+    """Test scenario context manager.
+
+    Returns a :class:`nose2.tools.such.Scenario` instance,
+    which by convention is bound to ``it``:
+
+    .. code-block :: python
+
+      with such.A('test scenario') as it:
+          # tests and fixtures
+
+    """
+    yield Scenario(description)
 
 
 class Helper(unittest.TestCase):
@@ -20,19 +30,21 @@ class Helper(unittest.TestCase):
 
 helper = Helper()
 
-BRIGHT = r'\033[1m'
-RESET = r'\033[0m'
-
 
 class Scenario(object):
+    """A test scenario.
+
+    A test scenario defines a set of fixtures and tests
+    that depend on those fixtures.
+    """
     _helper = helper
 
-    def __init__(self, description, colors=True):
-        self.colors = colors
+    def __init__(self, description):
         self._group = Group('A %s' % description, 0)
 
     @contextmanager
     def having(self, description):
+        """Define a new fixture under the current fixture"""
         last = self._group
         self._group = self._group.child(
             "having %s" % description)
@@ -62,11 +74,6 @@ class Scenario(object):
         if type(desc) == type(decorator):
             return decorator(desc)
         return decorator
-
-    def format(self, st):
-        if self.colors:
-            return re.sub(r'\*([^*]+)\*', r'%s\1%s' % (BRIGHT, RESET), st)
-        return st
 
     def __getattr__(self, attr):
         return getattr(self._helper, attr)
@@ -120,6 +127,10 @@ class Scenario(object):
                     else:
                         func()
             attr['tearDown'] = tearDown
+
+        def methodDescription(self):
+            return getattr(self, self._testMethodName).description
+        attr['methodDescription'] = methodDescription
 
         return type(group.description, (unittest.TestCase,), attr)
 

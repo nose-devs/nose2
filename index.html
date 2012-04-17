@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Nose2 : The successor to nose, based on unittest2" />
+    <meta name="description" content="nose2 : nicer testing for python, reloaded" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -16,10 +16,14 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/jpellerin/nose2">Fork Me on GitHub</a>
+          <section id="banners">
+            <a id="docs_banner" href="http://readthedocs.org/docs/nose2/en/latest/">Read the docs</a>
+            <a id="forkme_banner" href="https://github.com/jpellerin/nose2">Fork Me on GitHub</a>
 
-          <h1 id="project_title">Nose2</h1>
-          <h2 id="project_tagline">The successor to nose, based on unittest2</h2>
+          </section>
+
+          <h1 id="project_title">nose2</h1>
+          <h2 id="project_tagline">is nicer testing for python, reloaded.</h2>
 
           <section id="downloads">
             <a class="zip_download_link" href="https://github.com/jpellerin/nose2/zipball/master">Download this project as a .zip file</a>
@@ -31,11 +35,50 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>nose2</h1>
+        <h3>Install nose2</h3>
 
-<p>placeholder content</p>
+        <p><code>pip install nose2</code></p>
 
-<p><code>pip install nose2</code></p>
+        <h3>Write some tests</h3>
+
+        <div class="highlight"><pre><span class="kn">from</span> <span class="nn">nose2.compat</span> <span class="kn">import</span> <span class="n">unittest</span>
+<span class="kn">from</span> <span class="nn">nose2.tools</span> <span class="kn">import</span> <span class="n">params</span>
+
+
+<span class="k">def</span> <span class="nf">tests_can_be_functions</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="bp">True</span>
+
+
+<span class="k">def</span> <span class="nf">tests_can_be_generators</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">val</span> <span class="o">==</span> <span class="n">val</span><span class="p">,</span> <span class="s">&quot;Identity failure!&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">check</span><span class="p">,</span> <span class="n">i</span>
+
+
+<span class="nd">@params</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">tests_can_take_parameters</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;How&#39;d that get here?&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">TestsCanBeUnittestTestCases</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">test_one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TestsCanBePlainClasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">me_too</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">me_too</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Not me too?&quot;</span>
+</pre></div>
+
+        <h3><a href="http://readthedocs.org/docs/nose2/en/latest/">Read more</a></h3>
+
       </section>
     </div>
 

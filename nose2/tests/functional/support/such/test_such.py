@@ -8,7 +8,7 @@ from nose2.tools import such
 # and will typically bind the test declaration to a variable with
 # a name that makes nice sentences, like 'this' or 'it'.
 #
-with such.A('thing that tests stuff') as it:
+with such.A('system with complex setup') as it:
 
     #
     # Each layer of tests can define setup and teardown methods.
@@ -40,7 +40,7 @@ with such.A('thing that tests stuff') as it:
     # one that depends on the layer(s) above it. Tests in this
     # new layer inherit all of the fixtures of the layer above.
     #
-    with it.having('some thing that is whatever'):
+    with it.having('an expensive fixture'):
         @it.has_setup
         def setup():
             it.things.append(2)
@@ -110,11 +110,7 @@ with such.A('thing that tests stuff') as it:
                 assert it.things[-1] == 99
                 assert it.is_funny
 
-            @it.should('also do something else again')
-            def test():
-                assert it.is_funny
-
-            @it.should('go get me a sandwich')
+            @it.should('have another test')
             def test():
                 assert it.is_funny
 

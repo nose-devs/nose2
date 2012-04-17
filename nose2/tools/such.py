@@ -140,6 +140,7 @@ class Scenario(object):
                 teardown()
 
         attr = {
+            'description': group.description,
             'setUp': classmethod(setUp),
             'tearDown': classmethod(tearDown),
             'setups': group._setups[:],

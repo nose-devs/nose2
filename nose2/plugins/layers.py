@@ -86,3 +86,43 @@ class Layers(events.Plugin):
         return out
 
 
+class LayerReporter(events.Plugin):
+    commandLineSwitch = (
+        None, 'layer-reporter', 'Add layer information to test reports')
+    configSection = 'layer-reporter'
+
+    def __init__(self):
+        self.indent = self.config.as_str('indent', '  ')
+        self.layersReported = set()
+
+    def reportStartTest(self, event):
+        if self.session.verbosity < 2:
+            return
+        test = event.testEvent.test
+        layer = getattr(test, 'layer', None)
+        if not layer:
+            return
+        for ix, lys in enumerate(self.ancestry(layer)):
+            for layer in lys:
+                if layer not in self.layersReported:
+                    desc = getattr(layer, 'description', layer.__name__)
+                    event.stream.writeln('%s%s' % (self.indent * ix, desc))
+                    self.layersReported.add(layer)
+        event.stream.write(self.indent * (ix+1))
+
+    def ancestry(self, layer):
+        layers = [[layer]]
+        bases = [base for base in layer.__bases__
+                 if base is not object]
+        while bases:
+            layers.append(bases)
+            seen = set()
+            newbases = []
+            for b in bases:
+                for bb in b.__bases__:
+                    if bb is not object and bb not in seen:
+                        newbases.append(bb)
+            bases = newbases
+        layers.reverse()
+        return layers
+

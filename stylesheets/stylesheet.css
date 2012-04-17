@@ -349,34 +349,25 @@ Full-Width Styles
   background: url('../images/icon_download.png') no-repeat 0% 90%;
 }
 
-.zip_download_link {
+.download_link {
   display: block;
   float: right;
   width: 90px;
   height:70px;
-  text-indent: -5000px;
-  overflow: hidden;
+  color: white;
+  font-weight: bold;
   background: url(../images/sprite_download.png) no-repeat bottom left;
 }
 
-.tar_download_link {
-  display: block;
-  float: right;
-  width: 90px;
-  height:70px;
-  text-indent: -5000px;
-  overflow: hidden;
-  background: url(../images/sprite_download.png) no-repeat bottom right;
-  margin-left: 10px;
-}
-
-.zip_download_link:hover {
+.download_link:hover {
   background: url(../images/sprite_download.png) no-repeat top left;
 }
 
-.tar_download_link:hover {
-  background: url(../images/sprite_download.png) no-repeat top right;
-}
+.download_link span {
+   position: relative;
+   top: 35px;
+   left: 35px;
+ }
 
 #main_content_wrap {
   background: #f2f2f2;

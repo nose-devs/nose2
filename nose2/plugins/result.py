@@ -228,7 +228,7 @@ class ResultReporter(events.Plugin):
         else:
             desc = str(test)
         event = events.DescribeTestEvent(
-            test, description=desc, errorlist=errorList)
+            test, description=desc, errorList=errorList)
         self.session.hooks.describeTest(event)
         return event.description
 

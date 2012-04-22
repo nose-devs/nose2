@@ -99,7 +99,11 @@ class LayerReporter(events.Plugin):
 
     def __init__(self):
         self.indent = self.config.as_str('indent', '  ')
-        self.colors = self.config.as_bool('colors', False)
+        self.colors = self.config.as_bool('colors', True)
+        self.highlight_words = self.config.as_list('highlight-words',
+                                                   ['A', 'having', 'should'])
+        self.highlight_re = re.compile(
+            r'\b(%s)\b' % '|'.join(self.highlight_words))
         self.layersReported = set()
 
     def reportStartTest(self, event):
@@ -121,9 +125,8 @@ class LayerReporter(events.Plugin):
         return self.format(getattr(layer, 'description', layer.__name__))
 
     def format(self, st):
-        # FIXME
         if self.colors:
-            return re.sub(r'\*([^*]+)\*', r'%s\1%s' % (BRIGHT, RESET), st)
+            return self.highlight_re.sub(r'%s\1%s' % (BRIGHT, RESET), st)
         return st
 
     def describeTest(self, event):
@@ -131,7 +134,18 @@ class LayerReporter(events.Plugin):
             event.description = self.format(event.test.methodDescription())
         if event.errorList and hasattr(event.test, 'layer'):
             # walk back layers to build full description
-            pass
+            self.describeLayers(event)
+
+    def describeLayers(self, event):
+        desc = [event.description]
+        base = event.test.layer
+        print "base", base, base.__mro__
+        for layer in base.__mro__:
+            if layer is object:
+                break
+            desc.append(self.describeLayer(layer))
+        desc.reverse()
+        event.description = ' '.join(desc)
 
     def ancestry(self, layer):
         layers = [[layer]]

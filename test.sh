@@ -1,7 +1,10 @@
 #!/bin/bash
 
-. ~/.local/bin/virtualenvwrapper.sh
-workon nose2
+
+command -v nose2 >/dev/null >&2 || {
+    source /usr/local/bin/virtualenvwrapper.sh
+    workon nose2
+}
 
 nargs=""
 skip="no"

@@ -137,7 +137,6 @@ class LayerReporter(events.Plugin):
     def describeLayers(self, event):
         desc = [event.description]
         base = event.test.layer
-        print "base", base, base.__mro__
         for layer in base.__mro__:
             if layer is object:
                 break

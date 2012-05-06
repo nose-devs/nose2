@@ -19,8 +19,6 @@ class Layers(events.Plugin):
             event.suite, self.session.testLoader.suiteClass)
 
     def _sortByLayers(self, suite, suiteClass):
-        # FIXME pass session to all suites
-        # top-level suite that we'll return
         top = suiteClass()
         # first find all of the layers mentioned
         layers = {}

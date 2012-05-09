@@ -19,7 +19,6 @@ class TestLayers(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(failures=7\)')
         self.assertEqual(proc.poll(), 1)
 
-
     def test_layer_reporter_output(self):
         proc = self.runIn(
             'scenario/layers',
@@ -45,3 +44,21 @@ Base
         for line in expect:
             self.assertTestRunOutputMatches(proc, stderr=line)
         self.assertEqual(proc.poll(), 0)
+
+    def test_layer_reporter_error_output(self):
+        proc = self.runIn(
+            'scenario/layers_with_errors',
+            '--plugin=nose2.plugins.layers',
+            '--layer-reporter')
+        expect = [
+            r'ERROR: fixture with a value test_err '
+            '\(test_layers_with_errors.Test\)',
+            'ERROR: A test scenario with errors should check for an attribute '
+            'that does not exist and raise an error',
+            r'FAIL: fixture with a value test_fail '
+            '\(test_layers_with_errors.Test\)',
+            'FAIL: A test scenario with errors should check that value == 2 '
+            'and fail']
+        for line in expect:
+            self.assertTestRunOutputMatches(proc, stderr=line)
+        self.assertEqual(proc.poll(), 1)

@@ -44,7 +44,17 @@ class Scenario(object):
 
     @contextmanager
     def having(self, description):
-        """Define a new fixture under the current fixture"""
+        """Define a new group under the current group.
+
+        Fixtures and tests defined within the block will
+        belong to the new group.
+
+        .. code-block :: python
+
+           with it.having('a description of this group'):
+               # ...
+
+        """
         last = self._group
         self._group = self._group.child(
             "having %s" % description)
@@ -52,20 +62,117 @@ class Scenario(object):
         self._group = last
 
     def has_setup(self, func):
+        """Add a setup method to this group.
+
+        The setup method will run once, before any of the
+        tests in the containing group.
+
+        A group may define any number of setup functions. They
+        will execute in the order in which they are defined.
+
+        .. code-block :: python
+
+           @it.has_setup
+           def setup():
+               # ...
+
+        """
         self._group.addSetup(func)
         return func
 
     def has_teardown(self, func):
+        """Add a teardown method to this group.
+
+        The teardown method will run once, after all of the
+        tests in the containing group.
+
+        A group may define any number of teardown functions. They
+        will execute in the order in which they are defined.
+
+        .. code-block :: python
+
+           @it.has_teardown
+           def teardown():
+               # ...
+
+        """
         self._group.addTeardown(func)
         return func
 
     def has_test_setup(self, func):
+        """Add a test case setup method to this group.
+
+        The setup method will run before each of the
+        tests in the containing group.
+
+        A group may define any number of test case setup
+        functions. They will execute in the order in which they are
+        defined.
+
+        Test setup functions may optionally take one argument. If
+        they do, they will be passed the :class:`unittest.TestCase`
+        instance generated for the test.
+
+        .. code-block :: python
+
+           @it.has_test_setup
+           def setup(case):
+               # ...
+
+        """
         self._group.addTestSetUp(func)
 
     def has_test_teardown(self, func):
+        """Add a test case teardown method to this group.
+
+        The teardown method will run before each of the
+        tests in the containing group.
+
+        A group may define any number of test case teardown
+        functions. They will execute in the order in which they are
+        defined.
+
+        Test teardown functions may optionally take one argument. If
+        they do, they will be passed the :class:`unittest.TestCase`
+        instance generated for the test.
+
+        .. code-block :: python
+
+           @it.has_test_teardown
+           def teardown(case):
+               # ...
+
+        """
         self._group.addTestTearDown(func)
 
     def should(self, desc):
+        """Define a test case.
+
+        Each function marked with this decorator becomes a test
+        case in the current group.
+
+        The decorator takes one optional argument, the description
+        of the test case: what it **should** do. If this argument
+        is not provided, the docstring of the decorated function
+        will be used as the test case description.
+
+        Test functions may optionally take one argument. If they do,
+        they will be passed the :class:`unittest.TestCase` instance generated
+        for the test. They can use this TestCase instance to execute assert
+        methods, among other things.
+
+        .. code-block :: python
+
+           @it.should('do this')
+           def dothis(case):
+               # ....
+
+           @it.should
+           def dothat():
+               "do that also"
+               # ....
+
+        """
         def decorator(f):
             _desc = desc if isinstance(desc, basestring) else f.__doc__
             case = Case(self._group, f, "should %s" % _desc)
@@ -79,6 +186,20 @@ class Scenario(object):
         return getattr(self._helper, attr)
 
     def createTests(self, mod):
+        """Generate test cases for this scenario.
+
+        .. warning ::
+
+           You must call this, passing in ``globals()``, to
+           generate tests from the scenario. If you don't
+           call ``createTests``, **no tests will be
+           created**.
+
+        .. code-block :: python
+
+           it.createTests(globals())
+
+        """
         self._makeGroupTest(mod, self._group)
 
     def _makeGroupTest(self, mod, group, parent_layer=None):

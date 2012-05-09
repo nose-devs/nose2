@@ -97,7 +97,7 @@ class LayerReporter(events.Plugin):
 
     def __init__(self):
         self.indent = self.config.as_str('indent', '  ')
-        self.colors = self.config.as_bool('colors', True)
+        self.colors = self.config.as_bool('colors', False)
         self.highlight_words = self.config.as_list('highlight-words',
                                                    ['A', 'having', 'should'])
         self.highlight_re = re.compile(

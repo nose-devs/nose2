@@ -1,6 +1,8 @@
+import types
+
 from docutils import nodes
 from docutils.statemachine import ViewList
-from docutils.parsers.rst import Directive
+from docutils.parsers.rst import Directive, directives
 
 from nose2 import events, session, util
 
@@ -11,25 +13,55 @@ __unittest = True
 
 class AutoPlugin(Directive):
     required_arguments = 1
-    optional_arguments = 0
+    optional_arguments = 1
     final_argument_whitespace = False
     has_content = False
-    option_spec = {}
+    option_spec = {'module': directives.unchanged}
 
     def run(self):
+        plugin_name = self.arguments[0]
+        parent, plugin = util.object_from_name(plugin_name)
+        if isinstance(plugin, types.ModuleType):
+            # document all plugins in module
+            module = plugin
+            mod_name = module.__name__
+            plugins = self.plugins(module)
+
+        else:
+            if 'module' in self.options:
+                mod_name = self.options['module']
+            else:
+                mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
+            plugins = [plugin]
+
+        rst = ViewList()
+        if mod_name:
+            rst.append(u'.. automodule :: %s\n' % mod_name, AD)
+            rst.append(u'', AD)
+
+        for plug in plugins:
+            self.document(rst, plug)
+
+        # parse rst and generate new nodelist
+        state = self.state
+        node = nodes.section()
+        node.document = state.document
+        surrounding_title_styles = state.memo.title_styles
+        surrounding_section_level = state.memo.section_level
+        state.memo.title_styles = []
+        state.memo.section_level = 0
+        state.nested_parse(rst, 0, node, match_titles=1)
+        state.memo.title_styles = surrounding_title_styles
+        state.memo.section_level = surrounding_section_level
+
+        return node.children
+
+    def document(self, rst, plugin):
         ssn = session.Session()
         ssn.configClass = ssn.config = config = ConfigBucket()
         ssn.pluginargs = opts = OptBucket()
-
-        plugin_name = self.arguments[0]
-        parent, plugin = util.object_from_name(plugin_name)
-        # FIXME this is too naive
-        mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
-
-        rst = ViewList()
-        rst.append(u'.. automodule :: %s\n' % mod_name, AD)
-        rst.append(u'', AD)
-
+        plugin_name = plugin.__name__
+        config = ssn.config
         obj = plugin(session=ssn)
         try:
             obj.pluginsLoaded(events.PluginsLoadedEvent([obj]))
@@ -49,24 +81,10 @@ class AutoPlugin(Directive):
                 rst.append('', AD)
 
         # class __doc__
-        self.headline(rst, u'Plugin class reference')
+        self.headline(rst, u'Plugin class reference: %s' % plugin_name)
         rst.append(u'.. autoclass :: %s' % plugin_name, AD)
         rst.append(u'   :members:', AD)
         rst.append(u'', AD)
-
-        # parse rst and generate new nodelist
-        state = self.state
-        node = nodes.section()
-        node.document = state.document
-        surrounding_title_styles = state.memo.title_styles
-        surrounding_section_level = state.memo.section_level
-        state.memo.title_styles = []
-        state.memo.section_level = 0
-        state.nested_parse(rst, 0, node, match_titles=1)
-        state.memo.title_styles = surrounding_title_styles
-        state.memo.section_level = surrounding_section_level
-
-        return node.children
 
     def add_config(self, rst, config):
         headline = u'Configuration [%s]' % config.section
@@ -107,6 +125,18 @@ class AutoPlugin(Directive):
         rst.append(headline, AD)
         rst.append(level * len(headline), AD)
         rst.append(u'', AD)
+
+    def plugins(self, module):
+        for entry in dir(module):
+            try:
+                item = getattr(module, entry)
+            except AttributeError:
+                pass
+            try:
+                if issubclass(item, events.Plugin):
+                    yield item
+            except TypeError:
+                pass
 
 
 def setup(app):

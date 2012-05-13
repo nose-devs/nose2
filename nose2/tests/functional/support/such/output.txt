@@ -1,0 +1,16 @@
+test (test_such.NormalTest) ... ok
+A system with complex setup
+  should do something ... ok
+  having an expensive fixture
+    should do more things ... ok
+    having another precondtion
+      should do that not this ... ok
+      should do this not that ... ok
+    having a different precondition
+      should do something else ... ok
+      should have another test ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.002s
+
+OK

@@ -309,7 +309,7 @@ class Event(object):
 
     """
     _attrs = ('handled',)
-    version = '0.2'
+    version = '0.4'
 
     def __init__(self, **metadata):
         self.handled = False
@@ -924,12 +924,17 @@ class DescribeTestEvent(Event):
        Description of the test case. Plugins can set this to change
        how tests are described in output to users.
 
+    .. attribute :: errorList
+
+       Is the event fired as part of error list output?
+
     """
     _attrs = Event._attrs + ('test', 'description')
 
-    def __init__(self, test, description=None, **kw):
+    def __init__(self, test, description=None, errorList=False, **kw):
         self.test = test
         self.description = description
+        self.errorList = errorList
         super(DescribeTestEvent, self).__init__(**kw)
 
 

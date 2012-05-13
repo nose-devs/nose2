@@ -54,10 +54,12 @@ class FunctionalTestCase(unittest.TestCase):
         if cmd_stdout is None:
             cmd_stdout, cmd_stderr = proc.communicate()
             self._output[proc.pid] = cmd_stdout, cmd_stderr
+        testf = self.assertRegex if hasattr(self, 'assertRegex') \
+            else self.assertRegexpMatches
         if stdout:
-            self.assertRegexpMatches(util.safe_decode(cmd_stdout), stdout)
+            testf(util.safe_decode(cmd_stdout), stdout)
         if stderr:
-            self.assertRegexpMatches(util.safe_decode(cmd_stderr), stderr)
+            testf(util.safe_decode(cmd_stderr), stderr)
 
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)

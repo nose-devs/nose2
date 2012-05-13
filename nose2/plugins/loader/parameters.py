@@ -5,28 +5,7 @@ This plugin implements :func:`getTestCaseNames`,
 :func:`loadTestsFromModule`, and :func:`loadTestsFromName` to support
 loading tests from parameterized test functions and methods.
 
-To parameterize a function or test case method, use :func:`nose2.tools.params`:
-
-.. code-block :: python
-
-  import unittest
-
-  from nose2.tools import params
-
-
-  @params(1, 2, 3)
-  def test_nums(num):
-      asset num < 4
-
-
-  class Test(unittest.TestCase):
-
-      @params((1, 2), (2, 3), (4, 5))
-      def test_less_than(self, a, b):
-          assert a < b
-
-Parameters in the list may be defined as simple values, or as
-tuples. To pass a tuple as a simple value, wrap it in another tuple.
+To parameterize a function or test case method, use :func:`nose2.tools.params`.
 
 To address a particular parameterized test via a command-line test name,
 append a colon (':') followed by the index, *starting from 1*, of the

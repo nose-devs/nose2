@@ -203,6 +203,9 @@ def procserver(session_export, conn):
     for testid in gentests(conn):
         if testid is None:
             break
+        # XXX to handle weird cases like layers, need to
+        # deal with the case that testid is something other
+        # than a simple string.
         test = event.loader.loadTestsFromName(testid)
         # xxx try/except?
         rlog.debug("Execute test %s (%s)", testid, test)

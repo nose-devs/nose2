@@ -48,7 +48,7 @@ with such.A('system with complex setup') as it:
         #
         # Tests that take an argument will be passed the
         # unittest.TestCase instance that is generated to wrap
-        # them. Tests can all any and all TestCase methods on this
+        # them. Tests can call any and all TestCase methods on this
         # instance.
         #
         @it.should('do more things')

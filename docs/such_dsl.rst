@@ -78,9 +78,20 @@ And tests are likewise marked with the ``should`` decorator:
 Test cases may optionally take one argument. If they do, they will be
 passed the :class:`unittest.TestCase` instance generated for the
 test. They can use this TestCase instance to execute assert methods,
-among other things.
+among other things. Test functions can also call assert methods on the
+top-level scenario instance, if they don't take the ``case`` argument:
 
-Finally, to actually generate tests, you must call ``createTests`` on
+.. code-block :: python
+
+   @it.should("be able to use the scenario's assert methods")
+   def test():
+       it.assertEqual(something, 'a value')
+
+   @it.should("optionally take an argument")
+   def test(case):
+       case.assertEqual(case.attribute, 'some value')
+
+Finally, to actually generate tests, you **must** call ``createTests`` on
 the top-level scenario instance:
 
 .. code-block :: python
@@ -107,11 +118,11 @@ you would run nose2 like this::
 
   nose2 "test_such.having an expensive fixture.test: should do more things"
 
-As you can see, the **group description** is the **class name**, and
-the **test case description** is the **test case name**. As you can see if
-you run an individual test with the layer reporter active, all of the
-group fixtures execute in proper order when a test is run
-individually::
+That is, for the a generated test case, the **group description** is
+the **class name**, and the **test case description** is the **test
+case name**. As you can see if you run an individual test with the
+layer reporter active, all of the group fixtures execute in proper
+order when a test is run individually::
 
   $ nose2 "test_such.having an expensive fixture.test: should do more things"
   A system with complex setup

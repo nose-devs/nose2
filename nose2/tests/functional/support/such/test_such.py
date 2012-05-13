@@ -98,21 +98,25 @@ with such.A('system with complex setup') as it:
             # and TestCase.tearDown.
             #
             @it.has_test_setup
-            def test_setup():
+            def test_setup(case):
                 it.is_funny = True
+                case.is_funny = True
 
             @it.has_test_teardown
-            def test_teardown():
+            def test_teardown(case):
                 delattr(it, 'is_funny')
+                delattr(case, 'is_funny')
 
             @it.should('do something else')
-            def test():
+            def test(case):
                 assert it.things[-1] == 99
                 assert it.is_funny
+                assert case.is_funny
 
             @it.should('have another test')
-            def test():
+            def test(case):
                 assert it.is_funny
+                assert case.is_funny
 
 #
 # To convert the layer definitions into test cases, you have to call

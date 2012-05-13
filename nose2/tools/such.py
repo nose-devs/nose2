@@ -1,6 +1,8 @@
 from contextlib import contextmanager
 import inspect
 
+import six
+
 from nose2.compat import unittest
 
 
@@ -174,7 +176,7 @@ class Scenario(object):
 
         """
         def decorator(f):
-            _desc = desc if isinstance(desc, basestring) else f.__doc__
+            _desc = desc if isinstance(desc, six.string_types) else f.__doc__
             case = Case(self._group, f, "should %s" % _desc)
             self._group.addCase(case)
             return case

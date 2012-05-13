@@ -87,7 +87,7 @@ class Outer(unittest.TestCase):
     layer = Base
 
     def test(self):
-        self.assertDictContainsSubset({'base': 'setup'}, STATE)
+        self.assertEqual(STATE.get('base'), 'setup')
 
 
 class InnerA(unittest.TestCase):
@@ -100,24 +100,24 @@ class InnerA(unittest.TestCase):
         del STATE['innerA.test']
 
     def test(self):
-        self.assertDictContainsSubset(
-            {'base': 'setup',
-             'layerA': 'setup',
-             'innerA.test': 'setup',
-             'layerA.test': 'setup'},
-            STATE)
+        expect = {'base': 'setup',
+                  'layerA': 'setup',
+                  'innerA.test': 'setup',
+                  'layerA.test': 'setup'}
+        for k, v in expect.items():
+            self.assertEqual(STATE.get(k), v)
 
 
 class InnerA_1(unittest.TestCase):
     layer = LayerA_1
 
     def test(self):
-        self.assertDictContainsSubset(
-            {'base': 'setup',
-             'layerA': 'setup',
-             'layerA_1': 'setup',
-             'layerA.test': 'setup'},
-            STATE)
+        expect = {'base': 'setup',
+                  'layerA': 'setup',
+                  'layerA_1': 'setup',
+                  'layerA.test': 'setup'}
+        for k, v in expect.items():
+            self.assertEqual(STATE.get(k), v)
 
 
 class InnerB(unittest.TestCase):
@@ -134,33 +134,33 @@ class InnerB_1(unittest.TestCase):
     layer = LayerB_1
 
     def test(self):
-        self.assertDictContainsSubset(
-            {'base': 'setup',
-             'layerB': 'setup',
-             'layerB_1': 'setup'},
-            STATE)
+        expect = {'base': 'setup',
+                  'layerB': 'setup',
+                  'layerB_1': 'setup'}
+        for k, v in expect.items():
+            self.assertEqual(STATE.get(k), v)
 
 
 class InnerC(unittest.TestCase):
     layer = LayerC
 
     def test(self):
-        self.assertDictContainsSubset(
-            {'base': 'setup',
-             'layerB': 'setup',
-             'layerC': 'setup',
-             'layerA': 'setup',
-             'layerA.test': 'setup'},
-            STATE)
+        expect = {'base': 'setup',
+                  'layerB': 'setup',
+                  'layerC': 'setup',
+                  'layerA': 'setup',
+                  'layerA.test': 'setup'}
+        for k, v in expect.items():
+            self.assertEqual(STATE.get(k), v)
 
     def test2(self):
-        self.assertDictContainsSubset(
-            {'base': 'setup',
-             'layerB': 'setup',
-             'layerC': 'setup',
-             'layerA': 'setup',
-             'layerA.test': 'setup'},
-            STATE)
+        expect = {'base': 'setup',
+                  'layerB': 'setup',
+                  'layerC': 'setup',
+                  'layerA': 'setup',
+                  'layerA.test': 'setup'}
+        for k, v in expect.items():
+            self.assertEqual(STATE.get(k), v)
 
 
 class InnerD(unittest.TestCase):

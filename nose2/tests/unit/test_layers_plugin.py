@@ -30,8 +30,9 @@ class TestLayers(TestCase):
         suite = unittest.TestSuite([T2('test'), T1('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)']]]
+        expect = self._listset(
+            [['test (nose2.tests.unit.test_layers_plugin.T1)',
+              ['test (nose2.tests.unit.test_layers_plugin.T2)']]])
         self.assertEqual(self.names(event.suite), expect)
 
     def test_multiple_inheritance(self):
@@ -57,9 +58,10 @@ class TestLayers(TestCase):
         suite = unittest.TestSuite([T2('test'), T1('test'), T3('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)'],
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)']]]
+        expect = self._listset(
+            [['test (nose2.tests.unit.test_layers_plugin.T1)',
+              ['test (nose2.tests.unit.test_layers_plugin.T3)'],
+              ['test (nose2.tests.unit.test_layers_plugin.T2)']]])
         self.assertEqual(self.names(event.suite), expect)
 
 
@@ -99,17 +101,13 @@ class TestLayers(TestCase):
                                     T4('test'), T5('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T2)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T1)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T3)'],
-                    ['test (nose2.tests.unit.test_layers_plugin.T4)',
-                     ['test (nose2.tests.unit.test_layers_plugin.T5)']]]]]
-        expect = sorted([sorted(sorted(sub) for sub in items)
-                         for items in expect])
-        names = sorted([sorted(sorted(sub) for sub in items)
-                        for items in self.names(event.suite)])
-        for ix, namelist in enumerate(names):
-            self.assertItemsEqual(namelist, expect[ix])
+        expect = self._listset(
+            [['test (nose2.tests.unit.test_layers_plugin.T2)',
+              ['test (nose2.tests.unit.test_layers_plugin.T1)',
+               ['test (nose2.tests.unit.test_layers_plugin.T3)'],
+               ['test (nose2.tests.unit.test_layers_plugin.T4)',
+                ['test (nose2.tests.unit.test_layers_plugin.T5)']]]]])
+        self.assertEqual(self.names(event.suite), expect)
 
     def test_mixed_layers_no_layers(self):
         class L1(object):
@@ -132,16 +130,26 @@ class TestLayers(TestCase):
         suite = unittest.TestSuite([T2('test'), T1('test'), T3('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = ['test (nose2.tests.unit.test_layers_plugin.T3)',
-                  ['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)']]]
+        expect = self._listset(
+            ['test (nose2.tests.unit.test_layers_plugin.T3)',
+             ['test (nose2.tests.unit.test_layers_plugin.T1)',
+              ['test (nose2.tests.unit.test_layers_plugin.T2)']]])
         self.assertEqual(self.names(event.suite), expect)
 
     def names(self, suite):
-        n = []
+        n = set([])
         for t in suite:
             if isinstance(t, unittest.TestCase):
-                n.append(str(t))
+                n.add(str(t))
             else:
-                n.append(self.names(t))
-        return n
+                n.add(self.names(t))
+        return frozenset(n)
+
+    def _listset(self, l):
+        n = set([])
+        for t in l:
+            if isinstance(t, list):
+                n.add(self._listset(t))
+            else:
+                n.add(t)
+        return frozenset(n)

@@ -4,7 +4,7 @@
 
 .. note ::
 
-   New in version X.XX
+   New in version 0.4
 
 Such is a DSL for writing tests with expensive, nested fixtures --
 which typically means functional tests. It requires the layers plugin

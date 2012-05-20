@@ -4,7 +4,7 @@ Organizing Test Fixtures into Layers
 
 .. note ::
 
-   New in version X.X
+   New in version 0.4
 
 Layers allow more flexible organization of test fixtures than test-,
 class- and module- level fixtures. Layers in nose2 are inspired by

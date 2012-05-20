@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4
+
+* New plugin: Added nose2.plugins.layers to support Zope testing style
+  fixture layers.
+
+* New tool: Added nose2.tools.such, a spec-like DSL for writing tests
+  with layers.
+
 0.3
 ---
 

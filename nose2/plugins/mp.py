@@ -80,6 +80,10 @@ class MultiProcess(events.Plugin):
                     getattr(self.session.hooks, hook)(event)
         for proc, conn in procs:
             conn.close()
+        # ensure we wait until all processes are done before
+        # exiting, to allow plugins running there to finalize
+        for proc, _ in procs:
+            proc.join()
 
     def _startProcs(self):
         # XXX create session export

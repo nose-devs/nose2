@@ -68,6 +68,7 @@ class PluggableTestLoader(object):
         Fires :func:`loadTestsFromName` hook.
 
         """
+        log.debug('loadTestsFromName %s/%s', name, module)
         event = events.LoadFromNameEvent(self, name, module)
         result = self.session.hooks.loadTestsFromName(event)
         if event.handled:

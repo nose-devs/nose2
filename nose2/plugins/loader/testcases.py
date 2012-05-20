@@ -13,13 +13,16 @@ command line.
 # code developed in reference to that module and others within unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
-
+import logging
 import unittest
 
 from nose2 import events, util
 
 
 __unittest = True
+
+
+log = logging.getLogger(__name__)
 
 
 class TestCaseLoader(events.Plugin):
@@ -42,6 +45,7 @@ class TestCaseLoader(events.Plugin):
         """Load tests from event.name if it names a test case/method"""
         name = event.name
         module = event.module
+        log.debug("load %s from %s", name, module)
         try:
             result = util.test_from_name(name, module)
         except (AttributeError, ImportError) as e:

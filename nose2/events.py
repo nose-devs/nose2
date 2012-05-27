@@ -260,6 +260,7 @@ class PluginInterface(object):
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
         'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
         'afterInteraction', 'createTests', 'afterTestRun',
+        'moduleLoadedSuite',
         # ... etc?
         )
     hookClass = Hook
@@ -616,6 +617,16 @@ class LoadFromModuleEvent(Event):
         self.module = module
         self.extraTests = []
         super(LoadFromModuleEvent, self).__init__(**kw)
+
+
+class ModuleSuiteEvent(Event):
+    _attrs = Event._attrs + ('loader', 'module', 'suite')
+
+    def __init__(self, loader, module, suite, **kw):
+        self.loader = loader
+        self.module = module
+        self.suite = suite
+        super(ModuleSuiteEvent, self).__init__(**kw)
 
 
 class LoadFromTestCaseEvent(Event):

@@ -40,8 +40,13 @@ class PluggableTestLoader(object):
         result = self.session.hooks.loadTestsFromModule(evt)
         if evt.handled:
             suite = result or self.suiteClass()
-            return suite
-        return self.suiteClass(evt.extraTests)
+        else:
+            suite = self.suiteClass(evt.extraTests)
+        filterevt = events.ModuleSuiteEvent(self, module, suite)
+        result = self.session.hooks.moduleLoadedSuite(filterevt)
+        if result:
+            return result or self.suiteClass()
+        return filterevt.suite
 
     def loadTestsFromNames(self, testNames, module=None):
         """Load tests from test names.

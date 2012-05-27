@@ -22,3 +22,4 @@ build
 .noseids
 .tox
 .*.sw[nop]
+.dir-locals.el

@@ -28,3 +28,32 @@ FIXME support load_tests protocol
 
 
 """
+import logging
+
+from nose2 import events
+
+
+log = logging.getLogger(__name__)
+
+
+class LoadTestsLoader(events.Plugin):
+    alwaysOn = True
+    configSection = 'load_tests'
+
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
+    def moduleLoadedSuite(self, event):
+        module = event.module
+        load_tests = getattr(module, 'load_tests', None)
+        if not load_tests:
+            return
+        try:
+            event.suite = load_tests(
+                event.loader, event.suite, self.session.testFilePattern)
+        except Exception as exc:
+            log.exception("Failed to load tests from %s via load_tests", module)
+            suite = event.loader.suiteClass()
+            suite.addTest(event.loader.failedLoadTests(module.__name__, exc))
+            event.handled = True
+            return suite

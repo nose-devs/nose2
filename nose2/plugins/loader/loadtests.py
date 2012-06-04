@@ -28,9 +28,11 @@ FIXME support load_tests protocol
 
 
 """
+from fnmatch import fnmatch
 import logging
+import os
 
-from nose2 import events
+from nose2 import events, util
 
 
 log = logging.getLogger(__name__)
@@ -57,3 +59,27 @@ class LoadTestsLoader(events.Plugin):
             suite.addTest(event.loader.failedLoadTests(module.__name__, exc))
             event.handled = True
             return suite
+
+    def matchDirPath(self, event):
+        # if pattern matches, and dir is package
+        # try importing package. if package contains load_tests
+        # return false and set event.handled
+        if (self._match(event.name, event.pattern) and
+            util.ispackage(event.path)):
+            name = util.name_from_path(event.path)
+            module = util.module_from_name(name)
+            if hasattr(module, 'load_tests'):
+                event.handled = True
+                return False
+
+    def matchPatch(self, event):
+        # if filename is __init__ and package part matches
+        # test pattern then return true and set event.handled
+        if (event.name == '__init__.py' and
+            self._match(os.path.basename(os.path.dirname(event.path)),
+                        event.pattern)):
+            event.handled = True
+            return True
+
+    def _match(self, filename, pattern):
+        return fnmatch(filename, pattern)

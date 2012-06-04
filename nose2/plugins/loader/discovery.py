@@ -122,6 +122,11 @@ class DiscoveryLoader(events.Plugin):
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         log.debug("find in dir %s (%s)", full_path, top_level)
+        evt = events.MatchPathEvent(os.path.basename(full_path), full_path,
+                                      self.session.testFilePattern)
+        result = self.session.hooks.matchDirPath(evt)
+        if evt.handled and not result:
+            return
         for path in os.listdir(full_path):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):

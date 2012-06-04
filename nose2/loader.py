@@ -99,6 +99,15 @@ class PluggableTestLoader(object):
         """Sort key for test case test methods."""
         return name.lower()
 
+    def discover(self, start_dir=None, pattern=None):
+        """Compatibility shim for load_tests protocol."""
+        try:
+            oldsd = self.session.startDir
+            self.session.startDir = start_dir
+            return self.loadTestsFromNames([])
+        finally:
+            self.session.startDir = oldsd
+
     def _makeFailedTest(self, classname, methodname, exception):
         def testFailure(self):
             raise exception

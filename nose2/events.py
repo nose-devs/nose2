@@ -252,7 +252,7 @@ class PluginInterface(object):
         'loadTestsFromModule', 'loadTestsFromNames',
         'handleFile', 'startTestRun', 'startTest', 'stopTest',
         'loadTestsFromName', 'loadTestsFromTestCase',
-        'stopTestRun', 'matchPath', 'getTestCaseNames',
+        'stopTestRun', 'matchPath', 'matchDirPath', 'getTestCaseNames',
         'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
         'resultStop', 'setTestOutcome', 'describeTest',
         'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',

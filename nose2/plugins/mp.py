@@ -304,7 +304,7 @@ class RecordingHook(events.Hook):
 class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
     noLogMethods = set(['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
-                        'registerInSubprocess'])
+                        'registerInSubprocess', 'moduleLoadedSuite'])
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()

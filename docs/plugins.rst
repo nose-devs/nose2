@@ -22,6 +22,7 @@ keyword argument.
    plugins/parameters
    plugins/testcases
    plugins/testclasses
+   plugins/loadtests
    plugins/result
    plugins/buffer
    plugins/debugger

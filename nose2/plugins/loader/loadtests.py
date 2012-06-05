@@ -1,6 +1,18 @@
 """
-FIXME docs
+Loader that implements the load_tests protocol.
 
+This plugin implements the load_tests protocol as detailed in the
+documentation for unittest2.
+
+See the `load_tests protocol`_ documentation for more information.
+
+.. warning ::
+
+   Test suites using the load_tests protocol do not work correctly
+   with the multiprocess plugin as of nose2 04. This will be
+   fixed in a future release.
+
+.. _load_tests protocol: http://docs.python.org/library/unittest.html#load-tests-protocol
 """
 from fnmatch import fnmatch
 import logging
@@ -12,6 +24,7 @@ log = logging.getLogger(__name__)
 
 
 class LoadTestsLoader(events.Plugin):
+    """Loader plugin that implements load_tests."""
     alwaysOn = True
     configSection = 'load_tests'
     _loading = False
@@ -20,6 +33,11 @@ class LoadTestsLoader(events.Plugin):
         event.pluginClasses.append(self.__class__)
 
     def moduleLoadedSuite(self, event):
+        """Run load_tests in a module.
+
+        May add to or filter tests loaded in module.
+
+        """
         module = event.module
         load_tests = getattr(module, 'load_tests', None)
         if not load_tests:
@@ -35,6 +53,13 @@ class LoadTestsLoader(events.Plugin):
             return suite
 
     def handleDir(self, event):
+        """Run load_tests in packages.
+
+        If a package itself matches the test file pattern, run
+        load_tests in its __init__.py, and stop default test
+        discovery for that package.
+
+        """
         if self._loading:
             return
 

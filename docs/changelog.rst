@@ -10,6 +10,9 @@ Changelog
 * New tool: Added nose2.tools.such, a spec-like DSL for writing tests
   with layers.
 
+* New plugin: Added nose2.plugins.loader.loadtests to support the
+  unittest2 load_tests protocol.
+
 0.3
 ---
 

@@ -40,8 +40,13 @@ class PluggableTestLoader(object):
         result = self.session.hooks.loadTestsFromModule(evt)
         if evt.handled:
             suite = result or self.suiteClass()
-            return suite
-        return self.suiteClass(evt.extraTests)
+        else:
+            suite = self.suiteClass(evt.extraTests)
+        filterevt = events.ModuleSuiteEvent(self, module, suite)
+        result = self.session.hooks.moduleLoadedSuite(filterevt)
+        if result:
+            return result or self.suiteClass()
+        return filterevt.suite
 
     def loadTestsFromNames(self, testNames, module=None):
         """Load tests from test names.
@@ -93,6 +98,15 @@ class PluggableTestLoader(object):
     def sortTestMethodsUsing(self, name):
         """Sort key for test case test methods."""
         return name.lower()
+
+    def discover(self, start_dir=None, pattern=None):
+        """Compatibility shim for load_tests protocol."""
+        try:
+            oldsd = self.session.startDir
+            self.session.startDir = start_dir
+            return self.loadTestsFromNames([])
+        finally:
+            self.session.startDir = oldsd
 
     def _makeFailedTest(self, classname, methodname, exception):
         def testFailure(self):

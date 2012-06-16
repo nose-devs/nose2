@@ -122,6 +122,26 @@ class DiscoveryLoader(events.Plugin):
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         log.debug("find in dir %s (%s)", full_path, top_level)
+
+        dirname = os.path.basename(full_path)
+        pattern = self.session.testFilePattern
+
+        evt = events.HandleFileEvent(
+            event.loader, dirname, full_path, pattern, top_level)
+        result = self.session.hooks.handleDir(evt)
+        if evt.extraTests:
+            for test in evt.extraTests:
+                yield test
+        if evt.handled:
+            if result:
+                yield result
+            return
+
+        evt = events.MatchPathEvent(dirname, full_path,pattern)
+        result = self.session.hooks.matchDirPath(evt)
+        if evt.handled and not result:
+            return
+
         for path in os.listdir(full_path):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):
@@ -129,8 +149,6 @@ class DiscoveryLoader(events.Plugin):
                     event, path, entry_path, top_level):
                     yield test
             elif os.path.isdir(entry_path):
-                # FIXME need a hook or config opt here to allow
-                # plugins/config to add more dirnames to look in
                 if ('test' in path.lower()
                     or util.ispackage(entry_path)
                     or path in self.session.libDirs):

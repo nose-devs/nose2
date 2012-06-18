@@ -6,6 +6,10 @@ include tox.ini
 include unittest.cfg
 include README.rst
 include license.txt
-graft nose2/tests/functional/support
-graft docs
+recursive-include nose2/tests/functional/support *.py *.txt *.cfg
+recursive-include docs *.rst *.inc
 graft bin
+global-exclude __pycache__
+global-exclude *~
+global-exclude *.pyc
+

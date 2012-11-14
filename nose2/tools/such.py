@@ -63,6 +63,13 @@ class Scenario(object):
         yield self
         self._group = last
 
+    @contextmanager
+    def having_fixture(self, layer, description='the fixture'):
+        last = self._group
+        self._group = self._group.child('having %s' % description, layer)
+        yield self
+        self._group = last
+
     def has_setup(self, func):
         """Add a setup method to this group.
 
@@ -281,16 +288,22 @@ class Scenario(object):
             'teardowns': group._teardowns[:],
             }
 
-        return type("%s:layer" % group.description, (parent_layer, ), attr)
+        if group.base_layer:
+            bases = (group.base_layer, parent_layer)
+        else:
+            bases = (parent_layer,)
+
+        return type("%s:layer" % group.description, bases, attr)
 
 
 
 class Group(object):
     """Group of tests w/common fixtures & description"""
-    def __init__(self, description, indent=0, parent=None):
+    def __init__(self, description, indent=0, parent=None, base_layer=None):
         self.description = description
         self.indent = indent
         self.parent = parent
+        self.base_layer = base_layer
         self._cases = []
         self._setups = []
         self._teardowns = []
@@ -325,8 +338,8 @@ class Group(object):
         d.append(self.description)
         return ' '.join(d)
 
-    def child(self, description):
-        child = Group(description, self.indent+1, self)
+    def child(self, description, base_layer=None):
+        child = Group(description, self.indent+1, self, base_layer)
         self._children.append(child)
         return child
 

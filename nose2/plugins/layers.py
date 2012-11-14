@@ -57,19 +57,21 @@ class Layers(events.Plugin):
                     if outer not in layers:
                         remaining.append(outer)
                         layers[outer] = LayerSuite(layer=outer)
-                    seen.add(inner)
 
         # finally build the top-level suite
         self._treeToSuite(tree, None, top, layers)
-
         return top
 
     def _addToTree(self, tree, inner, outer):
+        found = False
         for k, v in tree.items():
             if inner in v:
-                v.remove(inner)
+                found = True
+                if outer is not None:
+                    v.remove(inner)
                 break
-        tree.setdefault(outer, []).append(inner)
+        if outer is not None or not found:
+            tree.setdefault(outer, []).append(inner)
 
     def _treeToSuite(self, tree, key, suite, layers):
         mysuite = layers.get(key, None)

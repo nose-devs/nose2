@@ -231,12 +231,13 @@ class Scenario(object):
         for index, case in enumerate(group._cases):
             def _test(s, case=case):
                 case(s)
-            name = 'test: %s' % case.description
+            name = 'test %04d: %s' % (index, case.description)
             _test.__name__ = name
             _test.description = case.description
             _test.case = case
             _test.index = index
-            attr[name] = _test
+            attr[name] = _test # for collection and sorting
+            attr[case.description] = _test # for random access by name
 
         setups = group._test_setups[:]
         teardowns = group._test_teardowns[:]

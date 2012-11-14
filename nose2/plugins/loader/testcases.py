@@ -100,7 +100,9 @@ class TestCaseLoader(events.Plugin):
                           if isTestMethod(entry)]
         if evt.extraNames:
             test_names.extend(evt.extraNames)
-        if event.loader.sortTestMethodsUsing:
+        sortkey = getattr(
+            testCaseClass, 'sortTestMethodsUsing', event.loader.sortTestMethodsUsing)
+        if sortkey:
             test_names.sort(
-                key=event.loader.sortTestMethodsUsing)
+                key=sortkey)
         return test_names

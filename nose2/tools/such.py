@@ -228,13 +228,14 @@ class Scenario(object):
             'description': group.description,
             }
 
-        for case in group._cases:
+        for index, case in enumerate(group._cases):
             def _test(s, case=case):
                 case(s)
             name = 'test: %s' % case.description
             _test.__name__ = name
             _test.description = case.description
             _test.case = case
+            _test.index = index
             attr[name] = _test
 
         setups = group._test_setups[:]
@@ -261,6 +262,11 @@ class Scenario(object):
         def methodDescription(self):
             return getattr(self, self._testMethodName).description
         attr['methodDescription'] = methodDescription
+
+        @classmethod
+        def sortTestMethodsUsing(cls, case):
+            return case.index
+        attr['sortTestMethodsUsing'] = sortTestMethodsUsing
 
         return type(group.description, (unittest.TestCase,), attr)
 

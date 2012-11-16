@@ -1,8 +1,10 @@
 import re
 
+import six
+
 from nose2 import events
 from nose2.suite import LayerSuite
-
+from nose2.compat import OrderedDict
 
 BRIGHT = r'\033[1m'
 RESET = r'\033[0m'
@@ -33,7 +35,7 @@ class Layers(events.Plugin):
         # then organize layers into a tree
         remaining = list(layers.keys())
         seen = set()
-        tree = {}
+        tree = OrderedDict()
         while remaining:
             ly = remaining.pop()
             if ly in seen:
@@ -94,7 +96,13 @@ class Layers(events.Plugin):
         return out
 
     def _sortKey(self, layer):
-        return getattr(layer, 'position', 0)
+        pos =  getattr(layer, 'position', None)
+        # ... lame
+        if pos:
+            key = six.u("%04f") % pos
+        else:
+            key = layer.__name__
+        return key
 
 
 class LayerReporter(events.Plugin):

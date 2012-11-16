@@ -173,15 +173,52 @@ class TestLayers(TestCase):
                    ['test (nose2.tests.unit.test_layers_plugin.T4)',]]]
         self.assertEqual(self.names(event.suite), expect)
 
+    def test_mixin_inheritance(self):
+        class L1(object):
+            pass
+        class L2(object): # a mixin, doesn't share a base w/L1
+            pass
+        class L3(L1):
+            pass
+        class L4(L3):
+            pass
+        class L5(L4):
+            pass
+        class L6(L2):
+            mixins = (L4,)
+        class T1(unittest.TestCase):
+            layer = L1
+            def test(self):
+                pass
+        class T3(unittest.TestCase):
+            layer = L3
+            def test(self):
+                pass
+        class T4(unittest.TestCase):
+            layer = L4
+            def test(self):
+                pass
+        class T5(unittest.TestCase):
+            layer = L5
+            def test(self):
+                pass
+        class T6(unittest.TestCase):
+            layer = L6
+            def test(self):
+                pass
+        suite = unittest.TestSuite([T6('test'), T1('test'),
+                                    T3('test'), T4('test'), T5('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
+                   ['test (nose2.tests.unit.test_layers_plugin.T3)',
+                    ['test (nose2.tests.unit.test_layers_plugin.T4)',
+                     [['test (nose2.tests.unit.test_layers_plugin.T6)']],
+                      ['test (nose2.tests.unit.test_layers_plugin.T5)',]]]]]
+        self.assertEqual(self.names(event.suite), expect)
+
     def names(self, suite):
         return [n for n in self.iternames(suite)]
-        # n = set([])
-        # for t in suite:
-        #     if isinstance(t, unittest.TestCase):
-        #         n.add(str(t))
-        #     else:
-        #         n.add(self.names(t))
-        # return frozenset(n)
 
     def iternames(self, suite):
         for t in suite:

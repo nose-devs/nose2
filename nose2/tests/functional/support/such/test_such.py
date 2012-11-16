@@ -3,6 +3,15 @@ import unittest
 from nose2.tools import such
 
 
+class SomeLayer(object):
+    @classmethod
+    def setUp(cls):
+        it.somelayer = True
+
+    @classmethod
+    def tearDown(cls):
+        del it.somelayer
+
 #
 # Such tests start with a declaration about the system under test
 # and will typically bind the test declaration to a variable with
@@ -117,6 +126,12 @@ with such.A('system with complex setup') as it:
             def test(case):
                 assert it.is_funny
                 assert case.is_funny
+
+            with it.having_fixture(SomeLayer):
+
+                @it.should('use that fixture')
+                def test(case):
+                    assert it.somelayer
 
 #
 # To convert the layer definitions into test cases, you have to call

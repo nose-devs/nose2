@@ -8,7 +8,7 @@ class TestSuchDSL(FunctionalTestCase):
             'such',
             '-v',
             '--plugin=nose2.plugins.layers')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 7 tests')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 8 tests')
         self.assertEqual(proc.poll(), 0)
 
     def test_load_top_level_by_name(self):

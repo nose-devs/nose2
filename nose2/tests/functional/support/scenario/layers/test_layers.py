@@ -14,6 +14,7 @@ class Base(object):
 
 
 class LayerA(Base):
+    position = 1
     @classmethod
     def setUp(cls):
         STATE['layerA'] = 'setup'
@@ -34,6 +35,7 @@ class LayerA(Base):
 
 
 class LayerA_1(LayerA):
+    position = 0
     @classmethod
     def setUp(cls):
         STATE['layerA_1'] = 'setup'
@@ -43,7 +45,8 @@ class LayerA_1(LayerA):
         del STATE['layerA_1']
 
 
-class LayerB(Base):
+class LayerB(LayerA):
+    position = 2
     @classmethod
     def setUp(cls):
         STATE['layerB'] = 'setup'
@@ -54,6 +57,7 @@ class LayerB(Base):
 
 
 class LayerB_1(LayerB):
+    position = 0
     @classmethod
     def setUp(cls):
         STATE['layerB_1'] = 'setup'
@@ -64,6 +68,7 @@ class LayerB_1(LayerB):
 
 
 class LayerC(LayerB, LayerA):
+    position = 1
     @classmethod
     def setUp(cls):
         STATE['layerC'] = 'setup'
@@ -74,6 +79,7 @@ class LayerC(LayerB, LayerA):
 
 
 class LayerD(Base):
+    position = 0
     @classmethod
     def setUp(cls):
         STATE['layerD'] = 'setup'

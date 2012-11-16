@@ -64,7 +64,6 @@ class TestLayers(TestCase):
               ['test (nose2.tests.unit.test_layers_plugin.T2)']]])
         self.assertEqual(self.names(event.suite), expect)
 
-
     def test_deep_inheritance(self):
         class L1(object):
             pass
@@ -136,6 +135,48 @@ class TestLayers(TestCase):
               ['test (nose2.tests.unit.test_layers_plugin.T2)']]])
         self.assertEqual(self.names(event.suite), expect)
 
+    def test_ordered_layers(self):
+        class L1(object):
+            pass
+        class L2(L1):
+            position = 1
+        class L3(L1):
+            position = 2
+        class L4(L1):
+            position = 3
+        class L5(L2):
+            position = 4
+        class T1(unittest.TestCase):
+            layer = L1
+            def test(self):
+                pass
+        class T2(unittest.TestCase):
+            layer = L2
+            def test(self):
+                pass
+        class T3(unittest.TestCase):
+            layer = L3
+            def test(self):
+                pass
+        class T4(unittest.TestCase):
+            layer = L4
+            def test(self):
+                pass
+        class T5(unittest.TestCase):
+            layer = L5
+            def test(self):
+                pass
+        suite = unittest.TestSuite([T2('test'), T1('test'),
+                                    T3('test'), T4('test'), T5('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
+                   ['test (nose2.tests.unit.test_layers_plugin.T2)',
+                    ['test (nose2.tests.unit.test_layers_plugin.T5)',]],
+                   ['test (nose2.tests.unit.test_layers_plugin.T3)',],
+                   ['test (nose2.tests.unit.test_layers_plugin.T4)',]]]
+        self.assertEqual([n for n in self.iternames(event.suite)], expect)
+
     def names(self, suite):
         n = set([])
         for t in suite:
@@ -144,6 +185,13 @@ class TestLayers(TestCase):
             else:
                 n.add(self.names(t))
         return frozenset(n)
+
+    def iternames(self, suite):
+        for t in suite:
+            if isinstance(t, unittest.TestCase):
+                yield str(t)
+            else:
+                yield [n for n in self.iternames(t)]
 
     def _listset(self, l):
         n = set([])

@@ -79,6 +79,8 @@ class Layers(events.Plugin):
             suite.addTest(mysuite)
             suite = mysuite
         sublayers = tree.get(key, [])
+        # ensure that layers with a set order are in order
+        sublayers.sort(key=self._sortKey)
         for layer in sublayers:
             self._treeToSuite(tree, layer, suite, layers)
 
@@ -90,6 +92,9 @@ class Layers(events.Plugin):
             except TypeError:
                 out.append(test)
         return out
+
+    def _sortKey(self, layer):
+        return getattr(layer, 'position', 0)
 
 
 class LayerReporter(events.Plugin):

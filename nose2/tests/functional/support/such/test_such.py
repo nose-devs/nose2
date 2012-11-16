@@ -6,11 +6,13 @@ from nose2.tools import such
 class SomeLayer(object):
     @classmethod
     def setUp(cls):
+        # print "somelayer setup ran!", it
         it.somelayer = True
 
     @classmethod
     def tearDown(cls):
         del it.somelayer
+        # print "somelayer teardown ran!", it
 
 #
 # Such tests start with a declaration about the system under test
@@ -27,6 +29,7 @@ with such.A('system with complex setup') as it:
     @it.has_setup
     def setup():
         it.things = [1]
+        # print "top"
 
     @it.has_teardown
     def teardown():
@@ -53,6 +56,7 @@ with such.A('system with complex setup') as it:
         @it.has_setup
         def setup():
             it.things.append(2)
+            # print "inner 1"
 
         #
         # Tests that take an argument will be passed the
@@ -71,6 +75,7 @@ with such.A('system with complex setup') as it:
             @it.has_setup
             def setup():
                 it.things.append(3)
+                # print "inner 3"
 
             @it.has_teardown
             def teardown():
@@ -93,9 +98,13 @@ with such.A('system with complex setup') as it:
         # A layer may have any number of sub-layers.
         #
         with it.having('a different precondition'):
+
+            it.uses(SomeLayer)
+
             @it.has_setup
             def setup():
                 it.things.append(99)
+                # print "inner 4"
 
             @it.has_teardown
             def teardown():
@@ -127,9 +136,12 @@ with such.A('system with complex setup') as it:
                 assert it.is_funny
                 assert case.is_funny
 
-            with it.having_fixture(SomeLayer):
+            @it.should('have access to an external fixture')
+            def test(case):
+                assert it.somelayer
 
-                @it.should('use that fixture')
+            with it.having('a case inside the external fixture'):
+                @it.should('still have access to that fixture')
                 def test(case):
                     assert it.somelayer
 

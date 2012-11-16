@@ -1,5 +1,11 @@
 import inspect
+import logging
+
 from nose2.compat import unittest
+
+log = logging.getLogger(__name__)
+
+__unittest = True
 
 #
 # Layer suite class
@@ -27,11 +33,13 @@ class LayerSuite(unittest.BaseTestSuite):
 
     def setUp(self):
         # FIXME hook call
+        log.debug('in setUp layer %s', self.layer)
         if self.layer is None:
             return
         setup = getattr(self.layer, 'setUp', None)
         if setup:
             setup()
+            log.debug('setUp layer %s called', self.layer)
         self.wasSetup = True
 
     def setUpTest(self, test):

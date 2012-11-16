@@ -1,10 +1,12 @@
 from contextlib import contextmanager
 import inspect
+import logging
 
 import six
 
 from nose2.compat import unittest
 
+log = logging.getLogger(__name__)
 
 __unittest = True
 
@@ -60,18 +62,14 @@ class Scenario(object):
         last = self._group
         self._group = self._group.child(
             "having %s" % description)
+        log.debug("starting new group from %s", description)
         yield self
+        log.debug("leaving group %s", description)
         self._group = last
 
-    @contextmanager
-    def having_fixture(self, layer, description=None):
-        last = self._group
-        if description is None:
-            description = 'having %s' % (
-                getattr(layer, 'description', 'the fixture %s' % layer.__name__))
-        self._group = self._group.child(description, layer)
-        yield self
-        self._group = last
+    def uses(self, layer):
+        log.debug("Adding %s as mixin to %s", layer, self._group)
+        self._group.mixins.append(layer)
 
     def has_setup(self, func):
         """Add a setup method to this group.
@@ -217,9 +215,10 @@ class Scenario(object):
     def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
         layer = self._makeLayer(group, parent_layer, position)
         case = self._makeTestCase(group, layer)
-        mod[layer.__name__] =  layer
+        log.debug("Made test case %s with layer %s from %s", case, layer, group)
+        mod[layer.__name__] = layer
         layer.__module__ = mod['__name__']
-        mod[case.__name__] =  case
+        mod[case.__name__] = case
         case.__module__ = mod['__name__']
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)
@@ -291,7 +290,8 @@ class Scenario(object):
             'tearDown': classmethod(tearDown),
             'setups': group._setups[:],
             'teardowns': group._teardowns[:],
-            'position': position
+            'position': position,
+            'mixins': ()
             }
 
         if group.base_layer:
@@ -300,10 +300,13 @@ class Scenario(object):
             layer = group.base_layer
             if parent_layer not in layer.__bases__:
                 layer.mixins = (parent_layer,)
-            return layer
         else:
-            return type("%s:layer" % group.description, (parent_layer,), attr)
-
+            layer = type("%s:layer" % group.description, (parent_layer,), attr)
+        if group.mixins:
+            layer.mixins = getattr(layer, 'mixins', ()) + tuple(group.mixins)
+        log.debug("made layer %s with bases %s and mixins %s",
+                  layer, layer.__bases__, layer.mixins)
+        return layer
 
 
 class Group(object):
@@ -313,6 +316,7 @@ class Group(object):
         self.indent = indent
         self.parent = parent
         self.base_layer = base_layer
+        self.mixins = []
         self._cases = []
         self._setups = []
         self._teardowns = []

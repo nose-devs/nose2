@@ -1,13 +1,18 @@
+import logging
 import re
 
 import six
 
 from nose2 import events
 from nose2.suite import LayerSuite
-from nose2.compat import OrderedDict
+from nose2.compat import unittest, OrderedDict
 
 BRIGHT = r'\033[1m'
 RESET = r'\033[0m'
+
+__unittest = True
+
+log = logging.getLogger(__name__)
 
 
 class Layers(events.Plugin):
@@ -23,7 +28,7 @@ class Layers(events.Plugin):
     def _sortByLayers(self, suite, suiteClass):
         top = suiteClass()
         # first find all of the layers mentioned
-        layers = {}
+        layers = OrderedDict()
         for test in self._flatten(suite):
             # split tests up into buckets by layer
             layer = getattr(test, 'layer', None)
@@ -35,7 +40,7 @@ class Layers(events.Plugin):
         # then organize layers into a tree
         remaining = list(layers.keys())
         seen = set()
-        tree = OrderedDict()
+        tree = {}
         while remaining:
             ly = remaining.pop()
             if ly in seen:
@@ -45,8 +50,7 @@ class Layers(events.Plugin):
             if ly is None:
                 deps = []
             else:
-                deps = [cls for cls in (ly.__bases__ +
-                                        getattr(ly, 'mixins', ()))
+                deps = [cls for cls in bases_and_mixins(ly)
                         if cls is not object]
                 deps.reverse()
             if not deps:
@@ -63,6 +67,7 @@ class Layers(events.Plugin):
 
         # finally build the top-level suite
         self._treeToSuite(tree, None, top, layers)
+        # printtree(top)
         return top
 
     def _addToTree(self, tree, inner, outer):
@@ -84,6 +89,8 @@ class Layers(events.Plugin):
         sublayers = tree.get(key, [])
         # ensure that layers with a set order are in order
         sublayers.sort(key=self._sortKey)
+        log.debug('sorted sublayers of %s (%s): %s', mysuite,
+                  getattr(mysuite, 'layer', 'no layer'), sublayers)
         for layer in sublayers:
             self._treeToSuite(tree, layer, suite, layers)
 
@@ -155,25 +162,38 @@ class LayerReporter(events.Plugin):
         base = event.test.layer
         for layer in (base.__mro__ + getattr(base, 'mixins', ())):
             if layer is object:
-                break
+                continue
             desc.append(self.describeLayer(layer))
         desc.reverse()
         event.description = ' '.join(desc)
 
     def ancestry(self, layer):
         layers = [[layer]]
-        bases = [base for base in (layer.__bases__ +
-                                   getattr(layer, 'mixins', ()))
+        bases = [base for base in bases_and_mixins(layer)
                  if base is not object]
         while bases:
             layers.append(bases)
-            seen = set()
+            seen = set() # ???
             newbases = []
             for b in bases:
-                for bb in b.__bases__:
+                for bb in bases_and_mixins(b):
                     if bb is not object and bb not in seen:
                         newbases.append(bb)
             bases = newbases
         layers.reverse()
         return layers
 
+
+def bases_and_mixins(layer):
+    return (layer.__bases__ + getattr(layer, 'mixins', ()))
+
+
+# for debugging
+def printtree(suite, indent=''):
+    six.print_('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
+    for test in suite:
+        if isinstance(test, unittest.BaseTestSuite):
+            printtree(test, indent + '  ')
+        else:
+            six.print_('%s %s' % (indent, test))
+    six.print_('%s<- %s' % (indent, getattr(suite, 'layer', 'no layer')))

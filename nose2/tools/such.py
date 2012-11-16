@@ -64,9 +64,12 @@ class Scenario(object):
         self._group = last
 
     @contextmanager
-    def having_fixture(self, layer, description='the fixture'):
+    def having_fixture(self, layer, description=None):
         last = self._group
-        self._group = self._group.child('having %s' % description, layer)
+        if description is None:
+            description = 'having %s' % (
+                getattr(layer, 'description', 'the fixture %s' % layer.__name__))
+        self._group = self._group.child(description, layer)
         yield self
         self._group = last
 
@@ -292,10 +295,14 @@ class Scenario(object):
             }
 
         if group.base_layer:
-            bases = (group.base_layer, parent_layer)
+            # inject this layer into the group class list
+            # by making it a subclass of parent_layer
+            layer = group.base_layer
+            if parent_layer not in layer.__bases__:
+                layer.mixins = (parent_layer,)
+            return layer
         else:
-            bases = (parent_layer,)
-        return type("%s:layer" % group.description, bases, attr)
+            return type("%s:layer" % group.description, (parent_layer,), attr)
 
 
 

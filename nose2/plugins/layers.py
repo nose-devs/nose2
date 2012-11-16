@@ -45,7 +45,8 @@ class Layers(events.Plugin):
             if ly is None:
                 deps = []
             else:
-                deps = [cls for cls in ly.__bases__
+                deps = [cls for cls in (ly.__bases__ +
+                                        getattr(ly, 'mixins', ()))
                         if cls is not object]
                 deps.reverse()
             if not deps:
@@ -152,7 +153,7 @@ class LayerReporter(events.Plugin):
     def describeLayers(self, event):
         desc = [event.description]
         base = event.test.layer
-        for layer in base.__mro__:
+        for layer in (base.__mro__ + getattr(base, 'mixins', ())):
             if layer is object:
                 break
             desc.append(self.describeLayer(layer))
@@ -161,7 +162,8 @@ class LayerReporter(events.Plugin):
 
     def ancestry(self, layer):
         layers = [[layer]]
-        bases = [base for base in layer.__bases__
+        bases = [base for base in (layer.__bases__ +
+                                   getattr(layer, 'mixins', ()))
                  if base is not object]
         while bases:
             layers.append(bases)

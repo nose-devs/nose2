@@ -211,15 +211,15 @@ class Scenario(object):
         """
         self._makeGroupTest(mod, self._group)
 
-    def _makeGroupTest(self, mod, group, parent_layer=None):
-        layer = self._makeLayer(group, parent_layer)
+    def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
+        layer = self._makeLayer(group, parent_layer, position)
         case = self._makeTestCase(group, layer)
         mod[layer.__name__] =  layer
         layer.__module__ = mod['__name__']
         mod[case.__name__] =  case
         case.__module__ = mod['__name__']
-        for child in group._children:
-            self._makeGroupTest(mod, child, layer)
+        for index, child in enumerate(group._children):
+            self._makeGroupTest(mod, child, layer, index)
 
     def _makeTestCase(self, group, layer):
         attr = {
@@ -264,14 +264,9 @@ class Scenario(object):
             return getattr(self, self._testMethodName).description
         attr['methodDescription'] = methodDescription
 
-        @classmethod
-        def sortTestMethodsUsing(cls, case):
-            return case.index
-        attr['sortTestMethodsUsing'] = sortTestMethodsUsing
-
         return type(group.description, (unittest.TestCase,), attr)
 
-    def _makeLayer(self, group, parent_layer=None):
+    def _makeLayer(self, group, parent_layer=None, position=0):
         if parent_layer is None:
             parent_layer = object
 
@@ -293,13 +288,13 @@ class Scenario(object):
             'tearDown': classmethod(tearDown),
             'setups': group._setups[:],
             'teardowns': group._teardowns[:],
+            'position': position
             }
 
         if group.base_layer:
             bases = (group.base_layer, parent_layer)
         else:
             bases = (parent_layer,)
-
         return type("%s:layer" % group.description, bases, attr)
 
 

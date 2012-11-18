@@ -6,13 +6,11 @@ from nose2.tools import such
 class SomeLayer(object):
     @classmethod
     def setUp(cls):
-        # print "somelayer setup ran!", it
         it.somelayer = True
 
     @classmethod
     def tearDown(cls):
         del it.somelayer
-        # print "somelayer teardown ran!", it
 
 #
 # Such tests start with a declaration about the system under test
@@ -29,7 +27,6 @@ with such.A('system with complex setup') as it:
     @it.has_setup
     def setup():
         it.things = [1]
-        # print "top"
 
     @it.has_teardown
     def teardown():
@@ -56,7 +53,6 @@ with such.A('system with complex setup') as it:
         @it.has_setup
         def setup():
             it.things.append(2)
-            # print "inner 1"
 
         #
         # Tests that take an argument will be passed the
@@ -75,7 +71,6 @@ with such.A('system with complex setup') as it:
             @it.has_setup
             def setup():
                 it.things.append(3)
-                # print "inner 3"
 
             @it.has_teardown
             def teardown():
@@ -99,12 +94,18 @@ with such.A('system with complex setup') as it:
         #
         with it.having('a different precondition'):
 
+            #
+            # A layer defined with ``having`` can make use of
+            # layers defined elsewhere. An external layer
+            # pulled in with ``it.uses`` becomes a parent
+            # of the current layer (though it doesn't actually
+            # get injected into the layer's MRO).
+            #
             it.uses(SomeLayer)
 
             @it.has_setup
             def setup():
                 it.things.append(99)
-                # print "inner 4"
 
             @it.has_teardown
             def teardown():

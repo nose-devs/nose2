@@ -106,17 +106,24 @@ layers.
 Running tests
 -------------
 
-Tests written in the such DSL are collected and run just like any
+Since order is often significant in functional tests, **such DSL tests
+always execute in the order in which they are defined in the
+module**. Parent groups run before child groups, and sibling groups
+and sibling tests within a group execute in the order in which they
+are defined.
+
+Otherwise, tests written in the such DSL are collected and run just like any
 other tests, with one exception: their names. The name of a such test
 case is the name of its immediately surrounding group, plus the
-description of the test, prepended with ``test:``. To run a case
+description of the test, prepended with ``test ####:``, where '####'
+is the test's (0-indexed) position within its group. To run a case
 individually, you must pass in this full name -- usually you'll have
 to quote it. For example, to run the case ``should do more things``
 defined above (assuming the layers plugin is activated by a config
 file, and the test module is in the normal path of test collection),
 you would run nose2 like this::
 
-  nose2 "test_such.having an expensive fixture.test: should do more things"
+  nose2 "test_such.having an expensive fixture.test 0000: should do more things"
 
 That is, for the a generated test case, the **group description** is
 the **class name**, and the **test case description** is the **test
@@ -124,7 +131,7 @@ case name**. As you can see if you run an individual test with the
 layer reporter active, all of the group fixtures execute in proper
 order when a test is run individually::
 
-  $ nose2 "test_such.having an expensive fixture.test: should do more things"
+  $ nose2 "test_such.having an expensive fixture.test 0000: should do more things"
   A system with complex setup
     having an expensive fixture
       should do more things ... ok

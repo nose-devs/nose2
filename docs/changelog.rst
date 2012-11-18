@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.4.2
+-----
+
+* Bug: fixed unpredictable ordering of layer tests.
+
+* Added ``uses`` method to ``such.Scenario`` to allow use of externally-defined
+  layers in such DSL tests.
+
+0.4.1
+-----
+
+* Fixed packaging bug.
+
 0.4
 ---
 

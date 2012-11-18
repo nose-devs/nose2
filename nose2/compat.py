@@ -29,3 +29,8 @@ except AttributeError:
 
 __unittest = True
 
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from .backports.ordereddict import OrderedDict

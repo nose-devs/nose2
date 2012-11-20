@@ -5,7 +5,7 @@ NAME = 'nose2'
 VERSION = '0.4.2'
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
-            'nose2.tools']
+            'nose2.tools', 'nose2.backports']
 SCRIPTS = ['bin/nose2']
 DESCRIPTION = 'nose2 is the next generation of nicer testing for Python'
 URL = 'https://github.com/nose-devs/nose2'

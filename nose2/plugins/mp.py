@@ -37,6 +37,10 @@ class MultiProcess(events.Plugin):
 
     def _runmp(self, test, result):
         flat = list(self._flatten(test))
+        # don't start more processes than there are tests, as that doesn't make any sense
+        n_tests = len(flat)
+        if n_tests < self.procs:
+            self.procs = n_tests
         procs = self._startProcs()
 
         # distribute tests more-or-less evenly among processes

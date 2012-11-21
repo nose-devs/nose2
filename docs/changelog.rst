@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4.3
+-----
+
+* Bug: fixed packaging for non-setuptools, pre-python 2.7. Thanks to fajpunk
+  for the patch.
+
 0.4.2
 -----
 

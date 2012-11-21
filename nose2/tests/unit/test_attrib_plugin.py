@@ -56,12 +56,12 @@ class TestAttribPlugin(TestCase):
         assert not self.plugin.validateAttrib(
             self.TC_1('test_a'), [[('tags', 'c')]])
 
-    def test_start_test_run_filters_suite(self):
+    def test_module_loaded_suite_filters_suite(self):
         self.plugin.attribs = ['a']
         suite = unittest.TestSuite()
         suite.addTest(self.TC_1('test_a'))
         suite.addTest(self.TC_1('test_b'))
-        event = events.StartTestRunEvent(None, suite, None, 1, None)
-        self.session.hooks.startTestRun(event)
+        event = events.ModuleSuiteEvent(None, None, suite)
+        self.session.hooks.moduleLoadedSuite(event)
         self.assertEqual(len(event.suite._tests), 1)
         self.assertEqual(event.suite._tests[0]._testMethodName, 'test_a')

@@ -106,8 +106,8 @@ class Layers(events.Plugin):
     def _sortKey(self, layer):
         pos =  getattr(layer, 'position', None)
         # ... lame
-        if pos:
-            key = six.u("%04f") % pos
+        if pos is not None:
+            key = six.u("%04d") % pos
         else:
             key = layer.__name__
         return key

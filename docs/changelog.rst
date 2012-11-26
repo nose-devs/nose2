@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.4.4
+-----
+
+* Bug: fixed sort key generation for layers.
+
 0.4.3
 -----
 

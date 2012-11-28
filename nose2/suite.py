@@ -58,7 +58,7 @@ class LayerSuite(unittest.BaseTestSuite):
             # suite-like enough for skipping
             return
 
-        setup = self._get_bound_classmethod(self.layer, 'testSetUp')
+        setup = getattr(self.layer, 'testSetUp', None)
         if setup:
             if getattr(test, '_layer_wasSetUp', False):
                 return
@@ -75,7 +75,7 @@ class LayerSuite(unittest.BaseTestSuite):
             return
         if not getattr(test, '_layer_wasSetUp', None):
             return
-        teardown = self._get_bound_classmethod(self.layer, 'testTearDown')
+        teardown = getattr(self.layer, 'testTearDown', None)
         if teardown:
             args, _, _, _ = inspect.getargspec(teardown)
             if len(args) > 1:

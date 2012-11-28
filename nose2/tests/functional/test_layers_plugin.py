@@ -25,12 +25,20 @@ class TestLayers(FunctionalTestCase):
             '-v',
             '--plugin=nose2.plugins.layers')
 
-        expected = ('L1setUp\n'
-                    'L2setUp\n'
-                    'L1testSetUp\n'
-                    'L2testSetUp\n'
-                    'L1testTearDown\n'
-                    'L1tearDown\n$')
+        expected = ('^'
+                    'L1 setUp\n'
+                    'L2 setUp\n'
+
+                    'L2 testSetUp\n'
+                    'Run test1\n'
+                    'L2 testTearDown\n'
+
+                    'L2 testSetUp\n'
+                    'Run test2\n'
+                    'L2 testTearDown\n'
+
+                    'L1 tearDown\n'
+                    '$')
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0)
 

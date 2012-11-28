@@ -26,7 +26,7 @@ class AttributeSelector(Plugin):
         if self.attribs or self.eval_attribs:
             self.register()
 
-    def startTestRun(self, event):
+    def moduleLoadedSuite(self, event):
         """Filter event.suite by specified attributes"""
         log.debug('Attribute selector attribs %s/%s',
                   self.attribs, self.eval_attribs)
@@ -71,7 +71,9 @@ class AttributeSelector(Plugin):
         event.suite = self.filterSuite(event.suite, attribs)
 
     def filterSuite(self, suite, attribs):
-        new_suite = suite.__class__()
+        new_suite = suite.__class__() # FIXME probably need to copy or something
+                                      # to allow suites w/custom attrs to work
+                                      # or iter and remove instead of recreating
         for test in suite:
             if isinstance(test, TestSuite):
                 new_suite.addTest(self.filterSuite(test, attribs))

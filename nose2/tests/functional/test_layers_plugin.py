@@ -85,3 +85,14 @@ Base
         for line in expect:
             self.assertTestRunOutputMatches(proc, stderr=line)
         self.assertEqual(proc.poll(), 1)
+
+    def test_layers_and_attributes(self):
+        proc = self.runIn(
+            'scenario/layers_and_attributes',
+            '-v',
+            '--plugin=nose2.plugins.attrib',
+            '--plugin=nose2.plugins.layers',
+            '-A',
+            'a=1')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 0)

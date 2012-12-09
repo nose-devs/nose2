@@ -6,6 +6,7 @@ class L1(object):
     def setUp(cls):
         print('L1 setUp')
 
+    @classmethod
     def testSetUp(cls):
         print('L1 testSetUp')
 

@@ -1,6 +1,7 @@
 import inspect
 import logging
 
+from nose2 import util
 from nose2.compat import unittest
 
 log = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class LayerSuite(unittest.BaseTestSuite):
         if self.layer is None:
             return
 
-        setup = self._get_bound_classmethod(self.layer, 'setUp')
+        setup = self._getBoundClassmethod(self.layer, 'setUp')
         if setup:
             setup()
             log.debug('setUp layer %s called', self.layer)
@@ -57,16 +58,9 @@ class LayerSuite(unittest.BaseTestSuite):
         else:
             # suite-like enough for skipping
             return
-
-        setup = getattr(self.layer, 'testSetUp', None)
-        if setup:
-            if getattr(test, '_layer_wasSetUp', False):
-                return
-            args, _, _, _ = inspect.getargspec(setup)
-            if len(args) > 1:
-                setup(test)
-            else:
-                setup()
+        if getattr(test, '_layer_wasSetUp', False):
+            return
+        self._allLayers(test, 'testSetUp')
         test._layer_wasSetUp = True
 
     def tearDownTest(self, test):
@@ -75,13 +69,7 @@ class LayerSuite(unittest.BaseTestSuite):
             return
         if not getattr(test, '_layer_wasSetUp', None):
             return
-        teardown = getattr(self.layer, 'testTearDown', None)
-        if teardown:
-            args, _, _, _ = inspect.getargspec(teardown)
-            if len(args) > 1:
-                teardown(test)
-            else:
-                teardown()
+        self._allLayers(test, 'testTearDown', reverse=True)
         delattr(test, '_layer_wasSetUp')
 
     def tearDown(self):
@@ -89,12 +77,33 @@ class LayerSuite(unittest.BaseTestSuite):
         if self.layer is None:
             return
 
-        teardown = self._get_bound_classmethod(self.layer, 'tearDown')
+        teardown = self._getBoundClassmethod(self.layer, 'tearDown')
         if teardown:
             teardown()
             log.debug('tearDown layer %s called', self.layer)
 
-    def _get_bound_classmethod(self, cls, method):
+    def _allLayers(self, test, method, reverse=False):
+        done = set()
+        all_lys = util.ancestry(self.layer)
+        if reverse:
+            all_lys = [reversed(lys) for lys in reversed(all_lys)]
+        for lys in all_lys:
+            for layer in lys:
+                if layer in done:
+                    continue
+                self._inLayer(layer, test, method)
+                done.add(layer)
+
+    def _inLayer(self, layer, test, method):
+        meth = self._getBoundClassmethod(layer, method)
+        if meth:
+            args, _, _, _ = inspect.getargspec(meth)
+            if len(args) > 1:
+                meth(test)
+            else:
+                meth()
+
+    def _getBoundClassmethod(self, cls, method):
         """
         Use instead of getattr to get only classmethods explicitly defined
         on cls (not methods inherited from ancestors)

@@ -7,8 +7,16 @@ class L1(object):
         print('L1 setUp')
 
     @classmethod
+    def testSetUp(cls):
+        print('L1 testSetUp')
+
+    @classmethod
     def tearDown(cls):
         print('L1 tearDown')
+
+    @classmethod
+    def testTearDown(cls):
+        print('L1 testTearDown')
 
 
 class L2(L1):

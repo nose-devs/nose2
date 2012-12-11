@@ -279,3 +279,23 @@ class _WritelnDecorator(object):
         if arg:
             self.stream.write(arg)
         self.stream.write('\n') # text-mode streams translate to \r\n if needed
+
+
+def ancestry(layer):
+    layers = [[layer]]
+    bases = [base for base in bases_and_mixins(layer)
+             if base is not object]
+    while bases:
+        layers.append(bases)
+        newbases = []
+        for b in bases:
+            for bb in bases_and_mixins(b):
+                if bb is not object:
+                    newbases.append(bb)
+        bases = newbases
+    layers.reverse()
+    return layers
+
+
+def bases_and_mixins(layer):
+    return (layer.__bases__ + getattr(layer, 'mixins', ()))

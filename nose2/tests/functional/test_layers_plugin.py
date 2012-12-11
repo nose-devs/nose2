@@ -29,13 +29,17 @@ class TestLayers(FunctionalTestCase):
                     'L1 setUp\n'
                     'L2 setUp\n'
 
+                    'L1 testSetUp\n'
                     'L2 testSetUp\n'
                     'Run test1\n'
                     'L2 testTearDown\n'
+                    'L1 testTearDown\n'
 
+                    'L1 testSetUp\n'
                     'L2 testSetUp\n'
                     'Run test2\n'
                     'L2 testTearDown\n'
+                    'L1 testTearDown\n'
 
                     'L1 tearDown\n'
                     '$')

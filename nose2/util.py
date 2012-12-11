@@ -287,11 +287,10 @@ def ancestry(layer):
              if base is not object]
     while bases:
         layers.append(bases)
-        seen = set() # ???
         newbases = []
         for b in bases:
             for bb in bases_and_mixins(b):
-                if bb is not object and bb not in seen:
+                if bb is not object:
                     newbases.append(bb)
         bases = newbases
     layers.reverse()

@@ -19,6 +19,33 @@ class TestLayers(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(failures=7\)')
         self.assertEqual(proc.poll(), 1)
 
+    def test_methods_run_once_per_class(self):
+        proc = self.runIn(
+            'scenario/layers_with_inheritance',
+            '-v',
+            '--plugin=nose2.plugins.layers')
+
+        expected = ('^'
+                    'L1 setUp\n'
+                    'L2 setUp\n'
+
+                    'L1 testSetUp\n'
+                    'L2 testSetUp\n'
+                    'Run test1\n'
+                    'L2 testTearDown\n'
+                    'L1 testTearDown\n'
+
+                    'L1 testSetUp\n'
+                    'L2 testSetUp\n'
+                    'Run test2\n'
+                    'L2 testTearDown\n'
+                    'L1 testTearDown\n'
+
+                    'L1 tearDown\n'
+                    '$')
+        self.assertTestRunOutputMatches(proc, stdout=expected)
+        self.assertEqual(proc.poll(), 0)
+
     def test_layer_reporter_output(self):
         proc = self.runIn(
             'scenario/layers',

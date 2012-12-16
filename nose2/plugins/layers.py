@@ -3,7 +3,7 @@ import re
 
 import six
 
-from nose2 import events
+from nose2 import events, util
 from nose2.suite import LayerSuite
 from nose2.compat import unittest, OrderedDict
 
@@ -50,7 +50,7 @@ class Layers(events.Plugin):
             if ly is None:
                 deps = []
             else:
-                deps = [cls for cls in bases_and_mixins(ly)
+                deps = [cls for cls in util.bases_and_mixins(ly)
                         if cls is not object]
                 deps.reverse()
             if not deps:
@@ -134,7 +134,7 @@ class LayerReporter(events.Plugin):
         layer = getattr(test, 'layer', None)
         if not layer:
             return
-        for ix, lys in enumerate(self.ancestry(layer)):
+        for ix, lys in enumerate(util.ancestry(layer)):
             for layer in lys:
                 if layer not in self.layersReported:
                     desc = self.describeLayer(layer)
@@ -166,26 +166,6 @@ class LayerReporter(events.Plugin):
             desc.append(self.describeLayer(layer))
         desc.reverse()
         event.description = ' '.join(desc)
-
-    def ancestry(self, layer):
-        layers = [[layer]]
-        bases = [base for base in bases_and_mixins(layer)
-                 if base is not object]
-        while bases:
-            layers.append(bases)
-            seen = set() # ???
-            newbases = []
-            for b in bases:
-                for bb in bases_and_mixins(b):
-                    if bb is not object and bb not in seen:
-                        newbases.append(bb)
-            bases = newbases
-        layers.reverse()
-        return layers
-
-
-def bases_and_mixins(layer):
-    return (layer.__bases__ + getattr(layer, 'mixins', ()))
 
 
 # for debugging

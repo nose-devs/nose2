@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.4.5
+-----
+
+* Bug: fixed broken interaction between attrib and layers plugins. They can now
+  be used together. Thanks @fajpunk.
+
+* Bug: fixed incorrect calling order of layer setup/teardown and test
+  setup/test teardow n methods. Thanks again @fajpunk for tests and fixes.
+
 0.4.4
 -----
 

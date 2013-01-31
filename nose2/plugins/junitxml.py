@@ -6,7 +6,11 @@ This plugin implements :func:`startTest`, :func:`testOutcome` and
 junit-xml format. By default, the report is written to a file called
 ``nose2-junit.xml`` in the current working directory. You can
 configure the output filename by setting ``path`` in a ``[junit-xml]``
-section in a config file.
+section in a config file.  Unicode characters which are invalid in XML 1.0 
+are replaced with the U+FFFD replacement character.  In the case that your
+software throws an error with an invalid byte string.  By default, the
+ranges of discouraged characters are replaced as well.  This can be 
+changed by setting the keep_restricted configuration variable to True.
 
 """
 # Based on unittest2/plugins/junitxml.py,
@@ -14,7 +18,7 @@ section in a config file.
 import time, re, sys
 from xml.etree import ElementTree as ET
 
-from nose2 import events, result, util
+from nose2 import events, result, util, _xml_util
 
 __unittest = True
 
@@ -25,6 +29,8 @@ class JUnitXmlReporter(events.Plugin):
 
     def __init__(self):
         self.path = self.config.as_str('path', default='nose2-junit.xml')
+        self.keep_restricted = self.config.as_bool('keep_restricted', 
+                                                    default=False)
         self.errors = 0
         self.failed = 0
         self.skipped = 0
@@ -57,9 +63,7 @@ class JUnitXmlReporter(events.Plugin):
         elif event.reason:
             msg = event.reason
 
-        msg = util.xml_string_cleanup(msg)
-
-	
+        msg = _xml_util.string_cleanup(msg, self.keep_restricted)
 
         if event.outcome == result.ERROR:
             self.errors += 1

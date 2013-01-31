@@ -220,6 +220,7 @@ def format_traceback(test, err):
             msgLines = traceback.format_exception(exctype, value, tb, length)
         else:
             msgLines = traceback.format_exception(exctype, value, tb)
+
     return ''.join(msgLines)
 
 
@@ -299,44 +300,4 @@ def ancestry(layer):
 
 def bases_and_mixins(layer):
     return (layer.__bases__ + getattr(layer, 'mixins', ()))
-
-def _unichr(string):
-    if six.PY3:
-        return chr(string)
-    else:
-        return unichr(string)
-
-_illegal_xml_rngs = [ (0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F), (0x7F, 0x84), 
-                    (0x86, 0x9F), (0xD800, 0xDFFF), (0xFDD0, 0xFDDF), 
-                    (0xFFFE, 0xFFFF), (0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF), 
-                    (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF), (0x5FFFE, 0x5FFFF),
-                    (0x6FFFE, 0x6FFFF), (0x7FFFE, 0x7FFFF), (0x8FFFE, 0x8FFFF),
-                    (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF), (0xBFFFE, 0xBFFFF),
-                    (0xCFFFE, 0xCFFFF), (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF),
-                    (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF) ]
-
-_illegal_xml_rngs = [ (l, min(h, sys.maxunicode)) for (l,h) \
-                                                  in _illegal_xml_rngs \
-                                                  if l < sys.maxunicode ]
-_illegal_xml_restr = six.u('[') + \
-                     six.u('').join(["%s-%s" % (_unichr(l), _unichr(h)) 
-                               for (l, h) in _illegal_xml_rngs]) + \
-                     six.u(']')
-
-_illegal_xml_re = re.compile(_illegal_xml_restr)
-
-def _match_repr(match):
-    """gets the string reprentation and strips off u'' if needed""" 
-    value = repr(match.group())
-    if value[0:2] == "u'" and value[-1:] == "'":
-        value = value[2:-1]
-    elif value[0] == "'" and value[-1:] == "'":
-        value = value[1:-1]
-
-    return value
-
-def xml_string_cleanup(string):
-    if not six.PY3:
-        string = unicode(string, errors='replace')
-    return _illegal_xml_re.sub(_match_repr, string)
 

@@ -61,6 +61,10 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin = junitxml.JUnitXmlReporter(session=self.session)
         self.plugin.register()
 
+        #unittest2 needs this
+        if not hasattr(self, 'assertRegexp'):
+            self.assertRegex = self.assertRegexpMatches
+
         class Test(unittest.TestCase):
             def test(self):
                 pass
@@ -104,8 +108,7 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         case = self.plugin.tree.find('testcase')
         error = case.find('error')
-        self.assertRegexpMatches(error.text, self.EXPECTED_RE_SAFE)
-
+        self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
 
     def test_error_bad_xml_keep(self):
         self.plugin.keep_restricted = True
@@ -113,7 +116,7 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         case = self.plugin.tree.find('testcase')
         error = case.find('error')
-        self.assertRegexpMatches(error.text, self.EXPECTED_RE)
+        self.assertRegex(error.text, self.EXPECTED_RE)
 
     def test_error_bad_xml_b(self):
         self.plugin.keep_restricted = False
@@ -123,7 +126,7 @@ class TestJunitXmlPlugin(TestCase):
         error = case.find('error')
         ending = six.u(' \uFFFD\uFFFD')
         assert error is not None
-        self.assertRegexpMatches(error.text, self.EXPECTED_RE_SAFE)
+        self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
 
 
     def test_error_bad_xml_b_keep(self):
@@ -133,7 +136,7 @@ class TestJunitXmlPlugin(TestCase):
         case = self.plugin.tree.find('testcase')
         error = case.find('error')
         assert error is not None
-        self.assertRegexpMatches(error.text, self.EXPECTED_RE)
+        self.assertRegex(error.text, self.EXPECTED_RE)
 
     def test_error_includes_traceback(self):
         test = self.case('test_err')

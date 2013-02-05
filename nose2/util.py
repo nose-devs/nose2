@@ -220,6 +220,7 @@ def format_traceback(test, err):
             msgLines = traceback.format_exception(exctype, value, tb, length)
         else:
             msgLines = traceback.format_exception(exctype, value, tb)
+
     return ''.join(msgLines)
 
 
@@ -299,3 +300,4 @@ def ancestry(layer):
 
 def bases_and_mixins(layer):
     return (layer.__bases__ + getattr(layer, 'mixins', ()))
+

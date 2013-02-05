@@ -6,16 +6,21 @@ This plugin implements :func:`startTest`, :func:`testOutcome` and
 junit-xml format. By default, the report is written to a file called
 ``nose2-junit.xml`` in the current working directory. You can
 configure the output filename by setting ``path`` in a ``[junit-xml]``
-section in a config file.
+section in a config file.  Unicode characters which are invalid in XML 1.0
+are replaced with the U+FFFD replacement character.  In the case that your
+software throws an error with an invalid byte string.  By default, the
+ranges of discouraged characters are replaced as well.  This can be
+changed by setting the keep_restricted configuration variable to True.
 
 """
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
 import time
+import re
+import sys
 from xml.etree import ElementTree as ET
 
 from nose2 import events, result, util
-
 
 __unittest = True
 
@@ -27,6 +32,8 @@ class JUnitXmlReporter(events.Plugin):
 
     def __init__(self):
         self.path = self.config.as_str('path', default='nose2-junit.xml')
+        self.keep_restricted = self.config.as_bool('keep_restricted',
+                                                   default=False)
         self.errors = 0
         self.failed = 0
         self.skipped = 0
@@ -58,6 +65,9 @@ class JUnitXmlReporter(events.Plugin):
             msg = util.exc_info_to_string(event.exc_info, test)
         elif event.reason:
             msg = event.reason
+
+        msg = string_cleanup(msg, self.keep_restricted)
+
         if event.outcome == result.ERROR:
             self.errors += 1
             error = ET.SubElement(testcase, 'error')
@@ -85,7 +95,7 @@ class JUnitXmlReporter(events.Plugin):
         """Output xml tree to file"""
         self.tree.set('name', 'nose2-junit')
         self.tree.set('errors', str(self.errors))
-        self.tree.set('failures' , str(self.failed))
+        self.tree.set('failures', str(self.failed))
         self.tree.set('skips', str(self.skipped))
         self.tree.set('tests', str(self.numtests))
         self.tree.set('time', "%.3f" % event.timeTaken)
@@ -117,3 +127,67 @@ class JUnitXmlReporter(events.Plugin):
             pass
         finally:
             self._start = None
+
+#This module contains some xml utility functions which may
+#be of use in multiple places
+
+import six
+import sys
+import re
+
+
+#six doesn't include a unichr function
+def _unichr(string):
+    if six.PY3:
+        return chr(string)
+    else:
+        return unichr(string)
+
+#etree outputs XML 1.0 so the 1.1 Restricted characters are invalid.
+#and there are no characters that can be given as entities aside
+#form & < > ' " which ever have to be escaped (etree handles these fine)
+ILLEGAL_RANGES = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
+                  (0xD800, 0xDFFF), (0xFFFE, 0xFFFF)]
+#0xD800 thru 0xDFFF are technically invalid in UTF-8 but PY2 will encode
+#bytes into these but PY3 will do a replacement
+
+#Other non-characters which are not strictly forbidden but
+#discouraged.
+RESTRICTED_RANGES = [(0x7F, 0x84), (0x86, 0x9F), (0xFDD0, 0xFDDF)]
+#check for a wide build
+if sys.maxunicode > 0xFFFF:
+    RESTRICTED_RANGES += [(0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
+                          (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
+                          (0x5FFFE, 0x5FFFF), (0x6FFFE, 0x6FFFF),
+                          (0x7FFFE, 0x7FFFF), (0x8FFFE, 0x8FFFF),
+                          (0x9FFFE, 0x9FFFF), (0xAFFFE, 0xAFFFF),
+                          (0xBFFFE, 0xBFFFF), (0xCFFFE, 0xCFFFF),
+                          (0xDFFFE, 0xDFFFF), (0xEFFFE, 0xEFFFF),
+                          (0xFFFFE, 0xFFFFF), (0x10FFFE, 0x10FFFF)]
+
+ILLEGAL_REGEX_STR = \
+    six.u('[') + \
+    six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
+                   for (l, h) in ILLEGAL_RANGES]) + \
+    six.u(']')
+RESTRICTED_REGEX_STR = \
+    six.u('[') + \
+    six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
+                   for (l, h) in RESTRICTED_RANGES]) + \
+    six.u(']')
+
+_ILLEGAL_REGEX = re.compile(ILLEGAL_REGEX_STR, re.U)
+_RESTRICTED_REGEX = re.compile(RESTRICTED_REGEX_STR, re.U)
+
+
+def string_cleanup(string, keep_restricted=False):
+
+    if not issubclass(type(string), six.text_type):
+        string = six.text_type(string, encoding='utf-8', errors='replace')
+
+    string = _ILLEGAL_REGEX.sub(six.u('\uFFFD'), string)
+    if not keep_restricted:
+        string = _RESTRICTED_REGEX.sub(six.u('\uFFFD'), string)
+
+    return string
+            

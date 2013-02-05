@@ -4,10 +4,54 @@ from nose2.compat import unittest
 from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml
 from nose2.plugins.loader import generators, parameters, testcases
-
+import six, re, sys
 
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
+
+    BAD_FOR_XML_U = six.u('A\x07 B\x0B C\x10 D\uD900 '
+                          'E\uFFFE F\x80 G\x90 H\uFDDD')
+    #UTF-8 string with double null (invalid)
+    BAD_FOR_XML_B = six.b('A\x07 B\x0b C\x10 D\xed\xa4\x80 '
+                          'E\xef\xbf\xbe F\xc2\x80 G\xc2\x90 H\xef\xb7\x9d '
+                          '\x00\x00')
+
+    #"byte" strings in PY2 and unicode in py3 works as expected will
+    #will translate surrogates into UTF-16 characters  so BAD_FOR_XML_U
+    #should have 8 letters follows by 0xFFFD, but only 4 when keeping
+    #the discouraged/restricted ranges. Respectively: 
+    #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\uFFFD G\uFFFD H\uFFFD"
+    #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\x80 G\x90 H\uFDDD"
+    #
+    #In Python 2 Invalid ascii characters seem to get escaped out as part
+    #of tracebace.format_traceback so full and partial replacements are:
+    #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
+    #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
+    #
+    #Byte strings in py3 as errors are replaced by their representation string
+    #So these will be safe and not have any replacements
+    #"b'A\\x07 B\\x0b C\\x10 D\\xed\\xa4\\x80 E\\xef\\xbf\\xbe F\\xc2\\x80 
+    #G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
+
+    if sys.maxunicode <= 0xFFFF:
+        EXPECTED_RE = six.u("^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$")
+        EXPECTED_RE_SAFE = six.u("^[\x09\x0A\x0D\x20\x21-\x7E\x85"
+                                   "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$")
+    else:
+        EXPECTED_RE = six.u("^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD"
+                               "\u10000-\u10FFFF]*$")
+        EXPECTED_RE_SAFE = six.u("^[\x09\x0A\x0D\x20\x21-\x7E\x85"
+                                   "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"
+                                   "\u10000-\u1FFFD\u20000-\u2FFFD"
+                                   "\u30000-\u3FFFD\u40000-\u4FFFD"
+                                   "\u50000-\u5FFFD\u60000-\u6FFFD"
+                                   "\u70000-\u7FFFD\u80000-\u8FFFD"
+                                   "\u90000-\u8FFFD\uA0000-\uAFFFD"
+                                   "\uB0000-\uBFFFD\uC0000-\uCFFFD"
+                                   "\uD0000-\uDFFFD\uE0000-\uEFFFD"
+                                   "\uF0000-\uFFFFD\u100000-\u10FFFD]*$")
+                                   
+
 
     def setUp(self):
         super(TestJunitXmlPlugin, self).setUp()
@@ -16,6 +60,10 @@ class TestJunitXmlPlugin(TestCase):
         self.result = result.PluggableTestResult(self.session)
         self.plugin = junitxml.JUnitXmlReporter(session=self.session)
         self.plugin.register()
+
+        #unittest2 needs this
+        if not hasattr(self, 'assertRegexp'):
+            self.assertRegex = self.assertRegexpMatches
 
         class Test(unittest.TestCase):
             def test(self):
@@ -26,6 +74,10 @@ class TestJunitXmlPlugin(TestCase):
                 1/0
             def test_skip(self):
                 raise unittest.SkipTest('skip')
+            def test_bad_xml(self):
+                raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_U)
+            def test_bad_xml_b(self):
+                raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_B)
             def test_gen(self):
                 def check(a, b):
                     self.assertEqual(a, b)
@@ -49,6 +101,42 @@ class TestJunitXmlPlugin(TestCase):
         failure = case.find('failure')
         assert failure is not None
         assert 'Traceback' in failure.text
+
+    def test_error_bad_xml(self):
+        self.plugin.keep_restricted = False
+        test = self.case('test_bad_xml')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        error = case.find('error')
+        self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
+
+    def test_error_bad_xml_keep(self):
+        self.plugin.keep_restricted = True
+        test = self.case('test_bad_xml')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        error = case.find('error')
+        self.assertRegex(error.text, self.EXPECTED_RE)
+
+    def test_error_bad_xml_b(self):
+        self.plugin.keep_restricted = False
+        test = self.case('test_bad_xml_b')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        error = case.find('error')
+        ending = six.u(' \uFFFD\uFFFD')
+        assert error is not None
+        self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
+
+
+    def test_error_bad_xml_b_keep(self):
+        self.plugin.keep_restricted = True
+        test = self.case('test_bad_xml_b')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        error = case.find('error')
+        assert error is not None
+        self.assertRegex(error.text, self.EXPECTED_RE)
 
     def test_error_includes_traceback(self):
         test = self.case('test_err')
@@ -96,7 +184,7 @@ class TestJunitXmlPlugin(TestCase):
         for case in event.extraTests:
             case(self.result)
         xml = self.plugin.tree.findall('testcase')
-        self.assertEqual(len(xml), 8)
+        self.assertEqual(len(xml), 10)
         params = [x for x in xml if x.get('name').startswith('test_params')]
         self.assertEqual(len(params), 3)
         self.assertEqual(params[0].get('name'), 'test_params:1')

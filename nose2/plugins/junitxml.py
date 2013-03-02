@@ -20,6 +20,8 @@ import re
 import sys
 from xml.etree import ElementTree as ET
 
+import six
+
 from nose2 import events, result, util
 
 __unittest = True
@@ -128,13 +130,9 @@ class JUnitXmlReporter(events.Plugin):
         finally:
             self._start = None
 
-#This module contains some xml utility functions which may
-#be of use in multiple places
-
-import six
-import sys
-import re
-
+#
+# xml utility functions
+#
 
 #six doesn't include a unichr function
 def _unichr(string):
@@ -190,4 +188,4 @@ def string_cleanup(string, keep_restricted=False):
         string = _RESTRICTED_REGEX.sub(six.u('\uFFFD'), string)
 
     return string
-            
+

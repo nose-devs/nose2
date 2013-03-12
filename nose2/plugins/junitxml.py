@@ -129,6 +129,7 @@ class JUnitXmlReporter(events.Plugin):
             pass
         finally:
             self._start = None
+        return 0
 
 #
 # xml utility functions

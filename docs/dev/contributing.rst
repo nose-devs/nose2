@@ -24,11 +24,37 @@ development. This means:
 Get started
 -----------
 
-The ``bootstrap.sh`` script in the root of the nose2 distribution can be
-used to get a new local clone up and running quickly. It requires that
-you have `virtualenvwrapper`_ installed. Run this script once to set
-up a nose2 virtualenv, install nose2's dependencies, and set up the
-git submodule that pulls in the `Sphinx`_ theme that the docs use.
+To hack on the project, execute this commands :
+
+::
+
+    $ git clone https://github.com/nose-devs/nose2.git
+    $ python bootstrap.py
+    $ bin/buildout
+
+Next, you can execute test with `tox`_ :
+
+::
+
+    $ bin/tox
+    ...
+    py27 runtests: commands[0]
+    ......
+    -----------------------------
+    Ran 147 tests in 0.749s
+
+    OK
+    ___________ summary ____________
+      py27: commands succeeded
+      congratulations :)
+
+You can also build sphinx docs with this commands :
+
+::
+
+    $ cd docs
+    $ make html
+
 
 Coding Guidelines
 -----------------

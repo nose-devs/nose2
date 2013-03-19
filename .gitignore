@@ -23,3 +23,7 @@ build
 .tox
 .*.sw[nop]
 .dir-locals.el
+.installed.cfg
+bin/
+develop-eggs/
+eggs/

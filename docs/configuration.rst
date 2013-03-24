@@ -33,6 +33,13 @@ The ``[unittest]`` section of nose2 config files is used to configure
 nose2 itself. The following options are available to configure test
 discovery:
 
+.. rst:configvar :: start-dir
+
+   This option configure the default directory to start discovery.
+   The default value is "." (the current directory where nose2
+   is executed). This directory is where nose2 will start looking for
+   tests.
+
 .. rst:configvar :: code-directories
 
    This option configures nose2 to add the named directories to
@@ -58,6 +65,7 @@ Examples:
 .. code-block :: ini
 
   [unittest]
+  start-dir = tests
   code-directories = source
                      more_source
   test-file-pattern = *_test.py

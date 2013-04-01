@@ -11,15 +11,14 @@ import sys
 import traceback
 
 try:
-    from compiler.consts import CO_GENERATOR
-except ImportError:
-    # IronPython doesn't have a complier module
-    CO_GENERATOR=0x20
-
-try:
     from inspect import isgeneratorfunction # new in 2.6
 except ImportError:
     import inspect
+    try:
+        from compiler.consts import CO_GENERATOR
+    except ImportError:
+        # IronPython doesn't have a complier module
+        CO_GENERATOR=0x20
     # backported from Python 2.6
     def isgeneratorfunction(func):
         return bool((inspect.isfunction(func) or inspect.ismethod(func)) and

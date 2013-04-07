@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.4.6
+-----
+
+* Bug: fixed DeprecationWarning for compiler package on python 2.7.
+  Thanks Max Arnold.
+
+* Bug: fixed lack of timing information in junitxml exception reports. Thanks
+  Viacheslav Dukalskiy.
+
+* Bug: cleaned up junitxml xml output. Thanks Philip Thiem.
+
+* Docs: noted support for python 3.3/ Thanks Omer Katz for the bug report.
+
 0.4.5
 -----
 

@@ -127,7 +127,7 @@ class Session(object):
         cfg_exclude = cfg.as_list('exclude-plugins', [])
         exclude.extend(cfg_exclude)
         exclude = set(exclude)
-        all_  = set(modules + more_plugins) - exclude
+        all_ = (set(modules) | set(more_plugins)) - exclude
         log.debug("Loading plugin modules: %s", all_)
         for module in all_:
             self.loadPluginsFromModule(util.module_from_name(module))

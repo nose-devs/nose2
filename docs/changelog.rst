@@ -12,7 +12,7 @@ Changelog
 
 * Bug: cleaned up junitxml xml output. Thanks Philip Thiem.
 
-* Docs: noted support for python 3.3/ Thanks Omer Katz for the bug report.
+* Docs: noted support for python 3.3. Thanks Omer Katz for the bug report.
 
 0.4.5
 -----
@@ -21,7 +21,7 @@ Changelog
   be used together. Thanks @fajpunk.
 
 * Bug: fixed incorrect calling order of layer setup/teardown and test
-  setup/test teardow n methods. Thanks again @fajpunk for tests and fixes.
+  setup/test teardown methods. Thanks again @fajpunk for tests and fixes.
 
 0.4.4
 -----

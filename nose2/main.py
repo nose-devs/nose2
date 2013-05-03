@@ -4,6 +4,7 @@ import sys
 
 from nose2.compat import unittest
 from nose2 import events, loader, runner, session, util
+from nose2 import __version__
 
 
 log = logging.getLogger(__name__)
@@ -163,6 +164,7 @@ class PluggableTestProgram(unittest.TestProgram):
             dest='exclude_plugins', default=[],
             help="Do not load this plugin module")
         self.argparse.add_argument('--verbose', '-v', action='count', default=0)
+        self.argparse.add_argument('--version', action='count', default=0, help="print version and exit")
         self.argparse.add_argument('--quiet', action='store_const',
                                  dest='verbose', const=0)
         self.argparse.add_argument(
@@ -176,6 +178,9 @@ class PluggableTestProgram(unittest.TestProgram):
         command line.
 
         """
+        if cfg_args.version:
+            print __version__
+            sys.exit()
         self.session.logLevel = util.parse_log_level(cfg_args.log_level)
         logging.basicConfig(level=self.session.logLevel)
         log.debug('logging initialized %s', cfg_args.log_level)

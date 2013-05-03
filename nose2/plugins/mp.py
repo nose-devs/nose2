@@ -14,7 +14,7 @@ class MultiProcess(events.Plugin):
     configSection = 'multiprocess'
 
     def __init__(self):
-        self.addArgument(self.setProcs, 'N', '--processes', '# o procs')
+        self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self.procs = self.config.as_int('processes', multiprocessing.cpu_count())
         self.cases = {}

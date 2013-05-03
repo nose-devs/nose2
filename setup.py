@@ -1,5 +1,11 @@
 import os
 import sys
+import re
+
+# get version from package without importing it
+with open('nose2/__init__.py') as fd:
+    line = fd.readline()
+VERSION = re.match('__version__\s*=\s*\'(.*)\'\s*', line)
 
 NAME = 'nose2'
 VERSION = '0.4.6'

@@ -81,7 +81,7 @@ class Session(object):
         self.hooks = events.PluginInterface()
         self.plugins = []
         self.verbosity = 1
-        self.startDir = '.'
+        self.startDir = None
         self.topLevelDir = None
         self.testResult = None
         self.testLoader = None

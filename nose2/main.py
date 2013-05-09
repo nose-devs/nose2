@@ -185,10 +185,7 @@ class PluggableTestProgram(unittest.TestProgram):
         if cfg_args.top_level_directory:
             self.session.topLevelDir = cfg_args.top_level_directory
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
-
-        if self.session.startDir is None:
-            self.session.startDir = self.session.unittest.as_str('start-dir', '.')
-
+        self.session.setStartDir()
         self.session.prepareSysPath()
         if cfg_args.load_plugins:
             self.defaultPlugins.extend(cfg_args.plugins)

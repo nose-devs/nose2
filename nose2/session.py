@@ -175,6 +175,10 @@ class Session(object):
                 log.debug("Register method %s for plugin %s", method, plugin)
                 self.hooks.register(method, plugin)
 
+    def setStartDir(self):
+        if self.startDir is None:
+            self.startDir = self.unittest.as_str('start-dir', '.')
+
     def prepareSysPath(self):
         """Add code directories to sys.path"""
         tld = self.topLevelDir

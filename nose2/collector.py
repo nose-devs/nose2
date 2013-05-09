@@ -18,6 +18,7 @@ def collector():
             rnr = runner.PluggableTestRunner(ssn)
 
             ssn.loadConfigFiles('unittest.cfg', 'nose2.cfg', 'setup.cfg')
+            ssn.setStartDir()
             ssn.prepareSysPath()
             ssn.loadPlugins(PluggableTestProgram.defaultPlugins)
 

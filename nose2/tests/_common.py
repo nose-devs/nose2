@@ -183,6 +183,29 @@ class NotReallyAProc(object):
         return not self.result.result.wasSuccessful()
 
 
+class RedirectStdStreams(object):
+    """
+    Context manager that replaces the stdin/out streams with StringIO
+    buffers. 
+    """
+    def __init__(self):
+        self.stdout = six.StringIO()
+        self.stderr = six.StringIO()
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush()
+        self.old_stderr.flush()
+        sys.stdout, sys.stderr = self.stdout, self.stderr
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.stdout.flush()
+        self.stderr.flush()
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
+
+
 # mock multprocessing Connection
 class Conn(object):
     def __init__(self, items):

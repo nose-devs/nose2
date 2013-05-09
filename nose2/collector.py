@@ -1,7 +1,8 @@
 import sys
 import unittest
 
-from nose2 import main, loader, runner, session
+from nose2 import loader, runner, session
+from nose2.main import PluggableTestProgram
 __unittest = True
 
 
@@ -18,7 +19,7 @@ def collector():
 
             ssn.loadConfigFiles('unittest.cfg', 'nose2.cfg', 'setup.cfg')
             ssn.prepareSysPath()
-            ssn.loadPlugins(main.PluggableTestProgram.defaultPlugins)
+            ssn.loadPlugins(PluggableTestProgram.defaultPlugins)
 
             test = ldr.loadTestsFromNames([], None)
             rslt = rnr.run(test)

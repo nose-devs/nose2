@@ -58,7 +58,7 @@ merges.
 
 Also, core devs should not merge their own work -- again, unless it's
 trivial -- without giving other developers a chance to review it. The
-basic worfklow should be to do the work in a topic branch in your fork
+basic workflow should be to do the work in a topic branch in your fork
 then post a pull request for that branch, whether you're a core
 developer or other contributor.
 

@@ -8,7 +8,7 @@ Organizing Test Fixtures into Layers
 
 Layers allow more flexible organization of test fixtures than test-,
 class- and module- level fixtures. Layers in nose2 are inspired by
-and aim to be compatible with the layers used by zope's testrunner.
+and aim to be compatible with the layers used by Zope's testrunner.
 
 Using layers, you can do things like:
 
@@ -96,7 +96,7 @@ Layer method reference
 
 .. class :: Layer
 
-   Not an acutal class, but reference documentation for
+   Not an actual class, but reference documentation for
    the methods layers can implement. There is no layer
    base class. Layers must be subclasses of :class:`object`
    or other layers.
@@ -209,7 +209,7 @@ Mixing layers with setUpClass and module fixtures
 **Don't cross the streams.**
 
 The implementation of class- and module-level fixtures in unittest2
-depends on introspecting the class heirarchy inside of the
+depends on introspecting the class hierarchy inside of the
 unittest.TestSuite. Since the suites that the layers plugin uses to
 organize tests derive from :class:`unittest.BaseTestSuite` not
 :class:`unittest.TestSuite`, class- and module- level fixtures in
@@ -219,7 +219,7 @@ Mixing layers and multiprocess testing
 --------------------------------------
 
 In the initial release, *test suites using layers are incompatible with
-the multipprocess plugin*. This should be fixed in a future release.
+the multiprocess plugin*. This should be fixed in a future release.
 
 
 Plugin reference

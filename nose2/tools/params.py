@@ -21,7 +21,7 @@ def params(*paramList):
 
       @params(1, 2, 3)
       def test_nums(num):
-          asset num < 4
+          assert num < 4
 
 
       class Test(unittest.TestCase):

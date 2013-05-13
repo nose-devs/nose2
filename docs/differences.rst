@@ -57,7 +57,7 @@ Parameterized and Generator Tests
 nose2 supports *more kinds of parameterized and generator tests than
 nose*, and supports all test generators in test functions, test
 classes, and in unittest TestCase subclasses. nose supports them only
-in test fuctions and test classes that do not subclass
+in test functions and test classes that do not subclass
 unittest.TestCase. See: :doc:`plugins/generators` and
 :doc:`plugins/parameters` for more.
 

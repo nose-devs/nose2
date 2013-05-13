@@ -69,7 +69,7 @@ Changelog
   from ordinary classes that are not subclasses of unittest.TestCase.
 
 * The default script target was changed from ``nose2.main`` to ``nose2.discover``.
-  The former may still be used for running a single module of teststs,
+  The former may still be used for running a single module of tests,
   unittest-style. The latter ignores the ``module`` argument. Thanks to
   @dtcaciuc for the bug report (#32).
 

@@ -41,7 +41,7 @@ config file::
    If you make the plugin always active by setting ``always-on`` in
    the ``[multiprocess]`` section of a config file, but do not set
    ``processes`` or pass :option:`-N`, the number of processes
-   defaults to the number of cpus available.
+   defaults to the number of CPUs available.
 
 Guidelines for Test Authors
 ---------------------------

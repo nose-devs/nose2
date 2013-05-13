@@ -18,7 +18,7 @@ Pre-registration Hooks
    (those that call :meth:`nose2.events.Plugin.register` in __init__
    or have ``always-on = True`` set in their config file sections) will
    have already been registered with the hooks they implement. Plugins
-   waiting for commmand-line activation will not yet be registered.
+   waiting for command-line activation will not yet be registered.
 
    Plugins can use this hook to examine or modify the set of loaded plugins,
    inject their own hook methods using
@@ -108,7 +108,7 @@ These hooks are called for registered plugins only.
    Plugins can use this hook to load tests from test modules. To
    prevent other plugins from loading from the module, set
    ``event.handled`` and return a test suite. Plugins can also append
-   tests to ``event.extraTests`` -- ususally that's what you want to
+   tests to ``event.extraTests`` -- usually that's what you want to
    do, since that will allow other plugins to load their tests from
    the module as well.
 
@@ -123,7 +123,7 @@ These hooks are called for registered plugins only.
    :class:`unittest.TestCase`. To prevent other plugins from loading
    tests from the test case, set ``event.handled`` to True and return
    a test suite. Plugins can also append tests to ``event.extraTests``
-   -- ususally that's what you want to do, since that will allow other
+   -- usually that's what you want to do, since that will allow other
    plugins to load their tests from the test case as well.
 
 .. function :: getTestCaseNames(self, event)

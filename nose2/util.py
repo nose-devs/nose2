@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import traceback
+import platform
 
 try:
     from inspect import isgeneratorfunction # new in 2.6
@@ -174,8 +175,17 @@ def has_module_fixtures(test):
 
 
 def has_class_fixtures(test):
-    return ('setUpClass' in test.__class__.__dict__ or
-            'tearDownClass' in test.__class__.__dict__)
+    # hasattr would be the obvious thing to use here, unfortunately all tests
+    # inherit from unittest2.case.TestCase and that *always* has setUpClass and
+    # tearDownClass methods. Therefore will have the following (ugly) solution:
+    ver = platform.python_version_tuple()
+    if float('{0}.{0}'.format(*ver[:2])) >= 2.7:
+        name = 'unitest.case'
+    else:
+        name = 'unittest2.case'
+    has_class_setups = any('setUpClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+    has_class_teardowns = any('tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+    return has_class_setups or has_class_teardowns
 
 
 def safe_decode(string):

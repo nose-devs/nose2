@@ -63,10 +63,12 @@ class TestMpPlugin(FunctionalTestCase):
         suite.addTest(mod.Test('test_2'))
         suite.addTest(mod.Test2('test_1'))
         suite.addTest(mod.Test2('test_2'))
+        suite.addTest(mod.Test3('test_3'))
 
         flat = list(self.plugin._flatten(suite))
         self.assertEqual(flat, ['test_cf_testcase.Test2.test_1',
                                 'test_cf_testcase.Test2.test_2',
+                                'test_cf_testcase.Test3',
                                 'test_cf_testcase.Test',
                                 ])
 
@@ -161,5 +163,5 @@ class MPPluginTestRuns(FunctionalTestCase):
             '-v',
             '--plugin=nose2.plugins.mp',
             '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 4 tests')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 7 tests')
         self.assertEqual(proc.poll(), 0)

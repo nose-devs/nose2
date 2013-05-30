@@ -187,6 +187,37 @@ The layer reporter plugin can also optionally colorize the keywords
 ('A', 'having', and 'should' by default) in output from tests defined
 with the :doc:`such DSL <../such_dsl>`.
 
+If you would like to change how the layer is displayed you need to set the description attribute.
+
+.. code-block :: python
+
+  class LayerD(Layer):
+      description = 'Layer D'
+      
+Now the output will be the following::
+
+
+  test (test_layers.NoLayer) ... ok
+  Base
+    test (test_layers.Outer) ... ok
+    Layer D
+      test (test_layers.InnerD) ... ok
+    LayerA
+      test (test_layers.InnerA) ... ok
+    LayerB
+      LayerC
+        test (test_layers.InnerC) ... ok
+        test2 (test_layers.InnerC) ... ok
+      LayerB_1
+        test (test_layers.InnerB_1) ... ok
+      LayerA_1
+        test (test_layers.InnerA_1) ... ok
+
+  ----------------------------------------------------------------------
+  Ran 8 tests in 0.002s
+
+  OK
+
 
 Warnings and Caveats
 ====================

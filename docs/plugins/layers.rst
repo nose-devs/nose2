@@ -192,7 +192,7 @@ If you would like to change how the layer is displayed you need to set the descr
 .. code-block :: python
 
   class LayerD(Layer):
-      description = 'Layer D'
+      description = '*** This is a very important custom layer description ***'
       
 Now the output will be the following::
 
@@ -200,7 +200,7 @@ Now the output will be the following::
   test (test_layers.NoLayer) ... ok
   Base
     test (test_layers.Outer) ... ok
-    Layer D
+    *** This is a very important custom layer description ***
       test (test_layers.InnerD) ... ok
     LayerA
       test (test_layers.InnerA) ... ok

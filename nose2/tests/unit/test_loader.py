@@ -3,6 +3,7 @@ from nose2.tests._common import TestCase
 
 
 class TestPluggableTestLoader(TestCase):
+
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
@@ -15,6 +16,7 @@ class TestPluggableTestLoader(TestCase):
 
 
 class FakePlugin(object):
+
     def loadTestsFromModule(self, event):
         event.fake = True
 

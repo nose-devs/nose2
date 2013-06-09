@@ -2,6 +2,7 @@ from nose2.tests._common import FakeStartTestRunEvent, TestCase
 from nose2.plugins import collect
 from nose2 import session
 
+
 class TestCollectOnly(TestCase):
     tags = ['unit']
 
@@ -13,5 +14,3 @@ class TestCollectOnly(TestCase):
         event = FakeStartTestRunEvent()
         self.plugin.startTestRun(event)
         self.assertEqual(event.executeTests, self.plugin.collectTests)
-
-

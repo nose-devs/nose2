@@ -11,6 +11,7 @@ __unittest = True
 
 
 class PluggableTestResult(object):
+
     """Test result that defers to plugins.
 
     All test outcome recording and reporting is deferred to plugins,
@@ -24,6 +25,7 @@ class PluggableTestResult(object):
        When True, test run should stop before running another test.
 
     """
+
     def __init__(self, session):
         self.session = session
         self.shouldStop = False

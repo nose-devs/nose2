@@ -11,7 +11,7 @@ class TestGeneratorUnpack(TestCase):
         self.loader = loader.PluggableTestLoader(self.session)
         self.expect = [(0, ('call', (0, 1))),
                        (1, ('call', (1, 2))),
-                       (2, ('call', (2, 3))),]
+                       (2, ('call', (2, 3))), ]
         self.plugin = generators.Generators(session=self.session)
         # need testcase loader to make the initial response to load from module
         self.tcl = testcases.TestCaseLoader(session=self.session)
@@ -33,6 +33,7 @@ class TestGeneratorUnpack(TestCase):
     def test_ignores_ordinary_functions(self):
         class Mod(object):
             pass
+
         def test():
             pass
         m = Mod()
@@ -44,8 +45,10 @@ class TestGeneratorUnpack(TestCase):
     def test_can_load_tests_from_generator_functions(self):
         class Mod(object):
             __name__ = 'themod'
+
         def check(x):
             assert x == 1
+
         def test():
             yield check, 1
             yield check, 2
@@ -64,9 +67,12 @@ class TestGeneratorUnpack(TestCase):
     def test_can_load_tests_from_generator_methods(self):
         class Mod(object):
             pass
+
         def check(x):
             return x == 1
+
         class Test(TestCase):
+
             def test(self):
                 yield check, 1
                 yield check, 2

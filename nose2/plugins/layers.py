@@ -104,7 +104,7 @@ class Layers(events.Plugin):
         return out
 
     def _sortKey(self, layer):
-        pos =  getattr(layer, 'position', None)
+        pos = getattr(layer, 'position', None)
         # ... lame
         if pos is not None:
             key = six.u("%04d") % pos
@@ -140,7 +140,7 @@ class LayerReporter(events.Plugin):
                     desc = self.describeLayer(layer)
                     event.stream.writeln('%s%s' % (self.indent * ix, desc))
                     self.layersReported.add(layer)
-        event.stream.write(self.indent * (ix+1))
+        event.stream.write(self.indent * (ix + 1))
 
     def describeLayer(self, layer):
         return self.format(getattr(layer, 'description', layer.__name__))

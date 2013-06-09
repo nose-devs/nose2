@@ -2,7 +2,7 @@ THINGS = []
 
 
 def setUpModule():
-   THINGS.append(1)
+    THINGS.append(1)
 
 
 def tearDownModule():

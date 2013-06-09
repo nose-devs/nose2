@@ -30,6 +30,7 @@ __unittest = True
 
 
 class Functions(Plugin):
+
     """Loader plugin that loads test functions"""
     alwaysOn = True
     configSection = 'functions'

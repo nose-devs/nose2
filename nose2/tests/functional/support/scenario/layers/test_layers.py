@@ -1,9 +1,10 @@
-from nose2.compat import  unittest
+from nose2.compat import unittest
 
 STATE = {}
 
 
 class Base(object):
+
     @classmethod
     def setUp(cls):
         STATE['base'] = 'setup'
@@ -15,6 +16,7 @@ class Base(object):
 
 class LayerA(Base):
     position = 1
+
     @classmethod
     def setUp(cls):
         STATE['layerA'] = 'setup'
@@ -26,16 +28,17 @@ class LayerA(Base):
     @classmethod
     def testSetUp(cls, test):
         STATE['layerA.test'] = 'setup'
-        #print "->", STATE, test
+        # print "->", STATE, test
 
     @classmethod
     def testTearDown(cls, test):
-        #print "<-", STATE, test
+        # print "<-", STATE, test
         del STATE['layerA.test']
 
 
 class LayerA_1(LayerA):
     position = 0
+
     @classmethod
     def setUp(cls):
         STATE['layerA_1'] = 'setup'
@@ -47,6 +50,7 @@ class LayerA_1(LayerA):
 
 class LayerB(LayerA):
     position = 2
+
     @classmethod
     def setUp(cls):
         STATE['layerB'] = 'setup'
@@ -58,6 +62,7 @@ class LayerB(LayerA):
 
 class LayerB_1(LayerB):
     position = 0
+
     @classmethod
     def setUp(cls):
         STATE['layerB_1'] = 'setup'
@@ -69,6 +74,7 @@ class LayerB_1(LayerB):
 
 class LayerC(LayerB, LayerA):
     position = 1
+
     @classmethod
     def setUp(cls):
         STATE['layerC'] = 'setup'
@@ -80,6 +86,7 @@ class LayerC(LayerB, LayerA):
 
 class LayerD(Base):
     position = 0
+
     @classmethod
     def setUp(cls):
         STATE['layerD'] = 'setup'

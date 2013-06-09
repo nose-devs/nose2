@@ -17,6 +17,7 @@ class TestParams(TestCase):
     def test_ignores_ordinary_functions(self):
         class Mod(object):
             pass
+
         def test():
             pass
         m = Mod()
@@ -28,8 +29,10 @@ class TestParams(TestCase):
     def test_can_load_tests_from_parameterized_functions(self):
         class Mod(object):
             __name__ = 'themod'
+
         def check(x):
             assert x == 1
+
         @params(1, 2)
         def test(a):
             check(a)
@@ -48,7 +51,9 @@ class TestParams(TestCase):
     def test_can_load_tests_from_parameterized_methods(self):
         class Mod(object):
             __name__ = 'themod'
+
         class Test(TestCase):
+
             @params(1, 2)
             def test(self, a):
                 assert a == 1

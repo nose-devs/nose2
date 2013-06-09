@@ -2,7 +2,7 @@ THINGS = []
 
 
 def setUpModule():
-   THINGS.append(1)
+    THINGS.append(1)
 
 
 def tearDownModule():
@@ -11,5 +11,5 @@ def tearDownModule():
 
 
 def test(p):
-   assert THINGS, "setup didn't run I think"
+    assert THINGS, "setup didn't run I think"
 test.paramList = (1,)

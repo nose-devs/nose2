@@ -12,15 +12,16 @@ import traceback
 import platform
 
 try:
-    from inspect import isgeneratorfunction # new in 2.6
+    from inspect import isgeneratorfunction  # new in 2.6
 except ImportError:
     import inspect
     try:
         from compiler.consts import CO_GENERATOR
     except ImportError:
         # IronPython doesn't have a complier module
-        CO_GENERATOR=0x20
+        CO_GENERATOR = 0x20
     # backported from Python 2.6
+
     def isgeneratorfunction(func):
         return bool((inspect.isfunction(func) or inspect.ismethod(func)) and
                     func.func_code.co_flags & CO_GENERATOR)
@@ -85,7 +86,7 @@ def test_from_name(name, module):
     pos = name.find(':')
     index = None
     if pos != -1:
-        real_name, digits = name[:pos], name[pos+1:]
+        real_name, digits = name[:pos], name[pos + 1:]
         try:
             index = int(digits)
         except ValueError:
@@ -136,6 +137,7 @@ def test_name(test):
         tid = tid.split('\n')[0]
     return tid
 
+
 def ispackage(path):
     """Is this path a package directory?"""
     if os.path.isdir(path):
@@ -183,8 +185,10 @@ def has_class_fixtures(test):
         name = 'unittest.case'
     else:
         name = 'unittest2.case'
-    has_class_setups = any('setUpClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
-    has_class_teardowns = any('tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+    has_class_setups = any(
+        'setUpClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+    has_class_teardowns = any(
+        'tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
     return has_class_setups or has_class_teardowns
 
 
@@ -238,7 +242,7 @@ def transplant_class(cls, module):
 
     :param cls: A class
     :param module: A module name
-    :returns: A subclass of ``cls`` that appears to have been defined in ``module``. 
+    :returns: A subclass of ``cls`` that appears to have been defined in ``module``.
 
     The returned class's ``__name__`` will be equal to
     ``cls.__name__``, and its ``__module__`` equal to ``module``.
@@ -273,7 +277,9 @@ def _count_relevant_tb_levels(tb):
 
 
 class _WritelnDecorator(object):
+
     """Used to decorate file-like objects with a handy 'writeln' method"""
+
     def __init__(self, stream):
         self.stream = stream
 
@@ -288,7 +294,8 @@ class _WritelnDecorator(object):
     def writeln(self, arg=None):
         if arg:
             self.stream.write(arg)
-        self.stream.write('\n') # text-mode streams translate to \r\n if needed
+        self.stream.write('\n')
+                          # text-mode streams translate to \r\n if needed
 
 
 def ancestry(layer):
@@ -309,4 +316,3 @@ def ancestry(layer):
 
 def bases_and_mixins(layer):
     return (layer.__bases__ + getattr(layer, 'mixins', ()))
-

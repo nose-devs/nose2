@@ -11,7 +11,10 @@ __unittest = True
 #
 # Layer suite class
 #
+
+
 class LayerSuite(unittest.BaseTestSuite):
+
     def __init__(self, tests=(), layer=None):
         super(LayerSuite, self).__init__(tests)
         self.layer = layer
@@ -117,4 +120,3 @@ class LayerSuite(unittest.BaseTestSuite):
             return bound_method
         else:
             return None
-

@@ -4,54 +4,55 @@ from nose2.compat import unittest
 from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml
 from nose2.plugins.loader import generators, parameters, testcases
-import six, re, sys
+import six
+import re
+import sys
+
 
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
 
     BAD_FOR_XML_U = six.u('A\x07 B\x0B C\x10 D\uD900 '
                           'E\uFFFE F\x80 G\x90 H\uFDDD')
-    #UTF-8 string with double null (invalid)
+    # UTF-8 string with double null (invalid)
     BAD_FOR_XML_B = six.b('A\x07 B\x0b C\x10 D\xed\xa4\x80 '
                           'E\xef\xbf\xbe F\xc2\x80 G\xc2\x90 H\xef\xb7\x9d '
                           '\x00\x00')
 
     #"byte" strings in PY2 and unicode in py3 works as expected will
-    #will translate surrogates into UTF-16 characters  so BAD_FOR_XML_U
-    #should have 8 letters follows by 0xFFFD, but only 4 when keeping
-    #the discouraged/restricted ranges. Respectively: 
+    # will translate surrogates into UTF-16 characters  so BAD_FOR_XML_U
+    # should have 8 letters follows by 0xFFFD, but only 4 when keeping
+    # the discouraged/restricted ranges. Respectively:
     #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\uFFFD G\uFFFD H\uFFFD"
     #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\x80 G\x90 H\uFDDD"
     #
-    #In Python 2 Invalid ascii characters seem to get escaped out as part
-    #of tracebace.format_traceback so full and partial replacements are:
+    # In Python 2 Invalid ascii characters seem to get escaped out as part
+    # of tracebace.format_traceback so full and partial replacements are:
     #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
     #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
     #
-    #Byte strings in py3 as errors are replaced by their representation string
-    #So these will be safe and not have any replacements
-    #"b'A\\x07 B\\x0b C\\x10 D\\xed\\xa4\\x80 E\\xef\\xbf\\xbe F\\xc2\\x80 
-    #G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
+    # Byte strings in py3 as errors are replaced by their representation string
+    # So these will be safe and not have any replacements
+    #"b'A\\x07 B\\x0b C\\x10 D\\xed\\xa4\\x80 E\\xef\\xbf\\xbe F\\xc2\\x80
+    # G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
 
     if sys.maxunicode <= 0xFFFF:
         EXPECTED_RE = six.u("^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$")
         EXPECTED_RE_SAFE = six.u("^[\x09\x0A\x0D\x20\x21-\x7E\x85"
-                                   "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$")
+                                 "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$")
     else:
         EXPECTED_RE = six.u("^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD"
-                               "\u10000-\u10FFFF]*$")
+                            "\u10000-\u10FFFF]*$")
         EXPECTED_RE_SAFE = six.u("^[\x09\x0A\x0D\x20\x21-\x7E\x85"
-                                   "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"
-                                   "\u10000-\u1FFFD\u20000-\u2FFFD"
-                                   "\u30000-\u3FFFD\u40000-\u4FFFD"
-                                   "\u50000-\u5FFFD\u60000-\u6FFFD"
-                                   "\u70000-\u7FFFD\u80000-\u8FFFD"
-                                   "\u90000-\u8FFFD\uA0000-\uAFFFD"
-                                   "\uB0000-\uBFFFD\uC0000-\uCFFFD"
-                                   "\uD0000-\uDFFFD\uE0000-\uEFFFD"
-                                   "\uF0000-\uFFFFD\u100000-\u10FFFD]*$")
-                                   
-
+                                 "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"
+                                 "\u10000-\u1FFFD\u20000-\u2FFFD"
+                                 "\u30000-\u3FFFD\u40000-\u4FFFD"
+                                 "\u50000-\u5FFFD\u60000-\u6FFFD"
+                                 "\u70000-\u7FFFD\u80000-\u8FFFD"
+                                 "\u90000-\u8FFFD\uA0000-\uAFFFD"
+                                 "\uB0000-\uBFFFD\uC0000-\uCFFFD"
+                                 "\uD0000-\uDFFFD\uE0000-\uEFFFD"
+                                 "\uF0000-\uFFFFD\u100000-\u10FFFD]*$")
 
     def setUp(self):
         super(TestJunitXmlPlugin, self).setUp()
@@ -61,28 +62,36 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin = junitxml.JUnitXmlReporter(session=self.session)
         self.plugin.register()
 
-        #unittest2 needs this
+        # unittest2 needs this
         if not hasattr(self, 'assertRegexp'):
             self.assertRegex = self.assertRegexpMatches
 
         class Test(unittest.TestCase):
+
             def test(self):
                 pass
+
             def test_fail(self):
                 assert False
+
             def test_err(self):
-                1/0
+                1 / 0
+
             def test_skip(self):
                 raise unittest.SkipTest('skip')
+
             def test_bad_xml(self):
                 raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_U)
+
             def test_bad_xml_b(self):
                 raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_B)
+
             def test_gen(self):
                 def check(a, b):
                     self.assertEqual(a, b)
                 yield check, 1, 1
                 yield check, 1, 2
+
             @tools.params(1, 2, 3)
             def test_params(self, p):
                 self.assertEqual(p, 2)
@@ -127,7 +136,6 @@ class TestJunitXmlPlugin(TestCase):
         ending = six.u(' \uFFFD\uFFFD')
         assert error is not None
         self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
-
 
     def test_error_bad_xml_b_keep(self):
         self.plugin.keep_restricted = True
@@ -175,6 +183,7 @@ class TestJunitXmlPlugin(TestCase):
         plug2 = testcases.TestCaseLoader(session=self.session)
         plug2.register()
         # need module to fire top-level event
+
         class Mod(object):
             pass
         m = Mod()
@@ -208,4 +217,3 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(tree.get('skips'), '0')
         self.assertEqual(tree.get('tests'), '1')
         assert 'time' in tree.attrib
-

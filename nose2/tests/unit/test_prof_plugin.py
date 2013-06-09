@@ -27,4 +27,3 @@ class TestProfPlugin(TestCase):
         self.plugin.startTestRun(event)
         assert event.executeTests is _prof.runcall, \
             "executeTests was not replaced"
-

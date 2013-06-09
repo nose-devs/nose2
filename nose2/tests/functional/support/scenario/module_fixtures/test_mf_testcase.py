@@ -4,7 +4,7 @@ THINGS = []
 
 
 def setUpModule():
-   THINGS.append(1)
+    THINGS.append(1)
 
 
 def tearDownModule():
@@ -13,6 +13,7 @@ def tearDownModule():
 
 
 class Test(unittest.TestCase):
+
     def test_1(self):
         assert THINGS, "setup didn't run"
 

@@ -13,18 +13,23 @@ class TestOutComesPlugin(TestCase):
         self.plugin.register()
 
         class Test(TestCase):
+
             def test_e1(self):
                 raise KeyError("k")
+
             def test_e2(self):
                 raise TypeError("x")
+
             def test_e3(self):
                 raise IOError("o")
 
         self.case = Test
 
         class Watcher(events.Plugin):
+
             def __init__(self):
                 self.outcomes = {}
+
             def testOutcome(self, event):
                 self.outcomes.setdefault(event.outcome, []).append(event)
         self.watcher = Watcher(session=self.session)

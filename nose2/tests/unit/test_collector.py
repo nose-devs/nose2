@@ -20,5 +20,3 @@ class TestCollector(TestCase):
         self.assertEqual("", redir.stdout.getvalue())
         self.assertTrue(re.match(r'\n-+\nRan 0 tests in \d.\d\d\ds\n\nOK\n',
                                  redir.stderr.getvalue()))
-
-

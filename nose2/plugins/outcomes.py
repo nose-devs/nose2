@@ -25,6 +25,7 @@ __unittest = True
 
 
 class Outcomes(Plugin):
+
     """Map exceptions to other test outcomes"""
 
     configSection = 'outcomes'

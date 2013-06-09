@@ -4,6 +4,7 @@ from nose2 import events, loader, session
 
 
 class TestTestCaseLoader(TestCase):
+
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(session=self.session)
@@ -14,18 +15,22 @@ class TestTestCaseLoader(TestCase):
         self.module = Mod()
 
         class A(TestCase):
+
             def test(self):
                 pass
 
         class B(TestCase):
+
             def runTest(self):
                 pass
 
         class C(TestCase):
+
             def foo(self):
                 pass
 
         class Test(object):
+
             def test(self):
                 pass
 
@@ -39,12 +44,13 @@ class TestTestCaseLoader(TestCase):
         result = self.session.hooks.loadTestsFromModule(event)
         self.assertEqual(result, None)
         self.assertEqual(len(event.extraTests), 3)
-        self.assertEqual(len(event.extraTests[0]._tests), 1) # A
-        self.assertEqual(len(event.extraTests[1]._tests), 1) # B
-        self.assertEqual(len(event.extraTests[2]._tests), 0) # C
+        self.assertEqual(len(event.extraTests[0]._tests), 1)  # A
+        self.assertEqual(len(event.extraTests[1]._tests), 1)  # B
+        self.assertEqual(len(event.extraTests[2]._tests), 0)  # C
 
     def test_get_testcase_names_can_override_name_selection(self):
         class FooIsOnlyTest(events.Plugin):
+
             def getTestCaseNames(self, event):
                 event.handled = True
                 return ['foo'] if 'foo' in dir(event.testCase) else []
@@ -54,12 +60,13 @@ class TestTestCaseLoader(TestCase):
         result = self.session.hooks.loadTestsFromModule(event)
         self.assertEqual(result, None)
         self.assertEqual(len(event.extraTests), 3)
-        self.assertEqual(len(event.extraTests[0]._tests), 0) # A
-        self.assertEqual(len(event.extraTests[1]._tests), 1) # B (runTest)
-        self.assertEqual(len(event.extraTests[2]._tests), 1) # C
+        self.assertEqual(len(event.extraTests[0]._tests), 0)  # A
+        self.assertEqual(len(event.extraTests[1]._tests), 1)  # B (runTest)
+        self.assertEqual(len(event.extraTests[2]._tests), 1)  # C
 
     def test_plugins_can_exclude_test_names(self):
         class Excluder(events.Plugin):
+
             def getTestCaseNames(self, event):
                 event.excludedNames.append('test')
         excl = Excluder(session=self.session)
@@ -68,6 +75,6 @@ class TestTestCaseLoader(TestCase):
         result = self.session.hooks.loadTestsFromModule(event)
         self.assertEqual(result, None)
         self.assertEqual(len(event.extraTests), 3)
-        self.assertEqual(len(event.extraTests[0]._tests), 0) # A
-        self.assertEqual(len(event.extraTests[1]._tests), 1) # B (runTest)
-        self.assertEqual(len(event.extraTests[2]._tests), 0) # C
+        self.assertEqual(len(event.extraTests[0]._tests), 0)  # A
+        self.assertEqual(len(event.extraTests[1]._tests), 1)  # B (runTest)
+        self.assertEqual(len(event.extraTests[2]._tests), 0)  # C

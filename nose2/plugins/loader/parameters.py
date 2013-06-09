@@ -33,6 +33,7 @@ __unittest = True
 
 
 class ParamsFunctionCase(ut2.FunctionTestCase):
+
     def __init__(self, name, func, **args):
         self._funcName = name
         ut2.FunctionTestCase.__init__(self, func, **args)
@@ -44,6 +45,7 @@ class ParamsFunctionCase(ut2.FunctionTestCase):
 
 
 class Parameters(Plugin):
+
     """Loader plugin that loads parameterized tests"""
     alwaysOn = True
     configSection = 'parameters'
@@ -72,6 +74,7 @@ class Parameters(Plugin):
     def loadTestsFromModule(self, event):
         """Load tests from parameterized test functions in the module"""
         module = event.module
+
         def is_test(obj):
             return (obj.__name__.startswith(self.session.testMethodPrefix) and
                     hasattr(obj, 'paramList'))
@@ -81,7 +84,7 @@ class Parameters(Plugin):
             if isinstance(obj, types.FunctionType) and is_test(obj):
                 tests.extend(
                     self._generateFuncTests(obj)
-                    )
+                )
         event.extraTests.extend(tests)
 
     def loadTestsFromName(self, event):
@@ -104,7 +107,8 @@ class Parameters(Plugin):
         if (index is None and not
             isinstance(parent, type) and not
             isinstance(obj, types.FunctionType)):
-            log.debug("Don't know how to load parameterized tests from %s", obj)
+            log.debug(
+                "Don't know how to load parameterized tests from %s", obj)
             return
 
         if (parent and
@@ -123,7 +127,7 @@ class Parameters(Plugin):
 
         if index is not None:
             try:
-                tests = [tests[index-1]]
+                tests = [tests[index - 1]]
             except IndexError:
                 raise exceptions.TestNotFoundError(original_name)
 

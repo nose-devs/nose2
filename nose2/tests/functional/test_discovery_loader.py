@@ -4,6 +4,7 @@ from nose2.plugins.loader.discovery import DiscoveryLoader
 
 
 class Watcher(events.Plugin):
+
     def __init__(self):
         self.called = []
 
@@ -12,6 +13,7 @@ class Watcher(events.Plugin):
 
 
 class DiscoveryFunctionalTest(FunctionalTestCase):
+
     def setUp(self):
         self.session = session.Session()
         self.plug = DiscoveryLoader(session=self.session)
@@ -40,6 +42,7 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
 
     def test_match_path_event_can_prevent_discovery(self):
         class NoTestsForYou(events.Plugin):
+
             def matchPath(self, event):
                 event.handled = True
                 return False
@@ -54,9 +57,12 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
 
     def test_handle_file_event_can_add_tests(self):
         class TextTest(TestCase):
+
             def test(self):
                 pass
+
         class TestsInText(events.Plugin):
+
             def handleFile(self, event):
                 if event.path.endswith('.txt'):
                     event.extraTests.append(TextTest('test'))
@@ -68,4 +74,3 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
         assert isinstance(result, self.loader.suiteClass)
         self.assertEqual(len(result._tests), 2)
         self.assertEqual(len(self.watcher.called), 1)
-

@@ -32,6 +32,7 @@ log = logging.getLogger(__name__)
 
 
 class DiscoveryLoader(events.Plugin):
+
     """Loader plugin that can discover tests"""
     alwaysOn = True
     configSection = 'discovery'
@@ -65,7 +66,7 @@ class DiscoveryLoader(events.Plugin):
         log.debug("Received event %s", event)
         if event.names or event.module:
             return
-        event.handled = True # I will handle discovery
+        event.handled = True  # I will handle discovery
         return self._discover(event)
 
     def _getStartDirs(self):
@@ -137,7 +138,7 @@ class DiscoveryLoader(events.Plugin):
                 yield result
             return
 
-        evt = events.MatchPathEvent(dirname, full_path,pattern)
+        evt = events.MatchPathEvent(dirname, full_path, pattern)
         result = self.session.hooks.matchDirPath(evt)
         if evt.handled and not result:
             return

@@ -16,11 +16,12 @@ class MultiProcess(events.Plugin):
     def __init__(self):
         self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
-        self.procs = self.config.as_int('processes', multiprocessing.cpu_count())
+        self.procs = self.config.as_int(
+            'processes', multiprocessing.cpu_count())
         self.cases = {}
 
     def setProcs(self, num):
-        self.procs = int(num[0]) # FIXME merge n fix
+        self.procs = int(num[0])  # FIXME merge n fix
         self.register()
 
     def pluginsLoaded(self, event):
@@ -52,7 +53,7 @@ class MultiProcess(events.Plugin):
             conn.send(None)
 
         # wait for results
-        procs = [(p,c) for p, c in procs if p.is_alive()]
+        procs = [(p, c) for p, c in procs if p.is_alive()]
         rdrs = [conn for proc, conn in procs
                 if proc.is_alive()]
         while rdrs:
@@ -65,7 +66,7 @@ class MultiProcess(events.Plugin):
                     # probably dead
                     log.warning("Subprocess connection closed unexpectedly")
                     rdrs.remove(conn)
-                    continue # XXX or die?
+                    continue  # XXX or die?
 
                 if remote_events is None:
                     # XXX proc is done, how to mark it dead?
@@ -119,9 +120,10 @@ class MultiProcess(events.Plugin):
                         mods.setdefault(test.__class__.__module__, []).append(
                             testid)
                     elif util.has_class_fixtures(test):
-                        classes.setdefault("%s.%s" % (test.__class__.__module__,
-                                                      test.__class__.__name__),
-                                           []).append(testid)
+                        classes.setdefault(
+                            "%s.%s" % (test.__class__.__module__,
+                                       test.__class__.__name__),
+                            []).append(testid)
                     else:
                         yield testid
         for cls in classes.keys():
@@ -162,7 +164,7 @@ class MultiProcess(events.Plugin):
                   'pluginClasses': []}
         # XXX fire registerInSubprocess -- add those plugin classes
         # (classes must be pickleable!)
-        event = RegisterInSubprocessEvent() # FIXME should be own event type
+        event = RegisterInSubprocessEvent()  # FIXME should be own event type
         self.session.hooks.registerInSubprocess(event)
         export['pluginClasses'].extend(event.pluginClasses)
         return export
@@ -185,7 +187,7 @@ def procserver(session_export, conn):
     ssn.testLoader = loader_
     result_ = result.PluggableTestResult(ssn)
     ssn.testResult = result_
-    runner_ = runner.PluggableTestRunner(ssn) # needed??
+    runner_ = runner.PluggableTestRunner(ssn)  # needed??
     ssn.testRunner = runner_
     # load and register plugins
     ssn.plugins = [
@@ -236,6 +238,7 @@ def gentests(conn):
 
 # custom event classes
 class SubprocessEvent(events.Event):
+
     """Event fired at start and end of subprocess execution.
 
     .. attribute :: loader
@@ -265,6 +268,7 @@ class SubprocessEvent(events.Event):
              ...
 
     """
+
     def __init__(self, loader, result, runner, plugins, connection, **metadata):
         self.loader = loader
         self.result = result
@@ -276,6 +280,7 @@ class SubprocessEvent(events.Event):
 
 
 class RegisterInSubprocessEvent(events.Event):
+
     """Event fired to notify plugins that multiprocess testing will occur
 
     .. attribute :: pluginClasses
@@ -288,6 +293,7 @@ class RegisterInSubprocessEvent(events.Event):
              event.pluginClasses.append(self.__class__)
 
     """
+
     def __init__(self, **metadata):
         self.pluginClasses = []
         super(RegisterInSubprocessEvent, self).__init__(**metadata)
@@ -295,6 +301,7 @@ class RegisterInSubprocessEvent(events.Event):
 
 # custom hook system that records calls and events
 class RecordingHook(events.Hook):
+
     def __init__(self, method, interface):
         super(RecordingHook, self).__init__(method)
         self.interface = interface
@@ -307,8 +314,9 @@ class RecordingHook(events.Hook):
 
 class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
-    noLogMethods = set(['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
-                        'registerInSubprocess', 'moduleLoadedSuite'])
+    noLogMethods = set(
+        ['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
+         'registerInSubprocess', 'moduleLoadedSuite'])
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()
@@ -349,4 +357,3 @@ class RecordingPluginInterface(events.PluginInterface):
                 hook = self.hookClass(method, self)
         self.hooks[method] = hook
         return hook
-

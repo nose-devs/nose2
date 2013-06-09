@@ -7,6 +7,7 @@ from nose2.tests._common import TestCase
 
 
 class UnitTestDocTestLoader(TestCase):
+
     """Test class DocTestLoader."""
     tags = ['unit']
 

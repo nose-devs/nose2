@@ -11,6 +11,7 @@ __unittest = True
 
 
 class PluggableTestProgram(unittest.TestProgram):
+
     """TestProgram that enables plugins.
 
     Accepts the same parameters as :class:`unittest.TestProgram`,
@@ -104,7 +105,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
         """
         self.session = self.sessionClass()
-        self.argparse = self.session.argparse # for convenience
+        self.argparse = self.session.argparse  # for convenience
 
         # XXX force these? or can it be avoided?
         self.testLoader = self.loaderClass(self.session)
@@ -162,9 +163,10 @@ class PluggableTestProgram(unittest.TestProgram):
             '--exclude-plugin', action='append',
             dest='exclude_plugins', default=[],
             help="Do not load this plugin module")
-        self.argparse.add_argument('--verbose', '-v', action='count', default=0, help="print more information about tests")
+        self.argparse.add_argument(
+            '--verbose', '-v', action='count', default=0, help="print more information about tests")
         self.argparse.add_argument('--quiet', action='store_const',
-                                 dest='verbose', const=0)
+                                   dest='verbose', const=0)
         self.argparse.add_argument(
             '--log-level', default=logging.WARN,
             help='Set logging level for message logged to console.')
@@ -242,10 +244,10 @@ class PluggableTestProgram(unittest.TestProgram):
     def createTests(self):
         """Create top-level test suite"""
         event = events.CreateTestsEvent(
-           self.testLoader, self.testNames, self.module)
+            self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
         if event.handled:
-           self.test = result
+            self.test = result
         else:
             log.debug("Create tests from %s/%s", self.testNames, self.module)
             self.test = self.testLoader.loadTestsFromNames(

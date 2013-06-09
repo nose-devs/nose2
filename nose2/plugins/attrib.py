@@ -72,11 +72,10 @@ class AttributeSelector(Plugin):
         event.suite = self.filterSuite(event.suite, attribs)
 
     def filterSuite(self, suite, attribs):
+        # FIXME probably need to copy or something to allow suites w/custom attrs to work or iter and remove instead of
+        # recreating
         new_suite = suite.__class__()
-                                    # FIXME probably need to copy or something
-                                      # to allow suites w/custom attrs to work
-                                      # or iter and remove instead of
-                                      # recreating
+
         for test in suite:
             if isinstance(test, TestSuite):
                 new_suite.addTest(self.filterSuite(test, attribs))

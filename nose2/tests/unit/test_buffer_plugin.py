@@ -17,16 +17,20 @@ class TestBufferPlugin(TestCase):
         self.plugin.register()
 
         class Test(TestCase):
+
             def test_out(self):
                 six.print_("hello")
                 raise {}["oops"]
+
             def test_err(self):
                 six.print_("goodbye", file=sys.stderr)
         self.case = Test
 
         class Watcher(events.Plugin):
+
             def __init__(self):
                 self.events = []
+
             def testOutcome(self, event):
                 self.events.append(event)
         self.watcher = Watcher(session=self.session)
@@ -40,7 +44,8 @@ class TestBufferPlugin(TestCase):
             test = self.case('test_out')
             test(self.result)
             assert "hello" not in buf.getvalue()
-            assert "hello" in self.watcher.events[0].metadata['stdout'].getvalue()
+            assert "hello" in self.watcher.events[
+                0].metadata['stdout'].getvalue()
         finally:
             sys.stdout = out
 
@@ -53,7 +58,8 @@ class TestBufferPlugin(TestCase):
             test = self.case('test_err')
             test(self.result)
             assert "goodbye" not in buf.getvalue()
-            assert "goodbye" in self.watcher.events[0].metadata['stderr'].getvalue()
+            assert "goodbye" in self.watcher.events[
+                0].metadata['stderr'].getvalue()
         finally:
             sys.stderr = err
 

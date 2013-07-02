@@ -8,7 +8,6 @@ from nose2.plugins.loader import discovery, testcases
 from nose2.tests._common import FunctionalTestCase, support_file, Conn
 
 
-
 class TestMpPlugin(FunctionalTestCase):
 
     def setUp(self):
@@ -90,7 +89,7 @@ class TestProcserver(FunctionalTestCase):
                               testcases.TestCaseLoader,
                               buffer.OutputBufferPlugin]
 
-            }
+        }
         conn = Conn(['pkg1.test.test_things.SomeTests.test_ok',
                      'pkg1.test.test_things.SomeTests.test_failed'])
         procserver(ssn, conn)
@@ -105,13 +104,13 @@ class TestProcserver(FunctionalTestCase):
                   ('pkg1.test.test_things.SomeTests.test_failed',
                    [('startTest', {}),
                     ('setTestOutcome', {
-                            'outcome': 'failed',
-                            'expected': False,
-                            'metadata': {'stdout': 'Hello stdout\n'}}),
+                     'outcome': 'failed',
+                     'expected': False,
+                     'metadata': {'stdout': 'Hello stdout\n'}}),
                     ('testOutcome', {
-                            'outcome': 'failed',
-                            'expected': False,
-                            'metadata': {'stdout': 'Hello stdout\n'}}),
+                     'outcome': 'failed',
+                     'expected': False,
+                     'metadata': {'stdout': 'Hello stdout\n'}}),
                     ('stopTest', {})]
                    ),
                   ]

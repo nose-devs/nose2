@@ -31,7 +31,8 @@ class AutoPlugin(Directive):
             if 'module' in self.options:
                 mod_name = self.options['module']
             else:
-                mod_name = plugin_name[0:plugin_name.index(plugin.__name__)-1]
+                mod_name = plugin_name[
+                    0:plugin_name.index(plugin.__name__) - 1]
             plugins = [plugin]
 
         rst = ViewList()
@@ -146,7 +147,9 @@ def setup(app):
 
 DEFAULT = object()
 
+
 class ConfigBucket(object):
+
     def __init__(self):
         self.section = None
         self.vars = {}
@@ -199,6 +202,7 @@ class ConfigBucket(object):
 
 
 class OptBucket(object):
+
     def __init__(self, doc=None, prog='nosetests'):
         self.seen = set()
         self.opts = []
@@ -226,6 +230,7 @@ class OptBucket(object):
 
 
 class Opt(object):
+
     def __init__(self, *arg, **kw):
         self.opts = arg
         self.action = kw.pop('action', None)

@@ -22,6 +22,7 @@ __unittest = True
 
 
 class LogCapture(Plugin):
+
     """Capture log messages during test execution"""
 
     configSection = 'log-capture'
@@ -104,6 +105,7 @@ class LogCapture(Plugin):
 
 
 class FilterSet(object):
+
     def __init__(self, filter_components):
         self.inclusive, self.exclusive = self._partition(filter_components)
 
@@ -144,6 +146,7 @@ class FilterSet(object):
 
 
 class MyMemoryHandler(BufferingHandler):
+
     def __init__(self, capacity, logformat, logdatefmt, filters):
         BufferingHandler.__init__(self, capacity)
         fmt = logging.Formatter(logformat, logdatefmt)
@@ -151,7 +154,7 @@ class MyMemoryHandler(BufferingHandler):
         self.filterset = FilterSet(filters)
 
     def flush(self):
-        pass # do nothing
+        pass  # do nothing
 
     def truncate(self):
         self.buffer = []

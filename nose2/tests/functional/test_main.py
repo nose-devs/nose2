@@ -2,6 +2,7 @@ from nose2.tests._common import FunctionalTestCase
 
 
 class TestPluggableTestProgram(FunctionalTestCase):
+
     def test_run_in_empty_dir_succeeds(self):
         proc = self.runIn('scenario/no_tests')
         stdout, stderr = proc.communicate()
@@ -10,6 +11,7 @@ class TestPluggableTestProgram(FunctionalTestCase):
     def test_extra_hooks(self):
         class Check(object):
             ran = False
+
             def startTestRun(self, event):
                 self.ran = True
 

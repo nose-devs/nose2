@@ -12,6 +12,7 @@ from nose2.tests._common import (FakeStartTestEvent, FakeLoadFromNameEvent,
 
 
 class UnitTestTestId(TestCase):
+
     """Test class TestId.
 
     Tests are carried out in a temporary directory, since TestId stores state
@@ -30,16 +31,19 @@ class UnitTestTestId(TestCase):
         """Test the __init__ method."""
         plug = self.plugin
         # Test attributes
-        for name, exp_val in [('configSection', 'testid'), ('commandLineSwitch',
-            ('I', 'with-id', 'Add test ids to output')), ('idfile',
-                os.path.abspath('.noseids')), ('ids', {}), ('tests', {}),
+        for name, exp_val in [(
+            'configSection', 'testid'), ('commandLineSwitch',
+                                         ('I', 'with-id', 'Add test ids to output')), ('idfile',
+                                                                                       os.path.abspath(
+                                                                                           '.noseids')), ('ids', {}), ('tests', {}),
                 ('id', 0)]:
             try:
                 val = getattr(plug, name)
             except AttributeError:
-                self.fail('TestId instance doesn\'t have attribute %s' % (name,))
+                self.fail(
+                    'TestId instance doesn\'t have attribute %s' % (name,))
             self.assertEqual(val, exp_val, 'Attribute %s should have value '
-                '\'%s\', but has value %s' % (name, exp_val, val))
+                             '\'%s\', but has value %s' % (name, exp_val, val))
 
     def test_start_test(self):
         """Test reportStartTest method."""

@@ -26,6 +26,7 @@ __unittest = True
 
 
 class _Buffer(object):
+
     def __init__(self, stream):
         self._stream = stream
         self._buffer = StringIO()
@@ -53,6 +54,7 @@ class _Buffer(object):
 
 
 class OutputBufferPlugin(events.Plugin):
+
     """Buffer output during test execution"""
     commandLineSwitch = ('B', 'output-buffer', 'Enable output buffer')
     configSection = 'output-buffer'
@@ -98,7 +100,8 @@ class OutputBufferPlugin(events.Plugin):
                 buf = event.outcomeEvent.metadata[stream].getvalue()
                 if not buf:
                     continue
-                event.extraDetail.append(ln('>> begin captured %s <<' % stream))
+                event.extraDetail.append(
+                    ln('>> begin captured %s <<' % stream))
                 event.extraDetail.append(buf)
                 event.extraDetail.append(ln('>> end captured %s <<' % stream))
 

@@ -4,6 +4,7 @@ from nose2.plugins import mp
 
 
 class TestMPPlugin(TestCase):
+
     def setUp(self):
         self.session = session.Session()
         self.plugin = mp.MultiProcess(session=self.session)

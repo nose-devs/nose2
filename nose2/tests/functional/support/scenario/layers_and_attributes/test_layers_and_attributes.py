@@ -1,9 +1,10 @@
-from nose2.compat import  unittest
+from nose2.compat import unittest
 
 STATE = {}
 
 
 class L1(object):
+
     @classmethod
     def setUp(cls):
         STATE['L1'] = 'setup'
@@ -14,6 +15,7 @@ class L1(object):
 
 
 class L2(object):
+
     @classmethod
     def setUp(cls):
         STATE['L2'] = 'setup'

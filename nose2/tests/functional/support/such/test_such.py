@@ -4,6 +4,7 @@ from nose2.tools import such
 
 
 class SomeLayer(object):
+
     @classmethod
     def setUp(cls):
         it.somelayer = True
@@ -158,5 +159,6 @@ it.createTests(globals())
 # Such tests and normal tests can coexist in the same modules.
 #
 class NormalTest(unittest.TestCase):
+
     def test(self):
         pass

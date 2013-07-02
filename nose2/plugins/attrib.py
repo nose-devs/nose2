@@ -8,6 +8,7 @@ undefined = object()
 
 
 class AttributeSelector(Plugin):
+
     """Filter tests by attribute"""
 
     def __init__(self):
@@ -71,9 +72,10 @@ class AttributeSelector(Plugin):
         event.suite = self.filterSuite(event.suite, attribs)
 
     def filterSuite(self, suite, attribs):
-        new_suite = suite.__class__() # FIXME probably need to copy or something
-                                      # to allow suites w/custom attrs to work
-                                      # or iter and remove instead of recreating
+        # FIXME probably need to copy or something to allow suites w/custom attrs to work or iter and remove instead of
+        # recreating
+        new_suite = suite.__class__()
+
         for test in suite:
             if isinstance(test, TestSuite):
                 new_suite.addTest(self.filterSuite(test, attribs))
@@ -144,6 +146,7 @@ def _get_attr(test, key):
 
 
 class ContextHelper:
+
     def __init__(self, obj):
         self.obj = obj
 

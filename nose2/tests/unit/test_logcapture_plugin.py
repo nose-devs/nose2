@@ -9,23 +9,29 @@ log = logging.getLogger(__name__)
 
 
 class StubLogging(object):
+
     def __init__(self, name=None):
         self.name = name
         self.handlers = []
         self.level = None
+
     def getLogger(self, _name=None):
         return self
+
     def addHandler(self, handler):
         self.handlers.append(handler)
+
     def setLevel(self, level):
         self.level = level
+
     def debug(self, message, *arg):
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         for handler in self.handlers:
             handler.emit(StubRecord(message % arg))
 
 
 class StubRecord(object):
+
     def __init__(self, message):
         self.message = message
         self.name = 'stub'
@@ -33,6 +39,7 @@ class StubRecord(object):
         self.exc_info = None
         self.exc_text = None
         self.stack_info = None
+
     def getMessage(self):
         return self.message
 

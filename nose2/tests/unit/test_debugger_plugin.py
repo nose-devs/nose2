@@ -6,11 +6,13 @@ from nose2 import events, result, session
 
 
 class NullHandler(logging.Handler):
+
     def emit(self, record):
         pass
 
 
 class StubPdb(object):
+
     def __init__(self):
         self.called = False
         self.tb = None
@@ -21,6 +23,7 @@ class StubPdb(object):
 
 
 class NoInteraction(events.Plugin):
+
     def beforeInteraction(self, event):
         event.handled = True
         return False
@@ -35,10 +38,13 @@ class TestDebugger(TestCase):
         self.result = result.PluggableTestResult(self.session)
 
         class Test(TestCase):
+
             def test(self):
                 pass
+
             def test_err(self):
                 raise Exception("oops")
+
             def test_fail(self):
                 assert False
         self.case = Test

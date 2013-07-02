@@ -3,6 +3,7 @@ from nose2 import events, loader, session
 from nose2.plugins.loader import functions
 from nose2.tests._common import TestCase
 
+
 class TestFunctionLoader(TestCase):
 
     def setUp(self):
@@ -13,6 +14,7 @@ class TestFunctionLoader(TestCase):
     def test_can_load_test_functions_from_module(self):
         class Mod(object):
             pass
+
         def test():
             pass
         m = Mod()
@@ -25,6 +27,7 @@ class TestFunctionLoader(TestCase):
     def test_ignores_generator_functions(self):
         class Mod(object):
             pass
+
         def test():
             yield
         m = Mod()
@@ -36,6 +39,7 @@ class TestFunctionLoader(TestCase):
     def test_ignores_functions_that_take_args(self):
         class Mod(object):
             pass
+
         def test(a):
             pass
         m = Mod()

@@ -14,6 +14,7 @@ __unittest = True
 
 
 class FailFast(events.Plugin):
+
     """Stop the test run after error or failure"""
     commandLineSwitch = (
         'F', 'fail-fast', 'Stop the test run after the first error or failure')

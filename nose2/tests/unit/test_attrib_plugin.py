@@ -11,6 +11,7 @@ class TestAttribPlugin(TestCase):
     def setUp(self):
         class TC_1(TestCase):
             tags = ['a', 'b']
+
             def test_a(self):
                 pass
             test_a.a = 1

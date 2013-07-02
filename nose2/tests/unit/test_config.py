@@ -3,10 +3,11 @@ from nose2.compat import unittest
 
 
 class TestConfig(unittest.TestCase):
+
     def setUp(self):
         self.conf = config.Config([
-                ('a', ' 1 '), ('b', '  x\n  y '), ('c', '0'),
-                ('d', '123')])
+            ('a', ' 1 '), ('b', '  x\n  y '), ('c', '0'),
+            ('d', '123')])
 
     def test_as_int(self):
         self.assertEqual(self.conf.as_int('a'), 1)

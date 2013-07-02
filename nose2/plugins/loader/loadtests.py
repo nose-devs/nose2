@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 
 
 class LoadTestsLoader(events.Plugin):
+
     """Loader plugin that implements load_tests."""
     alwaysOn = True
     configSection = 'load_tests'
@@ -46,7 +47,8 @@ class LoadTestsLoader(events.Plugin):
             event.suite = load_tests(
                 event.loader, event.suite, self.session.testFilePattern)
         except Exception as exc:
-            log.exception("Failed to load tests from %s via load_tests", module)
+            log.exception(
+                "Failed to load tests from %s via load_tests", module)
             suite = event.loader.suiteClass()
             suite.addTest(event.loader.failedLoadTests(module.__name__, exc))
             event.handled = True

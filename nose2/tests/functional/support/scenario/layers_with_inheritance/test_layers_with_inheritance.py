@@ -2,6 +2,7 @@ from nose2.compat import unittest
 
 
 class L1(object):
+
     @classmethod
     def setUp(cls):
         print('L1 setUp')
@@ -20,6 +21,7 @@ class L1(object):
 
 
 class L2(L1):
+
     @classmethod
     def setUp(cls):
         print('L2 setUp')

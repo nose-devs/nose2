@@ -25,6 +25,7 @@ __unittest = True
 
 
 class Profiler(events.Plugin):
+
     """Profile the test run"""
 
     configSection = 'profiler'
@@ -39,7 +40,7 @@ class Profiler(events.Plugin):
 
     def register(self):
         """Don't register if hotshot is not found"""
-        if  hotshot is None:
+        if hotshot is None:
             log.error("Unable to profile: hotshot module not available")
             return
         super(Profiler, self).register()
@@ -54,6 +55,7 @@ class Profiler(events.Plugin):
         """Output profiling results"""
         # write prof output to stream
         class Stream:
+
             def write(self, *msg):
                 for m in msg:
                     event.stream.write(m)

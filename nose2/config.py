@@ -3,6 +3,7 @@ __unittest = True
 
 
 class Config(object):
+
     """Configuration for a plugin or other entities.
 
     Encapsulates configuration for a single plugin or other element.
@@ -10,6 +11,7 @@ class Config(object):
     extended interface for extracting items as a certain type.
 
     """
+
     def __init__(self, items):
         self._items = items
         self._mvd = {}

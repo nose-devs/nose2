@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 
 class Debugger(events.Plugin):
+
     """Enter pdb on test error or failure
 
     .. attribute :: pdb
@@ -51,7 +52,8 @@ class Debugger(events.Plugin):
         result = self.session.hooks.beforeInteraction(evt)
         try:
             if not result and evt.handled:
-                log.warning("Skipping pdb for %s, user interaction not allowed", event)
+                log.warning(
+                    "Skipping pdb for %s, user interaction not allowed", event)
                 return
             self.pdb.post_mortem(tb)
         finally:

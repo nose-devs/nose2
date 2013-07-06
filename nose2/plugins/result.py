@@ -29,6 +29,7 @@ __unittest = True
 
 
 class ResultReporter(events.Plugin):
+
     """Result plugin that implements standard unittest console reporting"""
     alwaysOn = True
     configSection = 'test-result'
@@ -133,7 +134,8 @@ class ResultReporter(events.Plugin):
         self._report(event, 'reportExpectedFailure', 'x', 'expected failure')
 
     def _reportUnexpectedSuccess(self, event):
-        self._report(event, 'reportUnexpectedSuccess', 'u', 'unexpected success')
+        self._report(
+            event, 'reportUnexpectedSuccess', 'u', 'unexpected success')
 
     def _reportOtherOutcome(self, event):
         self._report(event, 'reportOtherOutcome', '?', 'unknown outcome')
@@ -258,4 +260,3 @@ class ResultReporter(events.Plugin):
         elif self.session.verbosity:
             evt.stream.write(getattr(event, 'shortLabel', None) or shortLabel)
             evt.stream.flush()
-

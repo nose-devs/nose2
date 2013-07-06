@@ -28,6 +28,7 @@ def A(description):
 
 
 class Helper(unittest.TestCase):
+
     def runTest(self):
         pass
 
@@ -36,6 +37,7 @@ helper = Helper()
 
 
 class Scenario(object):
+
     """A test scenario.
 
     A test scenario defines a set of fixtures and tests
@@ -188,7 +190,7 @@ class Scenario(object):
             case = Case(self._group, f, "should %s" % _desc)
             self._group.addCase(case)
             return case
-        if type(desc) == type(decorator):
+        if isinstance(desc, type(decorator)):
             return decorator(desc)
         return decorator
 
@@ -215,7 +217,8 @@ class Scenario(object):
     def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
         layer = self._makeLayer(group, parent_layer, position)
         case = self._makeTestCase(group, layer)
-        log.debug("Made test case %s with layer %s from %s", case, layer, group)
+        log.debug(
+            "Made test case %s with layer %s from %s", case, layer, group)
         mod[layer.__name__] = layer
         layer.__module__ = mod['__name__']
         mod[case.__name__] = case
@@ -228,7 +231,7 @@ class Scenario(object):
             'layer': layer,
             'group': group,
             'description': group.description,
-            }
+        }
 
         for index, case in enumerate(group._cases):
             def _test(s, case=case):
@@ -238,8 +241,8 @@ class Scenario(object):
             _test.description = case.description
             _test.case = case
             _test.index = index
-            attr[name] = _test # for collection and sorting
-            attr[case.description] = _test # for random access by name
+            attr[name] = _test  # for collection and sorting
+            attr[case.description] = _test  # for random access by name
 
         setups = group._test_setups[:]
         teardowns = group._test_teardowns[:]
@@ -273,8 +276,8 @@ class Scenario(object):
             parent_layer = object
 
         # FIXME test setups
-        #test_setups = group._test_setups[:]
-        #test_teardowns = group._testeardowns[:]
+        # test_setups = group._test_setups[:]
+        # test_teardowns = group._testeardowns[:]
 
         def setUp(cls):
             for setup in cls.setups:
@@ -292,7 +295,7 @@ class Scenario(object):
             'teardowns': group._teardowns[:],
             'position': position,
             'mixins': ()
-            }
+        }
 
         if group.base_layer:
             # inject this layer into the group class list
@@ -310,7 +313,9 @@ class Scenario(object):
 
 
 class Group(object):
+
     """Group of tests w/common fixtures & description"""
+
     def __init__(self, description, indent=0, parent=None, base_layer=None):
         self.description = description
         self.indent = indent
@@ -352,12 +357,13 @@ class Group(object):
         return ' '.join(d)
 
     def child(self, description, base_layer=None):
-        child = Group(description, self.indent+1, self, base_layer)
+        child = Group(description, self.indent + 1, self, base_layer)
         self._children.append(child)
         return child
 
 
 class Case(object):
+
     """Information about a test case"""
     _helper = helper
 

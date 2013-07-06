@@ -3,6 +3,7 @@ from nose2.compat import unittest
 
 
 class SessionUnitTests(unittest.TestCase):
+
     def test_can_create_session(self):
         session.Session()
 
@@ -10,6 +11,7 @@ class SessionUnitTests(unittest.TestCase):
         class fakemod:
             pass
         f = fakemod()
+
         class A(events.Plugin):
             pass
         f.A = A

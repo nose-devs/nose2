@@ -15,6 +15,7 @@ SUPPORT = os.path.join(HERE, 'functional', 'support')
 
 
 class TestCase(unittest.TestCase):
+
     """TestCase extension.
 
     If the class variable _RUN_IN_TEMP is True (default: False), tests will be
@@ -66,7 +67,9 @@ class FunctionalTestCase(unittest.TestCase):
 
 
 class _FakeEventBase(object):
+
     """Baseclass for fake Events."""
+
     def __init__(self):
         self.handled = False
         self.version = '0.1'
@@ -74,18 +77,22 @@ class _FakeEventBase(object):
 
 
 class FakeHandleFileEvent(_FakeEventBase):
+
     """Fake HandleFileEvent."""
+
     def __init__(self, name):
         super(FakeHandleFileEvent, self).__init__()
 
-        self.loader = Stub() # FIXME
+        self.loader = Stub()  # FIXME
         self.name = name
         self.path = os.path.split(name)[1]
         self.extraTests = []
 
 
 class FakeStartTestEvent(_FakeEventBase):
+
     """Fake StartTestEvent."""
+
     def __init__(self, test):
         super(FakeStartTestEvent, self).__init__()
         self.test = test
@@ -95,21 +102,27 @@ class FakeStartTestEvent(_FakeEventBase):
 
 
 class FakeLoadFromNameEvent(_FakeEventBase):
+
     """Fake LoadFromNameEvent."""
+
     def __init__(self, name):
         super(FakeLoadFromNameEvent, self).__init__()
         self.name = name
 
 
 class FakeLoadFromNamesEvent(_FakeEventBase):
+
     """Fake LoadFromNamesEvent."""
+
     def __init__(self, names):
         super(FakeLoadFromNamesEvent, self).__init__()
         self.names = names
 
 
 class FakeStartTestRunEvent(_FakeEventBase):
+
     """Fake StartTestRunEvent"""
+
     def __init__(self, runner=None, suite=None, result=None, startTime=None,
                  executeTests=None):
         super(FakeStartTestRunEvent, self).__init__()
@@ -121,9 +134,12 @@ class FakeStartTestRunEvent(_FakeEventBase):
 
 
 class Stub(object):
+
     """Stub object for use in tests"""
+
     def __getattr__(self, attr):
         return Stub()
+
     def __call__(self, *arg, **kw):
         return Stub()
 
@@ -143,6 +159,7 @@ def run_nose2(*nose2_args, **nose2_kwargs):
 
 
 class NotReallyAProc(object):
+
     def __init__(self, args, cwd=None, **kwargs):
         self.args = args
         self.chdir = cwd
@@ -184,10 +201,12 @@ class NotReallyAProc(object):
 
 
 class RedirectStdStreams(object):
+
     """
     Context manager that replaces the stdin/out streams with StringIO
-    buffers. 
+    buffers.
     """
+
     def __init__(self):
         self.stdout = six.StringIO()
         self.stderr = six.StringIO()
@@ -208,6 +227,7 @@ class RedirectStdStreams(object):
 
 # mock multprocessing Connection
 class Conn(object):
+
     def __init__(self, items):
         self.items = items
         self.sent = []

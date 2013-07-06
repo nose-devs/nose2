@@ -20,7 +20,10 @@ __unittest = True
 # have __init__ call self.configure() or something after the
 # initial setup, but that would further break compatibilty
 # with the unittest2 plugins branch Plugin class.
+
+
 class PluginMeta(type):
+
     def __call__(cls, *args, **kwargs):
         session = kwargs.pop('session', None)
         instance = object.__new__(cls, *args, **kwargs)
@@ -48,6 +51,7 @@ class PluginMeta(type):
 
 
 class Plugin(six.with_metaclass(PluginMeta)):
+
     """Base class for nose2 plugins
 
     All nose2 plugins must subclass this class.
@@ -93,6 +97,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
     """
     alwaysOn = False
     registered = False
+
     def register(self):
         """Register with appropriate hooks.
 
@@ -168,15 +173,18 @@ class Plugin(six.with_metaclass(PluginMeta)):
             log.warning("Unable to add option %s/%s for %s, no session",
                         short_opt, long_opt, self)
             return
+
         class CB(argparse.Action):
+
             def __call__(self, parser, namespace, values, option_string=None):
                 if six.callable(callback):
                     callback(values)
                 elif isinstance(callback, list):
                     callback.extend(values)
                 else:
-                    raise ValueError("Invalid callback %s for plugin option %s",
-                                     callback, option_string)
+                    raise ValueError(
+                        "Invalid callback %s for plugin option %s",
+                        callback, option_string)
         opts = []
         if short_opt:
             if short_opt.lower() == short_opt:
@@ -190,6 +198,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
 
 class Hook(object):
+
     """A plugin hook
 
     Each plugin method in the :class:`nose2.events.PluginInterface` is
@@ -205,6 +214,7 @@ class Hook(object):
        The list of plugin instances bound to this hook.
 
     """
+
     def __init__(self, method):
         self.method = method
         self.plugins = []
@@ -221,6 +231,7 @@ class Hook(object):
 
 
 class PluginInterface(object):
+
     """Definition of plugin interface.
 
     Instances of this class contain the methods that may be called,
@@ -262,7 +273,7 @@ class PluginInterface(object):
         'afterInteraction', 'createTests', 'afterTestRun',
         'moduleLoadedSuite', 'handleDir',
         # ... etc?
-        )
+    )
     hookClass = Hook
 
     def __init__(self):
@@ -292,6 +303,7 @@ class PluginInterface(object):
 
 
 class Event(object):
+
     """Base class for all events.
 
     .. attribute :: metadata
@@ -336,7 +348,8 @@ class Event(object):
             state['executeTests'] = None
         if 'exc_info' in state and state['exc_info'] is not None:
             ec, ev, tb = state['exc_info']
-            state['exc_info'] = (ec, ev, util.format_traceback(None, (ec, ev, tb)))
+            state['exc_info'] = (
+                ec, ev, util.format_traceback(None, (ec, ev, tb)))
         clear = ('loader', 'result', 'runner')
         for attr in clear:
             if attr in state:
@@ -345,6 +358,7 @@ class Event(object):
 
 
 class PluginsLoadedEvent(Event):
+
     """Event fired after all plugin classes are loaded.
 
     .. attribute :: pluginsLoaded
@@ -360,6 +374,7 @@ class PluginsLoadedEvent(Event):
 
 
 class RunnerCreatedEvent(Event):
+
     """Event fired when test runner is created.
 
     .. attribute :: runner
@@ -376,6 +391,7 @@ class RunnerCreatedEvent(Event):
 
 
 class ResultCreatedEvent(Event):
+
     """Event fired when test result handler is created.
 
     .. attribute :: result
@@ -392,6 +408,7 @@ class ResultCreatedEvent(Event):
 
 
 class StartTestRunEvent(Event):
+
     """Event fired when test run is about to start.
 
     Test collection is complete before this event fires, but
@@ -442,6 +459,7 @@ class StartTestRunEvent(Event):
 
 
 class StopTestRunEvent(Event):
+
     """Event fired when test run has stopped.
 
     .. attribute :: runner
@@ -472,6 +490,7 @@ class StopTestRunEvent(Event):
 
 
 class StartTestEvent(Event):
+
     """Event fired before a test is executed.
 
     .. attribute :: test
@@ -497,6 +516,7 @@ class StartTestEvent(Event):
 
 
 class StopTestEvent(Event):
+
     """Event fired after a test is executed.
 
     .. attribute :: test
@@ -522,6 +542,7 @@ class StopTestEvent(Event):
 
 
 class TestOutcomeEvent(Event):
+
     """Event fired when a test completes.
 
     .. attribute :: test
@@ -574,6 +595,7 @@ class TestOutcomeEvent(Event):
     """
     _attrs = Event._attrs + ('test', 'result', 'outcome', 'exc_info', 'reason',
                              'expected', 'shortLabel', 'longLabel')
+
     def __init__(self, test, result, outcome, exc_info=None, reason=None,
                  expected=False, shortLabel=None, longLabel=None, **kw):
         self.test = test
@@ -588,6 +610,7 @@ class TestOutcomeEvent(Event):
 
 
 class LoadFromModuleEvent(Event):
+
     """Event fired when a test module is loaded.
 
     .. attribute :: loader
@@ -630,6 +653,7 @@ class ModuleSuiteEvent(Event):
 
 
 class LoadFromTestCaseEvent(Event):
+
     """Event fired when tests are loaded from a test case.
 
     .. attribute :: loader
@@ -662,6 +686,7 @@ class LoadFromTestCaseEvent(Event):
 
 
 class LoadFromNamesEvent(Event):
+
     """Event fired to load tests from test names.
 
     .. attribute :: loader
@@ -703,6 +728,7 @@ class LoadFromNamesEvent(Event):
 
 
 class LoadFromNameEvent(Event):
+
     """Event fired to load tests from test names.
 
     .. attribute :: loader
@@ -741,6 +767,7 @@ class LoadFromNameEvent(Event):
 
 
 class HandleFileEvent(Event):
+
     """Event fired when a non-test file is examined.
 
     .. note ::
@@ -795,6 +822,7 @@ class HandleFileEvent(Event):
 
 
 class MatchPathEvent(Event):
+
     """Event fired during file matching.
 
     Plugins may return False and set ``handled`` on this event to prevent
@@ -824,6 +852,7 @@ class MatchPathEvent(Event):
 
 
 class GetTestCaseNamesEvent(Event):
+
     """Event fired to find test case names in a test case.
 
     Plugins may return a list of names and set ``handled`` on this
@@ -875,6 +904,7 @@ class GetTestCaseNamesEvent(Event):
 
 
 class ResultSuccessEvent(Event):
+
     """Event fired at end of test run to determine success.
 
     This event fires at the end of the test run and allows
@@ -900,6 +930,7 @@ class ResultSuccessEvent(Event):
 
 
 class ResultStopEvent(Event):
+
     """Event fired when a test run is told to stop.
 
     Plugins can use this event to prevent other plugins from stopping
@@ -923,6 +954,7 @@ class ResultStopEvent(Event):
 
 
 class DescribeTestEvent(Event):
+
     """Event fired to get test description.
 
 
@@ -950,6 +982,7 @@ class DescribeTestEvent(Event):
 
 
 class OutcomeDetailEvent(Event):
+
     """Event fired to acquire additional details about test outcome.
 
     .. attribute :: outcomeEvent
@@ -973,6 +1006,7 @@ class OutcomeDetailEvent(Event):
 
 
 class ReportSummaryEvent(Event):
+
     """Event fired before and after summary report.
 
     .. attribute :: stopTestEvent
@@ -1002,6 +1036,7 @@ class ReportSummaryEvent(Event):
 
 
 class ReportTestEvent(Event):
+
     """Event fired to report a test event.
 
     Plugins can respond to this event by producing output for the user.
@@ -1027,6 +1062,7 @@ class ReportTestEvent(Event):
 
 
 class UserInteractionEvent(Event):
+
     """Event fired before and after user interaction.
 
     Plugins that capture stdout or otherwise prevent user interaction
@@ -1037,11 +1073,13 @@ class UserInteractionEvent(Event):
     prevents users from typing/clicking/touching/psionics/whatever.
 
     """
+
     def __init__(self, **kw):
         super(UserInteractionEvent, self).__init__(**kw)
 
 
 class CommandLineArgsEvent(Event):
+
     """Event fired after parsing of command line arguments.
 
     Plugins can respond to this event by configuring themselves or other plugins
@@ -1066,6 +1104,7 @@ class CommandLineArgsEvent(Event):
 
 
 class CreateTestsEvent(Event):
+
     """Event fired before test loading.
 
     Plugins can take over test loading by returning a test suite and setting

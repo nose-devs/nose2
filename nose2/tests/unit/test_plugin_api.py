@@ -1,6 +1,7 @@
 from nose2 import events, session
 from nose2.tests._common import TestCase
 
+
 class Example(events.Plugin):
     commandLineSwitch = ('X', 'xxx', 'triple x')
 
@@ -9,6 +10,7 @@ class Example(events.Plugin):
 
 
 class TestPluginApi(TestCase):
+
     def setUp(self):
         self.session = session.Session()
         self.plug = Example(session=self.session)

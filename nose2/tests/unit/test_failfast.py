@@ -3,6 +3,7 @@ from nose2.plugins import failfast
 from nose2 import result, session
 from nose2.compat import unittest
 
+
 class TestFailFast(TestCase):
     tags = ['unit']
 
@@ -13,15 +14,20 @@ class TestFailFast(TestCase):
         self.plugin.register()
 
         class Test(TestCase):
+
             def test(self):
                 pass
+
             def test_err(self):
                 raise Exception("oops")
+
             def test_fail(self):
                 assert False
+
             @unittest.expectedFailure
             def test_fail_expected(self):
                 assert False
+
             @unittest.skipIf(True, "Always skip")
             def test_skip(self):
                 pass

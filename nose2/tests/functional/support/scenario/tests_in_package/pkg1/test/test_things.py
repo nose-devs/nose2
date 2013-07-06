@@ -67,6 +67,8 @@ def test_gen_nose_style():
 
 
 did_setup = False
+
+
 def setup():
     global did_setup
     did_setup = True

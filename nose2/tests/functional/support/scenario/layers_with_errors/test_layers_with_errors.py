@@ -1,4 +1,5 @@
-from nose2.compat import  unittest
+from nose2.compat import unittest
+
 
 class Layer(object):
     description = 'fixture with a value'

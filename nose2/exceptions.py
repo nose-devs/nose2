@@ -4,5 +4,7 @@
 # Rights Reserved. See: http://docs.python.org/license.html
 __unittest = True
 
+
 class TestNotFoundError(Exception):
+
     """Exception raised when a named test cannot be found"""

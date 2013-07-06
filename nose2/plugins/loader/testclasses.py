@@ -78,6 +78,7 @@ __unittest = True
 
 
 class TestClassLoader(events.Plugin):
+
     """Loader plugin that loads test functions"""
     alwaysOn = True
     configSection = 'test-classes'
@@ -142,8 +143,8 @@ class TestClassLoader(events.Plugin):
             names = self._getTestMethodNames(event, cls)
             loaded_suite = event.loader.suiteClass(
                 [util.transplant_class(
-                        MethodTestCase(cls), cls.__module__)(name)
-                 for name in names])
+                 MethodTestCase(cls), cls.__module__)(name)
+                    for name in names])
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests
@@ -152,6 +153,7 @@ class TestClassLoader(events.Plugin):
     def _getTestMethodNames(self, event, cls):
         # ... give others a chance to modify list
         excluded = set()
+
         def isTestMethod(attrname, cls=cls, excluded=excluded):
             # FIXME allow plugs to change prefix
             prefix = self.session.testMethodPrefix
@@ -159,7 +161,7 @@ class TestClassLoader(events.Plugin):
                 attrname.startswith(prefix) and
                 hasattr(getattr(cls, attrname), '__call__') and
                 attrname not in excluded
-                )
+            )
         evt = GetTestMethodNamesEvent(event.loader, cls, isTestMethod)
         result = self.session.hooks.getTestMethodNames(evt)
         if evt.handled:
@@ -179,6 +181,7 @@ class TestClassLoader(events.Plugin):
 # hide it inside of a factory func. ugly!
 def MethodTestCase(cls):
     class _MethodTestCase(ut2.TestCase):
+
         def __init__(self, method):
             self.method = method
             self._name = "%s.%s.%s" % (cls.__module__, cls.__name__, method)
@@ -215,9 +218,13 @@ def MethodTestCase(cls):
 #
 # Event classes
 #
+
+
 class LoadFromTestClassEvent(events.LoadFromTestCaseEvent):
+
     """Bare subclass of :class:`nose2.events.LoadFromTestCaseEvent`"""
 
 
 class GetTestMethodNamesEvent(events.GetTestCaseNamesEvent):
+
     """Bare subclass of :class:`nose2.events.GetTestCaseNamesEvent`"""

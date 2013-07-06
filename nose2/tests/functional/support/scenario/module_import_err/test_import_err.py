@@ -7,5 +7,6 @@ def test():
 
 
 class Test(unittest.TestCase):
+
     def test(self):
         pass

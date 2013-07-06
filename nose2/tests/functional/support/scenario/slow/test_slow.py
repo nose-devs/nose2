@@ -5,7 +5,9 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class TestSlow(unittest.TestCase):
+
     def test_ok(self):
         print("hide this")
         time.sleep(2)

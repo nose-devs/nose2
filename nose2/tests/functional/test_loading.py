@@ -172,6 +172,7 @@ class TestLoadTestsFromPackage(FunctionalTestCase):
 
 
 class TestLoadTestsOutsideOfPackage(FunctionalTestCase):
+
     def test_module_name(self):
         proc = self.runIn(
             'scenario/package_in_lib',
@@ -198,6 +199,7 @@ class TestLoadTestsOutsideOfPackage(FunctionalTestCase):
 
 
 class TestLoadingErrors(FunctionalTestCase):
+
     def test_import_error_module(self):
         proc = self.runIn(
             'scenario/module_import_err',
@@ -232,6 +234,7 @@ class TestLoadingErrors(FunctionalTestCase):
 
 
 class TestTestClassLoading(FunctionalTestCase):
+
     def test_load_testclass_by_name(self):
         proc = self.runIn(
             'scenario/test_classes',

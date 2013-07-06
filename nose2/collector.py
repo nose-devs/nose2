@@ -8,6 +8,7 @@ __unittest = True
 
 def collector():
     class Test(unittest.TestCase):
+
         def run(self, result_):
             ok = self._collector(result_)
             sys.exit(not ok)

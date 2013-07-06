@@ -12,6 +12,7 @@ __unittest = True
 
 
 class PluggableTestRunner(object):
+
     """Test runner that defers most work to plugins.
 
     :param session: Test run session
@@ -39,7 +40,8 @@ class PluggableTestRunner(object):
         result = self._makeResult()
         executor = lambda suite, result: suite(result)
         startTime = time.time()
-        event = events.StartTestRunEvent(self, test, result, startTime, executor)
+        event = events.StartTestRunEvent(
+            self, test, result, startTime, executor)
         self.session.hooks.startTestRun(event)
 
         # allows startTestRun to modify test suite

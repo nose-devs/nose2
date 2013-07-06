@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class TestCaseLoader(events.Plugin):
+
     """Loader plugin that loads from test cases"""
     alwaysOn = True
     configSection = 'testcases'
@@ -39,7 +40,8 @@ class TestCaseLoader(events.Plugin):
         for name in dir(module):
             obj = getattr(module, name)
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
-                event.extraTests.append(self._loadTestsFromTestCase(event, obj))
+                event.extraTests.append(
+                    self._loadTestsFromTestCase(event, obj))
 
     def loadTestsFromName(self, event):
         """Load tests from event.name if it names a test case/method"""
@@ -81,6 +83,7 @@ class TestCaseLoader(events.Plugin):
 
     def _getTestCaseNames(self, event, testCaseClass):
         excluded = set()
+
         def isTestMethod(attrname, testCaseClass=testCaseClass,
                          excluded=excluded):
             prefix = evt.testMethodPrefix or self.session.testMethodPrefix

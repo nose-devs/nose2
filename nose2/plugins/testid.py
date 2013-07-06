@@ -22,6 +22,7 @@ __unittest = True
 
 
 class TestId(Plugin):
+
     """Allow easy test select with ids"""
 
     configSection = 'testid'
@@ -98,7 +99,6 @@ class TestId(Plugin):
             self.tests = data['tests']
         self.id = max(self.ids.keys())
         self._loaded = True
-
 
     def _testNameFromId(self, name):
         """Try to translate one of our IDs to real test ID."""

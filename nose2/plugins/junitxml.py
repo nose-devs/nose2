@@ -28,6 +28,7 @@ __unittest = True
 
 
 class JUnitXmlReporter(events.Plugin):
+
     """Output junit-xml test report to file"""
     configSection = 'junit-xml'
     commandLineSwitch = ('X', 'junit-xml', 'Generate junit-xml output report')
@@ -108,14 +109,14 @@ class JUnitXmlReporter(events.Plugin):
 
     def _indent_tree(self, elem, level=0):
         """In-place pretty formatting of the ElementTree structure."""
-        i = "\n" + level*"  "
+        i = "\n" + level * "  "
         if len(elem):
             if not elem.text or not elem.text.strip():
                 elem.text = i + "  "
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
             for elem in elem:
-                self._indent_tree(elem, level+1)
+                self._indent_tree(elem, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:
@@ -135,25 +136,27 @@ class JUnitXmlReporter(events.Plugin):
 # xml utility functions
 #
 
-#six doesn't include a unichr function
+# six doesn't include a unichr function
+
+
 def _unichr(string):
     if six.PY3:
         return chr(string)
     else:
         return unichr(string)
 
-#etree outputs XML 1.0 so the 1.1 Restricted characters are invalid.
-#and there are no characters that can be given as entities aside
-#form & < > ' " which ever have to be escaped (etree handles these fine)
+# etree outputs XML 1.0 so the 1.1 Restricted characters are invalid.
+# and there are no characters that can be given as entities aside
+# form & < > ' " which ever have to be escaped (etree handles these fine)
 ILLEGAL_RANGES = [(0x00, 0x08), (0x0B, 0x0C), (0x0E, 0x1F),
                   (0xD800, 0xDFFF), (0xFFFE, 0xFFFF)]
-#0xD800 thru 0xDFFF are technically invalid in UTF-8 but PY2 will encode
-#bytes into these but PY3 will do a replacement
+# 0xD800 thru 0xDFFF are technically invalid in UTF-8 but PY2 will encode
+# bytes into these but PY3 will do a replacement
 
-#Other non-characters which are not strictly forbidden but
-#discouraged.
+# Other non-characters which are not strictly forbidden but
+# discouraged.
 RESTRICTED_RANGES = [(0x7F, 0x84), (0x86, 0x9F), (0xFDD0, 0xFDDF)]
-#check for a wide build
+# check for a wide build
 if sys.maxunicode > 0xFFFF:
     RESTRICTED_RANGES += [(0x1FFFE, 0x1FFFF), (0x2FFFE, 0x2FFFF),
                           (0x3FFFE, 0x3FFFF), (0x4FFFE, 0x4FFFF),
@@ -189,4 +192,3 @@ def string_cleanup(string, keep_restricted=False):
         string = _RESTRICTED_REGEX.sub(six.u('\uFFFD'), string)
 
     return string
-

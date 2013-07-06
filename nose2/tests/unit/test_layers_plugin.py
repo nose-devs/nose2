@@ -16,14 +16,19 @@ class TestLayers(TestCase):
     def test_simple_layer_inheritance(self):
         class L1(object):
             pass
+
         class L2(L1):
             pass
+
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T2(unittest.TestCase):
             layer = L2
+
             def test(self):
                 pass
 
@@ -37,20 +42,28 @@ class TestLayers(TestCase):
     def test_multiple_inheritance(self):
         class L1(object):
             pass
+
         class L2(L1):
             pass
+
         class L3(L1):
             pass
+
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T2(unittest.TestCase):
             layer = L2
+
             def test(self):
                 pass
+
         class T3(unittest.TestCase):
             layer = L3
+
             def test(self):
                 pass
 
@@ -65,32 +78,46 @@ class TestLayers(TestCase):
     def test_deep_inheritance(self):
         class L1(object):
             pass
+
         class L2(L1):
             pass
+
         class L3(L1):
             pass
+
         class L4(L2, L1):
             pass
+
         class L5(L4):
             pass
+
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T2(unittest.TestCase):
             layer = L2
+
             def test(self):
                 pass
+
         class T3(unittest.TestCase):
             layer = L3
+
             def test(self):
                 pass
+
         class T4(unittest.TestCase):
             layer = L4
+
             def test(self):
                 pass
+
         class T5(unittest.TestCase):
             layer = L5
+
             def test(self):
                 pass
 
@@ -108,18 +135,24 @@ class TestLayers(TestCase):
     def test_mixed_layers_no_layers(self):
         class L1(object):
             pass
+
         class L2(L1):
             pass
 
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T2(unittest.TestCase):
             layer = L2
+
             def test(self):
                 pass
+
         class T3(unittest.TestCase):
+
             def test(self):
                 pass
 
@@ -134,32 +167,46 @@ class TestLayers(TestCase):
     def test_ordered_layers(self):
         class L1(object):
             pass
+
         class L2(L1):
             position = 1
+
         class L3(L1):
             position = 2
+
         class L4(L1):
             position = 3
+
         class L5(L2):
             position = 4
+
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T2(unittest.TestCase):
             layer = L2
+
             def test(self):
                 pass
+
         class T3(unittest.TestCase):
             layer = L3
+
             def test(self):
                 pass
+
         class T4(unittest.TestCase):
             layer = L4
+
             def test(self):
                 pass
+
         class T5(unittest.TestCase):
             layer = L5
+
             def test(self):
                 pass
         suite = unittest.TestSuite([T2('test'), T1('test'),
@@ -168,42 +215,57 @@ class TestLayers(TestCase):
         self.plugin.startTestRun(event)
         expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
                    ['test (nose2.tests.unit.test_layers_plugin.T2)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T5)',]],
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)',],
-                   ['test (nose2.tests.unit.test_layers_plugin.T4)',]]]
+                    ['test (nose2.tests.unit.test_layers_plugin.T5)', ]],
+                   ['test (nose2.tests.unit.test_layers_plugin.T3)', ],
+                   ['test (nose2.tests.unit.test_layers_plugin.T4)', ]]]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_inheritance(self):
         class L1(object):
             pass
-        class L2(object): # a mixin, doesn't share a base w/L1
+
+        class L2(object):  # a mixin, doesn't share a base w/L1
             pass
+
         class L3(L1):
             pass
+
         class L4(L3):
             pass
+
         class L5(L4):
             pass
+
         class L6(L2):
             mixins = (L4,)
+
         class T1(unittest.TestCase):
             layer = L1
+
             def test(self):
                 pass
+
         class T3(unittest.TestCase):
             layer = L3
+
             def test(self):
                 pass
+
         class T4(unittest.TestCase):
             layer = L4
+
             def test(self):
                 pass
+
         class T5(unittest.TestCase):
             layer = L5
+
             def test(self):
                 pass
+
         class T6(unittest.TestCase):
             layer = L6
+
             def test(self):
                 pass
         suite = unittest.TestSuite([T6('test'), T1('test'),
@@ -214,7 +276,7 @@ class TestLayers(TestCase):
                    ['test (nose2.tests.unit.test_layers_plugin.T3)',
                     ['test (nose2.tests.unit.test_layers_plugin.T4)',
                      [['test (nose2.tests.unit.test_layers_plugin.T6)']],
-                      ['test (nose2.tests.unit.test_layers_plugin.T5)',]]]]]
+                 ['test (nose2.tests.unit.test_layers_plugin.T5)', ]]]]]
         self.assertEqual(self.names(event.suite), expect)
 
     def names(self, suite):

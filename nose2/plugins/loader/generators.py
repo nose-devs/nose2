@@ -40,6 +40,7 @@ __unittest = True
 
 
 class Generators(Plugin):
+
     """Loader plugin that loads generator tests"""
     alwaysOn = True
     configSection = 'generators'
@@ -128,8 +129,9 @@ class Generators(Plugin):
             # generator method in test case
             instance = parent(obj.__name__)
             tests = list(
-                self._testsFromGenerator(event, obj.__name__, obj(instance), parent)
-                )
+                self._testsFromGenerator(
+                    event, obj.__name__, obj(instance), parent)
+            )
         elif (parent and
               isinstance(parent, type)):
               # generator method in test class
@@ -137,14 +139,14 @@ class Generators(Plugin):
             instance = parent()
             tests = list(
                 self._testsFromGeneratorMethod(event, name, method, instance)
-                )
+            )
         else:
             # generator func
             tests = list(self._testsFromGeneratorFunc(event, obj))
 
         if index is not None:
             try:
-                tests = [tests[index-1]]
+                tests = [tests[index - 1]]
             except IndexError:
                 raise exceptions.TestNotFoundError(original_name)
 
@@ -174,6 +176,7 @@ class Generators(Plugin):
                 setattr(testCaseClass, method_name, None)
                 instance = testCaseClass(method_name)
                 delattr(testCaseClass, method_name)
+
                 def method(func=func, args=args):
                     return func(*args)
                 method = functools.update_wrapper(method, func)
@@ -196,6 +199,7 @@ class Generators(Plugin):
             args['setUp'] = setUp
         if tearDown is not None:
             args['tearDown'] = tearDown
+
         def createTest(name):
             return util.transplant_class(
                 GeneratorFunctionCase, obj.__module__)(name, **args)
@@ -204,7 +208,7 @@ class Generators(Plugin):
 
     def _testsFromGeneratorMethod(self, event, name, method, instance):
         extras = list(method(instance))
-        name = "%s.%s.%s" % (instance.__class__.__module__, 
+        name = "%s.%s.%s" % (instance.__class__.__module__,
                              instance.__class__.__name__,
                              method.__name__)
         args = {}
@@ -214,6 +218,7 @@ class Generators(Plugin):
             args['setUp'] = setUp
         if tearDown is not None:
             args['tearDown'] = tearDown
+
         def createTest(name):
             return util.transplant_class(
                 GeneratorMethodCase(instance.__class__),
@@ -222,8 +227,8 @@ class Generators(Plugin):
             yield test
 
 
-
 class GeneratorFunctionCase(ut2.FunctionTestCase):
+
     def __init__(self, name, **args):
         self._funcName = name
         ut2.FunctionTestCase.__init__(self, None, **args)
@@ -239,6 +244,7 @@ class GeneratorFunctionCase(ut2.FunctionTestCase):
 
 def GeneratorMethodCase(cls):
     class _GeneratorMethodCase(GeneratorFunctionCase):
+
         @classmethod
         def setUpClass(klass):
             if hasattr(cls, 'setUpClass'):

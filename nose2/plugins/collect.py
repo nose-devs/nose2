@@ -12,6 +12,7 @@ __unittest = True
 
 
 class CollectOnly(Plugin):
+
     """Collect but don't run tests"""
 
     configSection = 'collect-only'
@@ -41,4 +42,3 @@ class CollectOnly(Plugin):
             result.startTest(test)
             result.addSuccess(test)
             result.stopTest(test)
-

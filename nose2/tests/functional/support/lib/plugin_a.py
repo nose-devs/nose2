@@ -1,5 +1,6 @@
 from nose2 import events
 
+
 class PluginA(events.Plugin):
     configSection = 'a'
 

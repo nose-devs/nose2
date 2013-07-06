@@ -20,6 +20,7 @@ __unittest = True
 
 
 class PrintHooks(events.Plugin):
+
     """Print hooks as they are called"""
 
     configSection = 'print-hooks'
@@ -44,6 +45,7 @@ class PrintHooks(events.Plugin):
 
 
 class NoisyHook(events.Hook):
+
     def __call__(self, event):
         _report(self.method, event)
         _indent()

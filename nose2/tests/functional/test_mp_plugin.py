@@ -67,8 +67,8 @@ class TestMpPlugin(FunctionalTestCase):
         flat = list(self.plugin._flatten(suite))
         self.assertEqual(flat, ['test_cf_testcase.Test2.test_1',
                                 'test_cf_testcase.Test2.test_2',
-                                'test_cf_testcase.Test3',
                                 'test_cf_testcase.Test',
+                                'test_cf_testcase.Test3',
                                 ])
 
 

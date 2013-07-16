@@ -126,9 +126,10 @@ class MultiProcess(events.Plugin):
                             []).append(testid)
                     else:
                         yield testid
-        for cls in classes.keys():
+
+        for cls in sorted(classes.keys()):
             yield cls
-        for mod in mods.keys():
+        for mod in sorted(mods.keys()):
             yield mod
 
     def _localize(self, event):

@@ -1,3 +1,15 @@
+.. image:: https://travis-ci.org/nose-devs/nose2.png?branch=master
+    :target: https://travis-ci.org/nose-devs/nose2
+    :alt: Build Status
+
+.. image:: https://pypip.in/v/nose2/badge.png
+    :target: https://crate.io/packages/$REPO/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/nose2/badge.png
+    :target: https://crate.io/packages/$REPO/
+    :alt: Number of PyPI downloads
+
 Welcome to nose2
 ================
 

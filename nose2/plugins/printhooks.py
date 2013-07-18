@@ -56,7 +56,7 @@ class NoisyHook(events.Hook):
 
 
 def _report(method, event):
-    sys.stderr.write("\n%s%s: %s" % (''.join(INDENT), method, event, file=sys.stderr)
+    sys.stderr.write("\n%s%s: %s" % (''.join(INDENT), method, event))
 
 
 def _indent():

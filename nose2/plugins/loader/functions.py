@@ -86,7 +86,7 @@ class Functions(Plugin):
                 obj.setUp = obj.setUpFunc
         if not hasattr(obj, 'tearDown'):
             if hasattr(obj, 'teardown'):
-                obj.tearDown = obj.teardowns
+                obj.tearDown = obj.teardown
             elif hasattr(obj, 'tearDownFunc'):
                 obj.tearDown = obj.tearDownFunc
 

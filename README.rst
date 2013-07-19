@@ -3,11 +3,11 @@
     :alt: Build Status
 
 .. image:: https://pypip.in/v/nose2/badge.png
-    :target: https://crate.io/packages/$REPO/
+    :target: https://crate.io/packages/nose2/
     :alt: Latest PyPI version
 
 .. image:: https://pypip.in/d/nose2/badge.png
-    :target: https://crate.io/packages/$REPO/
+    :target: https://crate.io/packages/nose2/
     :alt: Number of PyPI downloads
 
 Welcome to nose2

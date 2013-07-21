@@ -19,3 +19,21 @@ def with_setup(setup):
         return testcase
 
     return decorator
+
+
+def with_teardown(teardown):
+    """
+    A decorator that sets the teardown method to be after before the test.
+
+    It currently works only for function test cases.
+
+    :param teardown: The method to be executed after the test.
+    :type teardown: function
+    """
+
+    def decorator(testcase):
+        testcase.tearDownFunc = teardown
+
+        return testcase
+
+    return decorator

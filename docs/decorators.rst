@@ -8,3 +8,4 @@ Setup & Teardown
 ================
 
 .. autofunction :: nose2.tools.decorators.with_setup
+.. autofunction :: nose2.tools.decorators.with_teardown

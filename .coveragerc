@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = nose2
+include = nose2/*
+omit = nose2/*/tests/*
+       nose2/tests/*
+       test_*.*
+       __init__.py

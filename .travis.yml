@@ -10,6 +10,6 @@ install:
   - pip install coveralls --use-mirrors
   - pip install coverage --use-mirrors
 script:
-  - PYTHONPATH=. coverage run -m nose2.__main__ --source=nose2
+  - PYTHONPATH=. coverage run -m nose2.__main__ --include=*nose2* --omit=*nose2/tests*
 after_success:
   - coveralls

@@ -5,5 +5,11 @@ python:
   - "3.2"
   - "3.3"
   - "pypy"
-install: pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --use-mirrors
-script: python -m nose2.__main__
+install:
+  - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --use-mirrors
+  - pip install coveralls --use-mirrors
+  - pip install coverage --use-mirrors
+script:
+  - coverage run -m nose2.__main__ --source=nose2
+after_success:
+  - coveralls

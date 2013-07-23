@@ -1,6 +1,36 @@
 Changelog
 =========
 
+0.4.7
+-----
+
+* Feature: Added start-dir config option. Thanks to Stéphane Klein.
+
+* Bug: Fixed broken import in collector.py. Thanks to Shaun Crampton.
+
+* Bug: Fixed processes command line option in mp plugin. Thanks to Tim Sampson.
+
+* Bug: Fixed handling of class fixtures in multiprocess plugin.
+  Thanks to Tim Sampson.
+
+* Bug: Fixed intermittent test failure caused by nondeterministic key ordering.
+  Thanks to Stéphane Klein.
+
+* Bug: Fixed syntax error in printhooks. Thanks to Tim Sampson.
+
+* Docs: Fixed formatting in changelog. Thanks to Omer Katz.
+
+* Docs: Added help text for verbose flag. Thanks to Tim Sampson.
+
+* Docs: Fixed typos in docs and examples. Thanks to Tim Sampson.
+
+* Docs: Added badges to README. Thanks to Omer Katz.
+
+* Updated six version requirement to be less Restrictive.
+  Thanks to Stéphane Klein.
+
+* Cleaned up numerous PEP8 violations. THanks to Omer Katz.
+
 0.4.6
 -----
 

@@ -13,6 +13,10 @@
 .. image:: https://pypip.in/d/nose2/badge.png
     :target: https://crate.io/packages/nose2/
     :alt: Number of PyPI downloads
+    
+.. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png
+    :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
+    :alt: Dependencies Status    
 
 Welcome to nose2
 ================

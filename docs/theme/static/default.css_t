@@ -1,0 +1,516 @@
+/*
+ * default.css_t
+ * ~~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- default theme.
+ *
+ * :copyright: Copyright 2007-2013 by the Sphinx team, see AUTHORS.
+ * :license: BSD, see LICENSE for details.
+ *
+ * Typography inspired by http://practicaltypography.com/
+ */
+
+@import url("basic.css");
+@import url("http://fonts.googleapis.com/css?family=Lusitana:400,700|Chivo:400,900");
+
+/* -- page layout ----------------------------------------------------------- */
+
+@media {
+    html {
+        font-size: {{ theme_base_font_size|toint }}px;
+    }
+}
+
+@media (max-width:900px){
+    html {
+        font-size: {{ theme_base_font_size|toint - 2}}px;
+    }
+}
+
+@media (max-width:800px){
+    html {
+        font-size: {{ theme_base_font_size|toint - 4}}px;
+    }
+}
+
+@media (max-width:700px){
+    html {
+        font-size: {{ theme_base_font_size|toint - 5}}px;
+    }
+}
+
+@media (max-width:600px){
+    html {
+        font-size: {{ theme_base_font_size|toint - 6}}px;
+    }
+}
+
+@media (max-width:500px){
+    html {
+        font-size: {{ theme_base_font_size|toint - 7}}px;
+    }
+}
+
+* {
+margin: 0;
+padding: 0;
+}
+
+
+body {
+    font-family: {{ theme_bodyfont }};
+    font-size: 100%;
+    background-color: {{ theme_footerbgcolor }};
+}
+
+div.document {
+    background-color: {{ theme_sidebarbgcolor }};
+    display: block; padding: 0 0 13rem 0;
+}
+
+div.documentwrapper {
+    float: left;
+    width: 100%;
+}
+
+div.bodywrapper {
+    margin: 0 0 0 4rem;
+}
+
+div.body {
+    background-color: {{ theme_bgcolor }};
+    color: {{ theme_textcolor }};
+    padding: 0 20px 30px 20px;
+}
+
+{%- if theme_rightsidebar|tobool %}
+div.bodywrapper {
+    margin: 0 4rem 0 0;
+}
+{%- endif %}
+
+div.footer {
+    color: {{ theme_footertextcolor }};
+    width: 100%;
+    padding: 9px 0 9px 0;
+    text-align: center;
+    font-size: 75%;
+    font-family: {{ theme_headfont }};
+}
+
+div.footer a {
+    color: {{ theme_footertextcolor }};
+    text-decoration: underline;
+}
+
+div.related {
+    background-color: {{ theme_relbarbgcolor }};
+    line-height: 30px;
+    color: {{ theme_relbartextcolor }};
+    font-family: {{ theme_headfont }};
+}
+
+div.related a {
+    color: {{ theme_relbarlinkcolor }};
+}
+
+div.sphinxsidebar {
+    {%- if theme_stickysidebar|tobool %}
+    top: 30px;
+    bottom: 0;
+    margin: 0;
+    position: fixed;
+    overflow: auto;
+    height: auto;
+    {%- else %}
+    top: 30px;
+    position: absolute;
+    {%- endif %}
+    {%- if theme_rightsidebar|tobool %}
+    float: right;
+    {%- if theme_stickysidebar|tobool %}
+    right: 0;
+    {%- endif %}
+    {%- else %}
+    float: left;
+    left: 2.5rem;
+    {%- endif %}
+
+     font-family: {{ theme_sidebarfont }};
+     font-size: 0.85rem;
+     line-height: 140%;
+
+     width: 12rem;
+     text-align: right;
+     list-style-type: none;
+     clear:both;
+     margin-bottom: 1rem;
+     padding-top: 1rem;
+}
+
+{%- if theme_stickysidebar|tobool %}
+/* this is nice, but it it leads to hidden headings when jumping
+   to an anchor */
+/*
+div.related {
+    position: fixed;
+}
+
+div.documentwrapper {
+    margin-top: 30px;
+}
+*/
+{%- endif %}
+
+div.sphinxsidebar h3 {
+    font-family: {{ theme_headfont }};
+    color: {{ theme_sidebartextcolor }};
+    font-size: 1.4em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+div.sphinxsidebar h3 a {
+    color: {{ theme_sidebartextcolor }};
+}
+
+div.sphinxsidebar h4 {
+    font-family: {{ theme_headfont }};
+    color: {{ theme_sidebartextcolor }};
+    font-size: 1.3em;
+    font-weight: normal;
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+div.sphinxsidebar p {
+    color: {{ theme_sidebartextcolor }};
+}
+
+div.sphinxsidebar p.topless {
+    margin: 5px 10px 10px 10px;
+}
+
+div.sphinxsidebar ul {
+    margin: 10px;
+    padding: 0;
+    color: {{ theme_sidebartextcolor }};
+    list-style: none;
+}
+
+div.sphinxsidebar ul > li > ul {
+    font-size: 90%;
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-right: 0;
+}
+
+div.sphinxsidebar li {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+div.sphinxsidebar input {
+    border: 1px solid {{ theme_sidebarlinkcolor }};
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+div.sphinxsidebar [type="text"] {
+    width: 9rem;
+}
+
+{% if theme_collapsiblesidebar|tobool %}
+/* for collapsible sidebar */
+div#sidebarbutton {
+    background-color: {{ theme_sidebarbtncolor }};
+}
+{% endif %}
+
+/* -- hyperlink styles ------------------------------------------------------ */
+
+a {
+    color: {{ theme_linkcolor }};
+    text-decoration: none;
+}
+
+a:visited {
+    color: {{ theme_visitedlinkcolor }};
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+{% if theme_externalrefs|tobool %}
+a.external {
+   text-decoration: none;
+   border-bottom: 1px dashed {{ theme_linkcolor }};
+}
+
+a.external:hover {
+   text-decoration: none;
+   border-bottom: none;
+}
+
+a.external:visited {
+    text-decoration: none;
+    border-bottom: 1px dashed {{ theme_visitedlinkcolor }};
+}
+{% endif %}
+
+/* -- body styles ----------------------------------------------------------- */
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    display: block;
+    font-family: {{ theme_headfont }};
+    font-size: 200%;
+    line-height: 120%;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-top: 0.0em;
+}
+
+div.body h1 { margin-top: 0; font-size: 200%; }
+div.body h2 { font-size: 160%; }
+div.body h3 { font-size: 140%; }
+div.body h4 { font-size: 120%; }
+div.body h5 { font-size: 110%; }
+div.body h6 { font-size: 100%; }
+div.body ul {
+    padding-left: 2em;
+}
+
+div.body h2 + div > h3, div.body h3 + div > h4 {
+    margin-top: 1rem;
+}
+
+a.headerlink {
+    font-family: {{ headfont }};
+    color: {{ theme_headlinkcolor }};
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+}
+
+a.headerlink:hover {
+    background-color: {{ theme_headlinkcolor }};
+    color: white;
+}
+
+div.body p, div.body dd, div.body li {
+    line-height: 130%;
+}
+
+div.body p {
+    text-align: left;
+}
+
+div.admonition p.admonition-title + p {
+    display: inline;
+}
+
+div.admonition p {
+    margin-bottom: 5px;
+}
+
+div.admonition pre {
+    margin-bottom: 5px;
+}
+
+div.admonition ul, div.admonition ol {
+    margin-bottom: 5px;
+}
+
+div.note {
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+div.seealso {
+    background-color: #ffc;
+    border: 1px solid #ff6;
+}
+
+div.topic {
+    background-color: #eee;
+}
+
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+}
+
+p.admonition-title {
+    display: inline;
+}
+
+p.admonition-title:after {
+    content: ":";
+}
+
+pre {
+    padding: 5px;
+    background-color: {{ theme_codebgcolor }};
+    color: {{ theme_codetextcolor }};
+    line-height: 120%;
+    border-left: none;
+    border-right: none;
+    margin-bottom: 1em;
+}
+
+tt {
+    background-color: #ecf0f3;
+    padding: 0 1px 0 1px;
+    font-size: 80%;
+}
+
+.warning tt {
+    background: #efc2c2;
+}
+
+.note tt {
+    background: #d6d6d6;
+}
+
+.viewcode-back {
+    font-family: {{ theme_bodyfont }};
+}
+
+div.viewcode-block:target {
+    background-color: #f4debf;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+}
+
+pre, code {
+    font-size: 75%;
+}
+
+span.pre {
+    font-size: 80%;
+}
+
+li {
+    -moz-column-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    -o-column-break-inside: avoid;
+    -ms-column-break-inside: avoid;
+    column-break-inside: avoid;
+    -moz-break-inside: avoid-column;
+    -webkit-break-inside: avoid-column;
+    -o-break-inside: avoid-column;
+    -ms-break-inside: avoid-column;
+    break-inside: avoid-column;
+}
+
+
+html {
+    height: 100%;
+}
+
+div.bodywrapper {
+    padding: 0rem 0em 0rem 0em;
+    width:100%;
+    max-width:1000px;
+    min-width:520px;
+    min-height: 100%;
+    text-rendering: optimizeLegibility;
+    -moz-font-feature-settings: 'kern=1';
+    -moz-font-feature-settings: 'kern' 1;
+    -webkit-font-feature-settings: 'kern' 1;
+    -o-font-feature-settings: 'kern' 1;
+    -ms-font-feature-settings: 'kern' 1;
+    font-feature-settings: 'kern' 1;
+    -moz-font-feature-settings: 'liga=1';
+    -moz-font-feature-settings: 'liga' 1;
+    -webkit-font-feature-settings: 'liga' 1;
+    -o-font-feature-settings: 'liga' 1;
+    -ms-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
+
+    border-top: 0px solid black;
+    border-bottom: 0px solid black;
+
+    position: relative; 
+}
+
+
+div.bodywrapper > * {
+    font-size: 100%;
+    margin-left: 11.5rem;
+    margin-right: 2.5rem;
+}
+
+
+p, li {
+    margin-bottom: 1em;
+    line-height: 135%;
+}
+
+ol li {
+    margin-left: 2.5rem; padding-left: 0rem;
+    list-style-position: outside;
+    font-family: {{ theme_headfont }};
+    -moz-font-feature-settings: 'liga=1';
+    -moz-font-feature-settings: 'liga' 1;
+    -webkit-font-feature-settings: 'liga' 1;
+    -o-font-feature-settings: 'liga' 1;
+    -ms-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
+}
+
+
+li.toctree-l1 {
+    display: block;
+    font-family: {{ theme_headfont }};
+    text-transform: uppercase;
+    line-height: 120%;
+    margin-top: 1.5rem;
+    margin-bottom: 0.0rem;
+    border-top: 0px solid #ccc;
+    text-align: left;
+}
+
+div.body .toctree-wrapper > ul {
+    padding: 0;
+    margin: 0;
+    padding-left: 0;
+}
+
+div.body .toctree-wrapper > ul > li > ul {
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    -o-column-count: 2;
+    -ms-column-count: 2;
+    column-count: 2;
+    -moz-column-gap: 2em;
+    -webkit-column-gap: 2em;
+    -o-column-gap: 2em;
+    -ms-column-gap: 2em;
+    column-gap: 2em;
+
+    font-size: 110%;
+    margin-left: 1rem;
+    margin-top: 0.7rem;
+    margin-bottom: 1.5rem;
+    padding-left: 1em;
+}
+
+li.toctree-l2 {
+    font-family: {{ theme_bodyfont }};
+    margin: 0;
+    padding: 0;
+    margin-bottom: 0.6em;
+    line-height: 115%;
+    list-style-type: none;
+    font-size: 80%;
+    text-transform: none;
+}

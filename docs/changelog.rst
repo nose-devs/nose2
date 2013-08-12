@@ -29,7 +29,7 @@ Changelog
 * Updated six version requirement to be less Restrictive.
   Thanks to Stéphane Klein.
 
-* Cleaned up numerous PEP8 violations. THanks to Omer Katz.
+* Cleaned up numerous PEP8 violations. Thanks to Omer Katz.
 
 0.4.6
 -----

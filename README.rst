@@ -1,3 +1,6 @@
+Welcome to nose2
+================
+
 .. image:: https://travis-ci.org/nose-devs/nose2.png?branch=master
     :target: https://travis-ci.org/nose-devs/nose2
     :alt: Build Status
@@ -10,8 +13,6 @@
     :target: https://crate.io/packages/nose2/
     :alt: Number of PyPI downloads
 
-Welcome to nose2
-================
 
 nose2 is the next generation of nicer testing for Python, based
 on the plugins branch of unittest2. nose2 aims to improve on nose by:

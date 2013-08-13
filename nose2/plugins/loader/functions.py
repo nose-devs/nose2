@@ -11,6 +11,41 @@ are not collected.
 This plugin also implements :func:`loadTestsFromName` to enable loading
 tests from dotted function names passed on the command line.
 
+Fixtures
+--------
+
+Test functions can specify setup and teardown fixtures as attributes on the
+function, for example:
+
+.. code :: python
+
+   x = 0
+
+   def test():
+       assert x
+
+   def setup():
+       global x
+       x = 1
+
+   def teardown():
+       global x
+       x = 1
+
+   test.setup = setup
+   test.teardown = teardown
+
+The setup attribute may be named ``setup``, ``setUp`` or ``setUpFunc``. The
+teardown attribute may be named ``teardown``, 'tearDown`` or ``tearDownFunc``.
+
+Other attributes
+----------------
+
+The other significant attribute that may be set on a test function is
+``paramList``. When ``paramList`` is set, the function will be collected
+by the :doc:`parameterized test loader <parameters>`. The easiest way
+to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
+
 """
 # This module contains some code copied from unittest2/ and other code
 # developed in reference to unittest2.

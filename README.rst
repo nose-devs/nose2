@@ -1,6 +1,10 @@
 .. image:: https://travis-ci.org/nose-devs/nose2.png?branch=master
     :target: https://travis-ci.org/nose-devs/nose2
     :alt: Build Status
+    
+.. image:: https://coveralls.io/repos/nose-devs/nose2/badge.png?branch=master
+    :target: https://coveralls.io/r/nose-devs/nose2?branch=master
+    :alt: Coverage Status
 
 .. image:: https://pypip.in/v/nose2/badge.png
     :target: https://crate.io/packages/nose2/
@@ -9,6 +13,10 @@
 .. image:: https://pypip.in/d/nose2/badge.png
     :target: https://crate.io/packages/nose2/
     :alt: Number of PyPI downloads
+    
+.. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png
+    :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
+    :alt: Dependencies Status    
 
 Welcome to nose2
 ================

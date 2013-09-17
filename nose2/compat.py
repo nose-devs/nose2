@@ -1,4 +1,4 @@
-"""unittest/unittest2 compatibilty wrapper.
+"""unittest/unittest2 compatibility wrapper.
 
 Anything internal to nose2 *must* import unittest from here, to be
 sure that it is using unittest2 when on older pythons.

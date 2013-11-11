@@ -25,7 +25,7 @@ class TestSuchDSL(FunctionalTestCase):
             'such',
             '-v',
             '--plugin=nose2.plugins.layers',
-            'test_such.A system with complex setup having an expensive fixture.'
+            'test_such.having an expensive fixture.'
             'should do more things')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())

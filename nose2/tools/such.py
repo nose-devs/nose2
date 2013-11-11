@@ -221,7 +221,10 @@ class Scenario(object):
             "Made test case %s with layer %s from %s", case, layer, group)
         mod[layer.__name__] = layer
         layer.__module__ = mod['__name__']
-        mod[case.__name__] = case
+        if parent_layer:
+            mod[parent_layer.description + ' ' + case.__name__] = case
+        else:
+            mod[case.__name__] = case
         case.__module__ = mod['__name__']
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)

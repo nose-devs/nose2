@@ -60,7 +60,7 @@ except ImportError:
     from distutils.core import setup
 else:
 
-    REQS = ['six>=1.1,<1.4']
+    REQS = ['six>=1.1,<1.5']
     if sys.version_info < (2, 7):
         REQS.extend(['unittest2>=0.5.1,<0.6', 'argparse>=1.2.1,<1.3'])
 

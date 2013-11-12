@@ -224,7 +224,10 @@ class Scenario(object):
         name = case.__name__
         index = 1
         while name in mod:
-            name = case.__name__ + '.%s' % index
+            if index == 1 and parent_layer:
+                name = '%s %s' % (parent_layer.description, case.__name__)
+            else:
+                name = case.__name__ + '.%s' % index
             index += 1
         mod[name] = case
         case.__module__ = mod['__name__']

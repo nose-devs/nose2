@@ -5,6 +5,7 @@ import logging
 import six
 
 from nose2.compat import unittest
+from nose2 import util
 
 log = logging.getLogger(__name__)
 
@@ -222,14 +223,11 @@ class Scenario(object):
         mod[layer.__name__] = layer
         layer.__module__ = mod['__name__']
         name = case.__name__
-        index = 1
-        while name in mod:
-            if index == 1 and parent_layer:
-                name = '%s %s' % (parent_layer.description, case.__name__)
-            else:
-                name = case.__name__ + '.%s' % index
-            index += 1
-        mod[name] = case
+        long_name = ' '.join(
+            [n[0].description for n in util.ancestry(layer)] + [name])
+        mod[long_name] = case
+        if name not in mod:
+            mod[name] = case
         case.__module__ = mod['__name__']
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)

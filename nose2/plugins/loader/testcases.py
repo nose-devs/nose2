@@ -36,9 +36,13 @@ class TestCaseLoader(events.Plugin):
 
     def loadTestsFromModule(self, event):
         """Load tests in :class:`unittest.TestCase` subclasses"""
+        seen = set()
         module = event.module
         for name in dir(module):
             obj = getattr(module, name)
+            if id(obj) in seen:
+                continue
+            seen.add(id(obj))
             if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
                 event.extraTests.append(
                     self._loadTestsFromTestCase(event, obj))

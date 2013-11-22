@@ -5,6 +5,7 @@ import logging
 import six
 
 from nose2.compat import unittest
+from nose2 import util
 
 log = logging.getLogger(__name__)
 
@@ -221,10 +222,12 @@ class Scenario(object):
             "Made test case %s with layer %s from %s", case, layer, group)
         mod[layer.__name__] = layer
         layer.__module__ = mod['__name__']
-        if parent_layer:
-            mod[parent_layer.description + ' ' + case.__name__] = case
-        else:
-            mod[case.__name__] = case
+        name = case.__name__
+        long_name = ' '.join(
+            [n[0].description for n in util.ancestry(layer)] + [name])
+        mod[long_name] = case
+        if name not in mod:
+            mod[name] = case
         case.__module__ = mod['__name__']
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)

@@ -99,7 +99,7 @@ class JUnitXmlReporter(events.Plugin):
         self.tree.set('name', 'nose2-junit')
         self.tree.set('errors', str(self.errors))
         self.tree.set('failures', str(self.failed))
-        self.tree.set('skips', str(self.skipped))
+        self.tree.set('skipped', str(self.skipped))
         self.tree.set('tests', str(self.numtests))
         self.tree.set('time', "%.3f" % event.timeTaken)
 

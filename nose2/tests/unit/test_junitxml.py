@@ -214,6 +214,6 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(case.get('name'), 'test')
         self.assertEqual(tree.get('errors'), '0')
         self.assertEqual(tree.get('failures'), '0')
-        self.assertEqual(tree.get('skips'), '0')
+        self.assertEqual(tree.get('skipped'), '0')
         self.assertEqual(tree.get('tests'), '1')
         assert 'time' in tree.attrib

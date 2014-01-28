@@ -77,6 +77,7 @@ class PluggableTestProgram(unittest.TestProgram):
                       'nose2.plugins.loader.generators',
                       'nose2.plugins.loader.parameters',
                       'nose2.plugins.loader.loadtests',
+                      'nose2.plugins.dundertest',
                       'nose2.plugins.result',
                       'nose2.plugins.logcapture',
                       'nose2.plugins.buffer',

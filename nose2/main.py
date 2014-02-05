@@ -164,7 +164,7 @@ class PluggableTestProgram(unittest.TestProgram):
             dest='exclude_plugins', default=[],
             help="Do not load this plugin module")
         self.argparse.add_argument(
-            '--verbose', '-v', action='count', default=0, help="print more information about tests")
+            '--verbose', '-v', action='count', default=0, help="print test case names and statuses")
         self.argparse.add_argument('--quiet', action='store_const',
                                    dest='verbose', const=0)
         self.argparse.add_argument(

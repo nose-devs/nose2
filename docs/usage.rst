@@ -1,6 +1,42 @@
 Using nose2
 ===========
 
+Naming Tests
+------------
+
+nose2 will look in each directory under the starting directory, unless
+the configuration modifies the included paths. Within directories and
+within any Python packages found in the starting directory and any
+source directories in the starting directory, nose2 will discover
+test modules and load tests from them. "Test modules" means any
+modules whose names start with "test". See the Configuration section
+for ways to modify searching for tests.
+
+Directories nose2 will look in:
+
+* Directory that contains an __init__.py file (a Python package)
+* Directory name that contains "test" after being lowercased.
+* Directory name that is either "lib" or "src"
+
+Each of the following test files will be run::
+
+  test.py
+  test_views.py
+  test_models.py
+  testThingy.py
+
+These files will not be run::
+
+  not_a_test.py
+  myapp_test.py
+  some_test_file.py
+
+
+Within test modules, nose2 will load tests from
+:class:`unittest.TestCase` subclasses, and from test functions
+(functions whose names begin with "test").
+
+
 Running Tests
 -------------
 
@@ -17,16 +53,6 @@ directory, load them, and run them, then output something like::
   Ran 77 tests in 1.897s
 
   OK
-
-"Test directories" means any directories whose names start with
-"test". Within test directories and within any Python packages found
-in the starting directory and any source directories in the starting
-directory, nose2 will discover test modules and load tests from
-them. "Test modules" means any modules whose names start with "test".
-
-Within test modules, nose2 will load tests from
-:class:`unittest.TestCase` subclasses, and from test functions
-(functions whose names begin with "test").
 
 .. todo ::
 

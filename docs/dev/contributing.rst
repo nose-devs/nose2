@@ -27,8 +27,7 @@ Get started
 The ``bootstrap.sh`` script in the root of the nose2 distribution can be
 used to get a new local clone up and running quickly. It requires that
 you have `virtualenvwrapper`_ installed. Run this script once to set
-up a nose2 virtualenv, install nose2's dependencies, and set up the
-git submodule that pulls in the `Sphinx`_ theme that the docs use.
+up a nose2 virtualenv and install nose2's dependencies.
 
 Coding Guidelines
 -----------------

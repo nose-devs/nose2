@@ -18,14 +18,14 @@ Directories nose2 will look in:
 * Directory name that contains "test" after being lowercased.
 * Directory name that is either "lib" or "src"
 
-Each of the following test files will be run:
+Each of the following test files will be run::
 
   test.py
   test_views.py
   test_models.py
   testThingy.py
 
-These files will not be run:
+These files will not be run::
 
   not_a_test.py
   myapp_test.py

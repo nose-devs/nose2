@@ -5,6 +5,10 @@ This plugin implements the primary user interface for nose2. It
 collects test outcomes and reports on them to the console, as well as
 firing several hooks for other plugins to do their own reporting.
 
+To see this report, nose2 MUST be run with the "verbose" flag:
+
+  nose2 --verbose
+
 This plugin extends standard unittest console reporting slightly by
 allowing custom report categories. To put events into a custom
 reporting category, change the event.outcome to whatever you

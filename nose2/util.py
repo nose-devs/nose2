@@ -208,6 +208,19 @@ def safe_decode(string):
         return six.u('<unable to decode>')
 
 
+def safe_encode(string, encoding='utf-8'):
+    if string is None:
+        return string
+    if encoding is None:
+        encoding = 'utf-8'
+    try:
+        return string.encode(encoding)
+    except AttributeError:
+        return string
+    except UnicodeEncodeError:
+        return six.u('<unable to encode>')
+
+
 def exc_info_to_string(err, test):
     """Format exception info for output"""
     formatTraceback = getattr(test, 'formatTraceback', None)
@@ -289,13 +302,13 @@ class _WritelnDecorator(object):
         return getattr(self.stream, attr)
 
     def write(self, arg):
+        arg = safe_encode(arg, getattr(self.stream, 'encoding', 'utf-8'))
         self.stream.write(arg)
 
     def writeln(self, arg=None):
         if arg:
-            self.stream.write(arg)
-        self.stream.write('\n')
-                          # text-mode streams translate to \r\n if needed
+            self.write(arg)
+        self.write('\n')  # text-mode streams translate to \r\n if needed
 
 
 def ancestry(layer):

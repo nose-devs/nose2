@@ -217,6 +217,9 @@ def safe_encode(string, encoding='utf-8'):
         return string.encode(encoding)
     except AttributeError:
         return string
+    except UnicodeDecodeError:
+        # already encoded
+        return string
     except UnicodeEncodeError:
         return six.u('<unable to encode>')
 

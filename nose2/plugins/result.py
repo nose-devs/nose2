@@ -251,7 +251,10 @@ class ResultReporter(events.Plugin):
             detail = []
         if evt.extraDetail:
             detail.extend(evt.extraDetail)
-        return "\n".join(detail)
+        try:
+            return "\n".join(detail)
+        except UnicodeDecodeError:
+            return "\n".join(util.safe_decode(d) for d in detail)
 
     def _report(self, event, hook, shortLabel, longLabel):
         evt = events.ReportTestEvent(event, self.stream)

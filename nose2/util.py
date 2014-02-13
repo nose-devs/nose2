@@ -305,7 +305,8 @@ class _WritelnDecorator(object):
         return getattr(self.stream, attr)
 
     def write(self, arg):
-        arg = safe_encode(arg, getattr(self.stream, 'encoding', 'utf-8'))
+        if sys.version_info[0] == 2:
+            arg = safe_encode(arg, getattr(self.stream, 'encoding', 'utf-8'))
         self.stream.write(arg)
 
     def writeln(self, arg=None):

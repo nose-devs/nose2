@@ -63,7 +63,7 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin.register()
 
         # unittest2 needs this
-        if not hasattr(self, 'assertRegexp'):
+        if not hasattr(self, 'assertRegex'):
             self.assertRegex = self.assertRegexpMatches
 
         class Test(unittest.TestCase):

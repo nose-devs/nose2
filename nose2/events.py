@@ -66,7 +66,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
        The :class:`nose2.config.Config` representing the plugin's
        config section as loaded from the session's config files.
 
-    .. attribute :: commandLineOption
+    .. attribute :: commandLineSwitch
 
        A tuple of (short opt, long opt, help text) that defines a command
        line flag that activates this plugin. The short opt may be None. If
@@ -75,7 +75,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
        Example::
 
-         commandLineOption = ('B', 'buffer-output', 'Buffer output during tests')
+         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during tests')
 
     .. attribute :: configSection
 

@@ -6,7 +6,7 @@ python:
   - "3.3"
   - "pypy"
 install:
-  - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt
+  - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
   - pip install coveralls
   - pip install coverage
 script:

@@ -3,8 +3,16 @@ import logging
 import multiprocessing
 import select
 import unittest
+import collections
 
+import os
+import sys
 import six
+
+if sys.platform == "win32":
+    import multiprocessing.connection as connection
+    import socket
+    import select
 
 from nose2 import events, loader, result, runner, session, util
 
@@ -88,16 +96,63 @@ class MultiProcess(events.Plugin):
         for proc, _ in procs:
             proc.join()
 
+    def _prepConns(self):
+        """
+        For windows, select.select only works on sockets.  Pipes
+        do support a form of select, but this requires pywin32 to
+        access. So instead, for windows a socket on localhost with a 
+        random port and authenticate key.  
+        
+        Return listener, parent, child.
+
+        When listener is none, the ends of the pipe will be in parent/child.
+        When listener is not none, then parent will be none, and child
+        will be (address, port, authkey).  Later, accept must be called
+        on the listener. The alternative is to use our own connection 
+        implementation or threading to get around the blocking nature of 
+        Client and Listener.accept so that connection object maybe created
+        like with Pipe().  
+        """
+        if sys.platform == "win32":
+            #prevent "accidental" wire crossing
+            authkey = os.urandom(20)
+            address = ('localhost', 0)
+            listener = connection.Listener(address, authkey=authkey)
+            return (listener, None, listener.address + (authkey,))
+        else:
+            return (None,) + multiprocessing.Pipe()
+
+    def _acceptConns(self, listener, parent_conn):
+        """
+        When listener is provided, select on the it, and accept
+        if reader is found.  Otherwise assume a failure.  When
+        listener is not, parent_conn is passed through.
+        """
+        if listener is None:
+            return parent_conn
+        else:
+            #ick private interface
+            rdrs = [listener._listener._socket]
+            readable, _, _ = select.select(rdrs, [], [], 
+                                           self.testRunTimeout)
+            if readable:
+                return listener.accept()
+            else:
+                raise RuntimeError('MP: Socket Connection Failed')
+
+
+
     def _startProcs(self):
         # XXX create session export
         session_export = self._exportSession()
         procs = []
         for i in range(0, self.procs):
-            parent_conn, child_conn = multiprocessing.Pipe()
+            listener, parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn))
             proc.daemon = True
             proc.start()
+            parent_conn = self._acceptConns(listener, parent_conn)
             procs.append((proc, parent_conn))
         return procs
 
@@ -199,6 +254,9 @@ def procserver(session_export, conn):
     for plugin in ssn.plugins:
         plugin.register()
         rlog.debug("Registered %s in subprocess", plugin)
+
+    if isinstance(conn, collections.Sequence):
+        conn = connection.Client(conn[:2], authkey=conn[2])
 
     event = SubprocessEvent(loader_, result_, runner_, ssn.plugins, conn)
     res = ssn.hooks.startSubprocess(event)

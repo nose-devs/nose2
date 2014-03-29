@@ -127,8 +127,6 @@ class TestProcserver(FunctionalTestCase):
                     self.assertEqual(getattr(event, attr), val)
 
 
-@unittest.skipIf(sys.platform == 'win32',
-                 'unable to use select.select with pipes on Windows')
 class MPPluginTestRuns(FunctionalTestCase):
 
     def test_tests_in_package(self):

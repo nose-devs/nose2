@@ -1,6 +1,6 @@
 """
 Python 2.7 Multiprocessing Unittest workaround.
-
+=====================================================================
 Due the manner in which multiprocessing in handled on windows
 and the fact that __main__.py are actually called __main__
 

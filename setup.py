@@ -2,11 +2,12 @@ import os
 import sys
 
 NAME = 'nose2'
-VERSION = '0.4.7'
+VERSION = open(os.path.join(os.path.dirname(__file__), 'nose2', 'VERSION')).read().strip()
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
             'nose2.tools', 'nose2.backports']
 SCRIPTS = ['bin/nose2']
+DATA_FILES = [('nose2', ['nose2/VERSION'])]
 DESCRIPTION = 'nose2 is the next generation of nicer testing for Python'
 URL = 'https://github.com/nose-devs/nose2'
 LONG_DESCRIPTION = open(
@@ -41,6 +42,7 @@ params = dict(
     long_description=LONG_DESCRIPTION,
     packages=PACKAGES,
     scripts=SCRIPTS,
+    data_files=DATA_FILES,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     url=URL,

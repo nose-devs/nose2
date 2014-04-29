@@ -177,10 +177,10 @@ class ResultReporter(events.Plugin):
             stream.writeln("%s" % err)
 
     def _printSummary(self, reportEvent):
-        stream.writeln(self.separator2)
         self.session.hooks.beforeSummaryReport(reportEvent)
 
         stream = reportEvent.stream
+        stream.writeln(self.separator2)
         run = self.testsRun
         msg = (
             "Ran %d test%s in %.3fs\n" %

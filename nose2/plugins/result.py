@@ -173,7 +173,7 @@ class ResultReporter(events.Plugin):
             err = self._getOutcomeDetail(event)
             stream.writeln(self.separator1)
             stream.writeln("%s: %s" % (flavour, desc))
-            self.stream.writeln(self.separator2)
+            stream.writeln(self.separator2)
             stream.writeln("%s" % err)
 
     def _printSummary(self, reportEvent):

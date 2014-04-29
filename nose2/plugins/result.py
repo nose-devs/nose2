@@ -148,7 +148,6 @@ class ResultReporter(events.Plugin):
         self._report(event, 'reportSuccess', '.', 'ok')
 
     def _reportSummary(self, event):
-        self.stream.writeln('')
         # let others print something
         evt = events.ReportSummaryEvent(
             event, self.stream, self.reportCategories)
@@ -158,6 +157,7 @@ class ResultReporter(events.Plugin):
         errors = cats.get('errors', [])
         failures = cats.get('failures', [])
         # use evt.stream so plugins can replace/wrap/spy it
+        evt.stream.writeln('')
         self._printErrorList('ERROR', errors, evt.stream)
         self._printErrorList('FAIL', failures, evt.stream)
 
@@ -177,7 +177,7 @@ class ResultReporter(events.Plugin):
             stream.writeln("%s" % err)
 
     def _printSummary(self, reportEvent):
-        self.stream.writeln(self.separator2)
+        stream.writeln(self.separator2)
         self.session.hooks.beforeSummaryReport(reportEvent)
 
         stream = reportEvent.stream

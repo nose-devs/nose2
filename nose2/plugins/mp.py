@@ -1,3 +1,4 @@
+
 import logging
 import multiprocessing
 import select
@@ -42,15 +43,15 @@ class MultiProcess(events.Plugin):
 
         # send one initial task to each process
         for proc, conn in procs:
-	    if not flat:
-	        break
-	    caseid = flat.pop(0)
-	    conn.send(caseid)
+            if not flat:
+                break
+            caseid = flat.pop(0)
+            conn.send(caseid)
 
         rdrs = [conn for proc, conn in procs if proc.is_alive()]
         while flat or rdrs:
-	    ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
-	    for conn in ready:
+            ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
+            for conn in ready:
                 # XXX proc could be dead
                 try:
                     remote_events = conn.recv()

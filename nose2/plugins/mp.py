@@ -1,3 +1,4 @@
+
 import logging
 import multiprocessing
 import select
@@ -40,23 +41,15 @@ class MultiProcess(events.Plugin):
         flat = list(self._flatten(test))
         procs = self._startProcs()
 
-        # distribute tests more-or-less evenly among processes
-        while flat:
-            for proc, conn in procs:
-                if not flat:
-                    break
-                caseid = flat.pop(0)
-                conn.send(caseid)
-
-        # None is the 'done' flag
+        # send one initial task to each process
         for proc, conn in procs:
-            conn.send(None)
+            if not flat:
+                break
+            caseid = flat.pop(0)
+            conn.send(caseid)
 
-        # wait for results
-        procs = [(p, c) for p, c in procs if p.is_alive()]
-        rdrs = [conn for proc, conn in procs
-                if proc.is_alive()]
-        while rdrs:
+        rdrs = [conn for proc, conn in procs if proc.is_alive()]
+        while flat or rdrs:
             ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
             for conn in ready:
                 # XXX proc could be dead
@@ -65,13 +58,13 @@ class MultiProcess(events.Plugin):
                 except EOFError:
                     # probably dead
                     log.warning("Subprocess connection closed unexpectedly")
-                    rdrs.remove(conn)
                     continue  # XXX or die?
 
                 if remote_events is None:
                     # XXX proc is done, how to mark it dead?
                     rdrs.remove(conn)
                     continue
+
                 # replay events
                 testid, events = remote_events
                 log.debug("Received results for %s", testid)
@@ -79,7 +72,16 @@ class MultiProcess(events.Plugin):
                     log.debug("Received %s(%s)", hook, event)
                     self._localize(event)
                     getattr(self.session.hooks, hook)(event)
-        for proc, conn in procs:
+
+                # send a new test to the worker if there is one left
+                if not flat:
+                    # if there isn't send None - it's the 'done' flag
+                    conn.send(None)
+                    continue
+                caseid = flat.pop(0)
+                conn.send(caseid)
+
+        for _, conn in procs:
             conn.close()
         # ensure we wait until all processes are done before
         # exiting, to allow plugins running there to finalize

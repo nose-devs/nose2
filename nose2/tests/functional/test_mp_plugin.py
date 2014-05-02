@@ -166,3 +166,14 @@ class MPPluginTestRuns(FunctionalTestCase):
             '-N=2')
         self.assertTestRunOutputMatches(proc, stderr='Ran 7 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_large_number_of_tests_stresstest(self):
+        proc = self.runIn(
+            'scenario/many_tests',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '--plugin=nose2.plugins.loader.generators',
+            '-N=1')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
+        self.assertEqual(proc.poll(), 0)
+

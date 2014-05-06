@@ -27,20 +27,35 @@ class TestPluggableTestLoader(TestCase):
     def test_load_from_names_calls_hook(self):
         self.session.hooks.register('loadTestsFromNames', FakePlugin())
         evt = events.LoadFromNamesEvent(self.loader,
-                                        ['name1', 'name2'],
+                                        ['some_name'],
                                         'some_module')
         self.session.hooks.loadTestsFromNames(evt)
         self.assertTrue(evt.fakeLoadFromNames,
                         "FakePlugin.fakeLoadFromNames() was not called")
+
+    def test_loader_from_names_calls_names_hook(self):
+        fake_plugin = FakePlugin()
+        self.session.hooks.register('loadTestsFromNames', fake_plugin)
+        self.loader.loadTestsFromNames(['some_name'])
+        self.assertTrue(fake_plugin.fakeLoadFromNames)
+
+    def test_loader_from_names_calls_name_hook(self):
+        fake_plugin = FakePlugin()
+        self.session.hooks.register('loadTestsFromName', fake_plugin)
+        self.loader.loadTestsFromNames(['some_name'])
+        self.assertTrue(fake_plugin.fakeLoadFromName)
 
 
 class FakePlugin(object):
 
     def loadTestsFromModule(self, event):
         event.fakeLoadFromModule = True
+        self.fakeLoadFromModule = True
 
     def loadTestsFromName(self, event):
         event.fakeLoadFromName = True
+        self.fakeLoadFromName = True
 
     def loadTestsFromNames(self, event):
         event.fakeLoadFromNames = True
+        self.fakeLoadFromNames = True

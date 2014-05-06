@@ -153,8 +153,6 @@ def run_nose2(*nose2_args, **nose2_kwargs):
         cwd = nose2_kwargs.pop('cwd')
         if not os.path.isabs(cwd):
             nose2_kwargs['cwd'] = support_file(cwd)
-    if 'module' not in nose2_kwargs:
-        nose2_kwargs['module'] = None
     return NotReallyAProc(nose2_args, **nose2_kwargs)
 
 

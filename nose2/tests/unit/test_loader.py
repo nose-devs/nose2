@@ -45,6 +45,12 @@ class TestPluggableTestLoader(TestCase):
         self.loader.loadTestsFromNames(['some_name'])
         self.assertTrue(fake_plugin.fakeLoadFromName)
 
+    def test_loader_from_names_calls_module_hook(self):
+        fake_plugin = FakePlugin()
+        self.session.hooks.register('loadTestsFromModule', fake_plugin)
+        self.loader.loadTestsFromNames([], 'some_module')
+        self.assertTrue(fake_plugin.fakeLoadFromModule)
+
 
 class FakePlugin(object):
 

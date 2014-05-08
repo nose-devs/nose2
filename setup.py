@@ -46,6 +46,9 @@ params = dict(
     url=URL,
     classifiers=CLASSIFIERS,
     keywords=KEYWORDS,
+    extras_require={
+        'coverage_plugin': ["cov-core>=1.12"],
+    }
 )
 
 

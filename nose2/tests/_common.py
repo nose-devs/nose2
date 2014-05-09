@@ -2,6 +2,7 @@
 import os.path
 import tempfile
 import shutil
+import subprocess
 import sys
 
 import six
@@ -64,6 +65,9 @@ class FunctionalTestCase(unittest.TestCase):
 
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)
+
+    def runModuleAsMain(self, testmodule):
+        return run_module_as_main(testmodule)
 
 
 class _FakeEventBase(object):
@@ -154,6 +158,13 @@ def run_nose2(*nose2_args, **nose2_kwargs):
         if not os.path.isabs(cwd):
             nose2_kwargs['cwd'] = support_file(cwd)
     return NotReallyAProc(nose2_args, **nose2_kwargs)
+
+
+def run_module_as_main(test_module):
+    if not os.path.isabs(test_module):
+        test_module = support_file(test_module)
+    return subprocess.Popen([sys.executable, test_module],
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 class NotReallyAProc(object):

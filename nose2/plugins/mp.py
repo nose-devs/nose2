@@ -116,7 +116,7 @@ class MultiProcess(events.Plugin):
         if sys.platform == "win32":
             #prevent "accidental" wire crossing
             authkey = os.urandom(20)
-            address = ('localhost', 0)
+            address = ('127.116.157.163', 0)
             listener = connection.Listener(address, authkey=authkey)
             return (listener, None, listener.address + (authkey,))
         else:

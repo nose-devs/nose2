@@ -63,3 +63,18 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         self.assertFalse(os.path.isfile(junit_report),
                          "junitxml report was found in working directory. "
                          "Report file: " + junit_report)
+
+    def test_report_location_should_be_resilent_to_chdir_in_tests(self):
+        junit_report, proc = self.run_with_junitxml_loaded(
+            ('scenario', 'junitxml', 'chdir'), '--junit-xml')
+
+        self.assertTestRunOutputMatches(
+            proc,
+            stderr='test_chdir \(test_junitxml_chdir.Test\) \.* ok')
+        self.assertTestRunOutputMatches(
+            proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 0)
+
+        self.assertTrue(os.path.isfile(junit_report),
+                        "junitxml report wasn't found in working directory. "
+                        "Searched for " + junit_report)

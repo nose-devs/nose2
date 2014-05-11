@@ -9,9 +9,7 @@ import os
 import sys
 import six
 
-if sys.platform == "win32":
-    import multiprocessing.connection as connection
-
+import multiprocessing.connection as connection
 from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)

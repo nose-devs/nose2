@@ -11,8 +11,6 @@ import six
 
 if sys.platform == "win32":
     import multiprocessing.connection as connection
-    import socket
-    import select
 
 from nose2 import events, loader, result, runner, session, util
 
@@ -23,15 +21,49 @@ class MultiProcess(events.Plugin):
     configSection = 'multiprocess'
 
     def __init__(self):
+        self.bind_host = None
+        self.bind_port = 0
         self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self.procs = self.config.as_int(
             'processes', multiprocessing.cpu_count())
+        self.setSocket(self.config.as_str('bind_address', None))
+
         self.cases = {}
 
     def setProcs(self, num):
         self.procs = int(num[0])  # FIXME merge n fix
         self.register()
+
+    def setSocket(self, address):
+        if address is None:
+            address = []
+        else:
+            address = address.strip().split()[:2]
+
+        #Background:  On Windows, select.select only works on sockets.  So the
+        #ability to select a bindable address and optionally port for the mp
+        #plugin was added.  Pipes should support a form of select, but this
+        #would require using pywin32.  They should also support poll() but
+        #this would be a time out for each socket instead to get a socket.
+        #Probably, the best alternative would be a Connection proxy object
+        #which would use a single pipe to a common Multiprocessing queue
+        #(whose timeout functions do work) read incoming event.  Then, a proxy
+        #connection object would be needed to connection the queue to the send
+        #functions and a pipe to the recieve function of the child's
+        #connection object to maintain individual dispatching.
+        if sys.platform == "win32" and not address:
+            self.bind_host = '127.116.157.163'
+            self.bind_port = 0
+        else:
+            self.bind_host = address[0]
+
+            if len(address) >= 2:
+                self.bind_port = int(address[1])
+
+            if self.bind_host in '0.0.0.0' or "::":
+                raise ValueError("MP: Address must both be"
+                                 " bindable and connectable")
 
     def pluginsLoaded(self, event):
         self.addMethods('registerInSubprocess', 'startSubprocess',
@@ -64,7 +96,7 @@ class MultiProcess(events.Plugin):
                 try:
                     remote_events = conn.recv()
                 except EOFError:
-                    # probably dead
+                    # probably dead/12
                     log.warning("Subprocess connection closed unexpectedly")
                     continue  # XXX or die?
 
@@ -98,61 +130,54 @@ class MultiProcess(events.Plugin):
 
     def _prepConns(self):
         """
-        For windows, select.select only works on sockets.  Pipes
-        do support a form of select, but this requires pywin32 to
-        access. So instead, for windows a socket on localhost with a 
-        random port and authenticate key.  
-        
-        Return listener, parent, child.
+        If the bind_host is not none, return:
+            (multiprocessing.connection.Listener, (address, port, authkey))
+        else:
+            (parent_connection, child_connection)
 
-        When listener is none, the ends of the pipe will be in parent/child.
-        When listener is not none, then parent will be none, and child
-        will be (address, port, authkey).  Later, accept must be called
-        on the listener. The alternative is to use our own connection 
-        implementation or threading to get around the blocking nature of 
-        Client and Listener.accept so that connection object maybe created
-        like with Pipe().  
+        For the former case: accept must be called on the listener. In order
+        to get a Connection object for the socket.
         """
-        if sys.platform == "win32":
+        if self.bind_host is not None:
             #prevent "accidental" wire crossing
             authkey = os.urandom(20)
-            address = ('127.116.157.163', 0)
+            address = (self.bind_host, self.bind_port)
             listener = connection.Listener(address, authkey=authkey)
-            return (listener, None, listener.address + (authkey,))
+            return (listener, listener.address + (authkey,))
         else:
-            return (None,) + multiprocessing.Pipe()
+            return multiprocessing.Pipe()
 
-    def _acceptConns(self, listener, parent_conn):
+    def _acceptConns(self, parent_conn):
         """
-        When listener is provided, select on the it, and accept
-        if reader is found.  Otherwise assume a failure.  When
-        listener is not, parent_conn is passed through.
+        When listener is is a connection.Listener instance: accept the next
+        incoming connection.  However, a timeout mechanism is needed.  Since,
+        this functionality was added to support mp over inet sockets, will
+        assume a Socket based listen and will accept the private _socket
+        member to get a low_level socket to do a select on.
         """
-        if listener is None:
-            return parent_conn
-        else:
+        if isinstance(parent_conn, connection.Listener):
             #ick private interface
-            rdrs = [listener._listener._socket]
-            readable, _, _ = select.select(rdrs, [], [], 
+            rdrs = [parent_conn._listener._socket]
+            readable, _, _ = select.select(rdrs, [], [],
                                            self.testRunTimeout)
             if readable:
-                return listener.accept()
+                return parent_conn.accept()
             else:
                 raise RuntimeError('MP: Socket Connection Failed')
-
-
+        else:
+            return parent_conn
 
     def _startProcs(self):
         # XXX create session export
         session_export = self._exportSession()
         procs = []
         for i in range(0, self.procs):
-            listener, parent_conn, child_conn = self._prepConns()
+            parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn))
             proc.daemon = True
             proc.start()
-            parent_conn = self._acceptConns(listener, parent_conn)
+            parent_conn = self._acceptConns(parent_conn)
             procs.append((proc, parent_conn))
         return procs
 

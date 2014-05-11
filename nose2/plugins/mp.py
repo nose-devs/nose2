@@ -55,7 +55,7 @@ class MultiProcess(events.Plugin):
         if sys.platform == "win32" and not address:
             self.bind_host = '127.116.157.163'
             self.bind_port = 0
-        else:
+        elif address:
             self.bind_host = address[0]
 
             if len(address) >= 2:

@@ -1,4 +1,3 @@
-from nose2.compat import unittest
 from nose2.tests._common import TestCase
 from nose2.plugins.loader.testclasses import TestClassLoader
 from nose2 import events, loader, session
@@ -49,7 +48,6 @@ class TestTestClassLoader(TestCase):
         self.assertEqual(len(event.extraTests[1]._tests), 0)  # TestB
         self.assertEqual(len(event.extraTests[2]._tests), 0)  # TestC
 
-    @unittest.expectedFailure
     def test_get_testmethod_names_can_override_name_selection(self):
         class FooIsOnlyTest(events.Plugin):
 
@@ -66,7 +64,6 @@ class TestTestClassLoader(TestCase):
         self.assertEqual(len(event.extraTests[1]._tests), 0)  # TestB
         self.assertEqual(len(event.extraTests[2]._tests), 1)  # TestC
 
-    @unittest.expectedFailure
     def test_plugins_can_exclude_test_names(self):
         class Excluder(events.Plugin):
 

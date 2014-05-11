@@ -886,8 +886,8 @@ class GetTestCaseNamesEvent(Event):
 
     .. attribute :: isTestMethod
 
-       Callable that plugins can use to examine test case attributes to determine
-       whether nose2 thinks they are test methods.
+       Callable that plugins can use to examine test case attributes to
+       determine whether nose2 thinks they are test methods.
 
     """
     _attrs = Event._attrs + ('loader', 'testCase', 'testMethodPrefix',

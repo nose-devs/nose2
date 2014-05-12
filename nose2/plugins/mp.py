@@ -19,13 +19,11 @@ class MultiProcess(events.Plugin):
     configSection = 'multiprocess'
 
     def __init__(self):
-        self.bind_host = None
-        self.bind_port = 0
         self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self.procs = self.config.as_int(
             'processes', multiprocessing.cpu_count())
-        self.setSocket(self.config.as_str('bind_address', None))
+        self.setAddress(self.config.as_str('bind_address', None))
 
         self.cases = {}
 
@@ -33,7 +31,7 @@ class MultiProcess(events.Plugin):
         self.procs = int(num[0])  # FIXME merge n fix
         self.register()
 
-    def setSocket(self, address):
+    def setAddress(self, address):
         if address is None:
             address = []
         else:
@@ -50,6 +48,9 @@ class MultiProcess(events.Plugin):
         #connection object would be needed to connection the queue to the send
         #functions and a pipe to the recieve function of the child's
         #connection object to maintain individual dispatching.
+        self.bind_host = None
+        self.bind_port = 0
+
         if sys.platform == "win32" and not address:
             self.bind_host = '127.116.157.163'
             self.bind_port = 0
@@ -58,10 +59,6 @@ class MultiProcess(events.Plugin):
 
             if len(address) >= 2:
                 self.bind_port = int(address[1])
-
-            if self.bind_host in '0.0.0.0' or "::":
-                raise ValueError("MP: Address must both be"
-                                 " bindable and connectable")
 
     def pluginsLoaded(self, event):
         self.addMethods('registerInSubprocess', 'startSubprocess',

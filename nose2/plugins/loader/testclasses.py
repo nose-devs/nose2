@@ -86,7 +86,7 @@ class TestClassLoader(events.Plugin):
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
 
-    def pluginsLoaded(self, event):
+    def register(self):
         """Install extra hooks
 
         Adds the new plugin hooks:
@@ -95,6 +95,7 @@ class TestClassLoader(events.Plugin):
         - getTestMethodNames
 
         """
+        super(TestClassLoader, self).register()
         self.addMethods('loadTestsFromTestClass', 'getTestMethodNames')
 
     def loadTestsFromModule(self, event):
@@ -102,9 +103,9 @@ class TestClassLoader(events.Plugin):
         module = event.module
         for name in dir(module):
             obj = getattr(module, name)
-            if (isinstance(obj, type) and not
-                issubclass(obj, unittest.TestCase) and not
-                issubclass(obj, unittest.TestSuite) and
+            if (isinstance(obj, type) and
+                not issubclass(obj, unittest.TestCase) and
+                not issubclass(obj, unittest.TestSuite) and
                 name.lower().startswith(self.session.testMethodPrefix)):
                 event.extraTests.append(
                     self._loadTestsFromTestClass(event, obj))
@@ -125,9 +126,9 @@ class TestClassLoader(events.Plugin):
             # name is a test case class
             event.extraTests.append(self._loadTestsFromTestClass(event, obj))
         elif (isinstance(parent, type) and
-              not issubclass(parent, unittest.TestCase) and not
-              util.isgenerator(obj) and not
-              hasattr(obj, 'paramList')):
+              not issubclass(parent, unittest.TestCase) and
+              not util.isgenerator(obj) and
+              not hasattr(obj, 'paramList')):
             # name is a single test method
             event.extraTests.append(
                 util.transplant_class(

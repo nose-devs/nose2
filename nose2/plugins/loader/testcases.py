@@ -64,9 +64,9 @@ class TestCaseLoader(events.Plugin):
             # name is a test case class
             event.extraTests.append(self._loadTestsFromTestCase(event, obj))
         elif (isinstance(parent, type) and
-              issubclass(parent, unittest.TestCase) and not
-              util.isgenerator(obj) and not
-              hasattr(obj, 'paramList')):
+              issubclass(parent, unittest.TestCase) and
+              not util.isgenerator(obj) and
+              not hasattr(obj, 'paramList')):
             # name is a single test method
             event.extraTests.append(parent(obj.__name__))
 
@@ -108,7 +108,8 @@ class TestCaseLoader(events.Plugin):
         if evt.extraNames:
             test_names.extend(evt.extraNames)
         sortkey = getattr(
-            testCaseClass, 'sortTestMethodsUsing', event.loader.sortTestMethodsUsing)
+            testCaseClass, 'sortTestMethodsUsing',
+            event.loader.sortTestMethodsUsing)
         if sortkey:
             test_names.sort(
                 key=sortkey)

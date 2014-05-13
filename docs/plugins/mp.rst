@@ -49,7 +49,7 @@ setting in the ``[multiprocess]`` section of the config file,
 for example::
 
   [multiprocess]
-  bind_address = 127.0.0.1 1024
+  bind_address = 127.0.0.1:1024
 
 This will bind to port 1024 of ``127.0.0.1``.  Also::
 

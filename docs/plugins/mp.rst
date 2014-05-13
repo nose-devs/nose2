@@ -43,6 +43,29 @@ config file::
    ``processes`` or pass :option:`-N`, the number of processes
    defaults to the number of CPUs available.
 
+Should one wish to specify the use of internet sockets for 
+interprocess communications, specify the ``bind_address``
+setting in the ``[multiprocess]`` section of the config file, 
+for example::
+
+  [multiprocess]
+  bind_address = 127.0.0.1 1024
+
+This will bind to port 1024 of ``127.0.0.1``.  Also::
+
+  [multiprocess]
+  bind_address = 127.1.2.3
+
+will bind to any random open port on ``127.1.2.3``.  Any internet 
+address or host-name which python can recognize as such, bind, *and* 
+connect is acceptable.  While ``0.0.0.0`` can be use for listening, 
+it is not necessarily an address to which the OS can connect.  When
+the port address is 0 or omitted, a random open port is used.  If
+the setting is omitted or or blank, then sockets are not used unless
+nose is being executed on Windows.  In which case, an address on
+the loop back interface and a random port are used.  Whenever, used
+processes employ a random shared key for authentication.
+
 Guidelines for Test Authors
 ---------------------------
 

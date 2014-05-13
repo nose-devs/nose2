@@ -32,31 +32,26 @@ class MultiProcess(events.Plugin):
         self.register()
 
     def setAddress(self, address):
-        if address is None:
+        if address is None or address.strip() == '':
             address = []
         else:
-            address = address.strip().split()[:2]
+            address = [x.strip() for x address.split(':')[:2]]
 
         #Background:  On Windows, select.select only works on sockets.  So the
         #ability to select a bindable address and optionally port for the mp
         #plugin was added.  Pipes should support a form of select, but this
-        #would require using pywin32.  They should also support poll() but
-        #this would be a time out for each socket instead to get a socket.
-        #Probably, the best alternative would be a Connection proxy object
-        #which would use a single pipe to a common Multiprocessing queue
-        #(whose timeout functions do work) read incoming event.  Then, a proxy
-        #connection object would be needed to connection the queue to the send
-        #functions and a pipe to the recieve function of the child's
-        #connection object to maintain individual dispatching.
+        #would require using pywin32.  There are altnernatives but all have
+        #some kind of downside.  An alternative might be creating a connection
+        #like object using a shared queue for incomings events. 
         self.bind_host = None
         self.bind_port = 0
 
-        if sys.platform == "win32" and not address:
+        if sys.platform == "win32" or address:
             self.bind_host = '127.116.157.163'
+            if address[0]:
+                self.bind_host = address[0]
+            
             self.bind_port = 0
-        elif address:
-            self.bind_host = address[0]
-
             if len(address) >= 2:
                 self.bind_port = int(address[1])
 

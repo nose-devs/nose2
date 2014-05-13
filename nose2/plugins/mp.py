@@ -35,7 +35,7 @@ class MultiProcess(events.Plugin):
         if address is None or address.strip() == '':
             address = []
         else:
-            address = [x.strip() for x address.split(':')[:2]]
+            address = [x.strip() for x in address.split(':')[:2]]
 
         #Background:  On Windows, select.select only works on sockets.  So the
         #ability to select a bindable address and optionally port for the mp

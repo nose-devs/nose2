@@ -39,7 +39,7 @@ class TestMPPlugin(TestCase):
             self.plugin.setAddress(host)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, 0))
-            self.plugin.setAddress("%s %i" % (host, port))
+            self.plugin.setAddress("%s:%i" % (host, port))
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, port))
             self.plugin.setAddress(None)
@@ -49,7 +49,7 @@ class TestMPPlugin(TestCase):
             self.plugin.setAddress(host)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, 0))
-            self.plugin.setAddress("%s %i" % (host, port))
+            self.plugin.setAddress("%s:%i" % (host, port))
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, port))
             self.plugin.setAddress(None)

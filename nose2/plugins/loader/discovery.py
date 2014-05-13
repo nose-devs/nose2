@@ -30,6 +30,11 @@ from nose2 import events, util
 __unittest = True
 log = logging.getLogger(__name__)
 
+try:
+    import pkg_resources
+except ImportError:
+    pkg_resources = None
+
 
 class DiscoveryLoader(events.Plugin):
 
@@ -77,8 +82,11 @@ class DiscoveryLoader(events.Plugin):
         if top_level_dir is None:
             top_level_dir = start_dir
 
+        if not os.path.exists(os.path.abspath(start_dir)):
+            raise OSError("%s does not exist" % os.path.abspath(start_dir))
         if not os.path.isdir(os.path.abspath(start_dir)):
-            raise OSError("%s is not a directory" % os.path.abspath(start_dir))
+            if not pkg_resources and not os.path.abspath(start_dir).endswith('.egg'):
+                raise OSError("%s is not a directory" % os.path.abspath(start_dir))
 
         is_not_importable = False
         start_dir = os.path.abspath(start_dir)
@@ -117,9 +125,50 @@ class DiscoveryLoader(events.Plugin):
                 event, full_path, top_level):
                 yield test
         elif os.path.isfile(start):
-            for test in self._find_tests_in_file(
-                event, start, full_path, top_level):
+            if pkg_resources and os.path.splitext(start)[1] == '.egg':
+                for dist in pkg_resources.find_distributions(start):
+                    for modname in dist._get_metadata('top_level.txt'):
+                        for test in self._find_tests_in_egg_dir(
+                            event, modname, dist):
+                            yield test
+            else:
+                for test in self._find_tests_in_file(
+                    event, start, full_path, top_level):
+                    yield test
+
+    def _find_tests_in_egg_dir(self, event, rel_path, dist):
+        log.debug("find in egg dir %s %s (%s)", dist.location, rel_path, dist.project_name)
+        full_path = os.path.join(dist.location, rel_path)
+        
+        pattern = self.session.testFilePattern
+
+        evt = events.HandleFileEvent(
+            event.loader, full_path, full_path, pattern, dist.location)
+        result = self.session.hooks.handleDir(evt)
+        if evt.extraTests:
+            for test in evt.extraTests:
                 yield test
+        if evt.handled:
+            if result:
+                yield result
+            return
+
+        evt = events.MatchPathEvent(full_path, full_path, pattern)
+        result = self.session.hooks.matchDirPath(evt)
+        if evt.handled and not result:
+            return
+
+        for path in dist.resource_listdir(rel_path):
+            entry_path = os.path.join(rel_path, path)
+            if dist.resource_isdir(entry_path):
+                for test in self._find_tests_in_egg_dir(event, entry_path, dist):
+                    yield test
+            else:
+                modname = os.path.splitext(entry_path)[0].replace('/', '.')
+                for test in self._find_tests_in_file(
+                    event, path, os.path.join(dist.location, entry_path), dist.location, modname):
+                    print '!!! TEST=%s'%test
+                    yield test
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         log.debug("find in dir %s (%s)", full_path, top_level)
@@ -156,7 +205,7 @@ class DiscoveryLoader(events.Plugin):
                     for test in self._find_tests(event, entry_path, top_level):
                         yield test
 
-    def _find_tests_in_file(self, event, filename, full_path, top_level):
+    def _find_tests_in_file(self, event, filename, full_path, top_level, modname=None):
         log.debug("find in file %s (%s)", full_path, top_level)
         pattern = self.session.testFilePattern
         loader = event.loader
@@ -183,12 +232,13 @@ class DiscoveryLoader(events.Plugin):
         elif not self._match_path(filename, full_path, pattern):
             return
 
-        # if the test file matches, load it
-        name = util.name_from_path(full_path)
+        if modname is None:
+            modname = util.name_from_path(full_path)
+        
         try:
-            module = util.module_from_name(name)
+            module = util.module_from_name(modname)
         except:
-            yield loader.failedImport(name)
+            yield loader.failedImport(modname)
         else:
             mod_file = os.path.abspath(
                 getattr(module, '__file__', full_path))
@@ -213,9 +263,17 @@ class DiscoveryLoader(events.Plugin):
         if pkgpath:
             for entry in pkgpath:
                 full_path = os.path.abspath(os.path.join(top_level_dir, entry))
-                for test in self._find_tests_in_dir(
-                    event, full_path, top_level_dir):
-                    yield test
+                if os.path.exists(full_path):
+                    for test in self._find_tests_in_dir(
+                        event, full_path, top_level_dir):
+                        yield test
+                elif pkg_resources and entry.find('.egg') != -1:
+                    egg_path = entry.split('.egg')[0] + '.egg'
+                    for dist in pkg_resources.find_distributions(egg_path):
+                        for modname in dist._get_metadata('top_level.txt'):
+                            for test in self._find_tests_in_egg_dir(
+                                event, modname, dist):
+                                yield test
 
     def _match_path(self, path, full_path, pattern):
         # override this method to use alternative matching strategy

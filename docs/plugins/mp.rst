@@ -251,6 +251,24 @@ Interacting with Users
 
   If you're not doing that, start!
 
+Possible Issues On Windows
+--------------------------
+
+On windows, there are a few know bugs with respect to multiprocessing.
+
+First, on python 2.X or old versions of 3.X, if the __main__ module
+accessing nose2 is a __main__.py, an assertion in python code module
+``multiprocessing.forking`` may fail.  The bug for 3.2 is 
+http://bugs.python.org/issue10845.
+
+Secondly, python on windows does not use fork().  It bootstraps from a
+separate interpreter invocation.  In certain contexts, the "value" for
+a parameter will taken as a "count" and subprocess will take this as the
+number of times to repeat a flag.  If this value is 2 billion
+(like a hash seed), subprocess.py may attempt to built a 2gig string,
+and possibly throw a MemoryError exception.  The related bug is
+http://bugs.python.org/issue20954.
+
 Reference
 ---------
 

@@ -167,7 +167,6 @@ class DiscoveryLoader(events.Plugin):
                 modname = os.path.splitext(entry_path)[0].replace('/', '.')
                 for test in self._find_tests_in_file(
                     event, path, os.path.join(dist.location, entry_path), dist.location, modname):
-                    print '!!! TEST=%s'%test
                     yield test
 
     def _find_tests_in_dir(self, event, full_path, top_level):

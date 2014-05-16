@@ -3,9 +3,13 @@ import logging
 import multiprocessing
 import select
 import unittest
+import collections
 
+import os
+import sys
 import six
 
+import multiprocessing.connection as connection
 from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
@@ -19,11 +23,37 @@ class MultiProcess(events.Plugin):
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self.procs = self.config.as_int(
             'processes', multiprocessing.cpu_count())
+        self.setAddress(self.config.as_str('bind_address', None))
+
         self.cases = {}
 
     def setProcs(self, num):
         self.procs = int(num[0])  # FIXME merge n fix
         self.register()
+
+    def setAddress(self, address):
+        if address is None or address.strip() == '':
+            address = []
+        else:
+            address = [x.strip() for x in address.split(':')[:2]]
+
+        #Background:  On Windows, select.select only works on sockets.  So the
+        #ability to select a bindable address and optionally port for the mp
+        #plugin was added.  Pipes should support a form of select, but this
+        #would require using pywin32.  There are altnernatives but all have
+        #some kind of downside.  An alternative might be creating a connection
+        #like object using a shared queue for incomings events. 
+        self.bind_host = None
+        self.bind_port = 0
+
+        if sys.platform == "win32" or address:
+            self.bind_host = '127.116.157.163'
+            if address and address[0]:
+                self.bind_host = address[0]
+            
+            self.bind_port = 0
+            if len(address) >= 2:
+                self.bind_port = int(address[1])
 
     def pluginsLoaded(self, event):
         self.addMethods('registerInSubprocess', 'startSubprocess',
@@ -56,7 +86,7 @@ class MultiProcess(events.Plugin):
                 try:
                     remote_events = conn.recv()
                 except EOFError:
-                    # probably dead
+                    # probably dead/12
                     log.warning("Subprocess connection closed unexpectedly")
                     continue  # XXX or die?
 
@@ -88,16 +118,56 @@ class MultiProcess(events.Plugin):
         for proc, _ in procs:
             proc.join()
 
+    def _prepConns(self):
+        """
+        If the bind_host is not none, return:
+            (multiprocessing.connection.Listener, (address, port, authkey))
+        else:
+            (parent_connection, child_connection)
+
+        For the former case: accept must be called on the listener. In order
+        to get a Connection object for the socket.
+        """
+        if self.bind_host is not None:
+            #prevent "accidental" wire crossing
+            authkey = os.urandom(20)
+            address = (self.bind_host, self.bind_port)
+            listener = connection.Listener(address, authkey=authkey)
+            return (listener, listener.address + (authkey,))
+        else:
+            return multiprocessing.Pipe()
+
+    def _acceptConns(self, parent_conn):
+        """
+        When listener is is a connection.Listener instance: accept the next
+        incoming connection.  However, a timeout mechanism is needed.  Since,
+        this functionality was added to support mp over inet sockets, will
+        assume a Socket based listen and will accept the private _socket
+        member to get a low_level socket to do a select on.
+        """
+        if isinstance(parent_conn, connection.Listener):
+            #ick private interface
+            rdrs = [parent_conn._listener._socket]
+            readable, _, _ = select.select(rdrs, [], [],
+                                           self.testRunTimeout)
+            if readable:
+                return parent_conn.accept()
+            else:
+                raise RuntimeError('MP: Socket Connection Failed')
+        else:
+            return parent_conn
+
     def _startProcs(self):
         # XXX create session export
         session_export = self._exportSession()
         procs = []
         for i in range(0, self.procs):
-            parent_conn, child_conn = multiprocessing.Pipe()
+            parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn))
             proc.daemon = True
             proc.start()
+            parent_conn = self._acceptConns(parent_conn)
             procs.append((proc, parent_conn))
         return procs
 
@@ -199,6 +269,9 @@ def procserver(session_export, conn):
     for plugin in ssn.plugins:
         plugin.register()
         rlog.debug("Registered %s in subprocess", plugin)
+
+    if isinstance(conn, collections.Sequence):
+        conn = connection.Client(conn[:2], authkey=conn[2])
 
     event = SubprocessEvent(loader_, result_, runner_, ssn.plugins, conn)
     res = ssn.hooks.startSubprocess(event)

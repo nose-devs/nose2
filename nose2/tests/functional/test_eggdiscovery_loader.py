@@ -26,7 +26,6 @@ else:
                 'scenario/tests_in_zipped_eggs',
                 '-v',
                 '--plugin=nose2.plugins.loader.eggdiscovery',
-                '--exclude-plugin=nose2.plugins.loader.discovery',
                 'pkg1')
             self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=5, errors=1, skipped=1\)')
     

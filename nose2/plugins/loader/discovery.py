@@ -117,6 +117,8 @@ class Discoverer(object):
                 yield test
 
     def _find_tests_in_dir(self, event, full_path, top_level):
+        if not os.path.isdir(full_path):
+            return
         log.debug("find in dir %s (%s)", full_path, top_level)
 
         dirname = os.path.basename(full_path)

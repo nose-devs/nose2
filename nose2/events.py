@@ -1124,7 +1124,7 @@ class CreateTestsEvent(Event):
        considered relative to this module.
 
     """
-    _attrs = Event._attrs = ('loader', 'testNames', 'module')
+    _attrs = Event._attrs + ('loader', 'testNames', 'module')
 
     def __init__(self, loader, testNames, module, **kw):
         self.loader = loader

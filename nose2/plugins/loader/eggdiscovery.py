@@ -41,11 +41,11 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
 
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
-        discovery.Discoverer.loadTestsFromName(self, event)
+        return discovery.Discoverer.loadTestsFromName(self, event)
 
     def loadTestsFromNames(self, event):
         """Discover tests if no test names specified"""
-        discovery.Discoverer.loadTestsFromNames(self, event)
+        return discovery.Discoverer.loadTestsFromNames(self, event)
 
     def _checkIfPathIsOK(self, start_dir):
         if not os.path.exists(os.path.abspath(start_dir)):

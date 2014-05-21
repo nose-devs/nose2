@@ -230,8 +230,8 @@ class DiscoveryLoader(events.Plugin, Discoverer):
 
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
-        Discoverer.loadTestsFromName(self, event)
+        return Discoverer.loadTestsFromName(self, event)
 
     def loadTestsFromNames(self, event):
         """Discover tests if no test names specified"""
-        Discoverer.loadTestsFromNames(self, event)
+        return Discoverer.loadTestsFromNames(self, event)

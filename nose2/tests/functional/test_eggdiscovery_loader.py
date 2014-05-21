@@ -13,8 +13,7 @@ else:
             for m in [m for m in sys.modules if m.startswith('pkg1')]:
                 del sys.modules[m]
             self.egg_path = support_file('scenario/tests_in_zipped_eggs/pkg1-0.0.0-py2.7.egg')
-            for dist in pkg_resources.find_distributions(self.egg_path, only=True):
-                pkg_resources.working_set.add(dist, self.egg_path)
+            sys.path.append(self.egg_path)
     
         def tearDown(self):
             if self.egg_path in sys.path:

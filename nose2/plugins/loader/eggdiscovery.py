@@ -17,7 +17,7 @@ import os
 
 from nose2 import events
 
-import discovery
+from nose2.plugins.loader import discovery
 
 __unittest = True
 log = logging.getLogger(__name__)

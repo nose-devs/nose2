@@ -1,5 +1,6 @@
 import sys
 from nose2.tests._common import FunctionalTestCase, support_file
+import nose2.plugins.loader.eggdiscovery #@UnusedImport This is not very elegant, but it allows eggdiscovery to be found in Travis (or when run with PYTHONPATH=.)
 
 try:
     import pkg_resources
@@ -31,7 +32,7 @@ else:
         
         def test_can_discover_test_modules_in_zipped_eggs(self):
             proc = self.runIn(
-                'scenario/tests_in_zipped_eggs',
+                'scenario/tests_in_zipped_eggs', 
                 '-v',
                 '--plugin=nose2.plugins.loader.eggdiscovery',
                 'pkgegg')

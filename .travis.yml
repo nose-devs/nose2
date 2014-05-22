@@ -4,7 +4,7 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-  - "pypy"
+  - pypy
 install:
   - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
   - pip install coveralls
@@ -13,3 +13,11 @@ script:
   - PYTHONPATH=. coverage run -m nose2.__main__
 after_success:
   - coveralls
+deploy:
+  provider: pypi
+  user: jpellerin
+  password:
+    secure: Cm3DItPisb3h39kLq8ss9cmYGDoccpKgk6V5azwpdbLM3aApRdsSMvhE0J1M6uibW5ZGTe0J2LK/doAamJVDdxo/5hWdoXjoVHdqqzmBOYqVJ+WNfxkGu+3G+ZRgurdhRnrcuLjnUmXj6hj6TbondBcUSZr0X/1PxNp742dUShs=
+  on:
+    tags: true
+    all_branches: true

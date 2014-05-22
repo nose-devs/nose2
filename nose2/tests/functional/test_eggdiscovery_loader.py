@@ -21,7 +21,6 @@ else:
                 sys.path.remove(self.egg_path)
             for m in [m for m in sys.modules if m.startswith('pkgegg')]:
                 del sys.modules[m]
-            reload(pkg_resources)
         
         def test_non_egg_discoverer_does_not_fail_when_looking_in_egg(self):
             proc = self.runIn(
@@ -38,4 +37,3 @@ else:
                 'pkgegg')
             self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=5, errors=1, skipped=1\)')
     
-

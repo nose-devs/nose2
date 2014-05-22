@@ -10,15 +10,15 @@ except ImportError:
 else:
     class EggDiscoveryFunctionalTest(FunctionalTestCase):
         def setUp(self):
-            for m in [m for m in sys.modules if m.startswith('pkg1')]:
+            for m in [m for m in sys.modules if m.startswith('pkgegg')]:
                 del sys.modules[m]
-            self.egg_path = support_file('scenario/tests_in_zipped_eggs/pkg1-0.0.0-py2.7.egg')
+            self.egg_path = support_file('scenario/tests_in_zipped_eggs/pkgegg-0.0.0-py2.7.egg')
             sys.path.append(self.egg_path)
     
         def tearDown(self):
             if self.egg_path in sys.path:
                 sys.path.remove(self.egg_path)
-            for m in [m for m in sys.modules if m.startswith('pkg1')]:
+            for m in [m for m in sys.modules if m.startswith('pkgegg')]:
                 del sys.modules[m]
             reload(pkg_resources)
         
@@ -26,7 +26,7 @@ else:
             proc = self.runIn(
                 'scenario/tests_in_zipped_eggs',
                 '-v',
-                'pkg1')
+                'pkgegg')
             self.assertTestRunOutputMatches(proc, stderr='Ran 0 tests in')
         
         def test_can_discover_test_modules_in_zipped_eggs(self):
@@ -34,7 +34,7 @@ else:
                 'scenario/tests_in_zipped_eggs',
                 '-v',
                 '--plugin=nose2.plugins.loader.eggdiscovery',
-                'pkg1')
+                'pkgegg')
             self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=5, errors=1, skipped=1\)')
     
 

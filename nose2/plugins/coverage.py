@@ -1,7 +1,8 @@
 """
 Use this plugin to activate coverage report.
 
-To install this plugin, you need to activate ``coverage-plugin`` with extra requires :
+To install this plugin, you need to activate ``coverage-plugin``
+with extra requirements :
 
 ::
 
@@ -17,7 +18,7 @@ Next, you can enable coverage reporting with :
 Or with this lines in ``unittest.cfg`` :
 
 ::
-    
+
     [coverage]
     always-on = True
 
@@ -46,7 +47,8 @@ class Coverage(Plugin):
             '--coverage-report', action='append', default=[], metavar='TYPE',
             choices=['term', 'term-missing', 'annotate', 'html', 'xml'],
             dest='coverage_report',
-            help='Generate selected reports, available types: term, term-missing, annotate, html, xml (multi-allowed)'
+            help='Generate selected reports, available types:'
+                 ' term, term-missing, annotate, html, xml (multi-allowed)'
         )
         group.add_argument(
             '--coverage-config', action='store', default='', metavar='FILE',
@@ -57,9 +59,12 @@ class Coverage(Plugin):
     def handleArgs(self, event):
         """Get our options in order command line, config file, hard coded."""
 
-        self.covSource = event.args.coverage_source or self.conSource or ['.']
-        self.covReport = event.args.coverage_report or self.conReport or ['term']
-        self.covConfig = event.args.coverage_config or self.conConfig or '.coveragerc'
+        self.covSource = (event.args.coverage_source or
+                          self.conSource or ['.'])
+        self.covReport = (event.args.coverage_report or
+                          self.conReport or ['term'])
+        self.covConfig = (event.args.coverage_config or
+                          self.conConfig or '.coveragerc')
 
     def startTestRun(self, event):
         """Only called if active so start coverage."""
@@ -67,10 +72,13 @@ class Coverage(Plugin):
         try:
             import cov_core
         except:
-            print('Warning: you need to install [coverage-plugin] extra require to use this plugin')
+            print('Warning: you need to install [coverage-plugin] '
+                  'extra requirements to use this plugin')
             return
 
-        self.covController = cov_core.Central(self.covSource, self.covReport, self.covConfig)
+        self.covController = cov_core.Central(self.covSource,
+                                              self.covReport,
+                                              self.covConfig)
         self.covController.start()
 
     def afterSummaryReport(self, event):

@@ -1,3 +1,5 @@
+import os.path
+
 from nose2.tests._common import FunctionalTestCase
 
 
@@ -9,6 +11,12 @@ class TestCoverage(FunctionalTestCase):
             '--with-coverage',
             '--coverage=lib/'
         )
+        STATS = '           8      5    38%'
+
         stdout, stderr = proc.communicate()
-        self.assertTestRunOutputMatches(proc, stderr='lib/mod1           8      5    38%')
-        self.assertTestRunOutputMatches(proc, stderr='TOTAL              8      5    38%')
+        self.assertTestRunOutputMatches(
+            proc,
+            stderr=os.path.join('lib', 'mod1').replace('\\', r'\\') + STATS)
+        self.assertTestRunOutputMatches(
+            proc,
+            stderr='TOTAL   ' + STATS)

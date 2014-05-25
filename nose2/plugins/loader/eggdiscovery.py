@@ -80,7 +80,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
                 for test in self._find_tests_in_egg_dir(event, entry_path, dist):
                     yield test
             else:
-                modname = os.path.splitext(entry_path)[0].replace('/', '.')
+                modname = os.path.splitext(entry_path)[0].replace(os.sep, '.')
                 for test in self._find_tests_in_file(
                     event, path, os.path.join(dist.location, entry_path), dist.location, modname):
                     yield test

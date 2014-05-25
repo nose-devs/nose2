@@ -1,11 +1,8 @@
 """
-Egg-Discovery-based test loader.
+Egg-based discovery test loader.
 
 This plugin implements nose2's automatic test module discovery inside Egg Files.
-It uses the same exact logic as the normal Discovery loader.
-
-This plugin uses standard nose2's automatic test module discovery. It
-looks for test modules in packages and directories whose names start
+It looks for test modules in packages whose names start
 with 'test', then fires the :func:`loadTestsFromModule` hook for each
 one to allow other plugins to load the actual tests.
 
@@ -13,13 +10,14 @@ It also fires :func:`handleFile` for every file that it sees, and
 :func:`matchPath` for every python module, to allow other plugins to
 load tests from other kinds of files and to influence which modules
 are examined for tests.
+
 """
 import logging
 import os
 
 from nose2 import events
 
-import discovery
+from nose2.plugins.loader import discovery
 
 __unittest = True
 log = logging.getLogger(__name__)
@@ -41,11 +39,11 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
 
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
-        discovery.Discoverer.loadTestsFromName(self, event)
+        return discovery.Discoverer.loadTestsFromName(self, event)
 
     def loadTestsFromNames(self, event):
         """Discover tests if no test names specified"""
-        discovery.Discoverer.loadTestsFromNames(self, event)
+        return discovery.Discoverer.loadTestsFromNames(self, event)
 
     def _checkIfPathIsOK(self, start_dir):
         if not os.path.exists(os.path.abspath(start_dir)):

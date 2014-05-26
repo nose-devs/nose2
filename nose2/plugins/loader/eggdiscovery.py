@@ -48,9 +48,6 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
     def _checkIfPathIsOK(self, start_dir):
         if not os.path.exists(os.path.abspath(start_dir)):
             raise OSError("%s does not exist" % os.path.abspath(start_dir))
-        if not os.path.isdir(os.path.abspath(start_dir)):
-            if not pkg_resources and not os.path.abspath(start_dir).endswith('.egg'):
-                raise OSError("%s is not a directory" % os.path.abspath(start_dir))
 
     def _find_tests_in_egg_dir(self, event, rel_path, dist):
         log.debug("find in egg dir %s %s (%s)", dist.location, rel_path, dist.project_name)
@@ -83,4 +80,3 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
                     for test in self._find_tests_in_egg_dir(
                         event, modname, dist):
                         yield test
-

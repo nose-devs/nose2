@@ -37,3 +37,12 @@ else:
                 'pkgegg')
             self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=5, errors=1, skipped=1\)')
     
+        def test_eggdiscovery_failure_does_not_exist(self):
+            proc = self.runIn(
+                'scenario', 
+                '-v',
+                '--plugin=nose2.plugins.loader.eggdiscovery',
+                '-s',
+                'tests_in_zipped_eggs_BAD')
+            self.assertTestRunOutputMatches(proc, stderr='tests_in_zipped_eggs_BAD does not exist')
+    

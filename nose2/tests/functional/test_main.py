@@ -21,3 +21,8 @@ class TestPluggableTestProgram(FunctionalTestCase):
         stdout, stderr = proc.communicate()
         self.assertEqual(proc.poll(), 0, stderr)
         assert check.ran, "Extra hook did not execute"
+
+    def test_run_in_module_from_its_main(self):
+        proc = self.runModuleAsMain('scenario/one_test/tests.py')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertEqual(proc.poll(), 0)

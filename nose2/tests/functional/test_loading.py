@@ -274,3 +274,14 @@ class TestTestClassLoading(FunctionalTestCase):
             'test_fixtures')
         self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_error_in_test_class(self):
+        proc = self.runIn(
+            'scenario/test_class_fail',
+            '-v',
+            'test_class_fail')
+        self.assertTestRunOutputMatches(proc, stderr='nose2.loader.LoadTestsFailure')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertTestRunOutputMatches(proc, stderr='FAILED')
+        self.assertEqual(proc.poll(), 1)
+        

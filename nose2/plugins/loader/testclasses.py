@@ -151,7 +151,7 @@ class TestClassLoader(events.Plugin):
             except:
                 _, ev, _ = sys.exc_info()
                 return event.loader.suiteClass(
-                    event.loader.failedLoadTests(self.session.startDir, ev))
+                    event.loader.failedLoadTests(cls.__name__, ev))
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests

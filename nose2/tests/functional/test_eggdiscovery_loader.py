@@ -42,6 +42,7 @@ else:
                 'scenario', 
                 '-v',
                 '--plugin=nose2.plugins.loader.eggdiscovery',
+                '--exclude-plugin=nose2.plugins.loader.discovery',
                 '-s',
                 'tests_in_zipped_eggs_BAD')
             self.assertTestRunOutputMatches(proc, stderr='tests_in_zipped_eggs_BAD does not exist')

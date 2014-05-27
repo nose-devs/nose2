@@ -70,6 +70,7 @@ Here's an example of a test class::
 """
 
 import unittest
+import sys
 
 from nose2 import events, util
 from nose2.compat import unittest as ut2
@@ -142,10 +143,15 @@ class TestClassLoader(events.Plugin):
             loaded_suite = result or event.loader.suiteClass()
         else:
             names = self._getTestMethodNames(event, cls)
-            loaded_suite = event.loader.suiteClass(
-                [util.transplant_class(
-                 MethodTestCase(cls), cls.__module__)(name)
-                    for name in names])
+            try:
+                loaded_suite = event.loader.suiteClass(
+                    [util.transplant_class(
+                     MethodTestCase(cls), cls.__module__)(name)
+                        for name in names])
+            except:
+                _, ev, _ = sys.exc_info()
+                return event.loader.suiteClass(
+                    event.loader.failedLoadTests(self.session.startDir, ev))
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests

@@ -24,7 +24,7 @@ class PrintHooks(events.Plugin):
     """Print hooks as they are called"""
 
     configSection = 'print-hooks'
-    commandLineSwitch = (None, 'print-hooks',
+    commandLineSwitch = ('P', 'print-hooks',
                          'Print names of hooks in order of execution')
 
     def register(self):

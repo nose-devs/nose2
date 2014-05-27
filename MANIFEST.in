@@ -7,7 +7,7 @@ include unittest.cfg
 include README.rst
 include license.txt
 recursive-include nose2/tests/functional/support *.py *.txt *.cfg
-recursive-include docs *.rst *.inc
+recursive-include docs *.inc *.py *.rst
 graft bin
 global-exclude __pycache__
 global-exclude *~

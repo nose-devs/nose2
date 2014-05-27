@@ -6,6 +6,10 @@ from nose2.plugins.mp import MultiProcess, procserver
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.tests._common import FunctionalTestCase, support_file, Conn
+import multiprocessing
+import threading
+import time
+from multiprocessing import connection
 
 
 class TestMpPlugin(FunctionalTestCase):
@@ -71,6 +75,39 @@ class TestMpPlugin(FunctionalTestCase):
                                 'test_cf_testcase.Test3',
                                 ])
 
+    def test_conn_prep(self):
+        self.plugin.bind_host = None
+        (parent_conn, child_conn) = self.plugin._prepConns()
+        (parent_pipe, child_pipe) = multiprocessing.Pipe()
+        self.assertIsInstance(parent_conn, type(parent_pipe))
+        self.assertIsInstance(child_conn, type(child_pipe))
+
+        self.plugin.bind_host = "127.0.0.1"
+        self.plugin.bind_port = 0
+        (parent_conn, child_conn) = self.plugin._prepConns()
+        self.assertIsInstance(parent_conn, connection.Listener)
+        self.assertIsInstance(child_conn, tuple)
+        self.assertEqual(parent_conn.address, child_conn[:2])
+
+    def test_conn_accept(self):
+        (parent_conn, child_conn) = multiprocessing.Pipe()
+        self.assertEqual(self.plugin._acceptConns(parent_conn), parent_conn)
+
+        listener = connection.Listener(('127.0.0.1', 0))
+        with self.assertRaises(RuntimeError):
+            self.plugin._acceptConns(listener)
+
+        def fake_client(address):
+            client = connection.Client(address)
+            time.sleep(10)
+            client.close()
+
+        t = threading.Thread(target=fake_client, args=(listener.address,))
+        t.start()
+        conn = self.plugin._acceptConns(listener)
+        self.assertTrue(hasattr(conn, "send"))
+        self.assertTrue(hasattr(conn, "recv"))
+
 
 class TestProcserver(FunctionalTestCase):
 
@@ -127,8 +164,6 @@ class TestProcserver(FunctionalTestCase):
                     self.assertEqual(getattr(event, attr), val)
 
 
-@unittest.skipIf(sys.platform == 'win32',
-                 'unable to use select.select with pipes on Windows')
 class MPPluginTestRuns(FunctionalTestCase):
 
     def test_tests_in_package(self):
@@ -166,3 +201,25 @@ class MPPluginTestRuns(FunctionalTestCase):
             '-N=2')
         self.assertTestRunOutputMatches(proc, stderr='Ran 7 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_large_number_of_tests_stresstest(self):
+        proc = self.runIn(
+            'scenario/many_tests',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '--plugin=nose2.plugins.loader.generators',
+            '-N=1')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_socket_stresstest(self):
+        proc = self.runIn(
+            'scenario/many_tests_socket',
+            '-v',
+            '-c scenario/many_test_socket/nose2.cfg',
+            '--plugin=nose2.plugins.mp',
+            '--plugin=nose2.plugins.loader.generators',
+            '-N=1')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
+        self.assertEqual(proc.poll(), 0)
+

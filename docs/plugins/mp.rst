@@ -43,6 +43,29 @@ config file::
    ``processes`` or pass :option:`-N`, the number of processes
    defaults to the number of CPUs available.
 
+Should one wish to specify the use of internet sockets for 
+interprocess communications, specify the ``bind_address``
+setting in the ``[multiprocess]`` section of the config file, 
+for example::
+
+  [multiprocess]
+  bind_address = 127.0.0.1:1024
+
+This will bind to port 1024 of ``127.0.0.1``.  Also::
+
+  [multiprocess]
+  bind_address = 127.1.2.3
+
+will bind to any random open port on ``127.1.2.3``.  Any internet 
+address or host-name which python can recognize as such, bind, *and* 
+connect is acceptable.  While ``0.0.0.0`` can be use for listening, 
+it is not necessarily an address to which the OS can connect.  When
+the port address is 0 or omitted, a random open port is used.  If
+the setting is omitted or or blank, then sockets are not used unless
+nose is being executed on Windows.  In which case, an address on
+the loop back interface and a random port are used.  Whenever used,
+processes employ a random shared key for authentication.
+
 Guidelines for Test Authors
 ---------------------------
 
@@ -227,6 +250,24 @@ Interacting with Users
   ``event.handled``.
 
   If you're not doing that, start!
+
+Possible Issues On Windows
+--------------------------
+
+On windows, there are a few know bugs with respect to multiprocessing.
+
+First, on python 2.X or old versions of 3.X, if the __main__ module
+accessing nose2 is a __main__.py, an assertion in python code module
+``multiprocessing.forking`` may fail.  The bug for 3.2 is 
+http://bugs.python.org/issue10845.
+
+Secondly, python on windows does not use fork().  It bootstraps from a
+separate interpreter invocation.  In certain contexts, the "value" for
+a parameter will be taken as a "count" and subprocess use this to build
+the flag for the command-line.  E.g., If this value is 2 billion
+(like a hash seed), subprocess.py may attempt to built a 2gig string,
+and possibly throw a MemoryError exception.  The related bug is
+http://bugs.python.org/issue20954.
 
 Reference
 ---------

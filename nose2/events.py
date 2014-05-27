@@ -66,7 +66,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
        The :class:`nose2.config.Config` representing the plugin's
        config section as loaded from the session's config files.
 
-    .. attribute :: commandLineOption
+    .. attribute :: commandLineSwitch
 
        A tuple of (short opt, long opt, help text) that defines a command
        line flag that activates this plugin. The short opt may be None. If
@@ -75,7 +75,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
        Example::
 
-         commandLineOption = ('B', 'buffer-output', 'Buffer output during tests')
+         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during tests')
 
     .. attribute :: configSection
 
@@ -886,8 +886,8 @@ class GetTestCaseNamesEvent(Event):
 
     .. attribute :: isTestMethod
 
-       Callable that plugins can use to examine test case attributes to determine
-       whether nose2 thinks they are test methods.
+       Callable that plugins can use to examine test case attributes to
+       determine whether nose2 thinks they are test methods.
 
     """
     _attrs = Event._attrs + ('loader', 'testCase', 'testMethodPrefix',
@@ -1124,7 +1124,7 @@ class CreateTestsEvent(Event):
        considered relative to this module.
 
     """
-    _attrs = Event._attrs = ('loader', 'testNames', 'module')
+    _attrs = Event._attrs + ('loader', 'testNames', 'module')
 
     def __init__(self, loader, testNames, module, **kw):
         self.loader = loader

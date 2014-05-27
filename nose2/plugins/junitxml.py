@@ -15,6 +15,7 @@ changed by setting the keep_restricted configuration variable to True.
 """
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
+import os.path
 import time
 import re
 import sys
@@ -34,7 +35,8 @@ class JUnitXmlReporter(events.Plugin):
     commandLineSwitch = ('X', 'junit-xml', 'Generate junit-xml output report')
 
     def __init__(self):
-        self.path = self.config.as_str('path', default='nose2-junit.xml')
+        self.path = os.path.realpath(
+            self.config.as_str('path', default='nose2-junit.xml'))
         self.keep_restricted = self.config.as_bool('keep_restricted',
                                                    default=False)
         self.errors = 0

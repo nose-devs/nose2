@@ -4,8 +4,9 @@ from nose2.compat import unittest
 from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml
 from nose2.plugins.loader import generators, parameters, testcases
+
+import os
 import six
-import re
 import sys
 
 
@@ -19,21 +20,21 @@ class TestJunitXmlPlugin(TestCase):
                           'E\xef\xbf\xbe F\xc2\x80 G\xc2\x90 H\xef\xb7\x9d '
                           '\x00\x00')
 
-    #"byte" strings in PY2 and unicode in py3 works as expected will
+    # "byte" strings in PY2 and unicode in py3 works as expected will
     # will translate surrogates into UTF-16 characters  so BAD_FOR_XML_U
     # should have 8 letters follows by 0xFFFD, but only 4 when keeping
     # the discouraged/restricted ranges. Respectively:
-    #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\uFFFD G\uFFFD H\uFFFD"
-    #"A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\x80 G\x90 H\uFDDD"
+    # "A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\uFFFD G\uFFFD H\uFFFD"
+    # "A\uFFFD B\uFFFD C\uFFFD D\uFFFD E\uFFFD F\x80 G\x90 H\uFDDD"
     #
     # In Python 2 Invalid ascii characters seem to get escaped out as part
     # of tracebace.format_traceback so full and partial replacements are:
-    #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
-    #"A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
+    # "A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
+    # "A\uFFFD B\uFFFD C\uFFFD D\\\\ud900 E\\\\ufffe F\\\\x80 G\\\\x90 H\\\\ufddd"
     #
     # Byte strings in py3 as errors are replaced by their representation string
     # So these will be safe and not have any replacements
-    #"b'A\\x07 B\\x0b C\\x10 D\\xed\\xa4\\x80 E\\xef\\xbf\\xbe F\\xc2\\x80
+    # "b'A\\x07 B\\x0b C\\x10 D\\xed\\xa4\\x80 E\\xef\\xbf\\xbe F\\xc2\\x80
     # G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
 
     if sys.maxunicode <= 0xFFFF:
@@ -63,13 +64,19 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin.register()
 
         # unittest2 needs this
-        if not hasattr(self, 'assertRegexp'):
+        if not hasattr(self, 'assertRegex'):
             self.assertRegex = self.assertRegexpMatches
 
         class Test(unittest.TestCase):
 
             def test(self):
                 pass
+
+            def test_chdir(self):
+                TEMP_SUBFOLDER = 'test_chdir'
+
+                os.mkdir(TEMP_SUBFOLDER)
+                os.chdir(TEMP_SUBFOLDER)
 
             def test_fail(self):
                 assert False
@@ -193,7 +200,7 @@ class TestJunitXmlPlugin(TestCase):
         for case in event.extraTests:
             case(self.result)
         xml = self.plugin.tree.findall('testcase')
-        self.assertEqual(len(xml), 10)
+        self.assertEqual(len(xml), 11)
         params = [x for x in xml if x.get('name').startswith('test_params')]
         self.assertEqual(len(params), 3)
         self.assertEqual(params[0].get('name'), 'test_params:1')
@@ -217,3 +224,10 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(tree.get('skipped'), '0')
         self.assertEqual(tree.get('tests'), '1')
         assert 'time' in tree.attrib
+
+    def test_xml_file_path_is_not_affected_by_chdir_in_test(self):
+        inital_dir = os.getcwd()
+        test = self.case('test_chdir')
+        test(self.result)
+        self.assertEqual(inital_dir,
+                         os.path.dirname(os.path.realpath(self.plugin.path)))

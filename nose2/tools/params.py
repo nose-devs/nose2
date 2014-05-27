@@ -6,11 +6,45 @@ unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
 
 """
+import itertools
+
 __unittest = True
 
 
+def cartesian_params(*paramList):
+    """Make a test function or method parameterized by cartesian product
+    of parameters
+
+    .. code-block :: python
+
+      import unittest
+
+      from nose2.tools import cartesian_params
+
+
+      @cartesian_params((1, 2, 3), ('a', 'b'))
+      def test_nums(num, char):
+          assert num < ord(char)
+
+
+      class Test(unittest.TestCase):
+
+          @cartesian_params((1, 2, 3), ('a', 'b'))
+          def test_less_than(self, num, char):
+              self.assertLess(num, ord(char))
+
+    Parameters in the list must be defined as iterable objects such as
+    tuple or list.
+
+    """
+    def decorator(func):
+        func.paramList = itertools.product(*paramList)
+        return func
+    return decorator
+
+
 def params(*paramList):
-    """Make a test function or method parameterized.
+    """Make a test function or method parameterized by parameters.
 
     .. code-block :: python
 

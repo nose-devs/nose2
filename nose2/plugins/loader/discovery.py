@@ -31,15 +31,35 @@ __unittest = True
 log = logging.getLogger(__name__)
 
 
-class DiscoveryLoader(events.Plugin):
+class DirectoryHandler(object):
+    def __init__(self, session):
+        self.session = session
+        self.event_handled = False
 
-    """Loader plugin that can discover tests"""
-    alwaysOn = True
-    configSection = 'discovery'
+    def handle_dir(self, event, full_path, top_level):
+        dirname = os.path.basename(full_path)
+        pattern = self.session.testFilePattern
 
-    def registerInSubprocess(self, event):
-        event.pluginClasses.append(self.__class__)
+        evt = events.HandleFileEvent(
+            event.loader, dirname, full_path, pattern, top_level)
+        result = self.session.hooks.handleDir(evt)
+        if evt.extraTests:
+            for test in evt.extraTests:
+                yield test
+        if evt.handled:
+            if result:
+                yield result
+            self.event_handled = True
+            return
+        
+        evt = events.MatchPathEvent(dirname, full_path, pattern)
+        result = self.session.hooks.matchDirPath(evt)
+        if evt.handled and not result:
+            self.event_handled = True
 
+
+class Discoverer(object):
+    
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name
@@ -69,6 +89,10 @@ class DiscoveryLoader(events.Plugin):
         event.handled = True  # I will handle discovery
         return self._discover(event)
 
+    def _checkIfPathIsOK(self, start_dir):
+        if not os.path.isdir(os.path.abspath(start_dir)):
+            raise OSError("%s is not a directory" % os.path.abspath(start_dir))
+
     def _getStartDirs(self):
         start_dir = self.session.startDir
         top_level_dir = self.session.topLevelDir
@@ -77,8 +101,7 @@ class DiscoveryLoader(events.Plugin):
         if top_level_dir is None:
             top_level_dir = start_dir
 
-        if not os.path.isdir(os.path.abspath(start_dir)):
-            raise OSError("%s is not a directory" % os.path.abspath(start_dir))
+        self._checkIfPathIsOK(start_dir)
 
         is_not_importable = False
         start_dir = os.path.abspath(start_dir)
@@ -120,29 +143,16 @@ class DiscoveryLoader(events.Plugin):
             for test in self._find_tests_in_file(
                 event, start, full_path, top_level):
                 yield test
-
+        
     def _find_tests_in_dir(self, event, full_path, top_level):
+        if not os.path.isdir(full_path):
+            return
         log.debug("find in dir %s (%s)", full_path, top_level)
-
-        dirname = os.path.basename(full_path)
-        pattern = self.session.testFilePattern
-
-        evt = events.HandleFileEvent(
-            event.loader, dirname, full_path, pattern, top_level)
-        result = self.session.hooks.handleDir(evt)
-        if evt.extraTests:
-            for test in evt.extraTests:
-                yield test
-        if evt.handled:
-            if result:
-                yield result
+        dir_handler = DirectoryHandler(self.session)
+        for test in dir_handler.handle_dir(event, full_path, top_level):
+            yield test
+        if dir_handler.event_handled:
             return
-
-        evt = events.MatchPathEvent(dirname, full_path, pattern)
-        result = self.session.hooks.matchDirPath(evt)
-        if evt.handled and not result:
-            return
-
         for path in os.listdir(full_path):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):
@@ -156,7 +166,7 @@ class DiscoveryLoader(events.Plugin):
                     for test in self._find_tests(event, entry_path, top_level):
                         yield test
 
-    def _find_tests_in_file(self, event, filename, full_path, top_level):
+    def _find_tests_in_file(self, event, filename, full_path, top_level, module_name=None):
         log.debug("find in file %s (%s)", full_path, top_level)
         pattern = self.session.testFilePattern
         loader = event.loader
@@ -183,12 +193,13 @@ class DiscoveryLoader(events.Plugin):
         elif not self._match_path(filename, full_path, pattern):
             return
 
-        # if the test file matches, load it
-        name = util.name_from_path(full_path)
+        if module_name is None:
+            module_name = util.name_from_path(full_path)
+        
         try:
-            module = util.module_from_name(name)
+            module = util.module_from_name(module_name)
         except:
-            yield loader.failedImport(name)
+            yield loader.failedImport(module_name)
         else:
             mod_file = os.path.abspath(
                 getattr(module, '__file__', full_path))
@@ -220,3 +231,20 @@ class DiscoveryLoader(events.Plugin):
     def _match_path(self, path, full_path, pattern):
         # override this method to use alternative matching strategy
         return fnmatch(path, pattern)
+
+
+class DiscoveryLoader(events.Plugin, Discoverer):
+    """Loader plugin that can discover tests"""
+    alwaysOn = True
+    configSection = 'discovery'
+
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+
+    def loadTestsFromName(self, event):
+        """Load tests from module named by event.name"""
+        return Discoverer.loadTestsFromName(self, event)
+
+    def loadTestsFromNames(self, event):
+        """Discover tests if no test names specified"""
+        return Discoverer.loadTestsFromNames(self, event)

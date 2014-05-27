@@ -22,11 +22,11 @@ class TestDunderTestPlugin(TestCase):
     def test_undefined_dunder_test_attribute_keeps_test(self):
         self.suite.addTest(self.caseClass('test_a'))
         self.plugin.removeNonTests(self.suite)
-        self.assertEquals(len(list(self.suite)), 1)
+        self.assertEqual(len(list(self.suite)), 1)
 
     def test_false_dunder_test_attribute_removes_test(self):
         dummyTest = self.caseClass('test_a')
         dummyTest.__test__ = False
         self.suite.addTest(dummyTest)
         self.plugin.removeNonTests(self.suite)
-        self.assertEquals(len(list(self.suite)), 0)
+        self.assertEqual(len(list(self.suite)), 0)

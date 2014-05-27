@@ -48,32 +48,15 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
     def _checkIfPathIsOK(self, start_dir):
         if not os.path.exists(os.path.abspath(start_dir)):
             raise OSError("%s does not exist" % os.path.abspath(start_dir))
-        if not os.path.isdir(os.path.abspath(start_dir)):
-            if not pkg_resources and not os.path.abspath(start_dir).endswith('.egg'):
-                raise OSError("%s is not a directory" % os.path.abspath(start_dir))
 
     def _find_tests_in_egg_dir(self, event, rel_path, dist):
         log.debug("find in egg dir %s %s (%s)", dist.location, rel_path, dist.project_name)
         full_path = os.path.join(dist.location, rel_path)
-        
-        pattern = self.session.testFilePattern
-
-        evt = events.HandleFileEvent(
-            event.loader, full_path, full_path, pattern, dist.location)
-        result = self.session.hooks.handleDir(evt)
-        if evt.extraTests:
-            for test in evt.extraTests:
-                yield test
-        if evt.handled:
-            if result:
-                yield result
+        dir_handler = discovery.DirectoryHandler(self.session)
+        for test in dir_handler.handle_dir(event, full_path, dist.location):
+            yield test
+        if dir_handler.event_handled:
             return
-
-        evt = events.MatchPathEvent(full_path, full_path, pattern)
-        result = self.session.hooks.matchDirPath(evt)
-        if evt.handled and not result:
-            return
-
         for path in dist.resource_listdir(rel_path):
             entry_path = os.path.join(rel_path, path)
             if dist.resource_isdir(entry_path):
@@ -97,4 +80,3 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
                     for test in self._find_tests_in_egg_dir(
                         event, modname, dist):
                         yield test
-

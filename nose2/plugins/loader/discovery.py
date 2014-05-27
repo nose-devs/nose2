@@ -30,6 +30,34 @@ from nose2 import events, util
 __unittest = True
 log = logging.getLogger(__name__)
 
+
+class DirectoryHandler(object):
+    def __init__(self, session):
+        self.session = session
+        self.event_handled = False
+
+    def handle_dir(self, event, full_path, top_level):
+        dirname = os.path.basename(full_path)
+        pattern = self.session.testFilePattern
+
+        evt = events.HandleFileEvent(
+            event.loader, dirname, full_path, pattern, top_level)
+        result = self.session.hooks.handleDir(evt)
+        if evt.extraTests:
+            for test in evt.extraTests:
+                yield test
+        if evt.handled:
+            if result:
+                yield result
+            self.event_handled = True
+            return
+        
+        evt = events.MatchPathEvent(dirname, full_path, pattern)
+        result = self.session.hooks.matchDirPath(evt)
+        if evt.handled and not result:
+            self.event_handled = True
+
+
 class Discoverer(object):
     
     def loadTestsFromName(self, event):
@@ -115,31 +143,16 @@ class Discoverer(object):
             for test in self._find_tests_in_file(
                 event, start, full_path, top_level):
                 yield test
-
+        
     def _find_tests_in_dir(self, event, full_path, top_level):
         if not os.path.isdir(full_path):
             return
         log.debug("find in dir %s (%s)", full_path, top_level)
-
-        dirname = os.path.basename(full_path)
-        pattern = self.session.testFilePattern
-
-        evt = events.HandleFileEvent(
-            event.loader, dirname, full_path, pattern, top_level)
-        result = self.session.hooks.handleDir(evt)
-        if evt.extraTests:
-            for test in evt.extraTests:
-                yield test
-        if evt.handled:
-            if result:
-                yield result
+        dir_handler = DirectoryHandler(self.session)
+        for test in dir_handler.handle_dir(event, full_path, top_level):
+            yield test
+        if dir_handler.event_handled:
             return
-
-        evt = events.MatchPathEvent(dirname, full_path, pattern)
-        result = self.session.hooks.matchDirPath(evt)
-        if evt.handled and not result:
-            return
-
         for path in os.listdir(full_path):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):

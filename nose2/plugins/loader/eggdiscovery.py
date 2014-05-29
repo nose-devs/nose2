@@ -29,8 +29,7 @@ except ImportError:
 
 
 class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
-
-    """Loader plugin that can discover tests"""
+    """Loader plugin that can discover tests inside Egg Files"""
     alwaysOn = True
     configSection = 'discovery'
 

@@ -56,6 +56,7 @@ argument.
    plugins/testid
    plugins/prof
    plugins/printhooks
+   plugins/eggdiscovery
 
 
 Third-party Plugins

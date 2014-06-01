@@ -173,6 +173,7 @@ class NotReallyAProc(object):
         self.args = args
         self.chdir = cwd
         self.kwargs = kwargs
+        self.result = None
 
     def __enter__(self):
         self._stdout = sys.__stdout__
@@ -198,7 +199,7 @@ class NotReallyAProc(object):
                     argv=('nose2',) + self.args, exit=False,
                     **self.kwargs)
             except SystemExit as e:
-                return "", "EXIT CODE %s" % str(e)
+                pass
             return self.stdout.getvalue(), self.stderr.getvalue()
 
     @property
@@ -206,6 +207,8 @@ class NotReallyAProc(object):
         return id(self)
 
     def poll(self):
+        if self.result is None:
+            return 1
         return not self.result.result.wasSuccessful()
 
 

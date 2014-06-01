@@ -259,7 +259,13 @@ class PluggableTestProgram(unittest.TestProgram):
         """Run tests"""
         # fire plugin hook
         runner = self._makeRunner()
-        self.result = runner.run(self.test)
+        try:
+            self.result = runner.run(self.test)
+        except Exception as e:
+            log.debug('Internal Error', exc_info=True)
+            sys.stderr.write('Internal Error: runTests aborted: %s\n'%(e))
+            if self.exit:
+                sys.exit(1)
         if self.exit:
             sys.exit(not self.result.wasSuccessful())
 

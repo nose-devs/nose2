@@ -1,3 +1,4 @@
+import sys
 import inspect
 import logging
 
@@ -21,7 +22,8 @@ class LayerSuite(unittest.BaseTestSuite):
         self.wasSetup = False
 
     def run(self, result):
-        self.setUp()
+        if not self._safeMethodCall(self.setUp, result):
+            return
         try:
             for test in self:
                 if result.shouldStop:
@@ -30,10 +32,10 @@ class LayerSuite(unittest.BaseTestSuite):
                 try:
                     test(result)
                 finally:
-                    self.tearDownTest(test)
+                    self._safeMethodCall(self.tearDownTest, result, test)
         finally:
             if self.wasSetup:
-                self.tearDown()
+                self._safeMethodCall(self.tearDown, result)
 
     def setUp(self):
         # FIXME hook call
@@ -85,6 +87,16 @@ class LayerSuite(unittest.BaseTestSuite):
             teardown()
             log.debug('tearDown layer %s called', self.layer)
 
+    def _safeMethodCall(self, method, result, *args):
+        try:
+            method(*args)
+            return True
+        except KeyboardInterrupt:
+            raise
+        except:
+            result.addError(self, sys.exc_info())
+            return False
+        
     def _allLayers(self, test, method, reverse=False):
         done = set()
         all_lys = util.ancestry(self.layer)

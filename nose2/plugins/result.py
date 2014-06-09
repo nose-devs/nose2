@@ -26,6 +26,7 @@ runs to exit(1))
 # Rights Reserved. See: http://docs.python.org/license.html
 
 import sys
+import unittest
 
 from nose2 import events, result, util
 
@@ -228,6 +229,8 @@ class ResultReporter(events.Plugin):
         self.session.hooks.afterSummaryReport(reportEvent)
 
     def _getDescription(self, test, errorList):
+        if not isinstance(test, unittest.TestCase):
+            return test.__class__.__name__
         doc_first_line = test.shortDescription()
         if self.descriptions and doc_first_line:
             desc = '\n'.join((str(test), doc_first_line))

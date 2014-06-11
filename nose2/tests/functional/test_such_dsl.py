@@ -39,3 +39,23 @@ class TestSuchDSL(FunctionalTestCase):
             'test_regression_same_havings')
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 test')
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
+
+    def test_teardown_fail(self):
+        proc = self.runIn('scenario/layers_with_errors',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'test_such_teardown_fail')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test in')
+        self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
+        self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(errors=1\)')
+        self.assertTestRunOutputMatches(proc, stderr='Bad Error in such tearDown')
+
+    def test_setup_fail(self):
+        proc = self.runIn('scenario/layers_with_errors',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'test_such_setup_fail')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 0 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
+        self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(errors=1\)')
+        self.assertTestRunOutputMatches(proc, stderr='Bad Error in such setUp!')

@@ -59,3 +59,13 @@ class TestSuchDSL(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
         self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(errors=1\)')
         self.assertTestRunOutputMatches(proc, stderr='Bad Error in such setUp!')
+
+    def test_param_plugin_with_such(self):
+        proc = self.runIn('scenario/such_with_params',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'such_with_params')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 6 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+        self.assertTestRunOutputMatches(proc, stderr='test 0000: should do bar:3')
+        self.assertTestRunOutputMatches(proc, stderr='test 0001: should do bar and extra:3')

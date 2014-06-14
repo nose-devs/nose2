@@ -199,7 +199,7 @@ class ResultReporter(events.Plugin):
         errored = len(reportEvent.reportCategories.get('errors', []))
         skipped = len(reportEvent.reportCategories.get('skipped', []))
         expectedFails = len(
-            reportEvent.reportCategories.get('expectedFails', []))
+            reportEvent.reportCategories.get('expectedFailures', []))
         unexpectedSuccesses = len(
             reportEvent.reportCategories.get('unexpectedSuccesses', []))
 

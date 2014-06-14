@@ -284,4 +284,11 @@ class TestTestClassLoading(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertTestRunOutputMatches(proc, stderr='FAILED')
         self.assertEqual(proc.poll(), 1)
+    
+    def test_expected_failures(self):
+        proc = self.runIn(
+            'scenario/expected_failures',
+            '-v',
+            'expected_failures')
+        self.assertTestRunOutputMatches(proc, stderr=r'FAILED \(failures=1, expected failures=1, unexpected successes=1\)')
         

@@ -772,7 +772,7 @@ class HandleFileEvent(Event):
 
     .. note ::
 
-       This event is *not* fired for python modules that
+       This event is fired for all python modules that
        match the test file pattern.
 
     .. attribute :: loader

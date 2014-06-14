@@ -1,4 +1,4 @@
-import unittest
+from nose2.compat import unittest
 
 class TestWithExpectedFailures(unittest.TestCase):
 

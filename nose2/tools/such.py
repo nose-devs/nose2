@@ -239,14 +239,23 @@ class Scenario(object):
             'description': group.description,
         }
 
+        def _make_test_func(case):
+            '''
+            Needs to be outside of the for-loop scope so that "case" is properly registered as a closure
+            '''
+            def _test(s, *args):
+                case(s, *args)
+            return _test
+            
         for index, case in enumerate(group._cases):
-            def _test(s, case=case):
-                case(s)
             name = 'test %04d: %s' % (index, case.description)
+            _test = _make_test_func(case)
             _test.__name__ = name
             _test.description = case.description
             _test.case = case
             _test.index = index
+            if hasattr(case.func, 'paramList'):
+                _test.paramList = case.func.paramList
             attr[name] = _test  # for collection and sorting
             attr[case.description] = _test  # for random access by name
 
@@ -382,12 +391,12 @@ class Case(object):
         self.first = False
         self.full = False
 
-    def __call__(self, testcase):
+    def __call__(self, testcase, *args):
         # ... only if it takes an arg
         self._helper = testcase
-        args, _, _, _ = inspect.getargspec(self.func)
-        if args:
-            self.func(testcase)
+        funcargs, _, _, _ = inspect.getargspec(self.func)
+        if funcargs:
+            self.func(testcase, *args)
         else:
             self.func()
 

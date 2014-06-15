@@ -772,7 +772,8 @@ class HandleFileEvent(Event):
 
     .. note ::
 
-       This event is *not* fired for python modules that
+       This event is fired for all processed python files and modules
+       including but not limited to the ones that
        match the test file pattern.
 
     .. attribute :: loader

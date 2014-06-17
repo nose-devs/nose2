@@ -1,16 +1,19 @@
 from contextlib import contextmanager
 import inspect
 import logging
+import sys
 
 import six
 
 from nose2.compat import unittest
 from nose2 import util
+from nose2.main import PluggableTestProgram
 
 log = logging.getLogger(__name__)
 
 __unittest = True
 
+LAYERS_PLUGIN_NOT_LOADED_MESSAGE = 'Warning: Such will not function properly if the "nose2.plugins.layers" plugin not loaded!\n'
 
 @contextmanager
 def A(description):
@@ -213,7 +216,15 @@ class Scenario(object):
            it.createTests(globals())
 
         """
+        self._checkForLayersPlugin()
         self._makeGroupTest(mod, self._group)
+
+    def _checkForLayersPlugin(self):
+        currentSession = PluggableTestProgram.getCurrentSession()
+        if not currentSession:
+            return
+        if not currentSession.isPluginLoaded('nose2.plugins.layers'):
+            sys.stderr.write(LAYERS_PLUGIN_NOT_LOADED_MESSAGE)
 
     def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
         layer = self._makeLayer(group, parent_layer, position)

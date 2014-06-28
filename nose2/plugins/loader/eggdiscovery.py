@@ -69,9 +69,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         if os.path.exists(full_path):
-            for test in discovery.Discoverer._find_tests_in_dir(self,
-                event, full_path, top_level):
-                yield test
+            return
         elif pkg_resources and full_path.find('.egg') != -1:
             egg_path = full_path.split('.egg')[0] + '.egg'
             for dist in pkg_resources.find_distributions(egg_path):

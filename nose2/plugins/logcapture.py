@@ -162,6 +162,12 @@ class MyMemoryHandler(BufferingHandler):
     def filter(self, record):
         return self.filterset.allow(record.name)
 
+    def emit(self, record):
+        # take a snapshot of the potentially mutable arguments
+        record.msg = record.getMessage()
+        record.args = {}
+        BufferingHandler.emit(self, record)
+
     def __getstate__(self):
         state = self.__dict__.copy()
         del state['lock']

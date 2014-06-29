@@ -47,3 +47,24 @@ else:
                 'tests_in_zipped_eggs_BAD')
             self.assertTestRunOutputMatches(proc, stderr='tests_in_zipped_eggs_BAD does not exist')
     
+    class UnzippedEggDiscoveryFunctionalTest(FunctionalTestCase):
+        def setUp(self):
+            for m in [m for m in sys.modules if m.startswith('pkgegg')]:
+                del sys.modules[m]
+            self.egg_path = support_file('scenario/tests_in_unzipped_eggs/pkgunegg-0.0.0-py2.7.egg')
+            sys.path.append(self.egg_path)
+    
+        def tearDown(self):
+            if self.egg_path in sys.path:
+                sys.path.remove(self.egg_path)
+            for m in [m for m in sys.modules if m.startswith('pkgunegg')]:
+                del sys.modules[m]
+        
+        def test_eggdiscovery_ignores_unzipped_eggs(self):
+            proc = self.runIn(
+                'scenario/tests_in_unzipped_eggs', 
+                '-v',
+                '--plugin=nose2.plugins.loader.eggdiscovery',
+                'pkgunegg')
+            self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=5, errors=1, skipped=1\)')
+    

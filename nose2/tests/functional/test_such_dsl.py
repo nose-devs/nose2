@@ -1,5 +1,5 @@
 from nose2.tests._common import FunctionalTestCase
-
+from nose2.tools import such
 
 class TestSuchDSL(FunctionalTestCase):
     def test_runs_example(self):
@@ -69,3 +69,10 @@ class TestSuchDSL(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='OK')
         self.assertTestRunOutputMatches(proc, stderr='test 0000: should do bar:3')
         self.assertTestRunOutputMatches(proc, stderr='test 0001: should do bar and extra:3')
+
+    def test_such_without_layers_plugin(self):
+        proc = self.runIn('such',
+                          '-v',
+                          'test_such_without_layers')
+        self.assertTestRunOutputMatches(proc, stderr=r'FAILED')
+        self.assertTestRunOutputMatches(proc, stderr=such.LAYERS_PLUGIN_NOT_LOADED_MESSAGE)

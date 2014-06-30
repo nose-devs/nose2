@@ -72,7 +72,7 @@ class Session(object):
 
     """
     configClass = config.Config
-
+    
     def __init__(self):
         self.argparse = argparse.ArgumentParser(prog='nose2', add_help=False)
         self.pluginargs = self.argparse.add_argument_group(
@@ -209,3 +209,14 @@ class Session(object):
     @property
     def unittest(self):
         return self.get('unittest')
+
+    def isPluginLoaded(self, pluginName):
+        """Returns True if a given plugin is loaded.
+
+        :param pluginName: the name of the plugin module: e.g. "nose2.plugins.layers".
+
+        """
+        for plugin in self.plugins:
+            if pluginName == plugin.__class__.__module__:
+                return True
+        return False

@@ -68,6 +68,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
     """
     sessionClass = session.Session
+    _currentSession = None
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
     defaultPlugins = ('nose2.plugins.loader.discovery',
@@ -86,7 +87,6 @@ class PluggableTestProgram(unittest.TestProgram):
                       'nose2.plugins.debugger',
                       )
     excludePlugins = ()
-
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
     def __init__(self, **kw):
         plugins = kw.pop('plugins', [])
@@ -107,6 +107,8 @@ class PluggableTestProgram(unittest.TestProgram):
 
         """
         self.session = self.sessionClass()
+        self.__class__._currentSession = self.session
+        
         self.argparse = self.session.argparse  # for convenience
 
         # XXX force these? or can it be avoided?
@@ -276,6 +278,12 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.testRunner = event.runner
         return event.runner
 
+    @classmethod
+    def getCurrentSession(cls):
+        """Returns the current session or None if no `nose2.session.Session` is running.
+        
+        """
+        return cls._currentSession
 
 main = PluggableTestProgram
 

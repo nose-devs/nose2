@@ -6,3 +6,5 @@ omit = nose2/*/tests/*
        nose2/tests/*
        test_*.*
        __init__.py
+       nose2/backports/*
+ 

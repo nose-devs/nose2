@@ -13,7 +13,7 @@ install:
 script:
   - PYTHONPATH=. coverage run -m nose2.__main__ -v
 after_success:
-  - coveralls
+  - python -c "import sys; sys.exit(sys.version_info[0:2]!=(3,4));" && coveralls
 deploy:
   provider: pypi
   user: jpellerin

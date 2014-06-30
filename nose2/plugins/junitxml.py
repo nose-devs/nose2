@@ -96,6 +96,10 @@ class JUnitXmlReporter(events.Plugin):
             skipped.set('message', 'expected test failure')
             skipped.text = msg
 
+    def _check(self):
+        if not os.path.exists(os.path.dirname(self.path)):
+            raise IOError(2, 'JUnitXML: Parent folder does not exist for file', self.path)
+    
     def stopTestRun(self, event):
         """Output xml tree to file"""
         self.tree.set('name', 'nose2-junit')
@@ -106,6 +110,9 @@ class JUnitXmlReporter(events.Plugin):
         self.tree.set('time', "%.3f" % event.timeTaken)
 
         self._indent_tree(self.tree)
+        
+        self._check()
+        
         output = ET.ElementTree(self.tree)
         output.write(self.path, encoding="utf-8")
 

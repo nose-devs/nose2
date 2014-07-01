@@ -23,7 +23,7 @@ in ``[unittest]`` section in a config file::
 
 Or pass the module with the :option:`--plugin` command-line option::
 
-  nose2 --plugin=nose2.plugin.mp
+  nose2 --plugin=nose2.plugins.mp
 
 Then configure the number of processes to run. You can do that either
 with the :option:`-N` option::

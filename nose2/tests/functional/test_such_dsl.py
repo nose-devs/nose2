@@ -76,3 +76,36 @@ class TestSuchDSL(FunctionalTestCase):
                           'test_such_without_layers')
         self.assertTestRunOutputMatches(proc, stderr=r'FAILED')
         self.assertTestRunOutputMatches(proc, stderr=such.LAYERS_PLUGIN_NOT_LOADED_MESSAGE)
+
+    def test_testsetup_on_higher_layer_with_test(self):
+        proc = self.runIn('scenario/layers_setups',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'higher_layer_testsetup_with_test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+
+    def test_testsetup_on_higher_layer(self):
+        proc = self.runIn('scenario/layers_setups',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'higher_layer_testsetup_no_test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+
+    def test_testsetup_on_higher_layer_3layers(self):
+        proc = self.runIn('scenario/layers_setups',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'higher_layer_testsetup_3layers')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+
+    def test_setup_on_higher_layer(self):
+        proc = self.runIn('scenario/layers_setups',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'higher_layer_setup')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+

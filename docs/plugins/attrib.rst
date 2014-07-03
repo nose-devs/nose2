@@ -124,7 +124,7 @@ evaluates to True (and doesn't raise an exception) will be selected.
 
 Running nose2 like this::
 
-  -nose2 -v -E '"blue" in flags and layer > 2'
+  nose2 -v -E '"blue" in flags and layer > 2'
 
 Runs only one test::
 

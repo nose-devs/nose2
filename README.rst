@@ -5,7 +5,11 @@
 .. image:: https://coveralls.io/repos/nose-devs/nose2/badge.png?branch=master
     :target: https://coveralls.io/r/nose-devs/nose2?branch=master
     :alt: Coverage Status
-
+    
+.. image:: https://landscape.io/github/nose-devs/nose2/master/landscape.png
+   :target: https://landscape.io/github/nose-devs/nose2/master
+   :alt: Code Health
+    
 .. image:: https://pypip.in/v/nose2/badge.png
     :target: https://crate.io/packages/nose2/
     :alt: Latest PyPI version

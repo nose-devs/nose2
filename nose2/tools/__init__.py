@@ -1,4 +1,4 @@
-from .params import params
+from .params import params, cartesian_params
 from . import such
 from . import decorators
 

@@ -5,11 +5,12 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - pypy
+  - "pypy"
+  - "pypy3"
 install:
-  - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
-  - pip install coveralls
-  - pip install coverage
+  - travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
+  - travis_retry pip install coveralls
+  - travis_retry pip install coverage
 script:
   - PYTHONPATH=. coverage run -m nose2.__main__ -v
 after_success:
@@ -22,3 +23,5 @@ deploy:
   on:
     tags: true
     all_branches: true
+matrix:
+  fast_finish: true

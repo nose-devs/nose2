@@ -19,6 +19,7 @@ import os.path
 import time
 import re
 import sys
+import json
 from xml.etree import ElementTree as ET
 
 import six
@@ -38,6 +39,9 @@ class JUnitXmlReporter(events.Plugin):
             self.config.as_str('path', default='nose2-junit.xml'))
         self.keep_restricted = self.config.as_bool('keep_restricted',
                                                    default=False)
+        self.test_properties = self.config.as_str('test_properties')
+        if self.test_properties is not None:
+            self.test_properties_path = os.path.realpath(self.test_properties)
         self.errors = 0
         self.failed = 0
         self.skipped = 0
@@ -105,6 +109,10 @@ class JUnitXmlReporter(events.Plugin):
         if not os.path.exists(os.path.dirname(self.path)):
             raise IOError(2, 'JUnitXML: Parent folder does not exist for file',
                           self.path)
+        if self.test_properties is not None:
+            if not os.path.exists(self.test_properties_path):
+                raise IOError(2, 'JUnitXML: Properties file does not exist',
+                              self.test_properties_path)
 
     def stopTestRun(self, event):
         """Output xml tree to file"""
@@ -115,12 +123,31 @@ class JUnitXmlReporter(events.Plugin):
         self.tree.set('tests', str(self.numtests))
         self.tree.set('time', "%.3f" % event.timeTaken)
 
-        self._indent_tree(self.tree)
-
         self._check()
+        self._include_test_properties()
+        self._indent_tree(self.tree)
 
         output = ET.ElementTree(self.tree)
         output.write(self.path, encoding="utf-8")
+
+    def _include_test_properties(self):
+        """Include test properties in xml tree"""
+        if self.test_properties is None:
+            return
+
+        props = {}
+        with open(self.test_properties_path) as data:
+            try:
+                props = json.loads(data.read())
+            except ValueError:
+                raise ValueError('JUnitXML: could not decode file: \'%s\'' %
+                                 self.test_properties_path)
+
+        properties = ET.SubElement(self.tree, 'properties')
+        for key, val in props.items():
+            prop = ET.SubElement(properties, 'property')
+            prop.set('name', key)
+            prop.set('value', val)
 
     def _indent_tree(self, elem, level=0):
         """In-place pretty formatting of the ElementTree structure."""

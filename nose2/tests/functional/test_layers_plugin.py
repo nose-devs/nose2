@@ -100,3 +100,23 @@ Base
             'a=1')
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
         self.assertEqual(proc.poll(), 0)
+
+    def test_teardown_fail(self):
+        proc = self.runIn('scenario/layers_with_errors',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'test_layer_teardown_fail')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test in')
+        self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
+        self.assertTestRunOutputMatches(proc, stderr='FAIL')
+        self.assertTestRunOutputMatches(proc, stderr='Bad Error in Layer testTearDown')
+
+    def test_setup_fail(self):
+        proc = self.runIn('scenario/layers_with_errors',
+                          '--plugin=nose2.plugins.layers',
+                          '-v',
+                          'test_layer_setup_fail')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 0 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
+        self.assertTestRunOutputMatches(proc, stderr='FAIL')
+        self.assertTestRunOutputMatches(proc, stderr='Bad Error in Layer setUp!')

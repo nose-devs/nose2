@@ -1,0 +1,10 @@
+setup.py
+pkgunegg/__init__.py
+pkgunegg/mod1.py
+pkgunegg.egg-info/PKG-INFO
+pkgunegg.egg-info/SOURCES.txt
+pkgunegg.egg-info/dependency_links.txt
+pkgunegg.egg-info/top_level.txt
+pkgunegg.egg-info/zip-safe
+pkgunegg/test/__init__.py
+pkgunegg/test/test_things.py

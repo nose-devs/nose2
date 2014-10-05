@@ -29,7 +29,6 @@ __unittest = True
 
 
 class JUnitXmlReporter(events.Plugin):
-
     """Output junit-xml test report to file"""
     configSection = 'junit-xml'
     commandLineSwitch = ('X', 'junit-xml', 'Generate junit-xml output report')
@@ -96,6 +95,17 @@ class JUnitXmlReporter(events.Plugin):
             skipped.set('message', 'expected test failure')
             skipped.text = msg
 
+        system_err = ET.SubElement(testcase, 'system-err')
+        system_err.text = string_cleanup(
+            '\n'.join(event.metadata.get('logs', '')),
+            self.keep_restricted
+        )
+
+    def _check(self):
+        if not os.path.exists(os.path.dirname(self.path)):
+            raise IOError(2, 'JUnitXML: Parent folder does not exist for file',
+                          self.path)
+
     def stopTestRun(self, event):
         """Output xml tree to file"""
         self.tree.set('name', 'nose2-junit')
@@ -106,6 +116,9 @@ class JUnitXmlReporter(events.Plugin):
         self.tree.set('time', "%.3f" % event.timeTaken)
 
         self._indent_tree(self.tree)
+
+        self._check()
+
         output = ET.ElementTree(self.tree)
         output.write(self.path, encoding="utf-8")
 
@@ -133,6 +146,7 @@ class JUnitXmlReporter(events.Plugin):
         finally:
             self._start = None
         return 0
+
 
 #
 # xml utility functions
@@ -172,12 +186,12 @@ if sys.maxunicode > 0xFFFF:
 ILLEGAL_REGEX_STR = \
     six.u('[') + \
     six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
-                   for (l, h) in ILLEGAL_RANGES]) + \
+                    for (l, h) in ILLEGAL_RANGES]) + \
     six.u(']')
 RESTRICTED_REGEX_STR = \
     six.u('[') + \
     six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
-                   for (l, h) in RESTRICTED_RANGES]) + \
+                    for (l, h) in RESTRICTED_RANGES]) + \
     six.u(']')
 
 _ILLEGAL_REGEX = re.compile(ILLEGAL_REGEX_STR, re.U)
@@ -185,7 +199,6 @@ _RESTRICTED_REGEX = re.compile(RESTRICTED_REGEX_STR, re.U)
 
 
 def string_cleanup(string, keep_restricted=False):
-
     if not issubclass(type(string), six.text_type):
         string = six.text_type(string, encoding='utf-8', errors='replace')
 

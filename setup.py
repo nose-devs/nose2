@@ -2,7 +2,7 @@ import os
 import sys
 
 NAME = 'nose2'
-VERSION = '0.4.7'
+VERSION = '0.5.0'
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
             'nose2.tools', 'nose2.backports']
@@ -22,6 +22,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: Implementation :: CPython',
     'Programming Language :: Python :: Implementation :: PyPy',
     'Operating System :: OS Independent',
@@ -63,7 +64,7 @@ except ImportError:
     from distutils.core import setup
 else:
 
-    REQS = ['six>=1.1,<1.5']
+    REQS = ['six>=1.1']
     if sys.version_info < (2, 7):
         REQS.extend(['unittest2>=0.5.1,<0.6', 'argparse>=1.2.1,<1.3'])
 

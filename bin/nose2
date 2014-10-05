@@ -4,4 +4,5 @@ __unittest = True
 
 from nose2 import discover
 
-discover()
+if __name__ == '__main__':
+  discover()

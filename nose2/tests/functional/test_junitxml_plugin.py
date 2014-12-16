@@ -119,8 +119,13 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertTestRunOutputMatches(
             proc,
             stderr='test \(test_junitxml_fail_to_write.Test\) \.* ok')
+
+        filename_for_regex = os.path.abspath('/does/not/exist.xml')
+        filename_for_regex = filename_for_regex.replace('\\', r'\\\\')
         self.assertTestRunOutputMatches(
-            proc, stderr=r'Internal Error: runTests aborted: \[Errno 2\] JUnitXML: Parent folder does not exist for file: \'/does/not/exist\.xml\'')
+            proc, stderr="Internal Error: runTests aborted: \[Errno 2\] "
+                         "JUnitXML: Parent folder does not exist for file: "
+                         "\'%s'" % filename_for_regex)
 
     def test_failure_to_read_missing_properties(self):
         proc = self.runIn('scenario/junitxml/missing_properties',
@@ -132,8 +137,14 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertTestRunOutputMatches(
             proc,
             stderr='test \(test_junitxml_missing_properties.Test\) \.* ok')
+
+        filename_for_regex = os.path.join('missing_properties',
+                                          'properties.json')
+        filename_for_regex = filename_for_regex.replace('\\', r'\\\\')
         self.assertTestRunOutputMatches(
-            proc, stderr=r'Internal Error: runTests aborted: \[Errno 2\] JUnitXML: Properties file does not exist: \'.*/missing_properties/properties\.json\'')
+            proc, stderr="Internal Error: runTests aborted: \[Errno 2\] "
+                         "JUnitXML: Properties file does not exist: "
+                         "'.*%s'" % filename_for_regex)
 
 
     def test_failure_to_read_empty_properties(self):
@@ -146,5 +157,11 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertTestRunOutputMatches(
             proc,
             stderr='test \(test_junitxml_empty_properties.Test\) \.* ok')
+
+        filename_for_regex = os.path.join('empty_properties',
+                                          'properties.json')
+        filename_for_regex = filename_for_regex.replace('\\', r'\\')
         self.assertTestRunOutputMatches(
-            proc, stderr=r'Internal Error: runTests aborted: JUnitXML: could not decode file: \'.*/empty_properties/properties\.json\'')
+            proc, stderr="Internal Error: runTests aborted: "
+                         "JUnitXML: could not decode file: "
+                         "'.*%s'" % filename_for_regex)

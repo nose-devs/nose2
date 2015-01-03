@@ -59,7 +59,15 @@ def valid_module_name(path):
 
 
 def name_from_path(path):
-    """Translate path into module name"""
+    """Translate path into module name
+
+    Returns a two-element tuple. The first element is a dotted
+    module name that can be used in import statement,
+    e.g. pkg1.test.test_things.
+    The second element is a full path to filesystem directory
+    that must be on sys.path in order for the import to succeed.
+
+    """
     # back up to find module root
     parts = []
     path = os.path.normpath(path)
@@ -72,7 +80,7 @@ def name_from_path(path):
             parts.append(top)
         else:
             break
-    return '.'.join(reversed(parts))
+    return '.'.join(reversed(parts)), candidate
 
 
 def module_from_name(name):
@@ -156,7 +164,7 @@ def ispackage(path):
 
 def ensure_importable(dirname):
     """Ensure a directory is on sys.path"""
-    if not dirname in sys.path:
+    if dirname not in sys.path:
         sys.path.insert(0, dirname)
 
 

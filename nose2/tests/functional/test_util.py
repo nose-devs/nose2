@@ -5,5 +5,9 @@ from nose2 import util
 class UtilTests(TestCase):
 
     def test_name_from_path(self):
+        test_module = support_file('scenario/tests_in_package/pkg1/test/test_things.py')
+        test_package_path = support_file('scenario/tests_in_package')
         self.assertEqual(
-            util.name_from_path(support_file('scenario/tests_in_package/pkg1/test/test_things.py')), 'pkg1.test.test_things')
+            util.name_from_path(test_module),
+            ('pkg1.test.test_things', test_package_path)
+        )

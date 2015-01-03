@@ -67,7 +67,7 @@ class LoadTestsLoader(events.Plugin):
 
         if (self._match(event.name, event.pattern) and
             util.ispackage(event.path)):
-            name = util.name_from_path(event.path)
+            name, _package_path = util.name_from_path(event.path)
             module = util.module_from_name(name)
 
             load_tests = getattr(module, 'load_tests', None)

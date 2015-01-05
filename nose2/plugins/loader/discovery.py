@@ -194,8 +194,8 @@ class Discoverer(object):
             return
 
         if module_name is None:
-            module_name = util.name_from_path(full_path)
-        
+            module_name, package_path = util.name_from_path(full_path)
+            util.ensure_importable(package_path)
         try:
             module = util.module_from_name(module_name)
         except:

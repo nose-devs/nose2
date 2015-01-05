@@ -29,3 +29,14 @@ class TestLoadTestsPlugin(FunctionalTestCase):
             proc, stderr='test..ltpkg.tests.test_find_these.Test')
         self.assertTestRunOutputMatches(
             proc, stderr='test..ltpkg2.tests.Test')
+
+    def test_project_directory_inside_package(self):
+        proc = self.runIn(
+            'scenario/load_tests_pkg/ltpkg/tests',
+            '-v',
+            '-c='
+            'nose2/tests/functional/support/scenario/load_tests_pkg/unittest.cfg',
+            '--plugin=nose2.plugins.loader.loadtests')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertTestRunOutputMatches(
+            proc, stderr='test..ltpkg.tests.test_find_these.Test')

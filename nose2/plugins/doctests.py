@@ -41,7 +41,8 @@ class DocTestLoader(Plugin):
         elif not util.valid_module_name(os.path.basename(path)):
             return
 
-        name = util.name_from_path(path)
+        name, package_path = util.name_from_path(path)
+        util.ensure_importable(package_path)
         try:
             module = util.module_from_name(name)
         except Exception:

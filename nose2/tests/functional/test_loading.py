@@ -22,6 +22,22 @@ from nose2.tests._common import FunctionalTestCase, support_file
 
 class TestLoadTestsFromPackage(FunctionalTestCase):
 
+    def test_start_directory_inside_package(self):
+        proc = self.runIn(
+            'scenario/tests_in_package/pkg1/test',
+            '-v',
+            '-t',
+            support_file('scenario/tests_in_package'))
+        self.assertTestRunOutputMatches(proc, stderr='Ran 25 tests')
+        self.assertEqual(proc.poll(), 1)
+
+    def test_project_directory_inside_package(self):
+        proc = self.runIn(
+            'scenario/tests_in_package/pkg1/test',
+            '-v')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 25 tests')
+        self.assertEqual(proc.poll(), 1)
+
     def test_module_name(self):
         proc = self.runIn(
             'scenario/tests_in_package',

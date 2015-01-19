@@ -13,11 +13,16 @@ def collector():
             ok = self._collector(result_)
             sys.exit(not ok)
 
-        def _collector(self, result_):
+        def _get_objects(self):
             ssn = session.Session()
             ldr = loader.PluggableTestLoader(ssn)
             rnr = runner.PluggableTestRunner(ssn)
+            return ssn, ldr, rnr
 
+        def _collector(self, result_):
+            ssn, ldr, rnr = self._get_objects()
+
+            ssn.testLoader = ldr
             ssn.loadConfigFiles('unittest.cfg', 'nose2.cfg', 'setup.cfg')
             ssn.setStartDir()
             ssn.prepareSysPath()

@@ -1,3 +1,9 @@
+try:
+    from unittest import mock
+except ImportError:
+    # Older python versions dont have mock by default
+    import mock
+
 from nose2.tests._common import TestCase, RedirectStdStreams
 from nose2 import collector
 from textwrap import dedent
@@ -20,3 +26,18 @@ class TestCollector(TestCase):
         self.assertEqual("", redir.stdout.getvalue())
         self.assertTrue(re.match(r'\n-+\nRan 0 tests in \d.\d\d\ds\n\nOK\n',
                                  redir.stderr.getvalue()))
+
+    def test_collector_sets_testLoader_in_session(self):
+        """
+        session.testLoader needs to be set so that plugins that use this
+        field (like Layers) dont break.
+        """
+        test = collector.collector()
+        mock_session = mock.MagicMock()
+        mock_loader = mock.MagicMock()
+        mock_runner = mock.MagicMock()
+        test._get_objects = mock.Mock(return_value=(mock_session,
+                                                    mock_loader,
+                                                    mock_runner))
+        test._collector(None)
+        self.assertTrue(mock_session.testLoader is mock_loader)

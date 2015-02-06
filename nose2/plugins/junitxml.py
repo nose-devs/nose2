@@ -39,7 +39,8 @@ class JUnitXmlReporter(events.Plugin):
             self.config.as_str('path', default='nose2-junit.xml'))
         self.keep_restricted = self.config.as_bool('keep_restricted',
                                                    default=False)
-        self.test_properties = self.config.as_str('test_properties')
+        self.test_properties = self.config.as_str('test_properties',
+                                                  default=None)
         if self.test_properties is not None:
             self.test_properties_path = os.path.realpath(self.test_properties)
         self.errors = 0

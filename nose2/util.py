@@ -10,6 +10,7 @@ import re
 import sys
 import traceback
 import platform
+import collections
 
 try:
     from inspect import isgeneratorfunction  # new in 2.6
@@ -241,7 +242,8 @@ def format_traceback(test, err):
             msgLines = traceback.format_exception(exctype, value, tb, length)
         else:
             msgLines = traceback.format_exception(exctype, value, tb)
-
+    if not isinstance(msgLines, collections.Iterable):
+        return str(msgLines)
     return ''.join(msgLines)
 
 

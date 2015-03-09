@@ -65,13 +65,13 @@ the base layer. For example for this test case::
 
 The ``setUp`` methods from *both* ``SubLayer`` and ``Layer`` will run
 before any tests are run. The superclass's setup will always run
-before the subclass's setup. For teardown, the reverse: the subclass's
-teardown runs before the superclass's.
+before the subclass's setup. For ``teardown``, the reverse: the subclass's
+``teardown`` runs before the superclass's.
 
 .. warning ::
 
    One important thing to note: layers that subclass other layers *must
-   not* call their superclass's ``setUp``, ``tearDown``, etc. -- the test
+   not* call their superclass's ``setUp``, ``tearDown``, etc. The test
    runner will take care of organizing tests so that the superclass's
    methods are called in the right order::
 
@@ -184,10 +184,10 @@ Will instead look like this::
   OK
 
 The layer reporter plugin can also optionally colorize the keywords
-('A', 'having', and 'should' by default) in output from tests defined
+(by default, 'A', 'having', and 'should') in output from tests defined
 with the :doc:`such DSL <../such_dsl>`.
 
-If you would like to change how the layer is displayed you need to set the description attribute.
+If you would like to change how the layer is displayed, set the ``description`` attribute.
 
 .. code-block :: python
 
@@ -234,16 +234,16 @@ from one module executing interleaved with tests from a different
 module.
 
 
-Mixing layers with setUpClass and module fixtures
+Mixing layers with ``setUpClass`` and module fixtures
 -------------------------------------------------
 
 **Don't cross the streams.**
 
 The implementation of class- and module-level fixtures in unittest2
 depends on introspecting the class hierarchy inside of the
-unittest.TestSuite. Since the suites that the layers plugin uses to
-organize tests derive from :class:`unittest.BaseTestSuite` not
-:class:`unittest.TestSuite`, class- and module- level fixtures in
+``unittest.TestSuite``. Since the suites that the ``layers`` plugin uses to
+organize tests derive from :class:`unittest.BaseTestSuite` (instead of 
+:class:`unittest.TestSuite`), class- and module- level fixtures in
 TestCase classes that use layers will be ignored.
 
 Mixing layers and multiprocess testing

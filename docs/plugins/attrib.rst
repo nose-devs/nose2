@@ -42,7 +42,7 @@ Runs these tests::
   test_fast (attrib_example.Test) ... ok
   test_faster (attrib_example.Test) ... ok
 
-This selects all tests that define the attribute as any True value.
+This selects all tests that define the attribute as any ``True`` value.
 
 
 Select tests that do not have an attribute
@@ -57,7 +57,7 @@ Runs these tests::
   test_slow (attrib_example.Test) ... ok
   test_slower (attrib_example.Test) ... ok
 
-This selects all tests that define the attribute as a False value,
+This selects all tests that define the attribute as a ``False`` value,
 *and those tests that do not have the attribute at all*.
 
 
@@ -108,7 +108,7 @@ Runs these tests::
   test_fast (attrib_example.Test) ... ok
 
 The result in this case can be somewhat counter-intuitive. What the
-attrib plugin selects when you negate an attribute that is in a list
+``attrib`` plugin selects when you negate an attribute that is in a list
 are only those tests that *have the list attribute* but *without the
 value* specified. Tests that do not have the attribute at all are
 *not* selected.
@@ -120,7 +120,7 @@ Select tests using Python expressions
 For more complex cases, you can use the :option:`-E` command-line
 option to pass a Python expression that will be evaluated in the
 context of each test case. Only those test cases where the expression
-evaluates to True (and doesn't raise an exception) will be selected.
+evaluates to ``True`` (and don't raise an exception) will be selected.
 
 Running nose2 like this::
 

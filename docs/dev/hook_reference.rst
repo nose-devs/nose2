@@ -15,7 +15,7 @@ Pre-registration Hooks
 
    The ``pluginsLoaded`` hook is called after all config files have been read,
    and all plugin classes loaded. Plugins that register automatically
-   (those that call :meth:`nose2.events.Plugin.register` in __init__
+   (those that call :meth:`nose2.events.Plugin.register` in ``__init__``
    or have ``always-on = True`` set in their config file sections) will
    have already been registered with the hooks they implement. Plugins
    waiting for command-line activation will not yet be registered.
@@ -68,7 +68,7 @@ These hooks are called for registered plugins only.
    :param event: A :class:`nose2.events.LoadFromNamesEvent` instance
 
    Plugins can return a test suite or list of test suites and set
-   ``event.handled`` to True to prevent other plugins from loading
+   ``event.handled`` to ``True`` to prevent other plugins from loading
    tests from the given names, or append tests to
    ``event.extraTests``. Plugins can also remove names from
    ``event.names`` to prevent other plugins from acting on those
@@ -78,7 +78,7 @@ These hooks are called for registered plugins only.
 
    :param event: A :class:`nose2.events.LoadFromNameEvent` instance
 
-   Plugins can return a test suite and set ``event.handled`` to True
+   Plugins can return a test suite and set ``event.handled`` to ``True``
    to prevent other plugins from loading tests from the given name,
    or append tests to ``event.extraTests``.
 
@@ -87,7 +87,7 @@ These hooks are called for registered plugins only.
    :param event: A :class:`nose2.events.HandleFileEvent` instance
 
    Plugins can use this hook to load tests from files that are not
-   python modules. Plugins may either append tests to ``event.extraTest``,
+   Python modules. Plugins may either append tests to ``event.extraTest``,
    or, if they want to prevent other plugins from processing the file,
    set ``event.handled`` to True and return a test case or test suite.
 
@@ -97,9 +97,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to prevent python modules from being
    loaded by the test loader or force them to be loaded by the test
-   loader. Set ``event.handled`` to True and return False to cause the
-   loader to skip the module. Set ``event.handled`` to True and return
-   True to cause the loader to load the module.
+   loader. Set ``event.handled`` to ``True`` and return ``False`` to cause the
+   loader to skip the module. Set ``event.handled`` to ``True`` and return
+   ``True`` to cause the loader to load the module.
 
 .. function :: loadTestsFromModule(self, event)
 
@@ -121,7 +121,7 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to load tests from a
    :class:`unittest.TestCase`. To prevent other plugins from loading
-   tests from the test case, set ``event.handled`` to True and return
+   tests from the test case, set ``event.handled`` to ``True`` and return
    a test suite. Plugins can also append tests to ``event.extraTests``
    -- usually that's what you want to do, since that will allow other
    plugins to load their tests from the test case as well.
@@ -134,7 +134,7 @@ These hooks are called for registered plugins only.
    names that will be loaded from a :class:`unittest.TestCase` by the
    standard nose2 test loader plugins (and other plugins that respect
    the results of the hook). To force a specific list of names, set
-   ``event.handled`` to True and return a list: this exact list will
+   ``event.handled`` to ``True`` and return a list: this exact list will
    be the only test case names loaded from the test case. Plugins can
    also extend the list of names by appending test names to
    ``event.extraNames``, and exclude names by appending test names to
@@ -164,7 +164,7 @@ These hooks are called for registered plugins only.
    takes two arguments: the top-level test and the test result.
 
    To prevent the test executor from running at all, set
-   ``event.handled`` to True.
+   ``event.handled`` to ``True``.
 
 .. function :: startTest(self, event)
 
@@ -179,9 +179,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to produce output for the user at the
    start of a test. If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting
-   to the user, set ``event.handled`` to True.
+   to the user, set ``event.handled`` to ``True``.
 
 .. function :: describeTest(self, event)
 
@@ -215,9 +215,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report test success to the user. If
    you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportError(self, event)
 
@@ -225,9 +225,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report a test error to the user. If
    you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportFailure(self, event)
 
@@ -235,9 +235,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report test failure to the user. If
    you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportSkip(self, event)
 
@@ -245,9 +245,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report a skipped test to the user. If
    you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportExpectedFailure(self, event)
 
@@ -255,9 +255,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report an expected failure to the
    user. If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportUnexpectedSuccess(self, event)
 
@@ -265,9 +265,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report an unexpected success to the
    user. If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: reportOtherOutcome(self, event)
 
@@ -275,9 +275,9 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to report a custom test outcome to the
    user. If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console. To prevent other plugins from reporting to
-   the user, set ``event.handled`` to True.
+   the user, set ``event.handled`` to ``True``.
 
 .. function :: stopTest(self, event)
 
@@ -312,7 +312,7 @@ These hooks are called for registered plugins only.
    a test run. This hook fires when something calls
    :meth:`nose2.result.PluggableTestResult.stop`. If you want to
    prevent this from stopping the test run, set ``event.shouldStop``
-   to False.
+   to ``False``.
 
 .. function :: beforeErrorList(self, event)
 
@@ -321,10 +321,10 @@ These hooks are called for registered plugins only.
    Plugins can use this hook to output or modify summary information
    before the list of errors and failures is output. To modify the
    categories of outcomes that will be reported, plugins can modify
-   the ``event.reportCategories`` dictionary. Plugins can set, wrap or
+   the ``event.reportCategories`` dictionary. Plugins can set, wrap, or
    capture the output stream by reading or setting ``event.stream``.
    If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console.
 
 .. function :: outcomeDetail(self, event)
@@ -346,7 +346,7 @@ These hooks are called for registered plugins only.
    the ``event.reportCategories`` dictionary. Plugins can set, wrap or
    capture the output stream by reading or setting
    ``event.stream``. If you want to print to the console, write to
-   ``event.stream``. Remember to respect self.session.verbosity when
+   ``event.stream``. Remember to respect ``self.session.verbosity`` when
    printing to the console.
 
 .. function :: wasSuccessful(self, event)
@@ -356,7 +356,7 @@ These hooks are called for registered plugins only.
    Plugins can use this hook to mark a test run as successful or
    unsuccessful. If not plugin marks the run as successful, the
    default state is failure. To mark a run as successful, set
-   ``event.success`` to True. Be ware that other plugins may set this
+   ``event.success`` to ``True``. Be ware that other plugins may set this
    attribute as well!
 
 .. function :: afterSummaryReport(self, event)
@@ -365,7 +365,7 @@ These hooks are called for registered plugins only.
 
    Plugins can use this hook to output a report to the user after the
    summary line is output. If you want to print to the console, write
-   to ``event.stream``. Remember to respect self.session.verbosity
+   to ``event.stream``. Remember to respect ``self.session.verbosity``
    when printing to the console.
 
 
@@ -380,7 +380,7 @@ These hooks are called when plugins want to interact with the user.
 
    Plugins should respond to this hook by getting out of the way of
    user interaction, if the need to, or setting ``event.handled`` and
-   returning False, if they need to but can't.
+   returning ``False``, if they need to but can't.
 
 
 .. function :: afterInteraction(event)

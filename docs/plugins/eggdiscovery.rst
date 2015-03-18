@@ -7,12 +7,12 @@ What is Egg Discovery
 ---------------------
 
 Sometimes Python Eggs are marked as zip-safe and they can be installed zipped, 
-instead of unzipped in a .egg folder. See http://peak.telecommunity.com/DevCenter/PythonEggs for more details.
-The normal nose2.plugins.loader.discovery plugin ignores modules located inside zip files.
+instead of unzipped in an ``.egg`` folder. See http://peak.telecommunity.com/DevCenter/PythonEggs for more details.
+The normal ``nose2.plugins.loader.discovery`` plugin ignores modules located inside zip files.
 
 The Egg Discovery plugin allows nose2 to discover tests within these zipped egg files.
 
-This plugin requires pkg_resources (from setuptools) to work correctly.
+This plugin requires ``pkg_resources`` (from ``setuptools``) to work correctly.
 
 
 Usage

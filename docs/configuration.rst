@@ -36,7 +36,7 @@ discovery:
 .. rst:configvar :: start-dir
 
    This option configures the default directory to start discovery.
-   The default value is "." (the current directory where nose2
+   The default value is ``"."`` (the current directory where nose2
    is executed). This directory is where nose2 will start looking for
    tests.
 

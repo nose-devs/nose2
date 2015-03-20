@@ -49,7 +49,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
           Overriding this attribute is the only way to customize
           the test loader class. Passing a test loader to
-          :class:`__init__` does not work.
+          :func:`__init__` does not work.
 
     .. attribute :: runnerClass
 

@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
 
     """TestCase extension.
 
-    If the class variable _RUN_IN_TEMP is True (default: False), tests will be
+    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will be
     performed in a temporary directory, which is deleted afterwards.
     """
     _RUN_IN_TEMP = False
@@ -72,7 +72,7 @@ class FunctionalTestCase(unittest.TestCase):
 
 class _FakeEventBase(object):
 
-    """Baseclass for fake Events."""
+    """Baseclass for fake :class:`~nose2.events.Event`\s."""
 
     def __init__(self):
         self.handled = False
@@ -95,7 +95,7 @@ class FakeHandleFileEvent(_FakeEventBase):
 
 class FakeStartTestEvent(_FakeEventBase):
 
-    """Fake StartTestEvent."""
+    """Fake :class:`~nose2.events.StartTestEvent`."""
 
     def __init__(self, test):
         super(FakeStartTestEvent, self).__init__()
@@ -107,7 +107,7 @@ class FakeStartTestEvent(_FakeEventBase):
 
 class FakeLoadFromNameEvent(_FakeEventBase):
 
-    """Fake LoadFromNameEvent."""
+    """Fake :class:`~nose2.events.LoadFromNameEvent`."""
 
     def __init__(self, name):
         super(FakeLoadFromNameEvent, self).__init__()
@@ -116,7 +116,7 @@ class FakeLoadFromNameEvent(_FakeEventBase):
 
 class FakeLoadFromNamesEvent(_FakeEventBase):
 
-    """Fake LoadFromNamesEvent."""
+    """Fake :class:`~nose2.events.LoadFromNamesEvent`."""
 
     def __init__(self, names):
         super(FakeLoadFromNamesEvent, self).__init__()
@@ -125,7 +125,7 @@ class FakeLoadFromNamesEvent(_FakeEventBase):
 
 class FakeStartTestRunEvent(_FakeEventBase):
 
-    """Fake StartTestRunEvent"""
+    """Fake :class:`~nose2.events.StartTestRunEvent`"""
 
     def __init__(self, runner=None, suite=None, result=None, startTime=None,
                  executeTests=None):
@@ -215,7 +215,7 @@ class NotReallyAProc(object):
 class RedirectStdStreams(object):
 
     """
-    Context manager that replaces the stdin/out streams with StringIO
+    Context manager that replaces the stdin/stdout streams with :class:`StringIO`
     buffers.
     """
 

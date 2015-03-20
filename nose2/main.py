@@ -18,9 +18,9 @@ class PluggableTestProgram(unittest.TestProgram):
     but most of them are ignored as their functions are
     handled by plugins.
 
-    :param module: Module in which to run tests. Default: __main__
-    :param defaultTest: Default test name. Default: None
-    :param argv: Command line args. Default: sys.argv
+    :param module: Module in which to run tests. Default: :func:`__main__`
+    :param defaultTest: Default test name. Default: ``None``
+    :param argv: Command line args. Default: ``sys.argv``
     :param testRunner: *IGNORED*
     :param testLoader: *IGNORED*
     :param exit: Exit after running tests?
@@ -49,7 +49,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
           Overriding this attribute is the only way to customize
           the test loader class. Passing a test loader to
-          ``__init__`` does not work.
+          :class:`__init__` does not work.
 
     .. attribute :: runnerClass
 
@@ -60,7 +60,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
           Overriding this attribute is the only way to customize
           the test runner class. Passing a test runner to
-          ``__init__`` does not work.
+          :func:`__init__` does not work.
 
     .. attribute :: defaultPlugins
 
@@ -103,7 +103,7 @@ class PluggableTestProgram(unittest.TestProgram):
         """Parse command line args
 
         Parses arguments and creates a configuration session,
-        then calls createTests.
+        then calls :func:`createTests`.
 
         """
         self.session = self.sessionClass()
@@ -230,7 +230,7 @@ class PluggableTestProgram(unittest.TestProgram):
         """Load available plugins
 
 
-        ``self.defaultPlugins`` and ``self.excludePlugins`` are passed
+        :func:`self.defaultPlugins`` and :func:`self.excludePlugins` are passed
         to the session to alter the list of plugins that will be
         loaded.
 
@@ -280,7 +280,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
     @classmethod
     def getCurrentSession(cls):
-        """Returns the current session or None if no `nose2.session.Session` is running.
+        """Returns the current session, or ``None`` if no :class:`nose2.session.Session` is running.
         
         """
         return cls._currentSession

@@ -3,11 +3,11 @@ Discovery-based test loader.
 
 This plugin implements nose2's automatic test module discovery. It
 looks for test modules in packages and directories whose names start
-with 'test', then fires the :func:`loadTestsFromModule` hook for each
+with ``test``, then fires the :func:`loadTestsFromModule` hook for each
 one to allow other plugins to load the actual tests.
 
 It also fires :func:`handleFile` for every file that it sees, and
-:func:`matchPath` for every python module, to allow other plugins to
+:func:`matchPath` for every Python module, to allow other plugins to
 load tests from other kinds of files and to influence which modules
 are examined for tests.
 

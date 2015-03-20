@@ -35,12 +35,12 @@ VALID_MODULE_RE = re.compile(r'[_a-zA-Z]\w*\.py$', re.UNICODE)
 
 
 def ln(label, char='-', width=70):
-    """Draw a divider, with label in the middle.
+    """Draw a divider, with ``label`` in the middle.
 
     >>> ln('hello there')
     '---------------------------- hello there -----------------------------'
 
-    Width and divider char may be specified. Defaults are 70 and '-'
+    ``width`` and divider ``char`` may be specified. Defaults are ``70`` and ``'-'``,
     respectively.
 
     """
@@ -54,18 +54,20 @@ def ln(label, char='-', width=70):
 
 
 def valid_module_name(path):
-    """Is path a valid module name?"""
+    """Is ``path`` a valid module name?"""
     return VALID_MODULE_RE.search(path)
 
 
 def name_from_path(path):
-    """Translate path into module name
+    """Translate ``path`` into module name
 
-    Returns a two-element tuple. The first element is a dotted
-    module name that can be used in import statement,
-    e.g. pkg1.test.test_things.
-    The second element is a full path to filesystem directory
-    that must be on sys.path in order for the import to succeed.
+    Returns a two-element tuple: 
+    
+    1. a dotted module name that can be used in an import statement
+       (e.g., ``pkg1.test.test_things``)
+    
+    2. a full path to filesystem directory, which must be on ``sys.path`` 
+       for the import to succeed.
 
     """
     # back up to find module root
@@ -84,13 +86,13 @@ def name_from_path(path):
 
 
 def module_from_name(name):
-    """Import module from name"""
+    """Import module from ``name``"""
     __import__(name)
     return sys.modules[name]
 
 
 def test_from_name(name, module):
-    """Import test from name"""
+    """Import test from ``name``"""
     pos = name.find(':')
     index = None
     if pos != -1:
@@ -106,7 +108,7 @@ def test_from_name(name, module):
 
 
 def object_from_name(name, module=None):
-    """Import object from name"""
+    """Import object from ``name``"""
     parts = name.split('.')
     if module is None:
         parts_copy = parts[:]
@@ -134,7 +136,7 @@ def name_from_args(name, index, args):
 
 
 def test_name(test):
-    # XXX does not work for test funcs, test.id() lacks module
+    # XXX does not work for test funcs; test.id() lacks module
     if hasattr(test, '_funcName'):
         tid = test._funcName
     elif hasattr(test, '_testFunc'):
@@ -163,13 +165,13 @@ def ispackage(path):
 
 
 def ensure_importable(dirname):
-    """Ensure a directory is on sys.path"""
+    """Ensure a directory is on ``sys.path``."""
     if dirname not in sys.path:
         sys.path.insert(0, dirname)
 
 
 def isgenerator(obj):
-    """is this object a generator?"""
+    """Is this object a generator?"""
     return (isgeneratorfunction(obj)
             or getattr(obj, 'testGenerator', None) is not None)
 
@@ -185,9 +187,9 @@ def has_module_fixtures(test):
 
 
 def has_class_fixtures(test):
-    # hasattr would be the obvious thing to use here, unfortunately all tests
-    # inherit from unittest2.case.TestCase and that *always* has setUpClass and
-    # tearDownClass methods. Therefore will have the following (ugly) solution:
+    # hasattr would be the obvious thing to use here. Unfortunately, all tests
+    # inherit from unittest2.case.TestCase, and that *always* has setUpClass and
+    # tearDownClass methods. Thus, the following (ugly) solution:
     ver = platform.python_version_tuple()
     if float('{0}.{1}'.format(*ver[:2])) >= 2.7:
         name = 'unittest.case'
@@ -226,7 +228,7 @@ def exc_info_to_string(err, test):
 
 
 def format_traceback(test, err):
-    """Converts a sys.exc_info()-style tuple of values into a string."""
+    """Converts a :func:`sys.exc_info` -style tuple of values into a string."""
     exctype, value, tb = err
     if not hasattr(tb, 'tb_next'):
         msgLines = tb
@@ -246,7 +248,7 @@ def format_traceback(test, err):
 
 
 def transplant_class(cls, module):
-    """Make class appear to reside in ``module``.
+    """Make ``cls`` appear to reside in ``module``.
 
     :param cls: A class
     :param module: A module name
@@ -286,7 +288,7 @@ def _count_relevant_tb_levels(tb):
 
 class _WritelnDecorator(object):
 
-    """Used to decorate file-like objects with a handy 'writeln' method"""
+    """Used to decorate file-like objects with a handy :func:`writeln` method"""
 
     def __init__(self, stream):
         self.stream = stream

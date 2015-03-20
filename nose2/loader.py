@@ -104,7 +104,7 @@ class PluggableTestLoader(object):
         return name.lower()
 
     def discover(self, start_dir=None, pattern=None):
-        """Compatibility shim for load_tests protocol."""
+        """Compatibility shim for ``load_tests`` protocol."""
         try:
             oldsd = self.session.startDir
             self.session.startDir = start_dir

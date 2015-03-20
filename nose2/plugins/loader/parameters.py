@@ -8,7 +8,7 @@ loading tests from parameterized test functions and methods.
 To parameterize a function or test case method, use :func:`nose2.tools.params`.
 
 To address a particular parameterized test via a command-line test name,
-append a colon (':') followed by the index, *starting from 1*, of the
+append a colon (':') followed by the index (*starting from 1*) of the
 case you want to execute.
 
 Such And The Parameters Plugin

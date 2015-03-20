@@ -4,13 +4,15 @@ Output test reports in junit-xml format.
 This plugin implements :func:`startTest`, :func:`testOutcome` and
 :func:`stopTestRun` to compile and then output a test report in
 junit-xml format. By default, the report is written to a file called
-``nose2-junit.xml`` in the current working directory. You can
-configure the output filename by setting ``path`` in a ``[junit-xml]``
+``nose2-junit.xml`` in the current working directory. 
+
+You can configure the output filename by setting ``path`` in a ``[junit-xml]``
 section in a config file.  Unicode characters which are invalid in XML 1.0
-are replaced with the U+FFFD replacement character.  In the case that your
-software throws an error with an invalid byte string.  By default, the
-ranges of discouraged characters are replaced as well.  This can be
-changed by setting the keep_restricted configuration variable to True.
+are replaced with the ``U+FFFD`` replacement character.  In the case that your
+software throws an error with an invalid byte string.  
+
+By default, the ranges of discouraged characters are replaced as well.  This can be
+changed by setting the ``keep_restricted`` configuration variable to ``True``.
 
 """
 # Based on unittest2/plugins/junitxml.py,

@@ -15,7 +15,7 @@ tuple, or the arguments may be grouped into a separate tuple::
       yield check, (1, 2)
 
 To address a particular generated test via a command-line test name,
-append a colon (':') followed by the index, *starting from 1*, of the
+append a colon (':') followed by the index (*starting from 1*) of the
 generated case you want to execute.
 
 """

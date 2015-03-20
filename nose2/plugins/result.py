@@ -5,7 +5,7 @@ This plugin implements the primary user interface for nose2. It
 collects test outcomes and reports on them to the console, as well as
 firing several hooks for other plugins to do their own reporting.
 
-To see this report, nose2 MUST be run with the "verbose" flag::
+To see this report, nose2 MUST be run with the :option:`verbose` flag::
 
   nose2 --verbose
 
@@ -16,9 +16,9 @@ want. Note, however, that customer categories are *not* treated as
 errors or failures for the purposes of determining whether a test run
 has succeeded.
 
-Don't disable this plugin unless you a) have another one doing the
-same job or b) really don't want any test results (and want all test
-runs to exit(1))
+Don't disable this plugin, unless you (a) have another one doing the
+same job, or (b) really don't want any test results (and want all test
+runs to ``exit(1)``).
 """
 # This module contains some code copied from unittest2/runner.py and other
 # code developed in reference to that module and others within unittest2.

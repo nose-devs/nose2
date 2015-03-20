@@ -120,13 +120,13 @@ class MultiProcess(events.Plugin):
 
     def _prepConns(self):
         """
-        If the bind_host is not none, return:
+        If the ``bind_host`` is not ``None``, return:
             (multiprocessing.connection.Listener, (address, port, authkey))
         else:
             (parent_connection, child_connection)
 
-        For the former case: accept must be called on the listener. In order
-        to get a Connection object for the socket.
+        For the former case: ``accept`` must be called on the listener. In order
+        to get a ``Connection`` object for the socket.
         """
         if self.bind_host is not None:
             #prevent "accidental" wire crossing
@@ -139,10 +139,10 @@ class MultiProcess(events.Plugin):
 
     def _acceptConns(self, parent_conn):
         """
-        When listener is is a connection.Listener instance: accept the next
-        incoming connection.  However, a timeout mechanism is needed.  Since,
-        this functionality was added to support mp over inet sockets, will
-        assume a Socket based listen and will accept the private _socket
+        When listener is is a :class:`connection.Listener` instance: accept the next
+        incoming connection.  However, a timeout mechanism is needed.  Since
+        this functionality was added to support mp over inet sockets, this method
+        assumes a Socket-based listen, and will accept the private _socket
         member to get a low_level socket to do a select on.
         """
         if isinstance(parent_conn, connection.Listener):

@@ -5,7 +5,7 @@ This module provides decorators that assist the test author to write tests.
 
 def with_setup(setup):
     """
-    A decorator that sets the setup method to be executed before the test.
+    A decorator that sets the :func:`setup` method to be executed before the test.
 
     It currently works only for function test cases.
 
@@ -23,7 +23,7 @@ def with_setup(setup):
 
 def with_teardown(teardown):
     """
-    A decorator that sets the teardown method to be after before the test.
+    A decorator that sets the :func:`teardown` method to be after before the test.
 
     It currently works only for function test cases.
 

@@ -20,7 +20,7 @@ class AttributeSelector(Plugin):
         self.addArgument(
             self.eval_attribs, "E", "eval-attribute",
             "Select tests for whose attributes the "
-            "given Python expression evalures to True")
+            "given Python expression evaluates to ``True``")
 
     def handleArgs(self, args):
         """Register if any attribs defined"""

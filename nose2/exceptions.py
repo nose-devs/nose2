@@ -7,4 +7,4 @@ __unittest = True
 
 class TestNotFoundError(Exception):
 
-    """Exception raised when a named test cannot be found"""
+    """Raised when a named test cannot be found"""

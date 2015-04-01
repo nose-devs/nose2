@@ -120,8 +120,8 @@ class LayerSuite(unittest.BaseTestSuite):
 
     def _getBoundClassmethod(self, cls, method):
         """
-        Use instead of getattr to get only classmethods explicitly defined
-        on cls (not methods inherited from ancestors)
+        Use instead of :func:`getattr` to get only classmethods explicitly defined
+        on ``cls`` (not methods inherited from ancestors)
         """
         descriptor = cls.__dict__.get(method, None)
         if descriptor:

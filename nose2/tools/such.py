@@ -78,12 +78,12 @@ class Scenario(object):
         self._group.mixins.append(layer)
 
     def has_setup(self, func):
-        """Add a setup method to this group.
+        """Add a :func:`setup` method to this group.
 
-        The setup method will run once, before any of the
+        The :func:`setup` method will run once, before any of the
         tests in the containing group.
 
-        A group may define any number of setup functions. They
+        A group may define any number of :func:`setup` functions. They
         will execute in the order in which they are defined.
 
         .. code-block :: python
@@ -97,12 +97,12 @@ class Scenario(object):
         return func
 
     def has_teardown(self, func):
-        """Add a teardown method to this group.
+        """Add a :func:`teardown` method to this group.
 
-        The teardown method will run once, after all of the
+        The :func:`teardown` method will run once, after all of the
         tests in the containing group.
 
-        A group may define any number of teardown functions. They
+        A group may define any number of :func:`teardown` functions. They
         will execute in the order in which they are defined.
 
         .. code-block :: python
@@ -116,16 +116,16 @@ class Scenario(object):
         return func
 
     def has_test_setup(self, func):
-        """Add a test case setup method to this group.
+        """Add a test case :func:`setup` method to this group.
 
-        The setup method will run before each of the
+        The :func:`setup` method will run before each of the
         tests in the containing group.
 
-        A group may define any number of test case setup
+        A group may define any number of test case :func:`setup`
         functions. They will execute in the order in which they are
         defined.
 
-        Test setup functions may optionally take one argument. If
+        Test :func:`setup` functions may optionally take one argument. If
         they do, they will be passed the :class:`unittest.TestCase`
         instance generated for the test.
 
@@ -139,16 +139,16 @@ class Scenario(object):
         self._group.addTestSetUp(func)
 
     def has_test_teardown(self, func):
-        """Add a test case teardown method to this group.
+        """Add a test case :func:`teardown` method to this group.
 
-        The teardown method will run before each of the
+        The :func:`teardown` method will run before each of the
         tests in the containing group.
 
-        A group may define any number of test case teardown
+        A group may define any number of test case :func:`teardown`
         functions. They will execute in the order in which they are
         defined.
 
-        Test teardown functions may optionally take one argument. If
+        Test :func:`teardown` functions may optionally take one argument. If
         they do, they will be passed the :class:`unittest.TestCase`
         instance generated for the test.
 
@@ -206,10 +206,9 @@ class Scenario(object):
 
         .. warning ::
 
-           You must call this, passing in ``globals()``, to
-           generate tests from the scenario. If you don't
-           call ``createTests``, **no tests will be
-           created**.
+           You must call this, passing in :func:`globals`, to
+           generate tests from the scenario. If you don't,
+           **no tests will be created**.
 
         .. code-block :: python
 
@@ -252,7 +251,7 @@ class Scenario(object):
 
         def _make_test_func(case):
             '''
-            Needs to be outside of the for-loop scope so that "case" is properly registered as a closure
+            Needs to be outside of the for-loop scope, so that ``case`` is properly registered as a closure.
             '''
             def _test(s, *args):
                 case(s, *args)
@@ -346,7 +345,7 @@ class Scenario(object):
 
 class Group(object):
 
-    """Group of tests w/common fixtures & description"""
+    """A group of tests, with common fixtures and description"""
 
     def __init__(self, description, indent=0, parent=None, base_layer=None):
         self.description = description

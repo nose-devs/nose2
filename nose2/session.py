@@ -211,7 +211,7 @@ class Session(object):
         return self.get('unittest')
 
     def isPluginLoaded(self, pluginName):
-        """Returns True if a given plugin is loaded.
+        """Returns ``True`` if a given plugin is loaded.
 
         :param pluginName: the name of the plugin module: e.g. "nose2.plugins.layers".
 

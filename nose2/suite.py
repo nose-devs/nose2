@@ -4,6 +4,7 @@ import logging
 
 from nose2 import util
 from nose2.compat import unittest
+from nose2 import events
 
 log = logging.getLogger(__name__)
 
@@ -16,10 +17,11 @@ __unittest = True
 
 class LayerSuite(unittest.BaseTestSuite):
 
-    def __init__(self, tests=(), layer=None):
+    def __init__(self, session, tests=(), layer=None):
         super(LayerSuite, self).__init__(tests)
         self.layer = layer
         self.wasSetup = False
+        self.session = session
 
     def run(self, result):
         self.handle_previous_test_teardown(result)
@@ -58,12 +60,18 @@ class LayerSuite(unittest.BaseTestSuite):
             return
 
         setup = self._getBoundClassmethod(self.layer, 'setUp')
+
+        event = events.StartLayerSetupEvent(self.layer)
+        self.session.hooks.startLayerSetup(event)
+
         if setup:
             setup()
         self.wasSetup = True
 
+        event = events.StopLayerSetupEvent(self.layer)
+        self.session.hooks.stopLayerSetup(event)
+
     def setUpTest(self, test):
-        # FIXME hook call
         if self.layer is None:
             return
         # skip suites, to ensure test setup only runs once around each test
@@ -78,26 +86,42 @@ class LayerSuite(unittest.BaseTestSuite):
             return
         if getattr(test, '_layer_wasSetUp', False):
             return
+
+        event = events.StartLayerSetupTestEvent(self.layer, test)
+        self.session.hooks.startLayerSetupTest(event)
+
         self._allLayers(test, 'testSetUp')
         test._layer_wasSetUp = True
 
+        event = events.StopLayerSetupTestEvent(self.layer, test)
+        self.session.hooks.stopLayerSetupTest(event)
+
     def tearDownTest(self, test):
-        # FIXME hook call
         if self.layer is None:
             return
         if not getattr(test, '_layer_wasSetUp', None):
             return
+
+        event = events.StartLayerTeardownTestEvent(self.layer, test)
+        self.session.hooks.startLayerTeardownTest(event)
+
         self._allLayers(test, 'testTearDown', reverse=True)
+
+        event = events.StopLayerTeardownTestEvent(self.layer, test)
+        self.session.hooks.stopLayerTeardownTest(event)
         delattr(test, '_layer_wasSetUp')
 
     def tearDown(self):
-        # FIXME hook call
         if self.layer is None:
             return
 
         teardown = self._getBoundClassmethod(self.layer, 'tearDown')
+        event = events.StartLayerTeardownEvent(self.layer)
+        self.session.hooks.startLayerTeardown(event)
         if teardown:
             teardown()
+        event = events.StopLayerTeardownEvent(self.layer)
+        self.session.hooks.stopLayerTeardown(event)
 
     def _safeMethodCall(self, method, result, *args):
         try:
@@ -132,8 +156,8 @@ class LayerSuite(unittest.BaseTestSuite):
 
     def _getBoundClassmethod(self, cls, method):
         """
-        Use instead of :func:`getattr` to get only classmethods explicitly defined
-        on ``cls`` (not methods inherited from ancestors)
+        Use instead of :func:`getattr` to get only classmethods explicitly
+        defined on ``cls`` (not methods inherited from ancestors)
         """
         descriptor = cls.__dict__.get(method, None)
         if descriptor:

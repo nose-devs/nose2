@@ -154,10 +154,10 @@ nose2 is being developed by the same people who maintain nose.
 nose2 is not (exactly) unittest2/plugins
 ----------------------------------------
 
+nose2 is based on the unittest2 ``plugins`` branch, but differs from it in
 several substantial ways. The *event api not exactly the same* because
 nose2 can't replace unittest.TestCase, and *does not configure the test
 run or plugin set globally*. nose2 also has a *wholly different
-nose2 is based on the unittest2 ``plugins`` branch, but differs from it in
 reporting API* from unittest2's plugins, one which we feel better
 supports some common cases (like adding extra information to error
 output). nose2 also *defers more work to plugins* than unittest2: the

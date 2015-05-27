@@ -251,11 +251,17 @@ class PluggableTestProgram(unittest.TestProgram):
             self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
         if event.handled:
-            self.test = result
+            test = result
         else:
             log.debug("Create tests from %s/%s", self.testNames, self.module)
-            self.test = self.testLoader.loadTestsFromNames(
+            test = self.testLoader.loadTestsFromNames(
                 self.testNames, self.module)
+
+        event = events.CreatedTestSuiteEvent(test)
+        result = self.session.hooks.createdTestSuite(event)
+        if event.handled:
+            test = result
+        self.test = test
 
     def runTests(self):
         """Run tests"""

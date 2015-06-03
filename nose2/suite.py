@@ -28,7 +28,7 @@ class LayerSuite(unittest.BaseTestSuite):
             for test in self:
                 if result.shouldStop:
                     break
-                self.setUpTest(test)
+                self._safeMethodCall(self.setUpTest, result, test)
                 try:
                     test(result)
                 finally:
@@ -96,7 +96,7 @@ class LayerSuite(unittest.BaseTestSuite):
         except:
             result.addError(self, sys.exc_info())
             return False
-        
+
     def _allLayers(self, test, method, reverse=False):
         done = set()
         all_lys = util.ancestry(self.layer)

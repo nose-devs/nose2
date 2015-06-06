@@ -270,7 +270,7 @@ class PluginInterface(object):
         'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
         'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
-        'afterInteraction', 'createTests', 'afterTestRun',
+        'afterInteraction', 'createTests', 'createdTestSuite', 'afterTestRun',
         'moduleLoadedSuite', 'handleDir',
         # ... etc?
     )
@@ -1132,3 +1132,21 @@ class CreateTestsEvent(Event):
         self.testNames = testNames
         self.module = module
         super(CreateTestsEvent, self).__init__(**kw)
+
+
+class CreatedTestSuiteEvent(Event):
+    """Event fired after test loading.
+
+    Plugins can replace the loaded test suite by returning a test suite and
+    setting ``handled`` on this event.
+
+    .. attribute :: suite
+
+       Test Suite instance
+
+    """
+    _attrs = Event._attrs + ('suite', )
+
+    def __init__(self, suite, **kw):
+        self.suite = suite
+        super(CreatedTestSuiteEvent, self).__init__(**kw)

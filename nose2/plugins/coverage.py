@@ -55,6 +55,7 @@ class Coverage(Plugin):
             dest='coverage_config',
             help='Config file for coverage, default: .coveragerc'
         )
+        self.covController = None
 
     def handleArgs(self, event):
         """Get our options in order command line, config file, hard coded."""
@@ -66,9 +67,10 @@ class Coverage(Plugin):
         self.covConfig = (event.args.coverage_config or
                           self.conConfig or '.coveragerc')
 
-    def startTestRun(self, event):
-        """Only called if active so start coverage."""
-        self.covController = None
+    def createTests(self, event):
+        """Start coverage early to catch imported modules.
+
+        Only called if active so, safe to just start without checking flags"""
         try:
             import cov_core
         except:
@@ -80,6 +82,16 @@ class Coverage(Plugin):
                                               self.covReport,
                                               self.covConfig)
         self.covController.start()
+
+    def createdTestSuite(self, event):
+        """Pause coverage collection until we begin running tests."""
+        if self.covController:
+            self.covController.cov.stop()
+
+    def startTestRun(self, event):
+        """Resume coverage collection before running tests."""
+        if self.covController:
+            self.covController.cov.start()
 
     def afterSummaryReport(self, event):
         """Only called if active so stop coverage and produce reports."""

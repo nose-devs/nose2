@@ -8,6 +8,21 @@ class TestPluggableTestLoader(TestCase):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
 
+    def test_failed_load_tests_exception(self):
+        suite = self.loader.failedLoadTests('test', RuntimeError('err'))
+        tc = suite._tests[0]
+        with self.assertRaises(RuntimeError) as cm:
+            tc.test()
+        self.assertEqual(cm.exception.args, ('err', ))
+
+    def test_failed_load_tests_exc_info(self):
+        suite = self.loader.failedLoadTests(
+            'test', (RuntimeError, RuntimeError('err'), None))
+        tc = suite._tests[0]
+        with self.assertRaises(RuntimeError) as cm:
+            tc.test()
+        self.assertEqual(cm.exception.args, ('err', ))
+
     def test_load_from_module_calls_hook(self):
         self.session.hooks.register('loadTestsFromModule', FakePlugin())
         evt = events.LoadFromModuleEvent(self.loader, 'some_module')

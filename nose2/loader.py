@@ -7,6 +7,8 @@
 import logging
 import traceback
 
+import six
+
 from nose2 import events
 from nose2.compat import unittest
 
@@ -114,7 +116,11 @@ class PluggableTestLoader(object):
 
     def _makeFailedTest(self, classname, methodname, exception):
         def testFailure(self):
-            raise exception
+            if isinstance(exception, Exception):
+                raise exception
+            else:
+                # exception tuple (type, value, traceback)
+                six.reraise(*exception)
         attrs = {methodname: testFailure}
         TestClass = type(classname, (unittest.TestCase,), attrs)
         return self.suiteClass((TestClass(methodname),))

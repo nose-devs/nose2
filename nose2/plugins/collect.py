@@ -36,7 +36,7 @@ class CollectOnly(Plugin):
     def collectTests(self, suite, result):
         """Collect tests, but don't run them"""
         for test in suite:
-            if isinstance(test, unittest.TestSuite):
+            if isinstance(test, unittest.BaseTestSuite):
                 self.collectTests(test, result)
                 continue
             result.startTest(test)

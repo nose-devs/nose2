@@ -16,7 +16,7 @@ class TestCoverage(FunctionalTestCase):
         stdout, stderr = proc.communicate()
         self.assertTestRunOutputMatches(
             proc,
-            stderr=os.path.join('lib', 'mod1').replace('\\', r'\\') + STATS)
+            stderr=os.path.join('lib', 'mod1.py').replace('\\', r'\\') + STATS)
         self.assertTestRunOutputMatches(
             proc,
-            stderr='TOTAL   ' + STATS)
+            stderr='TOTAL      ' + STATS)

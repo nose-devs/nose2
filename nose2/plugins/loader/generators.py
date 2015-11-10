@@ -182,12 +182,11 @@ class Generators(Plugin):
                 method = functools.update_wrapper(method, func)
                 setattr(instance, method_name, method)
                 yield instance
-        except:
-            exc_info = sys.exc_info()
+        except Exception as e:
             test_name = '%s.%s.%s' % (testCaseClass.__module__,
                                       testCaseClass.__name__,
                                       name)
-            yield event.loader.failedLoadTests(test_name, exc_info)
+            yield event.loader.failedLoadTests(test_name, e)
 
     def _testsFromGeneratorFunc(self, event, obj):
         extras = list(obj())

@@ -9,10 +9,10 @@ python:
   - "pypy3"
 install:
   - travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
-  - travis_retry pip install coveralls
-  - travis_retry pip install coverage
+  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coveralls; fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coverage; fi
 script:
-  - PYTHONPATH=. coverage run -m nose2.__main__ -v
+  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then CMD="coverage run"; else CMD="python"; fi; PYTHONPATH=. $CMD -m nose2.__main__ -v
 after_success:
   - coveralls
 deploy:

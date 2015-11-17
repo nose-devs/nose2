@@ -108,7 +108,7 @@ class PluggableTestProgram(unittest.TestProgram):
         """
         self.session = self.sessionClass()
         self.__class__._currentSession = self.session
-        
+
         self.argparse = self.session.argparse  # for convenience
 
         # XXX force these? or can it be avoided?
@@ -270,7 +270,7 @@ class PluggableTestProgram(unittest.TestProgram):
         try:
             self.result = runner.run(self.test)
         except Exception as e:
-            log.debug('Internal Error', exc_info=True)
+            log.exception('Internal Error')
             sys.stderr.write('Internal Error: runTests aborted: %s\n'%(e))
             if self.exit:
                 sys.exit(1)
@@ -287,7 +287,7 @@ class PluggableTestProgram(unittest.TestProgram):
     @classmethod
     def getCurrentSession(cls):
         """Returns the current session, or ``None`` if no :class:`nose2.session.Session` is running.
-        
+
         """
         return cls._currentSession
 

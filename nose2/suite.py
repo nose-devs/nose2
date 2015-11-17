@@ -38,15 +38,12 @@ class LayerSuite(unittest.BaseTestSuite):
                 self._safeMethodCall(self.tearDown, result)
 
     def setUp(self):
-        # FIXME hook call
-        log.debug('in setUp layer %s', self.layer)
         if self.layer is None:
             return
 
         setup = self._getBoundClassmethod(self.layer, 'setUp')
         if setup:
             setup()
-            log.debug('setUp layer %s called', self.layer)
         self.wasSetup = True
 
     def setUpTest(self, test):
@@ -85,7 +82,6 @@ class LayerSuite(unittest.BaseTestSuite):
         teardown = self._getBoundClassmethod(self.layer, 'tearDown')
         if teardown:
             teardown()
-            log.debug('tearDown layer %s called', self.layer)
 
     def _safeMethodCall(self, method, result, *args):
         try:

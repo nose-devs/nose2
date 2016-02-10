@@ -1,3 +1,5 @@
+*Looking for maintainers. See https://github.com/nose-devs/nose2/issues/261*
+
 .. image:: https://travis-ci.org/nose-devs/nose2.png?branch=master
     :target: https://travis-ci.org/nose-devs/nose2
     :alt: Build Status

@@ -18,7 +18,7 @@ install:
 script:
   - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then CMD="coverage run"; else CMD="python"; fi; PYTHONPATH=. $CMD -m nose2.__main__ -v
 after_success:
-  - coveralls
+  - python -c "import sys; sys.exit(sys.version_info[0:2]!=(3,4));" && coveralls
 deploy:
   provider: pypi
   user: jpellerin

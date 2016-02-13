@@ -1,6 +1,7 @@
 from nose2.tests._common import FunctionalTestCase
 from nose2.tools import such
 
+
 class TestSuchDSL(FunctionalTestCase):
     def test_runs_example(self):
         proc = self.runIn(
@@ -109,3 +110,10 @@ class TestSuchDSL(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests in')
         self.assertTestRunOutputMatches(proc, stderr='OK')
 
+    def test_long_setup(self):
+        proc = self.runIn('such',
+                          '-v',
+                          '--plugin=nose2.plugins.layers',
+                          'test_such_timing')
+        self.assertTestRunOutputMatches(proc, stderr=r'Ran 2 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')

@@ -21,9 +21,9 @@ after_success:
   - coveralls
 deploy:
   provider: pypi
-  user: jpellerin
+  user: little-dude
   password:
-    secure: Cm3DItPisb3h39kLq8ss9cmYGDoccpKgk6V5azwpdbLM3aApRdsSMvhE0J1M6uibW5ZGTe0J2LK/doAamJVDdxo/5hWdoXjoVHdqqzmBOYqVJ+WNfxkGu+3G+ZRgurdhRnrcuLjnUmXj6hj6TbondBcUSZr0X/1PxNp742dUShs=
+    secure: YhPcKX01u0PA7B5rkltlTHyEVfrA//vwWUraOdnqUJmiWOyWdZrXMu3+QIMjX+Oq7+zwMeN74+GNeZ2Qg2yFZ+tYnyHLNCZDPOIfx0CHX4qhha19JbByVmbIyemKa57gFJVSUm6rr2Lx+dm4fXiTZHrD3EfoNYcWsQFo8YdojVM=
   on:
     tags: true
     all_branches: true

@@ -22,6 +22,7 @@ class LayerSuite(unittest.BaseTestSuite):
         self.wasSetup = False
 
     def run(self, result):
+        self.handle_previous_test_teardown(result)
         if not self._safeMethodCall(self.setUp, result):
             return
         try:
@@ -36,6 +37,21 @@ class LayerSuite(unittest.BaseTestSuite):
         finally:
             if self.wasSetup:
                 self._safeMethodCall(self.tearDown, result)
+
+    def handle_previous_test_teardown(self, result):
+        try:
+            prev = result._previousTestClass
+        except AttributeError:
+            return
+        layer_attr = getattr(prev, 'layer', None)
+        if isinstance(layer_attr, LayerSuite):
+            return
+        try:
+            suite_obj = unittest.suite.TestSuite()
+            suite_obj._tearDownPreviousClass(None, result)
+            suite_obj._handleModuleTearDown(result)
+        finally:
+            delattr(result, '_previousTestClass')
 
     def setUp(self):
         if self.layer is None:

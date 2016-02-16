@@ -120,3 +120,14 @@ Base
         self.assertTestRunOutputMatches(proc, stderr='ERROR: LayerSuite')
         self.assertTestRunOutputMatches(proc, stderr='FAIL')
         self.assertTestRunOutputMatches(proc, stderr='Bad Error in Layer setUp!')
+
+    def test_layers_and_non_layers(self):
+        proc = self.runIn(
+            'scenario/',
+            'layers_and_non_layers',
+            '-v',
+            '--plugin=nose2.plugins.layers',
+            )
+        self.assertTestRunOutputMatches(proc, stderr='Ran 12 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')
+        self.assertEqual(proc.poll(), 0)

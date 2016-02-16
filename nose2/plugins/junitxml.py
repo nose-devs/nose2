@@ -4,15 +4,71 @@ Output test reports in junit-xml format.
 This plugin implements :func:`startTest`, :func:`testOutcome` and
 :func:`stopTestRun` to compile and then output a test report in
 junit-xml format. By default, the report is written to a file called
-``nose2-junit.xml`` in the current working directory. 
+``nose2-junit.xml`` in the current working directory.
 
 You can configure the output filename by setting ``path`` in a ``[junit-xml]``
 section in a config file.  Unicode characters which are invalid in XML 1.0
-are replaced with the ``U+FFFD`` replacement character.  In the case that your
-software throws an error with an invalid byte string.  
+are replaced with the ``U+FFFD`` replacement character. In the case that your
+software throws an error with an invalid byte string.
 
-By default, the ranges of discouraged characters are replaced as well.  This can be
-changed by setting the ``keep_restricted`` configuration variable to ``True``.
+By default, the ranges of discouraged characters are replaced as well. This can
+be changed by setting the ``keep_restricted`` configuration variable to
+``True``.
+
+By default, the arguments of parametrized and generated tests are not printed.
+For instance, the following code:
+
+.. code-block:: python
+
+    # a.py
+
+    from nose2 import tools
+
+    def test_gen():
+        def check(a, b):
+            assert a == b, '{}!={}'.format(a,b)
+
+        yield check, 99, 99
+        yield check, -1, -1
+
+    @tools.params('foo', 'bar')
+    def test_params(arg):
+        assert arg in ['foo', 'bar', 'baz']
+
+Produces this XML by default:
+
+.. code-block:: xml
+
+    <testcase classname="a" name="test_gen:1" time="0.000171">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_gen:2" time="0.000202">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_params:1" time="0.000159">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_params:2" time="0.000163">
+        <system-out />
+    </testcase>
+
+But if ``test_fullname`` is ``True``, then the following XML is
+produced:
+
+.. code-block:: xml
+
+    <testcase classname="a" name="test_gen:1 (99, 99)" time="0.000213">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_gen:2 (-1, -1)" time="0.000194">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_params:1 ('foo')" time="0.000178">
+        <system-out />
+    </testcase>
+    <testcase classname="a" name="test_params:2 ('bar')" time="0.000187">
+        <system-out />
+    </testcase>
 
 """
 # Based on unittest2/plugins/junitxml.py,
@@ -39,10 +95,12 @@ class JUnitXmlReporter(events.Plugin):
     def __init__(self):
         self.path = os.path.realpath(
             self.config.as_str('path', default='nose2-junit.xml'))
-        self.keep_restricted = self.config.as_bool('keep_restricted',
-                                                   default=False)
-        self.test_properties = self.config.as_str('test_properties',
-                                                  default=None)
+        self.keep_restricted = self.config.as_bool(
+            'keep_restricted', default=False)
+        self.test_properties = self.config.as_str(
+            'test_properties', default=None)
+        self.test_fullname = self.config.as_bool(
+            'test_fullname', default=False)
         if self.test_properties is not None:
             self.test_properties_path = os.path.realpath(self.test_properties)
         self.errors = 0
@@ -60,11 +118,15 @@ class JUnitXmlReporter(events.Plugin):
     def testOutcome(self, event):
         """Add test outcome to xml tree"""
         test = event.test
-        testid = test.id().split('\n')[0]
-        # split into module, class, method parts... somehow
+        testid_lines = test.id().split('\n')
+        testid = testid_lines[0]
         parts = testid.split('.')
         classname = '.'.join(parts[:-1])
         method = parts[-1]
+        # for generated test cases
+        if len(testid_lines) > 1 and self.test_fullname:
+            test_args = ':'.join(testid_lines[1:])
+            method = '%s (%s)' % (method, test_args)
 
         testcase = ET.SubElement(self.tree, 'testcase')
         testcase.set('time', "%.6f" % self._time())

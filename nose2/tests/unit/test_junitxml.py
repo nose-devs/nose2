@@ -186,6 +186,20 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(xml[0].get('name'), 'test_gen:1')
         self.assertEqual(xml[1].get('name'), 'test_gen:2')
 
+    def test_generator_test_full_name_correct(self):
+        gen = generators.Generators(session=self.session)
+        gen.register()
+        self.plugin.test_fullname = True
+        event = events.LoadFromTestCaseEvent(self.loader, self.case)
+        self.session.hooks.loadTestsFromTestCase(event)
+        cases = event.extraTests
+        for case in cases:
+            case(self.result)
+        xml = self.plugin.tree.findall('testcase')
+        self.assertEqual(len(xml), 2)
+        self.assertEqual(xml[0].get('name'), 'test_gen:1 (1, 1)')
+        self.assertEqual(xml[1].get('name'), 'test_gen:2 (1, 2)')
+
     def test_params_test_name_correct(self):
         # param test loading is a bit more complex than generator
         # loading. XXX -- can these be reconciled so they both
@@ -212,6 +226,31 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(params[0].get('name'), 'test_params:1')
         self.assertEqual(params[1].get('name'), 'test_params:2')
         self.assertEqual(params[2].get('name'), 'test_params:3')
+
+    def test_params_test_full_name_correct(self):
+        plug1 = parameters.Parameters(session=self.session)
+        plug1.register()
+        plug2 = testcases.TestCaseLoader(session=self.session)
+        plug2.register()
+        # need module to fire top-level event
+
+        class Mod(object):
+            pass
+
+        m = Mod()
+        m.Test = self.case
+        event = events.LoadFromModuleEvent(self.loader, m)
+        self.plugin.test_fullname = True
+        self.session.hooks.loadTestsFromModule(event)
+        for case in event.extraTests:
+            case(self.result)
+        xml = self.plugin.tree.findall('testcase')
+        self.assertEqual(len(xml), 12)
+        params = [x for x in xml if x.get('name').startswith('test_params')]
+        self.assertEqual(len(params), 3)
+        self.assertEqual(params[0].get('name'), 'test_params:1 (1)')
+        self.assertEqual(params[1].get('name'), 'test_params:2 (2)')
+        self.assertEqual(params[2].get('name'), 'test_params:3 (3)')
 
     def test_writes_xml_file_at_end(self):
         test = self.case('test')

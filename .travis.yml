@@ -2,30 +2,35 @@ language: python
 sudo: false
 cache:
   directories:
-    - $HOME/.cache/pip
+  - "$HOME/.cache/pip"
 python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-  - "pypy"
-  - "pypy3"
+- '2.6'
+- '2.7'
+- '3.2'
+- '3.3'
+- '3.4'
+- pypy
+- pypy3
 install:
-  - travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
-  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coveralls; fi
-  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coverage; fi
+- travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external
+  argparse
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coveralls;
+  fi
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coverage;
+  fi
 script:
-  - if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then CMD="coverage run"; else CMD="python"; fi; PYTHONPATH=. $CMD -m nose2.__main__ -v
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then CMD="coverage run"; else CMD="python";
+  fi; PYTHONPATH=. $CMD -m nose2.__main__ -v
 after_success:
-  - coveralls
+- coveralls
 deploy:
   provider: pypi
-  user: little-dude
+  user: the_drow
   password:
-    secure: YhPcKX01u0PA7B5rkltlTHyEVfrA//vwWUraOdnqUJmiWOyWdZrXMu3+QIMjX+Oq7+zwMeN74+GNeZ2Qg2yFZ+tYnyHLNCZDPOIfx0CHX4qhha19JbByVmbIyemKa57gFJVSUm6rr2Lx+dm4fXiTZHrD3EfoNYcWsQFo8YdojVM=
+    secure: UprHllwkY0QzmO5mGl30LpJcpdnyf9wRkrXjifeEuOFjBAosWISa0vOPd6OMv8oZ5zWlEODiMRPVxHvBsjqo2nKLxSRh98Vc6vZCZBNc1GZEcbkAQDntQCnUwQhwWlrE8imcgjHAWlOvFUzzhrCF6l97TLFe7hRJl/Ms4LLJ1QI=
   on:
     tags: true
-    all_branches: true
+    distributions: sdist bdist_wheel
+    repo: nose-devs/nose2
 matrix:
   fast_finish: true

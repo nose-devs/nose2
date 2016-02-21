@@ -235,7 +235,7 @@ module.
 
 
 Mixing layers with ``setUpClass`` and module fixtures
--------------------------------------------------
+-----------------------------------------------------
 
 **Don't cross the streams.**
 

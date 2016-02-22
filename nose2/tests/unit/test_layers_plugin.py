@@ -221,6 +221,62 @@ class TestLayers(TestCase):
                    ['test (nose2.tests.unit.test_layers_plugin.T4)', ]]]
         self.assertEqual(self.names(event.suite), expect)
 
+    def test_mixin_in_top_layer(self):
+
+        class M1(object):
+            pass
+
+        class L1(object):
+            mixins = (M1,)
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [  # M1
+                  [  # L1
+                   [  # T1
+                    'test (nose2.tests.unit.test_layers_plugin.T1)']]]
+        self.assertEqual(self.names(event.suite), expect)
+
+    def test_mixin_in_inner_layer(self):
+
+        class M1(object):
+            pass
+
+        class L1(object):
+            pass
+
+        class L2(L1):
+            mixins = (M1,)
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        class T2(unittest.TestCase):
+            layer = L2
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test'), T2('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [  # L1
+                  ['test (nose2.tests.unit.test_layers_plugin.T1)',
+                   # M1
+                   [  # L2
+                    ['test (nose2.tests.unit.test_layers_plugin.T2)']]]]
+        self.assertEqual(self.names(event.suite), expect)
+
     def test_mixin_inheritance(self):
         # without mixin
         # L1

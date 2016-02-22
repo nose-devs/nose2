@@ -1,6 +1,7 @@
+import sys
 from nose2.compat import unittest
 from nose2.plugins import layers
-from nose2 import events, loader, session
+from nose2 import events, loader, session, exceptions
 from nose2.tests._common import TestCase
 
 
@@ -311,6 +312,27 @@ class TestLayers(TestCase):
                       # L6
                       ['test (nose2.tests.unit.test_layers_plugin.T6)']]]]]]
         self.assertEqual(self.names(event.suite), expect)
+
+    def test_invalid_top_layer(self):
+
+        if sys.version_info[0] == 3:
+            # in python 3, L1 will automatically have `object` has base, so
+            # this test does not make sense, and will actually fail.
+            return
+
+        class L1():
+            pass
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        with self.assertRaises(exceptions.LoadTestsFailure):
+            self.plugin.startTestRun(event)
 
     def names(self, suite):
         return [n for n in self.iternames(suite)]

@@ -1,15 +1,14 @@
 """
 Use this plugin to activate coverage report.
 
-To install this plugin, you need to activate ``coverage-plugin``
-with extra requirements :
+To use this plugin, you need to install ``cov-core``:
 
 ::
 
-    $ pip install nose2[coverage-plugin]
+    $ pip install cov-core
 
 
-Next, you can enable coverage reporting with :
+Then, you can enable coverage reporting with :
 
 ::
 
@@ -21,7 +20,6 @@ Or with this lines in ``unittest.cfg`` :
 
     [coverage]
     always-on = True
-
 
 """
 from nose2.events import Plugin

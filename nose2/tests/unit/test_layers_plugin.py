@@ -1,6 +1,7 @@
+import sys
 from nose2.compat import unittest
 from nose2.plugins import layers
-from nose2 import events, loader, session
+from nose2 import events, loader, session, exceptions
 from nose2.tests._common import TestCase
 
 
@@ -220,7 +221,90 @@ class TestLayers(TestCase):
                    ['test (nose2.tests.unit.test_layers_plugin.T4)', ]]]
         self.assertEqual(self.names(event.suite), expect)
 
+    def test_mixin_in_top_layer(self):
+
+        class M1(object):
+            pass
+
+        class L1(object):
+            mixins = (M1,)
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [  # M1
+                  [  # L1
+                   [  # T1
+                    'test (nose2.tests.unit.test_layers_plugin.T1)']]]
+        self.assertEqual(self.names(event.suite), expect)
+
+    def test_mixin_in_inner_layer(self):
+
+        class M1(object):
+            pass
+
+        class L1(object):
+            pass
+
+        class L2(L1):
+            mixins = (M1,)
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        class T2(unittest.TestCase):
+            layer = L2
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test'), T2('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        self.plugin.startTestRun(event)
+        expect = [  # L1
+                  ['test (nose2.tests.unit.test_layers_plugin.T1)',
+                   # M1
+                   [  # L2
+                    ['test (nose2.tests.unit.test_layers_plugin.T2)']]]]
+        self.assertEqual(self.names(event.suite), expect)
+
     def test_mixin_inheritance(self):
+        # without mixin
+        # L1
+        #  -> L3
+        #   -> L4
+        #    -> L5
+        # L2
+        #  -> L6
+        #
+        # with mixin new behavior:
+        #   the mixin (L4, which comes with L3 and L1)
+        #   is inserted after the parent layer (L2).
+        # L2
+        #  -> L1
+        #   -> L3
+        #    -> L4
+        #     -> L6
+        #     -> L5
+        #
+        # with mixin old behavior
+        #   the mixin (L4, which comes with L3 and L1)
+        #   is inserted before the parent layer (L2).
+        # L1
+        #  -> L3
+        #   -> L4
+        #    -> L2
+        #     -> L6
+        #    -> L5
         class L1(object):
             pass
 
@@ -268,16 +352,43 @@ class TestLayers(TestCase):
 
             def test(self):
                 pass
-        suite = unittest.TestSuite([T6('test'), T1('test'),
-                                    T3('test'), T4('test'), T5('test')])
+        suite = unittest.TestSuite(
+            [T6('test'), T1('test'), T3('test'), T4('test'), T5('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T4)',
-                     [['test (nose2.tests.unit.test_layers_plugin.T6)']],
-                 ['test (nose2.tests.unit.test_layers_plugin.T5)', ]]]]]
+        expect = [  # L2
+                  [  # L1
+                   ['test (nose2.tests.unit.test_layers_plugin.T1)',  # T1
+                    # L3
+                    ['test (nose2.tests.unit.test_layers_plugin.T3)',  # T3
+                     # L4
+                     ['test (nose2.tests.unit.test_layers_plugin.T4)',  # T4
+                      # L5
+                      ['test (nose2.tests.unit.test_layers_plugin.T5)'],
+                      # L6
+                      ['test (nose2.tests.unit.test_layers_plugin.T6)']]]]]]
         self.assertEqual(self.names(event.suite), expect)
+
+    def test_invalid_top_layer(self):
+
+        if sys.version_info[0] == 3:
+            # in python 3, L1 will automatically have `object` has base, so
+            # this test does not make sense, and will actually fail.
+            return
+
+        class L1():
+            pass
+
+        class T1(unittest.TestCase):
+            layer = L1
+
+            def test(self):
+                pass
+
+        suite = unittest.TestSuite([T1('test')])
+        event = events.StartTestRunEvent(None, suite, None, 0, None)
+        with self.assertRaises(exceptions.LoadTestsFailure):
+            self.plugin.startTestRun(event)
 
     def names(self, suite):
         return [n for n in self.iternames(suite)]

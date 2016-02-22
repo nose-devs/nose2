@@ -109,3 +109,10 @@ class TestSuchDSL(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests in')
         self.assertTestRunOutputMatches(proc, stderr='OK')
 
+    def test_long_setup(self):
+        proc = self.runIn('such',
+                          '-v',
+                          '--plugin=nose2.plugins.layers',
+                          'test_such_timing')
+        self.assertTestRunOutputMatches(proc, stderr=r'Ran 2 tests in')
+        self.assertTestRunOutputMatches(proc, stderr='OK')

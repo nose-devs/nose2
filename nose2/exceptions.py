@@ -8,3 +8,8 @@ __unittest = True
 class TestNotFoundError(Exception):
 
     """Raised when a named test cannot be found"""
+
+
+class LoadTestsFailure(Exception):
+
+    """Raised when a test cannot be loaded"""

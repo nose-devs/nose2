@@ -221,6 +221,33 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_inheritance(self):
+        # without mixin
+        # L1
+        #  -> L3
+        #   -> L4
+        #    -> L5
+        # L2
+        #  -> L6
+        #
+        # with mixin new behavior:
+        #   the mixin (L4, which comes with L3 and L1)
+        #   is inserted after the parent layer (L2).
+        # L2
+        #  -> L1
+        #   -> L3
+        #    -> L4
+        #     -> L6
+        #     -> L5
+        #
+        # with mixin old behavior
+        #   the mixin (L4, which comes with L3 and L1)
+        #   is inserted before the parent layer (L2).
+        # L1
+        #  -> L3
+        #   -> L4
+        #    -> L2
+        #     -> L6
+        #    -> L5
         class L1(object):
             pass
 
@@ -268,15 +295,21 @@ class TestLayers(TestCase):
 
             def test(self):
                 pass
-        suite = unittest.TestSuite([T6('test'), T1('test'),
-                                    T3('test'), T4('test'), T5('test')])
+        suite = unittest.TestSuite(
+            [T6('test'), T1('test'), T3('test'), T4('test'), T5('test')])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T4)',
-                     [['test (nose2.tests.unit.test_layers_plugin.T6)']],
-                 ['test (nose2.tests.unit.test_layers_plugin.T5)', ]]]]]
+        expect = [  # L2
+                  [  # L1
+                   ['test (nose2.tests.unit.test_layers_plugin.T1)',  # T1
+                    # L3
+                    ['test (nose2.tests.unit.test_layers_plugin.T3)',  # T3
+                     # L4
+                     ['test (nose2.tests.unit.test_layers_plugin.T4)',  # T4
+                      # L5
+                      ['test (nose2.tests.unit.test_layers_plugin.T5)'],
+                      # L6
+                      ['test (nose2.tests.unit.test_layers_plugin.T6)']]]]]]
         self.assertEqual(self.names(event.suite), expect)
 
     def names(self, suite):

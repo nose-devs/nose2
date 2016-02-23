@@ -6,7 +6,7 @@ include tox.ini
 include unittest.cfg
 include README.rst
 include license.txt
-recursive-include nose2/tests/functional/support *.py *.txt *.cfg
+recursive-include nose2/tests/functional/support *.py *.txt *.cfg *.rst *.json *.egg
 recursive-include docs *.inc *.py *.rst Makefile
 graft bin
 global-exclude __pycache__

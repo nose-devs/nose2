@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.6.1
+-----
+
+* Fixed
+    * missing test files added to package.
+
+0.6.0
+-----
+
+* Added
+    * Junit XML report support properties
+    * Improve test coverage
+    * Improve CI
+    * Add a `createdTestSuite` event, fired after test loading
+
+* Fixed
+    * Junit-xml plugin fixed on windows
+    * Ensure tests are importable before trying to load them
+    * Fail test instead of skipping it, when setup fails
+    * When test loading fails, print the traceback
+    * Make the ``collect`` plugin work with layers
+    * Fix coverage plugin to take import-time coverage into account
+
 0.4.7
 -----
 

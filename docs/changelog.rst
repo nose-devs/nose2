@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.2
+-----
+
+* Fixed
+    * fix the coverage plugin tests for coverage==3.7.1
+
 0.6.1
 -----
 

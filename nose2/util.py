@@ -61,12 +61,12 @@ def valid_module_name(path):
 def name_from_path(path):
     """Translate ``path`` into module name
 
-    Returns a two-element tuple: 
-    
+    Returns a two-element tuple:
+
     1. a dotted module name that can be used in an import statement
        (e.g., ``pkg1.test.test_things``)
-    
-    2. a full path to filesystem directory, which must be on ``sys.path`` 
+
+    2. a full path to filesystem directory, which must be on ``sys.path``
        for the import to succeed.
 
     """
@@ -135,14 +135,20 @@ def name_from_args(name, index, args):
     return '%s:%s\n%s' % (name, index + 1, summary[:79])
 
 
-def test_name(test):
+def test_name(test, qualname=True):
     # XXX does not work for test funcs; test.id() lacks module
     if hasattr(test, '_funcName'):
         tid = test._funcName
     elif hasattr(test, '_testFunc'):
         tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
     else:
-        tid = test.id()
+        if sys.version_info >= (3, 5) and not qualname:
+            test_module = test.__class__.__module__
+            test_class = test.__class__.__name__
+            test_method = test._testMethodName
+            tid = "%s.%s.%s" % (test_module, test_class, test_method)
+        else:
+            tid = test.id()
     if '\n' in tid:
         tid = tid.split('\n')[0]
     return tid

@@ -1,3 +1,4 @@
+import sys
 from nose2.compat import unittest
 from nose2.plugins import layers
 from nose2 import events, loader, session
@@ -285,7 +286,13 @@ class TestLayers(TestCase):
     def iternames(self, suite):
         for t in suite:
             if isinstance(t, unittest.TestCase):
-                yield str(t)
+                if sys.version_info >= (3, 5):
+                    test_module = t.__class__.__module__
+                    test_class = t.__class__.__name__
+                    test_method = t._testMethodName
+                    yield "%s (%s.%s)" % (test_method, test_module, test_class)
+                else:
+                    yield str(t)
             else:
                 yield [n for n in self.iternames(t)]
 

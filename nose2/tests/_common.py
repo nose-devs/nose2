@@ -41,6 +41,32 @@ class TestCase(unittest.TestCase):
             os.chdir(self._orig_dir)
             shutil.rmtree(self._work_dir, ignore_errors=True)
 
+    def __str__(self):
+        """
+        In python 3.5, the unittest.TestCase.__str__() output changed.
+        This makes it conform to previous version.
+        """
+        if sys.version_info >= (3, 5):
+            test_module = self.__class__.__module__
+            test_class = self.__class__.__name__
+            test_method = self._testMethodName
+            return "%s (%s.%s)" % (test_method, test_module, test_class)
+        else:
+            return super(TestCase, self).__str__()
+
+    def id(self):
+        """
+        In python 3.5, the unittest.TestCase.__id__() output changed.
+        This makes it conform to previous version.
+        """
+        if sys.version_info >= (3, 5):
+            test_module = self.__class__.__module__
+            test_class = self.__class__.__name__
+            test_method = self._testMethodName
+            return "%s.%s.%s" % (test_module, test_class, test_method)
+        else:
+            return super(TestCase, self).id()
+
 
 class FunctionalTestCase(unittest.TestCase):
     tags = ['functional']

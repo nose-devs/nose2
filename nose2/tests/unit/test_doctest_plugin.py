@@ -1,4 +1,5 @@
 """Test doctests plugin."""
+import sys
 import doctest
 
 from nose2 import events, loader, session
@@ -54,7 +55,10 @@ True
 def func():
     pass
 """)
-        self.assertEqual(event.extraTests, [])
+        if sys.version_info >= (3, 5):
+            self.assertEqual(event.extraTests, [doctest.DocTestSuite()])
+        else:
+            self.assertEqual(event.extraTests, [])
 
     def _handle_file(self, fpath, content):
         """Have plugin handle a file with certain content.

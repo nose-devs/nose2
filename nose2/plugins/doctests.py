@@ -53,7 +53,7 @@ class DocTestLoader(Plugin):
         try:
             suite = doctest.DocTestSuite(module)
         except ValueError:
-            # doctest, very annoyingly, raises ValueError when
-            # a module has no tests.
+            # with python <= 3.5, doctest, very annoyingly, raises ValueError
+            # when a module has no tests.
             return
         event.extraTests.append(suite)

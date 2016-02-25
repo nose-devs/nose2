@@ -43,13 +43,18 @@ class Layers(events.Plugin):
 
     @classmethod
     def get_parent_layers(cls, layers_dict):
-        for layer in layers_dict.keys():
-            for parent in layer.__bases__:
-                if parent is object:
-                    continue
-                if parent not in layers_dict:
-                    layers_dict[parent] = LayerSuite(layer=parent)
-                    cls.get_parent_layers(layers_dict)
+        while True:
+            missing_parents = []
+            for layer in layers_dict.keys():
+                for parent in layer.__bases__:
+                    if parent is object:
+                        continue
+                    if parent not in layers_dict:
+                        missing_parents.append(parent)
+            if not missing_parents:
+                break
+            for parent in missing_parents:
+                layers_dict[parent] = LayerSuite(layer=parent)
 
     def make_suite(cls, suite, suiteClass):
         top_layer, layers_dict = cls.get_layers_from_suite(suite, suiteClass)

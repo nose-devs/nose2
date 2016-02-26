@@ -26,23 +26,21 @@ class Layers(events.Plugin):
         event.suite = self.make_suite(
             event.suite, self.session.testLoader.suiteClass)
 
-    @classmethod
-    def get_layers_from_suite(cls, suite, suiteClass):
+    def get_layers_from_suite(self, suite, suiteClass):
         top_layer = suiteClass()
         layers_dict = OrderedDict()
-        for test in cls.flatten_suite(suite):
+        for test in self.flatten_suite(suite):
             layer = getattr(test, 'layer', None)
             if layer:
                 if layer not in layers_dict:
-                    layers_dict[layer] = LayerSuite(layer=layer)
+                    layers_dict[layer] = LayerSuite(self.session, layer=layer)
                 layers_dict[layer].addTest(test)
             else:
                 top_layer.addTest(test)
-        cls.get_parent_layers(layers_dict)
+        self.get_parent_layers(layers_dict)
         return top_layer, layers_dict
 
-    @classmethod
-    def get_parent_layers(cls, layers_dict):
+    def get_parent_layers(self, layers_dict):
         while True:
             missing_parents = []
             for layer in layers_dict.keys():
@@ -54,22 +52,22 @@ class Layers(events.Plugin):
             if not missing_parents:
                 break
             for parent in missing_parents:
-                layers_dict[parent] = LayerSuite(layer=parent)
+                layers_dict[parent] = LayerSuite(self.session, layer=parent)
 
-    def make_suite(cls, suite, suiteClass):
-        top_layer, layers_dict = cls.get_layers_from_suite(suite, suiteClass)
+    def make_suite(self, suite, suiteClass):
+        top_layer, layers_dict = self.get_layers_from_suite(suite, suiteClass)
         tree = {}
-        unresolved_layers = cls.update_layer_tree(tree, layers_dict.keys())
+        unresolved_layers = self.update_layer_tree(tree, layers_dict.keys())
         while unresolved_layers:
-            remaining = cls.update_layer_tree(tree, unresolved_layers)
+            remaining = self.update_layer_tree(tree, unresolved_layers)
             if len(remaining) == len(unresolved_layers):
                 raise exceptions.LoadTestsFailure(
                     'Could not resolve layer dependencies')
             unresolved_layers = remaining
         for layer in tree.keys():
             if layer and layer not in layers_dict:
-                layers_dict[layer] = LayerSuite(layer=layer)
-        cls.tree_to_suite(tree, None, top_layer, layers_dict)
+                layers_dict[layer] = LayerSuite(self.session, layer=layer)
+        self.tree_to_suite(tree, None, top_layer, layers_dict)
         return top_layer
 
     @classmethod

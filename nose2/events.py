@@ -75,7 +75,8 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
        Example::
 
-         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during tests')
+         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during
+         tests')
 
     .. attribute :: configSection
 
@@ -260,12 +261,14 @@ class PluginInterface(object):
     """
     preRegistrationMethods = ('pluginsLoaded', 'handleArgs')
     methods = (
-        'loadTestsFromModule', 'loadTestsFromNames',
-        'handleFile', 'startTestRun', 'startTest', 'stopTest',
-        'loadTestsFromName', 'loadTestsFromTestCase',
-        'stopTestRun', 'matchPath', 'matchDirPath', 'getTestCaseNames',
-        'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
-        'resultStop', 'setTestOutcome', 'describeTest',
+        'loadTestsFromModule', 'loadTestsFromNames', 'handleFile',
+        'startLayerSetup', 'startLayerSetupTest', 'stopLayerSetupTest',
+        'stopLayerSetup', 'startTestRun', 'startTest', 'stopTest',
+        'startLayerTeardown', 'startLayerTeardownTest',
+        'stopLayerTeardownTest', 'stopLayerTeardown', 'loadTestsFromName',
+        'loadTestsFromTestCase', 'stopTestRun', 'matchPath', 'matchDirPath',
+        'getTestCaseNames', 'runnerCreated', 'resultCreated', 'testOutcome',
+        'wasSuccessful', 'resultStop', 'setTestOutcome', 'describeTest',
         'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',
         'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
@@ -405,6 +408,146 @@ class ResultCreatedEvent(Event):
     def __init__(self, result, **kw):
         self.result = result
         super(ResultCreatedEvent, self).__init__(**kw)
+
+
+class StartLayerSetupEvent(Event):
+
+    """Event fired before running a layer setup.
+
+    .. attribute :: layer
+
+       The current layer instance, for which setup is about to run.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StartLayerSetupEvent, self).__init__(**kw)
+
+
+class StopLayerSetupEvent(Event):
+
+    """Event fired after running a layer setup.
+
+    .. attribute :: layer
+
+       The current layer instance, for which setup just ran.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StopLayerSetupEvent, self).__init__(**kw)
+
+
+class StartLayerSetupTestEvent(Event):
+
+    """Event fired before test cases setups in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which the setup is about to run.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StartLayerSetupTestEvent, self).__init__(**kw)
+
+
+class StopLayerSetupTestEvent(Event):
+
+    """Event fired after test cases setups in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which the setup just finished.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StopLayerSetupTestEvent, self).__init__(**kw)
+
+
+class StartLayerTeardownEvent(Event):
+
+    """Event fired before running a layer teardown.
+
+    .. attribute :: layer
+
+       The current layer instance, for which teardown is about to run.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StartLayerTeardownEvent, self).__init__(**kw)
+
+
+class StopLayerTeardownEvent(Event):
+
+    """Event fired after running a layer teardown.
+
+    .. attribute :: layer
+
+       The current layer instance, for which teardown just ran.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StopLayerTeardownEvent, self).__init__(**kw)
+
+
+class StartLayerTeardownTestEvent(Event):
+
+    """Event fired before test cases teardowns in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which teardown is about to run.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StartLayerTeardownTestEvent, self).__init__(**kw)
+
+
+class StopLayerTeardownTestEvent(Event):
+
+    """Event fired after test cases teardowns in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which teardown just ran.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StopLayerTeardownTestEvent, self).__init__(**kw)
 
 
 class StartTestRunEvent(Event):

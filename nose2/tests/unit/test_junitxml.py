@@ -145,7 +145,6 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         case = self.plugin.tree.find('testcase')
         error = case.find('error')
-        ending = six.u(' \uFFFD\uFFFD')
         assert error is not None
         self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
 
@@ -277,22 +276,22 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(inital_dir,
                          os.path.dirname(os.path.realpath(self.plugin.path)))
 
-    def test_xml_contains_empty_system_err_without_logcapture(self):
+    def test_xml_contains_empty_system_out_without_logcapture(self):
         test = self.case('test_with_log')
         test(self.result)
         case = self.plugin.tree.find('testcase')
-        system_err = case.find('system-err')
-        assert system_err is not None
-        assert not system_err.text
+        system_out = case.find('system-out')
+        assert system_out is not None
+        assert not system_out.text
 
-    def test_xml_contains_log_message_in_system_err_with_logcapture(self):
+    def test_xml_contains_log_message_in_system_out_with_logcapture(self):
         self.logcapture_plugin = logcapture.LogCapture(session=self.session)
         self.logcapture_plugin.register()
 
         test = self.case('test_with_log')
         test(self.result)
         case = self.plugin.tree.find('testcase')
-        system_err = case.find('system-err')
-        assert system_err is not None
-        assert 'log message' in system_err.text
-        assert 'INFO' in system_err.text
+        system_out = case.find('system-out')
+        assert system_out is not None
+        assert 'log message' in system_out.text
+        assert 'INFO' in system_out.text

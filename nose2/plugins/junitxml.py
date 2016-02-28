@@ -164,11 +164,10 @@ class JUnitXmlReporter(events.Plugin):
             skipped.set('message', 'expected test failure')
             skipped.text = msg
 
-        system_err = ET.SubElement(testcase, 'system-err')
-        system_err.text = string_cleanup(
+        system_out = ET.SubElement(testcase, 'system-out')
+        system_out.text = string_cleanup(
             '\n'.join(event.metadata.get('logs', '')),
-            self.keep_restricted
-        )
+            self.keep_restricted)
 
     def _check(self):
         if not os.path.exists(os.path.dirname(self.path)):

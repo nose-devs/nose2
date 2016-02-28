@@ -117,9 +117,9 @@ class TestClassLoader(events.Plugin):
         module = event.module
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             return
         parent, obj, name, index = result
@@ -149,9 +149,8 @@ class TestClassLoader(events.Plugin):
                      MethodTestCase(cls), cls.__module__)(name)
                         for name in names])
             except:
-                _, ev, _ = sys.exc_info()
                 return event.loader.suiteClass(
-                    event.loader.failedLoadTests(cls.__name__, ev))
+                    event.loader.failedLoadTests(cls.__name__, sys.exc_info()))
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests

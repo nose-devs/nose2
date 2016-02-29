@@ -51,7 +51,7 @@ class DirectoryHandler(object):
                 yield result
             self.event_handled = True
             return
-        
+
         evt = events.MatchPathEvent(dirname, full_path, pattern)
         result = self.session.hooks.matchDirPath(evt)
         if evt.handled and not result:
@@ -59,7 +59,7 @@ class DirectoryHandler(object):
 
 
 class Discoverer(object):
-    
+
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name
@@ -73,7 +73,9 @@ class Discoverer(object):
             # try name as a dotted module name first
             __import__(name)
             module = sys.modules[name]
-        except ImportError:
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
             # if that fails, try it as a file or directory
             event.extraTests.extend(
                 self._find_tests(event, name, top_level_dir))
@@ -121,9 +123,8 @@ class Discoverer(object):
         try:
             start_dir, top_level_dir = self._getStartDirs()
         except (OSError, ImportError):
-            _, ev, _ = sys.exc_info()
             return loader.suiteClass(
-                loader.failedLoadTests(self.session.startDir, ev))
+                loader.failedLoadTests(self.session.startDir, sys.exc_info()))
         log.debug("_discover in %s (%s)", start_dir, top_level_dir)
         tests = list(self._find_tests(event, start_dir, top_level_dir))
         return loader.suiteClass(tests)
@@ -143,7 +144,7 @@ class Discoverer(object):
             for test in self._find_tests_in_file(
                 event, start, full_path, top_level):
                 yield test
-        
+
     def _find_tests_in_dir(self, event, full_path, top_level):
         if not os.path.isdir(full_path):
             return

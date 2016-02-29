@@ -53,6 +53,7 @@ to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
 # Rights Reserved. See: http://docs.python.org/license.html
 
 
+import sys
 import inspect
 import types
 
@@ -79,9 +80,9 @@ class Functions(Plugin):
         module = event.module
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             return
 

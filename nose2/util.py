@@ -6,27 +6,13 @@
 
 import logging
 import os
+import types
 import re
 import sys
 import traceback
 import platform
-
-try:
-    from inspect import isgeneratorfunction  # new in 2.6
-except ImportError:
-    import inspect
-    try:
-        from compiler.consts import CO_GENERATOR
-    except ImportError:
-        # IronPython doesn't have a complier module
-        CO_GENERATOR = 0x20
-    # backported from Python 2.6
-
-    def isgeneratorfunction(func):
-        return bool((inspect.isfunction(func) or inspect.ismethod(func)) and
-                    func.func_code.co_flags & CO_GENERATOR)
-
 import six
+from inspect import isgeneratorfunction  # new in 2.6
 
 
 __unittest = True
@@ -108,25 +94,80 @@ def test_from_name(name, module):
 
 
 def object_from_name(name, module=None):
-    """Import object from ``name``"""
+    """
+    Given a dotted name, return the corresponding object.
+
+    Getting the object can fail for two reason:
+
+        - the object is a module that cannot be imported.
+        - the object is a class or a function that does not exists.
+
+    Since we cannot distinguish between these two cases, we assume we are in
+    the first one. We expect the stacktrace is explicit enough for the user to
+    understand the error.
+    """
+    import_error = None
     parts = name.split('.')
     if module is None:
-        parts_copy = parts[:]
-        while parts_copy:
-            try:
-                module = __import__('.'.join(parts_copy))
-                break
-            except ImportError:
-                del parts_copy[-1]
-                if not parts_copy:
-                    raise
+        (module, import_error) = try_import_module_from_name(parts[:])
         parts = parts[1:]
-
     parent = None
     obj = module
     for part in parts:
-        parent, obj = obj, getattr(obj, part)
+        try:
+            parent, obj = obj, getattr(obj, part)
+        except AttributeError as e:
+            if is_package_or_module(obj) and import_error:
+                # Re-raise the import error which got us here, since
+                # it probably better describes the issue.
+                _raise_custom_attribute_error(obj, part, e, import_error)
+            else:
+                raise
+
     return parent, obj
+
+
+def _raise_custom_attribute_error(obj, attr, attr_error_exc, prev_exc):
+
+    if sys.version_info >= (3, 0):
+        six.raise_from(attr_error_exc, prev_exc[1])
+
+    # for python 2, do exception chaining manually
+    raise AttributeError(
+        "'%s' has not attribute '%s'\n\nMaybe caused by\n\n%s" % (
+            obj, attr, '\n'.join(traceback.format_exception(*prev_exc))))
+
+
+def is_package_or_module(obj):
+    if hasattr(obj, '__path__') or isinstance(obj, types.ModuleType):
+        return True
+    return False
+
+
+def try_import_module_from_name(splitted_name):
+    """
+    Try to find the longest importable from the ``splitted_name``, and return
+    the corresponding module, as well as the potential ``ImportError``
+    exception that occurs when trying to import a longer name.
+
+    For instance, if ``splitted_name`` is ['a', 'b', 'c'] but only ``a.b`` is
+    importable, this function:
+        1. tries to import ``a.b.c`` and fails
+        2. tries to import ``a.b`` and succeeds
+        3. return ``a.b`` and the exception that occured at step 1.
+    """
+    module = None
+    import_error = None
+    while splitted_name:
+        try:
+            module = __import__('.'.join(splitted_name))
+            break
+        except:
+            import_error = sys.exc_info()
+            del splitted_name[-1]
+            if not splitted_name:
+                six.reraise(*sys.exc_info())
+    return (module, import_error)
 
 
 def name_from_args(name, index, args):

@@ -13,6 +13,7 @@ command line.
 # code developed in reference to that module and others within unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
+import sys
 import logging
 import unittest
 
@@ -54,9 +55,9 @@ class TestCaseLoader(events.Plugin):
         log.debug("load %s from %s", name, module)
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             return
         parent, obj, name, index = result

@@ -73,7 +73,9 @@ class Discoverer(object):
             # try name as a dotted module name first
             __import__(name)
             module = sys.modules[name]
-        except ImportError:
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
             # if that fails, try it as a file or directory
             event.extraTests.extend(
                 self._find_tests(event, name, top_level_dir))

@@ -1,3 +1,4 @@
+import sys
 import logging
 from unittest import TestSuite
 
@@ -143,6 +144,11 @@ def _get_attr(test, key):
             val = getattr(meth, key, undefined)
             if val is not undefined:
                 return val
+    if sys.version_info >= (3, 0):
+        import builtins
+    else:
+        builtins = __import__('__builtin__')
+    return getattr(builtins, key, None)
 
 
 class ContextHelper:

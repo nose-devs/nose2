@@ -2,7 +2,7 @@ import os
 import sys
 
 NAME = 'nose2'
-VERSION = '0.6.2'
+VERSION = '0.6.3'
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
             'nose2.tools', 'nose2.backports']
@@ -23,6 +23,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: Implementation :: CPython',
     'Programming Language :: Python :: Implementation :: PyPy',
     'Operating System :: OS Independent',

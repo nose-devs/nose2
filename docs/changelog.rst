@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.3
+-----
+
+* Added
+    * python 3.5 support
+
 0.6.2
 -----
 

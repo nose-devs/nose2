@@ -94,10 +94,10 @@ class TestParams(TestCase):
         self.assertEqual(len(event.extraTests), 1)
         self.assertEqual(len(event.extraTests[0]._tests), 2)
         # check that test names are sensible
-        self.assertEqual(util.test_name(event.extraTests[0]._tests[0]),
-                         'themod.Test.test:1')
-        self.assertEqual(util.test_name(event.extraTests[0]._tests[1]),
-                         'themod.Test.test:2')
+        t1 = util.test_name(event.extraTests[0]._tests[0], qualname=False)
+        self.assertEqual(t1, 'themod.Test.test:1')
+        t2 = util.test_name(event.extraTests[0]._tests[1], qualname=False)
+        self.assertEqual(t2, 'themod.Test.test:2')
 
     def test_can_load_tests_from_parameterized_by_cartesian_params_methods(self):
         class Mod(object):

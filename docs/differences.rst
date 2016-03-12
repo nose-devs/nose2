@@ -93,7 +93,7 @@ with a custom test runner, when run this way, *nose2 essentially
 hijacks the test running process*. The "test suite" that
 :func:`nose2.collector.collector` returns actually *is* a test runner,
 cloaked inside of a test case. It loads and runs tests as normal,
-setting up its own test runner and test result, and calls sys.exit()
+setting up its own test runner and test result, and calls ``sys.exit()``
 itself -- completely bypassing the test runner and test result that
 setuptools/unittest create. This may be incompatible with some
 projects.
@@ -102,7 +102,7 @@ New Plugin API
 ^^^^^^^^^^^^^^
 
 nose2 implements a new plugin API based on the work done by Michael
-Foord in unittest2's plugins branch. This API is greatly superior to
+Foord in unittest2's ``plugins`` branch. This API is greatly superior to
 the one in nose, especially in how it allows plugins to interact with
 each other. But it is different enough from the API in nose that
 supporting nose plugins in nose2 will not be practical: *plugins must
@@ -122,8 +122,8 @@ Internals
 
 nose wraps or replaces everything in unittest. nose2 does a bit less:
 *it does not wrap TestCases*, and does not wrap the test result class
-with a result proxy. nose2 does subclass TestProgram, and install its
-own loader, runner and result classes. It does this unconditionally,
+with a result proxy. nose2 does subclass :class:`TestProgram`, and install its
+own loader, runner, and result classes. It does this unconditionally,
 rather than allowing arguments to ``TestProgram.__init__()`` to specify
 the test loader and runner. See :doc:`dev/internals` for more
 information.
@@ -154,7 +154,7 @@ nose2 is being developed by the same people who maintain nose.
 nose2 is not (exactly) unittest2/plugins
 ----------------------------------------
 
-nose2 is based on the unittest2 plugins branch, but differs from it in
+nose2 is based on the unittest2 ``plugins`` branch, but differs from it in
 several substantial ways. The *event api not exactly the same* because
 nose2 can't replace unittest.TestCase, and *does not configure the test
 run or plugin set globally*. nose2 also has a *wholly different

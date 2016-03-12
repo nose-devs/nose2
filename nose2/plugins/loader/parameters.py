@@ -8,8 +8,31 @@ loading tests from parameterized test functions and methods.
 To parameterize a function or test case method, use :func:`nose2.tools.params`.
 
 To address a particular parameterized test via a command-line test name,
-append a colon (':') followed by the index, *starting from 1*, of the
+append a colon (':') followed by the index (*starting from 1*) of the
 case you want to execute.
+
+Such And The Parameters Plugin
+------------------------------
+
+The parameters plugin can work with the Such DSL, as long as the first argument
+of the test function is the "case" argument, followed by the other parameters::
+
+    from nose2.tools import such
+    from nose2.tools.params import params
+
+    with such.A('foo') as it:
+        @it.should('do bar')
+        @params(1,2,3)
+        def test(case, bar):
+            case.assert_(isinstance(bar, int))
+
+        @it.should('do bar and extra')
+        @params((1, 2), (3, 4) ,(5, 6))
+        def testExtraArg(case, bar, foo):
+            case.assert_(isinstance(bar, int))
+            case.assert_(isinstance(foo, int))
+
+    it.createTests(globals())
 
 """
 # This module contains some code copied from unittest2 and other code
@@ -17,6 +40,7 @@ case you want to execute.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import sys
 import functools
 import logging
 import types
@@ -93,9 +117,9 @@ class Parameters(Plugin):
         module = event.module
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             # we can't find it - let the default case handle it
             return

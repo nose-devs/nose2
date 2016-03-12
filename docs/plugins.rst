@@ -29,6 +29,7 @@ keyword argument.
    plugins/debugger
    plugins/failfast
    plugins/logcapture
+   plugins/coverage
 
 
 Built in but *not* Loaded by Default
@@ -55,6 +56,7 @@ argument.
    plugins/testid
    plugins/prof
    plugins/printhooks
+   plugins/eggdiscovery
 
 
 Third-party Plugins

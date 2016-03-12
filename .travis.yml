@@ -1,15 +1,37 @@
 language: python
+sudo: false
+cache:
+  directories:
+  - "$HOME/.cache/pip"
 python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "pypy"
+- '2.6'
+- '2.7'
+- '3.2'
+- '3.3'
+- '3.4'
+- '3.5'
+- pypy
+- pypy3
 install:
-  - pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external argparse
-  - pip install coveralls
-  - pip install coverage
+- travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external
+  argparse
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coveralls;
+  fi
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then travis_retry pip install coverage;
+  fi
 script:
-  - PYTHONPATH=. coverage run -m nose2.__main__
+- if [[ "${TRAVIS_PYTHON_VERSION}" != 3.2 ]]; then CMD="coverage run"; else CMD="python";
+  fi; PYTHONPATH=. $CMD -m nose2.__main__ -v
 after_success:
-  - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  user: the_drow
+  password:
+    secure: UprHllwkY0QzmO5mGl30LpJcpdnyf9wRkrXjifeEuOFjBAosWISa0vOPd6OMv8oZ5zWlEODiMRPVxHvBsjqo2nKLxSRh98Vc6vZCZBNc1GZEcbkAQDntQCnUwQhwWlrE8imcgjHAWlOvFUzzhrCF6l97TLFe7hRJl/Ms4LLJ1QI=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: nose-devs/nose2
+matrix:
+  fast_finish: true

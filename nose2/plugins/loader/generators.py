@@ -15,7 +15,7 @@ tuple, or the arguments may be grouped into a separate tuple::
       yield check, (1, 2)
 
 To address a particular generated test via a command-line test name,
-append a colon (':') followed by the index, *starting from 1*, of the
+append a colon (':') followed by the index (*starting from 1*) of the
 generated case you want to execute.
 
 """
@@ -106,9 +106,9 @@ class Generators(Plugin):
         module = event.module
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             # we can't find it - let the default case handle it
             return
@@ -182,12 +182,11 @@ class Generators(Plugin):
                 method = functools.update_wrapper(method, func)
                 setattr(instance, method_name, method)
                 yield instance
-        except:
-            exc_info = sys.exc_info()
+        except Exception as e:
             test_name = '%s.%s.%s' % (testCaseClass.__module__,
                                       testCaseClass.__name__,
                                       name)
-            yield event.loader.failedLoadTests(test_name, exc_info)
+            yield event.loader.failedLoadTests(test_name, e)
 
     def _testsFromGeneratorFunc(self, event, obj):
         extras = list(obj())

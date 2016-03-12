@@ -69,13 +69,14 @@ class Plugin(six.with_metaclass(PluginMeta)):
     .. attribute :: commandLineSwitch
 
        A tuple of (short opt, long opt, help text) that defines a command
-       line flag that activates this plugin. The short opt may be None. If
+       line flag that activates this plugin. The short opt may be ``None``. If
        defined, it must be a single upper-case character. Both short and
        long opt must *not* start with dashes.
 
        Example::
 
-         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during tests')
+         commandLineSwitch = ('B', 'buffer-output', 'Buffer output during
+         tests')
 
     .. attribute :: configSection
 
@@ -84,7 +85,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
     .. attribute :: alwaysOn
 
        If this plugin should automatically register itself, set alwaysOn to
-       True. Default is False.
+       ``True``. Default is ``False``.
 
     .. note ::
 
@@ -260,17 +261,19 @@ class PluginInterface(object):
     """
     preRegistrationMethods = ('pluginsLoaded', 'handleArgs')
     methods = (
-        'loadTestsFromModule', 'loadTestsFromNames',
-        'handleFile', 'startTestRun', 'startTest', 'stopTest',
-        'loadTestsFromName', 'loadTestsFromTestCase',
-        'stopTestRun', 'matchPath', 'matchDirPath', 'getTestCaseNames',
-        'runnerCreated', 'resultCreated', 'testOutcome', 'wasSuccessful',
-        'resultStop', 'setTestOutcome', 'describeTest',
+        'loadTestsFromModule', 'loadTestsFromNames', 'handleFile',
+        'startLayerSetup', 'startLayerSetupTest', 'stopLayerSetupTest',
+        'stopLayerSetup', 'startTestRun', 'startTest', 'stopTest',
+        'startLayerTeardown', 'startLayerTeardownTest',
+        'stopLayerTeardownTest', 'stopLayerTeardown', 'loadTestsFromName',
+        'loadTestsFromTestCase', 'stopTestRun', 'matchPath', 'matchDirPath',
+        'getTestCaseNames', 'runnerCreated', 'resultCreated', 'testOutcome',
+        'wasSuccessful', 'resultStop', 'setTestOutcome', 'describeTest',
         'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',
         'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
         'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
         'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
-        'afterInteraction', 'createTests', 'afterTestRun',
+        'afterInteraction', 'createTests', 'createdTestSuite', 'afterTestRun',
         'moduleLoadedSuite', 'handleDir',
         # ... etc?
     )
@@ -312,7 +315,7 @@ class Event(object):
 
     .. attribute :: handled
 
-       Set to True to indicate that a plugin has handled the event,
+       Set to ``True`` to indicate that a plugin has handled the event,
        and no other plugins or core systems should process it further.
 
     .. attribute :: version
@@ -407,6 +410,146 @@ class ResultCreatedEvent(Event):
         super(ResultCreatedEvent, self).__init__(**kw)
 
 
+class StartLayerSetupEvent(Event):
+
+    """Event fired before running a layer setup.
+
+    .. attribute :: layer
+
+       The current layer instance, for which setup is about to run.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StartLayerSetupEvent, self).__init__(**kw)
+
+
+class StopLayerSetupEvent(Event):
+
+    """Event fired after running a layer setup.
+
+    .. attribute :: layer
+
+       The current layer instance, for which setup just ran.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StopLayerSetupEvent, self).__init__(**kw)
+
+
+class StartLayerSetupTestEvent(Event):
+
+    """Event fired before test cases setups in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which the setup is about to run.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StartLayerSetupTestEvent, self).__init__(**kw)
+
+
+class StopLayerSetupTestEvent(Event):
+
+    """Event fired after test cases setups in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which the setup just finished.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StopLayerSetupTestEvent, self).__init__(**kw)
+
+
+class StartLayerTeardownEvent(Event):
+
+    """Event fired before running a layer teardown.
+
+    .. attribute :: layer
+
+       The current layer instance, for which teardown is about to run.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StartLayerTeardownEvent, self).__init__(**kw)
+
+
+class StopLayerTeardownEvent(Event):
+
+    """Event fired after running a layer teardown.
+
+    .. attribute :: layer
+
+       The current layer instance, for which teardown just ran.
+    """
+    _attrs = Event._attrs + ('layer',)
+
+    def __init__(self, layer, **kw):
+        self.layer = layer
+        super(StopLayerTeardownEvent, self).__init__(**kw)
+
+
+class StartLayerTeardownTestEvent(Event):
+
+    """Event fired before test cases teardowns in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which teardown is about to run.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StartLayerTeardownTestEvent, self).__init__(**kw)
+
+
+class StopLayerTeardownTestEvent(Event):
+
+    """Event fired after test cases teardowns in layers.
+
+    .. attribute :: layer
+
+       The current layer instance.
+
+    .. attribute :: test
+
+       The test instance for which teardown just ran.
+    """
+    _attrs = Event._attrs + ('layer', 'test')
+
+    def __init__(self, layer, test, **kw):
+        self.layer = layer
+        self.test = test
+        super(StopLayerTeardownTestEvent, self).__init__(**kw)
+
+
 class StartTestRunEvent(Event):
 
     """Event fired when test run is about to start.
@@ -442,7 +585,7 @@ class StartTestRunEvent(Event):
              ...
 
     To prevent normal test execution, plugins may set ``handled`` on
-    this event to True. When ``handled`` is true, the test executor
+    this event to ``True``. When ``handled`` is true, the test executor
     does not run at all.
 
     """
@@ -562,19 +705,19 @@ class TestOutcomeEvent(Event):
 
        If the test resulted in an exception, the tuple of (exception
        class, exception value, traceback) as returned by
-       sys.exc_info(). If the test did not result in an exception,
-       None.
+       ``sys.exc_info()``. If the test did not result in an exception,
+       ``None``.
 
     .. attribute :: reason
 
-       For test outcomes that include a reason (Skips, for example),
+       For test outcomes that include a reason (``Skips``, for example),
        the reason.
 
     .. attribute :: expected
 
        Boolean indicating whether the test outcome was expected. In
        general, all tests are expected to pass, and any other outcome
-       will have expected as False. The exceptions to that rule are
+       will have expected as ``False``. The exceptions to that rule are
        unexpected successes and expected failures.
 
     .. attribute :: shortLabel
@@ -629,7 +772,7 @@ class LoadFromModuleEvent(Event):
 
     Plugins may set ``handled`` on this event and return a test suite
     to prevent other plugins from loading tests from the module. If
-    any plugin sets ``handled`` to True, ``extraTests`` will be
+    any plugin sets ``handled`` to ``True``, ``extraTests`` will be
     ignored.
 
     """
@@ -672,7 +815,7 @@ class LoadFromTestCaseEvent(Event):
 
     Plugins may set ``handled`` on this event and return a test suite
     to prevent other plugins from loading tests from the test case. If
-    any plugin sets ``handled`` to True, ``extraTests`` will be
+    any plugin sets ``handled`` to ``True``, ``extraTests`` will be
     ignored.
 
     """
@@ -695,11 +838,11 @@ class LoadFromNamesEvent(Event):
 
     .. attribute :: names
 
-       List of test names. May be empty or None.
+       List of test names. May be empty or ``None``.
 
     .. attribute :: module
 
-       Module to load from. May be None. If not None, names should be
+       Module to load from. May be ``None``. If not ``None``, names should be
        considered relative to this module.
 
     .. attribute :: extraTests
@@ -710,7 +853,7 @@ class LoadFromNamesEvent(Event):
 
     Plugins may set ``handled`` on this event and return a test suite
     to prevent other plugins from loading tests from the test names. If
-    any plugin sets ``handled`` to True, ``extraTests`` will be
+    any plugin sets ``handled`` to ``True``, ``extraTests`` will be
     ignored.
 
     """
@@ -741,7 +884,7 @@ class LoadFromNameEvent(Event):
 
     .. attribute :: module
 
-       Module to load from. May be None. If not None, names should be
+       Module to load from. May be ``None``. If not ``None``, names should be
        considered relative to this module.
 
     .. attribute :: extraTests
@@ -752,7 +895,7 @@ class LoadFromNameEvent(Event):
 
     Plugins may set ``handled`` on this event and return a test suite
     to prevent other plugins from loading tests from the test name. If
-    any plugin sets ``handled`` to True, ``extraTests`` will be
+    any plugin sets ``handled`` to ``True``, ``extraTests`` will be
     ignored.
 
     """
@@ -772,7 +915,8 @@ class HandleFileEvent(Event):
 
     .. note ::
 
-       This event is *not* fired for python modules that
+       This event is fired for all processed python files and modules
+       including but not limited to the ones that
        match the test file pattern.
 
     .. attribute :: loader
@@ -803,7 +947,7 @@ class HandleFileEvent(Event):
 
     Plugins may set ``handled`` on this event and return a test suite
     to prevent other plugins from loading tests from the file. If
-    any plugin sets ``handled`` to True, ``extraTests`` will be
+    any plugin sets ``handled`` to ``True``, ``extraTests`` will be
     ignored.
 
     """
@@ -825,7 +969,7 @@ class MatchPathEvent(Event):
 
     """Event fired during file matching.
 
-    Plugins may return False and set ``handled`` on this event to prevent
+    Plugins may return ``False`` and set ``handled`` on this event to prevent
     a file from being matched as a test file, regardless of other system
     settings.
 
@@ -870,7 +1014,7 @@ class GetTestCaseNamesEvent(Event):
     .. attribute :: testMethodPrefix
 
        Set this to change the test method prefix. Unless set by a plugin,
-       it is None.
+       it is ``None``.
 
     .. attribute :: extraNames
 
@@ -916,9 +1060,9 @@ class ResultSuccessEvent(Event):
 
     .. attribute :: success
 
-       Set this to True to indicate that the test run was
+       Set this to ``True`` to indicate that the test run was
        successful. If no plugin sets the ``success`` to
-       True, the test run fails.
+       ``True``, the test run fails.
 
     """
     _attrs = Event._attrs + ('result', 'success')
@@ -942,7 +1086,7 @@ class ResultStopEvent(Event):
 
     .. attribute :: shouldStop
 
-       Set to True to indicate that the test run should stop.
+       Set to ``True`` to indicate that the test run should stop.
 
     """
     _attrs = Event._attrs + ('result', 'shouldStop')
@@ -1068,7 +1212,7 @@ class UserInteractionEvent(Event):
     Plugins that capture stdout or otherwise prevent user interaction
     should respond to this event.
 
-    To prevent the user interaction from occurring, return False and
+    To prevent the user interaction from occurring, return ``False`` and
     set ``handled``. Otherwise, turn off whatever you are doing that
     prevents users from typing/clicking/touching/psionics/whatever.
 
@@ -1116,18 +1260,36 @@ class CreateTestsEvent(Event):
 
     .. attribute :: names
 
-       List of test names. May be empty or None.
+       List of test names. May be empty or ``None``.
 
     .. attribute :: module
 
-       Module to load from. May be None. If not None, names should be
+       Module to load from. May be ``None``. If not ``None``, names should be
        considered relative to this module.
 
     """
-    _attrs = Event._attrs = ('loader', 'testNames', 'module')
+    _attrs = Event._attrs + ('loader', 'testNames', 'module')
 
     def __init__(self, loader, testNames, module, **kw):
         self.loader = loader
         self.testNames = testNames
         self.module = module
         super(CreateTestsEvent, self).__init__(**kw)
+
+
+class CreatedTestSuiteEvent(Event):
+    """Event fired after test loading.
+
+    Plugins can replace the loaded test suite by returning a test suite and
+    setting ``handled`` on this event.
+
+    .. attribute :: suite
+
+       Test Suite instance
+
+    """
+    _attrs = Event._attrs + ('suite', )
+
+    def __init__(self, suite, **kw):
+        self.suite = suite
+        super(CreatedTestSuiteEvent, self).__init__(**kw)

@@ -7,6 +7,8 @@
 import logging
 import traceback
 
+import six
+
 from nose2 import events
 from nose2.compat import unittest
 
@@ -62,8 +64,11 @@ class PluggableTestLoader(object):
         if event.handled:
             suites = result or []
         else:
-            suites = [self.loadTestsFromName(name, module)
-                      for name in event.names]
+            if event.names:
+                suites = [self.loadTestsFromName(name, module)
+                          for name in event.names]
+            elif module:
+                suites = self.loadTestsFromModule(module)
         if event.extraTests:
             suites.extend(event.extraTests)
         return self.suiteClass(suites)
@@ -101,7 +106,7 @@ class PluggableTestLoader(object):
         return name.lower()
 
     def discover(self, start_dir=None, pattern=None):
-        """Compatibility shim for load_tests protocol."""
+        """Compatibility shim for ``load_tests`` protocol."""
         try:
             oldsd = self.session.startDir
             self.session.startDir = start_dir
@@ -111,7 +116,11 @@ class PluggableTestLoader(object):
 
     def _makeFailedTest(self, classname, methodname, exception):
         def testFailure(self):
-            raise exception
+            if isinstance(exception, Exception):
+                raise exception
+            else:
+                # exception tuple (type, value, traceback)
+                six.reraise(*exception)
         attrs = {methodname: testFailure}
         TestClass = type(classname, (unittest.TestCase,), attrs)
         return self.suiteClass((TestClass(methodname),))

@@ -101,7 +101,7 @@ class AutoPlugin(Directive):
 
         self.headline(rst, u"Sample configuration", '-')
         rst.append(u'The default configuration is equivalent to including '
-                   u'the following in a unittest.cfg file.', AD)
+                   u'the following in a :file:`unittest.cfg` file.', AD)
         rst.append(u'', AD)
         rst.append(u'.. code-block:: ini', AD)
         rst.append(u'  ', AD)

@@ -6,7 +6,7 @@ whenever it sees a test outcome that includes exc_info.
 
 It fires :func:`beforeInteraction` before launching pdb and
 :func:`afterInteraction` after. Other plugins may implement
-:func:`beforeInteraction` to return False and set event.handled to
+:func:`beforeInteraction` to return ``False`` and set ``event.handled`` to
 prevent this plugin from launching pdb.
 
 """

@@ -23,10 +23,10 @@ test loaders to use:
 
    Plugins can use this hook to load tests from a class that is not a
    :class:`unittest.TestCase` subclass. To prevent other plugins from
-   loading tests from the test class, set ``event.handled`` to True and
+   loading tests from the test class, set ``event.handled`` to ``True`` and
    return a test suite. Plugins can also append tests to
-   ``event.extraTests`` -- ususally that's what you want to do, since
-   that will allow other plugins to load their tests from the test
+   ``event.extraTests``. Ususally, that's what you want, since
+   it allows other plugins to load their tests from the test
    case as well.
 
 .. function :: getTestMethodNames(self, event)
@@ -38,7 +38,7 @@ test loaders to use:
    :class:`unittest.TestCase` subclass by the standard nose2 test
    loader plugins (and other plugins that respect the results of the
    hook). To force a specific list of names, set ``event.handled`` to
-   True and return a list: this exact list will be the only test case
+   ``True`` and return a list: this exact list will be the only test case
    names loaded from the test case. Plugins can also extend the list
    of names by appending test names to ``event.extraNames``, and
    exclude names by appending test names to ``event.excludedNames``.
@@ -70,6 +70,7 @@ Here's an example of a test class::
 """
 
 import unittest
+import sys
 
 from nose2 import events, util
 from nose2.compat import unittest as ut2
@@ -116,9 +117,9 @@ class TestClassLoader(events.Plugin):
         module = event.module
         try:
             result = util.test_from_name(name, module)
-        except (AttributeError, ImportError) as e:
+        except (AttributeError, ImportError):
             event.handled = True
-            return event.loader.failedLoadTests(name, e)
+            return event.loader.failedLoadTests(name, sys.exc_info())
         if result is None:
             return
         parent, obj, name, index = result
@@ -142,10 +143,14 @@ class TestClassLoader(events.Plugin):
             loaded_suite = result or event.loader.suiteClass()
         else:
             names = self._getTestMethodNames(event, cls)
-            loaded_suite = event.loader.suiteClass(
-                [util.transplant_class(
-                 MethodTestCase(cls), cls.__module__)(name)
-                    for name in names])
+            try:
+                loaded_suite = event.loader.suiteClass(
+                    [util.transplant_class(
+                     MethodTestCase(cls), cls.__module__)(name)
+                        for name in names])
+            except:
+                return event.loader.suiteClass(
+                    event.loader.failedLoadTests(cls.__name__, sys.exc_info()))
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests

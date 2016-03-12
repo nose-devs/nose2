@@ -2,9 +2,10 @@ from xml.etree import ElementTree as ET
 from nose2.tests._common import TestCase
 from nose2.compat import unittest
 from nose2 import events, loader, result, session, tools
-from nose2.plugins import junitxml
+from nose2.plugins import junitxml, logcapture
 from nose2.plugins.loader import generators, parameters, testcases
 
+import logging
 import os
 import six
 import sys
@@ -68,7 +69,6 @@ class TestJunitXmlPlugin(TestCase):
             self.assertRegex = self.assertRegexpMatches
 
         class Test(unittest.TestCase):
-
             def test(self):
                 pass
 
@@ -85,7 +85,7 @@ class TestJunitXmlPlugin(TestCase):
                 1 / 0
 
             def test_skip(self):
-                raise unittest.SkipTest('skip')
+                self.skipTest('skip')
 
             def test_bad_xml(self):
                 raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_U)
@@ -96,12 +96,17 @@ class TestJunitXmlPlugin(TestCase):
             def test_gen(self):
                 def check(a, b):
                     self.assertEqual(a, b)
+
                 yield check, 1, 1
                 yield check, 1, 2
 
             @tools.params(1, 2, 3)
             def test_params(self, p):
                 self.assertEqual(p, 2)
+
+            def test_with_log(self):
+                logging.info('log message')
+
         self.case = Test
 
     def test_success_added_to_xml(self):
@@ -140,7 +145,6 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         case = self.plugin.tree.find('testcase')
         error = case.find('error')
-        ending = six.u(' \uFFFD\uFFFD')
         assert error is not None
         self.assertRegex(error.text, self.EXPECTED_RE_SAFE)
 
@@ -181,6 +185,20 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(xml[0].get('name'), 'test_gen:1')
         self.assertEqual(xml[1].get('name'), 'test_gen:2')
 
+    def test_generator_test_full_name_correct(self):
+        gen = generators.Generators(session=self.session)
+        gen.register()
+        self.plugin.test_fullname = True
+        event = events.LoadFromTestCaseEvent(self.loader, self.case)
+        self.session.hooks.loadTestsFromTestCase(event)
+        cases = event.extraTests
+        for case in cases:
+            case(self.result)
+        xml = self.plugin.tree.findall('testcase')
+        self.assertEqual(len(xml), 2)
+        self.assertEqual(xml[0].get('name'), 'test_gen:1 (1, 1)')
+        self.assertEqual(xml[1].get('name'), 'test_gen:2 (1, 2)')
+
     def test_params_test_name_correct(self):
         # param test loading is a bit more complex than generator
         # loading. XXX -- can these be reconciled so they both
@@ -193,6 +211,7 @@ class TestJunitXmlPlugin(TestCase):
 
         class Mod(object):
             pass
+
         m = Mod()
         m.Test = self.case
         event = events.LoadFromModuleEvent(self.loader, m)
@@ -200,12 +219,37 @@ class TestJunitXmlPlugin(TestCase):
         for case in event.extraTests:
             case(self.result)
         xml = self.plugin.tree.findall('testcase')
-        self.assertEqual(len(xml), 11)
+        self.assertEqual(len(xml), 12)
         params = [x for x in xml if x.get('name').startswith('test_params')]
         self.assertEqual(len(params), 3)
         self.assertEqual(params[0].get('name'), 'test_params:1')
         self.assertEqual(params[1].get('name'), 'test_params:2')
         self.assertEqual(params[2].get('name'), 'test_params:3')
+
+    def test_params_test_full_name_correct(self):
+        plug1 = parameters.Parameters(session=self.session)
+        plug1.register()
+        plug2 = testcases.TestCaseLoader(session=self.session)
+        plug2.register()
+        # need module to fire top-level event
+
+        class Mod(object):
+            pass
+
+        m = Mod()
+        m.Test = self.case
+        event = events.LoadFromModuleEvent(self.loader, m)
+        self.plugin.test_fullname = True
+        self.session.hooks.loadTestsFromModule(event)
+        for case in event.extraTests:
+            case(self.result)
+        xml = self.plugin.tree.findall('testcase')
+        self.assertEqual(len(xml), 12)
+        params = [x for x in xml if x.get('name').startswith('test_params')]
+        self.assertEqual(len(params), 3)
+        self.assertEqual(params[0].get('name'), 'test_params:1 (1)')
+        self.assertEqual(params[1].get('name'), 'test_params:2 (2)')
+        self.assertEqual(params[2].get('name'), 'test_params:3 (3)')
 
     def test_writes_xml_file_at_end(self):
         test = self.case('test')
@@ -231,3 +275,23 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         self.assertEqual(inital_dir,
                          os.path.dirname(os.path.realpath(self.plugin.path)))
+
+    def test_xml_contains_empty_system_out_without_logcapture(self):
+        test = self.case('test_with_log')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        system_out = case.find('system-out')
+        assert system_out is not None
+        assert not system_out.text
+
+    def test_xml_contains_log_message_in_system_out_with_logcapture(self):
+        self.logcapture_plugin = logcapture.LogCapture(session=self.session)
+        self.logcapture_plugin.register()
+
+        test = self.case('test_with_log')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        system_out = case.find('system-out')
+        assert system_out is not None
+        assert 'log message' in system_out.text
+        assert 'INFO' in system_out.text

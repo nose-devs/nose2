@@ -5,7 +5,11 @@
 .. image:: https://coveralls.io/repos/nose-devs/nose2/badge.png?branch=master
     :target: https://coveralls.io/r/nose-devs/nose2?branch=master
     :alt: Coverage Status
-
+    
+.. image:: https://landscape.io/github/nose-devs/nose2/master/landscape.png
+   :target: https://landscape.io/github/nose-devs/nose2/master
+   :alt: Code Health
+    
 .. image:: https://pypip.in/v/nose2/badge.png
     :target: https://crate.io/packages/nose2/
     :alt: Latest PyPI version
@@ -28,7 +32,7 @@ on the plugins branch of unittest2. nose2 aims to improve on nose by:
  * being easier for users to configure
  * simplifying internal interfaces and processes
  * supporting Python 2 and 3 from the same codebase, without translation
- * encourging greater community involvement in its development
+ * encouraging greater community involvement in its development
 
 In service of some those goals, some features of nose *will not* be
 supported in nose2. See `differences`_ for a thorough rundown.

@@ -18,9 +18,9 @@ class PluggableTestProgram(unittest.TestProgram):
     but most of them are ignored as their functions are
     handled by plugins.
 
-    :param module: Module in which to run tests. Default: __main__
-    :param defaultTest: Default test name. Default: None
-    :param argv: Command line args. Default: sys.argv
+    :param module: Module in which to run tests. Default: :func:`__main__`
+    :param defaultTest: Default test name. Default: ``None``
+    :param argv: Command line args. Default: ``sys.argv``
     :param testRunner: *IGNORED*
     :param testLoader: *IGNORED*
     :param exit: Exit after running tests?
@@ -49,7 +49,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
           Overriding this attribute is the only way to customize
           the test loader class. Passing a test loader to
-          ``__init__`` does not work.
+          :func:`__init__` does not work.
 
     .. attribute :: runnerClass
 
@@ -60,7 +60,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
           Overriding this attribute is the only way to customize
           the test runner class. Passing a test runner to
-          ``__init__`` does not work.
+          :func:`__init__` does not work.
 
     .. attribute :: defaultPlugins
 
@@ -68,6 +68,7 @@ class PluggableTestProgram(unittest.TestProgram):
 
     """
     sessionClass = session.Session
+    _currentSession = None
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
     defaultPlugins = ('nose2.plugins.loader.discovery',
@@ -78,6 +79,7 @@ class PluggableTestProgram(unittest.TestProgram):
                       'nose2.plugins.loader.parameters',
                       'nose2.plugins.loader.loadtests',
                       'nose2.plugins.dundertest',
+                      'nose2.plugins.coverage',
                       'nose2.plugins.result',
                       'nose2.plugins.logcapture',
                       'nose2.plugins.buffer',
@@ -85,7 +87,6 @@ class PluggableTestProgram(unittest.TestProgram):
                       'nose2.plugins.debugger',
                       )
     excludePlugins = ()
-
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
     def __init__(self, **kw):
         plugins = kw.pop('plugins', [])
@@ -102,10 +103,12 @@ class PluggableTestProgram(unittest.TestProgram):
         """Parse command line args
 
         Parses arguments and creates a configuration session,
-        then calls createTests.
+        then calls :func:`createTests`.
 
         """
         self.session = self.sessionClass()
+        self.__class__._currentSession = self.session
+
         self.argparse = self.session.argparse  # for convenience
 
         # XXX force these? or can it be avoided?
@@ -227,7 +230,7 @@ class PluggableTestProgram(unittest.TestProgram):
         """Load available plugins
 
 
-        ``self.defaultPlugins`` and ``self.excludePlugins`` are passed
+        :func:`self.defaultPlugins`` and :func:`self.excludePlugins` are passed
         to the session to alter the list of plugins that will be
         loaded.
 
@@ -248,17 +251,29 @@ class PluggableTestProgram(unittest.TestProgram):
             self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
         if event.handled:
-            self.test = result
+            test = result
         else:
             log.debug("Create tests from %s/%s", self.testNames, self.module)
-            self.test = self.testLoader.loadTestsFromNames(
+            test = self.testLoader.loadTestsFromNames(
                 self.testNames, self.module)
+
+        event = events.CreatedTestSuiteEvent(test)
+        result = self.session.hooks.createdTestSuite(event)
+        if event.handled:
+            test = result
+        self.test = test
 
     def runTests(self):
         """Run tests"""
         # fire plugin hook
         runner = self._makeRunner()
-        self.result = runner.run(self.test)
+        try:
+            self.result = runner.run(self.test)
+        except Exception as e:
+            log.exception('Internal Error')
+            sys.stderr.write('Internal Error: runTests aborted: %s\n'%(e))
+            if self.exit:
+                sys.exit(1)
         if self.exit:
             sys.exit(not self.result.wasSuccessful())
 
@@ -269,6 +284,12 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.testRunner = event.runner
         return event.runner
 
+    @classmethod
+    def getCurrentSession(cls):
+        """Returns the current session, or ``None`` if no :class:`nose2.session.Session` is running.
+
+        """
+        return cls._currentSession
 
 main = PluggableTestProgram
 

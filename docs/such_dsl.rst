@@ -77,7 +77,7 @@ And tests are likewise marked with the ``should`` decorator:
 
 Test cases may optionally take one argument. If they do, they will be
 passed the :class:`unittest.TestCase` instance generated for the
-test. They can use this TestCase instance to execute assert methods,
+test. They can use this ``TestCase`` instance to execute assert methods,
 among other things. Test functions can also call assert methods on the
 top-level scenario instance, if they don't take the ``case`` argument:
 
@@ -115,10 +115,10 @@ are defined.
 Otherwise, tests written in the such DSL are collected and run just like any
 other tests, with one exception: their names. The name of a such test
 case is the name of its immediately surrounding group, plus the
-description of the test, prepended with ``test ####:``, where '####'
-is the test's (0-indexed) position within its group. To run a case
-individually, you must pass in this full name -- usually you'll have
-to quote it. For example, to run the case ``should do more things``
+description of the test, prepended with ``test ####:``, where ``####``
+is the test's (``0`` -indexed) position within its group. 
+
+To run a case individually, you must pass in this full name -- usually you'll have to quote it. For example, to run the case ``should do more things``
 defined above (assuming the layers plugin is activated by a config
 file, and the test module is in the normal path of test collection),
 you would run nose2 like this::

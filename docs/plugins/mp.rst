@@ -23,7 +23,7 @@ in ``[unittest]`` section in a config file::
 
 Or pass the module with the :option:`--plugin` command-line option::
 
-  nose2 --plugin=nose2.plugin.mp
+  nose2 --plugin=nose2.plugins.mp
 
 Then configure the number of processes to run. You can do that either
 with the :option:`-N` option::
@@ -60,7 +60,7 @@ will bind to any random open port on ``127.1.2.3``.  Any internet
 address or host-name which python can recognize as such, bind, *and* 
 connect is acceptable.  While ``0.0.0.0`` can be use for listening, 
 it is not necessarily an address to which the OS can connect.  When
-the port address is 0 or omitted, a random open port is used.  If
+the port address is ``0`` or omitted, a random open port is used.  If
 the setting is omitted or or blank, then sockets are not used unless
 nose is being executed on Windows.  In which case, an address on
 the loop back interface and a random port are used.  Whenever used,
@@ -78,10 +78,12 @@ Overhead Cost
 ~~~~~~~~~~~~~
 
 Starting subprocesses and dispatching tests takes time. A test run
-that includes a relatively small number of tests that are not IO or
-CPU bound (or calling time.sleep()) is likely to be *slower* when run
-in parallel. As of this writing, for instance, nose2's test suite
-takes about 10 times as long to run when using multiprocessing, due to
+that includes a relatively small number of tests that are not I/O or
+CPU bound (or calling ``time.sleep()``) is likely to be *slower* when run
+in parallel. 
+
+As of this writing, for instance, nose2's test suite
+takes about 10 times as long to run when using ``multiprocessing``, due to
 the overhead cost.
 
 Shared Fixtures
@@ -125,7 +127,7 @@ tests or care about something that happens *during* test execution.
 New Methods
 ~~~~~~~~~~~
 
-The MultiProcess plugin adds a few plugin hooks that other plugins can
+The ``MultiProcess`` plugin adds a few plugin hooks that other plugins can
 use to set themselves up for multiprocess test runs. Plugins don't
 have to do anything special to register for these hooks, just
 implement the methods as normal.
@@ -175,7 +177,7 @@ implement the methods as normal.
 New Events
 ~~~~~~~~~~
 
-The MultiProcess plugin's new hooks come with custom event classes.
+The ``MultiProcess`` plugin's new hooks come with custom event classes.
 
 .. autoclass :: nose2.plugins.mp.RegisterInSubprocessEvent
    :members:
@@ -246,7 +248,7 @@ Interacting with Users
 * You are probably safe because as a responsible plugin author you are
   already firing the interaction hooks (:func:`beforeInteraction`,
   :func:`afterInteraction`) around your interactive bits, and skipping
-  them when the :func:`beforeInteraction` hook returns false and sets
+  them when the :func:`beforeInteraction` hook returns ``False`` and sets
   ``event.handled``.
 
   If you're not doing that, start!

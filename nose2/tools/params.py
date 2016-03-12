@@ -1,6 +1,6 @@
 """
-This module contains some code copied from unittest2 and other
-code developed in reference to unittest2.
+This module contains some code copied from :mod:`unittest2` and other
+code developed in reference to :mod:`unittest2`.
 
 unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
@@ -33,8 +33,8 @@ def cartesian_params(*paramList):
           def test_less_than(self, num, char):
               self.assertLess(num, ord(char))
 
-    Parameters in the list must be defined as iterable objects such as
-    tuple or list.
+    Parameters in the list must be defined as iterable objects (such as
+    ``tuple`` or ``list``).
 
     """
     def decorator(func):

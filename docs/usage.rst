@@ -14,9 +14,9 @@ for ways to modify searching for tests.
 
 Directories nose2 will look in:
 
-* Directory that contains an __init__.py file (a Python package)
+* Directory that contains an ``__init__.py`` file (a Python package)
 * Directory name that contains "test" after being lowercased.
-* Directory name that is either "lib" or "src"
+* Directory name that is either ``lib`` or ``src``
 
 Each of the following test files will be run::
 
@@ -72,7 +72,7 @@ importable directory of the project, use the :option:`-s` and
 
    Top-level directory of the project. Defaults to the starting
    directory. This is the directory containing importable modules and
-   packages, and is always prepended to sys.path before test discovery
+   packages, and is always prepended to ``sys.path`` before test discovery
    begins.
 
 Specifying Tests to Run

@@ -15,14 +15,14 @@ class PluggableTestResult(object):
     """Test result that defers to plugins.
 
     All test outcome recording and reporting is deferred to plugins,
-    which are expected to implement startTest, stopTest, testOutcome,
-    and wasSuccessful.
+    which are expected to implement :func:`startTest`, :func:`stopTest`, 
+    :func:`testOutcome`, and :func:`wasSuccessful`.
 
     :param session: Test run session.
 
     .. attribute :: shouldStop
 
-       When True, test run should stop before running another test.
+       When ``True``, test run should stop before running another test.
 
     """
 
@@ -111,10 +111,10 @@ class PluggableTestResult(object):
     def wasSuccessful(self):
         """Was test run successful?
 
-        Fires :func:`wasSuccessful` hook, returns ``event.success``.
+        Fires :func:`wasSuccessful` hook, and returns ``event.success``.
 
         """
-        # assume failure, plugins must affirmatively declare success
+        # assume failure; plugins must explicitly declare success
         try:
             return self._success
         except AttributeError:
@@ -126,7 +126,7 @@ class PluggableTestResult(object):
     def stop(self):
         """Stop test run.
 
-        Fires :func:`resultStop` hook, sets ``self.shouldStop`` to
+        Fires :func:`resultStop` hook, and sets ``self.shouldStop`` to
         ``event.shouldStop``.
 
         """

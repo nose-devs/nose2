@@ -1,16 +1,19 @@
 from contextlib import contextmanager
 import inspect
 import logging
+import sys
 
 import six
 
 from nose2.compat import unittest
 from nose2 import util
+from nose2.main import PluggableTestProgram
 
 log = logging.getLogger(__name__)
 
 __unittest = True
 
+LAYERS_PLUGIN_NOT_LOADED_MESSAGE = 'Warning: Such will not function properly if the "nose2.plugins.layers" plugin not loaded!\n'
 
 @contextmanager
 def A(description):
@@ -75,12 +78,12 @@ class Scenario(object):
         self._group.mixins.append(layer)
 
     def has_setup(self, func):
-        """Add a setup method to this group.
+        """Add a :func:`setup` method to this group.
 
-        The setup method will run once, before any of the
+        The :func:`setup` method will run once, before any of the
         tests in the containing group.
 
-        A group may define any number of setup functions. They
+        A group may define any number of :func:`setup` functions. They
         will execute in the order in which they are defined.
 
         .. code-block :: python
@@ -94,12 +97,12 @@ class Scenario(object):
         return func
 
     def has_teardown(self, func):
-        """Add a teardown method to this group.
+        """Add a :func:`teardown` method to this group.
 
-        The teardown method will run once, after all of the
+        The :func:`teardown` method will run once, after all of the
         tests in the containing group.
 
-        A group may define any number of teardown functions. They
+        A group may define any number of :func:`teardown` functions. They
         will execute in the order in which they are defined.
 
         .. code-block :: python
@@ -113,16 +116,16 @@ class Scenario(object):
         return func
 
     def has_test_setup(self, func):
-        """Add a test case setup method to this group.
+        """Add a test case :func:`setup` method to this group.
 
-        The setup method will run before each of the
+        The :func:`setup` method will run before each of the
         tests in the containing group.
 
-        A group may define any number of test case setup
+        A group may define any number of test case :func:`setup`
         functions. They will execute in the order in which they are
         defined.
 
-        Test setup functions may optionally take one argument. If
+        Test :func:`setup` functions may optionally take one argument. If
         they do, they will be passed the :class:`unittest.TestCase`
         instance generated for the test.
 
@@ -136,16 +139,16 @@ class Scenario(object):
         self._group.addTestSetUp(func)
 
     def has_test_teardown(self, func):
-        """Add a test case teardown method to this group.
+        """Add a test case :func:`teardown` method to this group.
 
-        The teardown method will run before each of the
+        The :func:`teardown` method will run before each of the
         tests in the containing group.
 
-        A group may define any number of test case teardown
+        A group may define any number of test case :func:`teardown`
         functions. They will execute in the order in which they are
         defined.
 
-        Test teardown functions may optionally take one argument. If
+        Test :func:`teardown` functions may optionally take one argument. If
         they do, they will be passed the :class:`unittest.TestCase`
         instance generated for the test.
 
@@ -203,21 +206,28 @@ class Scenario(object):
 
         .. warning ::
 
-           You must call this, passing in ``globals()``, to
-           generate tests from the scenario. If you don't
-           call ``createTests``, **no tests will be
-           created**.
+           You must call this, passing in :func:`globals`, to
+           generate tests from the scenario. If you don't,
+           **no tests will be created**.
 
         .. code-block :: python
 
            it.createTests(globals())
 
         """
+        self._checkForLayersPlugin()
         self._makeGroupTest(mod, self._group)
+
+    def _checkForLayersPlugin(self):
+        currentSession = PluggableTestProgram.getCurrentSession()
+        if not currentSession:
+            return
+        if not currentSession.isPluginLoaded('nose2.plugins.layers'):
+            sys.stderr.write(LAYERS_PLUGIN_NOT_LOADED_MESSAGE)
 
     def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
         layer = self._makeLayer(group, parent_layer, position)
-        case = self._makeTestCase(group, layer)
+        case = self._makeTestCase(group, layer, parent_layer)
         log.debug(
             "Made test case %s with layer %s from %s", case, layer, group)
         mod[layer.__name__] = layer
@@ -232,26 +242,34 @@ class Scenario(object):
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)
 
-    def _makeTestCase(self, group, layer):
+    def _makeTestCase(self, group, layer, parent_layer):
         attr = {
             'layer': layer,
             'group': group,
             'description': group.description,
         }
 
+        def _make_test_func(case):
+            '''
+            Needs to be outside of the for-loop scope, so that ``case`` is properly registered as a closure.
+            '''
+            def _test(s, *args):
+                case(s, *args)
+            return _test
+            
         for index, case in enumerate(group._cases):
-            def _test(s, case=case):
-                case(s)
             name = 'test %04d: %s' % (index, case.description)
+            _test = _make_test_func(case)
             _test.__name__ = name
             _test.description = case.description
             _test.case = case
             _test.index = index
+            if hasattr(case.func, 'paramList'):
+                _test.paramList = case.func.paramList
             attr[name] = _test  # for collection and sorting
             attr[case.description] = _test  # for random access by name
 
-        setups = group._test_setups[:]
-        teardowns = group._test_teardowns[:]
+        setups = getattr(parent_layer, 'testSetups', []) + group._test_setups
         if setups:
             def setUp(self):
                 for func in setups:
@@ -261,6 +279,7 @@ class Scenario(object):
                     else:
                         func()
             attr['setUp'] = setUp
+        teardowns = getattr(parent_layer, 'testTeardowns', []) + group._test_teardowns[:]
         if teardowns:
             def tearDown(self):
                 for func in teardowns:
@@ -281,24 +300,30 @@ class Scenario(object):
         if parent_layer is None:
             parent_layer = object
 
-        # FIXME test setups
-        # test_setups = group._test_setups[:]
-        # test_teardowns = group._testeardowns[:]
-
         def setUp(cls):
-            for setup in cls.setups:
-                setup()
+            for func in cls.setups:
+                args, _, _, _ = inspect.getargspec(func)
+                if args:
+                    func(self)
+                else:
+                    func()
 
         def tearDown(cls):
-            for teardown in cls.teardowns:
-                teardown()
+            for func in cls.teardowns:
+                args, _, _, _ = inspect.getargspec(func)
+                if args:
+                    func(self)
+                else:
+                    func()
 
         attr = {
             'description': group.description,
             'setUp': classmethod(setUp),
             'tearDown': classmethod(tearDown),
             'setups': group._setups[:],
+            'testSetups': getattr(parent_layer, 'testSetups', []) + group._test_setups,
             'teardowns': group._teardowns[:],
+            'testTeardowns': getattr(parent_layer, 'testTeardowns', []) + group._test_teardowns[:],
             'position': position,
             'mixins': ()
         }
@@ -320,7 +345,7 @@ class Scenario(object):
 
 class Group(object):
 
-    """Group of tests w/common fixtures & description"""
+    """A group of tests, with common fixtures and description"""
 
     def __init__(self, description, indent=0, parent=None, base_layer=None):
         self.description = description
@@ -382,12 +407,12 @@ class Case(object):
         self.first = False
         self.full = False
 
-    def __call__(self, testcase):
+    def __call__(self, testcase, *args):
         # ... only if it takes an arg
         self._helper = testcase
-        args, _, _, _ = inspect.getargspec(self.func)
-        if args:
-            self.func(testcase)
+        funcargs, _, _, _ = inspect.getargspec(self.func)
+        if funcargs:
+            self.func(testcase, *args)
         else:
             self.func()
 

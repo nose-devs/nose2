@@ -68,9 +68,7 @@ class MultiProcess(events.Plugin):
         return False
 
     def _runmp(self, test, result):
-        log.debug("Flattening test into list of IDs")
         flat = list(self._flatten(test))
-
         procs = self._startProcs(len(flat))
 
         # send one initial task to each process
@@ -182,6 +180,7 @@ class MultiProcess(events.Plugin):
         # or module fixtures and group them that way into names
         # of test classes or modules
         # ALSO record all test cases in self.cases
+        log.debug("Flattening test into list of IDs")
         mods = {}
         classes = {}
         stack = [suite]

@@ -164,8 +164,9 @@ class MultiProcess(events.Plugin):
         # XXX create session export
         session_export = self._exportSession()
         procs = []
-        log.debug("Creating %i worker processes", self.procs)
-        for i in range(0, min(test_count, self.procs)):
+        count = min(test_count, self.procs)
+        log.debug("Creating %i worker processes", count)
+        for i in range(0, count):
             parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn))

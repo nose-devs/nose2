@@ -225,23 +225,32 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertEqual(proc.poll(), 0)
 
     def test_too_many_procs(self):
+        # Just need to run the mp plugin with less tests than
+        # processes.
         proc = self.runModuleAsMain('scenario/one_test/tests.py',
                                     '--log-level=debug',
                                     '--plugin=nose2.plugins.mp',
                                     '-N=2')
         ret_vals = queue.Queue()
+
         def save_return():
-            try:                
+            """
+            Popen.communciate() blocks.  Use a thread-safe queue
+            to return any exceptions.  Ideally, this completes
+            and returns None.
+            """
+            try:
                 self.assertTestRunOutputMatches(proc,
                                                 stderr='Ran 1 test')
-                self.assertEqual(proc.poll(), 0)        
+                self.assertEqual(proc.poll(), 0)
                 ret_vals.put(None)
             except Exception as exc:
-                import traceback
-                ret_vals.put(traceback.format_exc())
+                ret_vals.put(exc)
         thread = threading.Thread(target=save_return)
         thread.start()
 
+        # 1 minute should be more than sufficent for this
+        # little test case.
         try:
             exc = ret_vals.get(True, 60)
         except queue.Empty:

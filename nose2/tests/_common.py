@@ -92,8 +92,8 @@ class FunctionalTestCase(unittest.TestCase):
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)
 
-    def runModuleAsMain(self, testmodule):
-        return run_module_as_main(testmodule)
+    def runModuleAsMain(self, testmodule, *args):
+        return run_module_as_main(testmodule, *args)
 
 
 class _FakeEventBase(object):
@@ -186,10 +186,10 @@ def run_nose2(*nose2_args, **nose2_kwargs):
     return NotReallyAProc(nose2_args, **nose2_kwargs)
 
 
-def run_module_as_main(test_module):
+def run_module_as_main(test_module, *args):
     if not os.path.isabs(test_module):
         test_module = support_file(test_module)
-    return subprocess.Popen([sys.executable, test_module],
+    return subprocess.Popen([sys.executable, test_module] + list(args),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 

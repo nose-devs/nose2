@@ -6,6 +6,7 @@ from nose2.plugins.mp import MultiProcess, procserver
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.tests._common import FunctionalTestCase, support_file, Conn
+from six.moves import queue
 import multiprocessing
 import threading
 import time
@@ -222,4 +223,29 @@ class MPPluginTestRuns(FunctionalTestCase):
             '-N=1')
         self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_too_many_procs(self):
+        proc = self.runModuleAsMain('scenario/one_test/tests.py',
+                                    '--log-level=debug',
+                                    '--plugin=nose2.plugins.mp',
+                                    '-N=2')
+        ret_vals = queue.Queue()
+        def save_return():
+            try:                
+                self.assertTestRunOutputMatches(proc,
+                                                stderr='Ran 1 test')
+                self.assertEqual(proc.poll(), 0)        
+                ret_vals.put(None)
+            except Exception as exc:
+                import traceback
+                ret_vals.put(traceback.format_exc())
+        thread = threading.Thread(target=save_return)
+        thread.start()
+
+        try:
+            exc = ret_vals.get(True, 60)
+        except queue.Empty:
+            exc = "MP Test timed out"
+            proc.kill()
+        self.assertIsNone(exc, str(exc))
 

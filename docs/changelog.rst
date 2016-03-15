@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.4
+-----
+
+* Fixed
+    * fix deadlock in mp plugin
+
 0.6.3
 -----
 

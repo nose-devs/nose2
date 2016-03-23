@@ -127,7 +127,7 @@ class OutputBufferPlugin(events.Plugin):
                 event.extraDetail.append(ln('>> end captured %s <<' % stream))
                 if stream_buffer_exc_info:
                     event.extraDetail.append('OUTPUT ERROR: Could not get captured %s output.' % stream)
-                    event.extraDetail.append('The test may have output both non-ASCII Unicode strings and non-ASCII 8-bit strings.')
+                    event.extraDetail.append("The test might've printed both 'unicode' strings and non-ASCII 8-bit 'str' strings.")
                     event.extraDetail.append(ln('>> begin captured %s exception traceback <<' % stream))
                     event.extraDetail.append(''.join(traceback.format_exception(*stream_buffer_exc_info)))
                     event.extraDetail.append(ln('>> end captured %s exception traceback <<' % stream))

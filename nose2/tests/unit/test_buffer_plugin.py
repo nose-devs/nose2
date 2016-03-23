@@ -20,7 +20,8 @@ class TestBufferPlugin(TestCase):
 
         class Test(TestCase):
 
-            unicode_string = util.safe_decode("test 日本")
+            printed_nonascii_str = util.safe_decode("test 日本").encode('utf-8')
+            printed_unicode = six.u("hello")
 
             def test_out(self):
                 six.print_("hello")
@@ -29,11 +30,11 @@ class TestBufferPlugin(TestCase):
             def test_err(self):
                 six.print_("goodbye", file=sys.stderr)
 
-            def test_nonascii_mixed_unicode_and_str(self):
-                six.print_(self.unicode_string)
-                six.print_(self.unicode_string.encode('utf-8'))
-                six.print_(self.unicode_string, file=sys.stderr)
-                six.print_(self.unicode_string.encode('utf-8'), file=sys.stderr)
+            def test_mixed_unicode_and_nonascii_str(self):
+                six.print_(self.printed_nonascii_str)
+                six.print_(self.printed_unicode)
+                six.print_(self.printed_nonascii_str, file=sys.stderr)
+                six.print_(self.printed_unicode, file=sys.stderr)
                 raise {}["oops"]
 
         self.case = Test
@@ -75,19 +76,21 @@ class TestBufferPlugin(TestCase):
         finally:
             sys.stderr = err
 
-    def test_does_not_crash_with_nonascii_mixed_unicode_and_str(self):
+    def test_does_not_crash_with_mixed_unicode_and_nonascii_str(self):
         self.plugin.captureStderr = True
-        test = self.case('test_nonascii_mixed_unicode_and_str')
+        test = self.case('test_mixed_unicode_and_nonascii_str')
         test(self.result)
         evt = events.OutcomeDetailEvent(self.watcher.events[0])
         self.session.hooks.outcomeDetail(evt)
         extraDetail = "".join(evt.extraDetail)
         if six.PY2:
-            assert self.case.unicode_string not in extraDetail, "Output unexpectedly found in error message"
+            for string in [util.safe_decode(self.case.printed_nonascii_str), self.case.printed_unicode]:
+                assert string not in extraDetail, "Output unexpectedly found in error message"
             assert "OUTPUT ERROR" in extraDetail
             assert "UnicodeDecodeError" in extraDetail
         else:
-            assert self.case.unicode_string in extraDetail, "Output not found in error message"
+            for string in [repr(self.case.printed_nonascii_str), self.case.printed_unicode]:
+                assert string in extraDetail, "Output not found in error message"
 
     def test_decorates_outcome_detail(self):
         test = self.case('test_out')

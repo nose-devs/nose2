@@ -15,6 +15,7 @@ talk to the user.
 """
 
 import sys
+import traceback
 
 from six import StringIO
 
@@ -97,13 +98,39 @@ class OutputBufferPlugin(events.Plugin):
         """Add buffered output to event.extraDetail"""
         for stream in ('stdout', 'stderr'):
             if stream in event.outcomeEvent.metadata:
-                buf = event.outcomeEvent.metadata[stream].getvalue()
-                if not buf:
+                buf = ''
+                stream_buffer_exc_info = None
+                try:
+                    buf = event.outcomeEvent.metadata[stream].getvalue()
+                except UnicodeError:
+                    # python2's StringIO.StringIO [1] class has this warning:
+                    #
+                    #     The StringIO object can accept either Unicode or 8-bit strings,
+                    #     but mixing the two may take some care. If both are used, 8-bit
+                    #     strings that cannot be interpreted as 7-bit ASCII (that use the
+                    #     8th bit) will cause a UnicodeError to be raised when getvalue()
+                    #     is called.
+                    #
+                    # This exception handler is a protection against crashes
+                    # caused by this exception (such as [2] in the original
+                    # nose application). Capturing the exception info allows us
+                    # to display it back to the user.
+                    #
+                    # [1] <https://github.com/python/cpython/blob/2.7/Lib/StringIO.py#L258>
+                    # [2] <https://github.com/nose-devs/nose/issues/816>
+                    stream_buffer_exc_info = sys.exc_info()
+                if (not buf) and (not stream_buffer_exc_info):
                     continue
                 event.extraDetail.append(
                     ln('>> begin captured %s <<' % stream))
                 event.extraDetail.append(buf)
                 event.extraDetail.append(ln('>> end captured %s <<' % stream))
+                if stream_buffer_exc_info:
+                    event.extraDetail.append('OUTPUT ERROR: Could not get captured %s output.' % stream)
+                    event.extraDetail.append('The test may have output both non-ASCII Unicode strings and non-ASCII 8-bit strings.')
+                    event.extraDetail.append(ln('>> begin captured %s exception traceback <<' % stream))
+                    event.extraDetail.append(''.join(traceback.format_exception(*stream_buffer_exc_info)))
+                    event.extraDetail.append(ln('>> end captured %s exception traceback <<' % stream))
 
     def beforeInteraction(self, event):
         """Stop buffering so users can see stdout"""

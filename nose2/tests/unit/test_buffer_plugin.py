@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
 import six
 
 from nose2.plugins import buffer
-from nose2 import events, result, session
+from nose2 import events, result, session, util
 from nose2.tests._common import TestCase
 
 
@@ -18,12 +20,22 @@ class TestBufferPlugin(TestCase):
 
         class Test(TestCase):
 
+            unicode_string = util.safe_decode("test 日本")
+
             def test_out(self):
                 six.print_("hello")
                 raise {}["oops"]
 
             def test_err(self):
                 six.print_("goodbye", file=sys.stderr)
+
+            def test_nonascii_mixed_unicode_and_str(self):
+                six.print_(self.unicode_string)
+                six.print_(self.unicode_string.encode('utf-8'))
+                six.print_(self.unicode_string, file=sys.stderr)
+                six.print_(self.unicode_string.encode('utf-8'), file=sys.stderr)
+                raise {}["oops"]
+
         self.case = Test
 
         class Watcher(events.Plugin):
@@ -62,6 +74,20 @@ class TestBufferPlugin(TestCase):
                 0].metadata['stderr'].getvalue()
         finally:
             sys.stderr = err
+
+    def test_does_not_crash_with_nonascii_mixed_unicode_and_str(self):
+        self.plugin.captureStderr = True
+        test = self.case('test_nonascii_mixed_unicode_and_str')
+        test(self.result)
+        evt = events.OutcomeDetailEvent(self.watcher.events[0])
+        self.session.hooks.outcomeDetail(evt)
+        extraDetail = "".join(evt.extraDetail)
+        if six.PY2:
+            assert self.case.unicode_string not in extraDetail, "Output unexpectedly found in error message"
+            assert "OUTPUT ERROR" in extraDetail
+            assert "UnicodeDecodeError" in extraDetail
+        else:
+            assert self.case.unicode_string in extraDetail, "Output not found in error message"
 
     def test_decorates_outcome_detail(self):
         test = self.case('test_out')

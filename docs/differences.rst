@@ -86,7 +86,7 @@ plugins that are part of the project under test. See:
 Limited support for ``python setup.py test``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-nose2 supports setuptools' ``python setup.test`` command, but via very
+nose2 supports setuptools' ``python setup.py test`` command, but via very
 different means than nose. To avoid the internal complexity forced on
 nose by the fact that the setuptools test command can't be configured
 with a custom test runner, when run this way, *nose2 essentially

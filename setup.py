@@ -2,7 +2,7 @@ import os
 import sys
 
 NAME = 'nose2'
-VERSION = '0.6.2'
+VERSION = open('nose2/_version.py').readlines()[-1].split()[-1].strip('"\'')
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
             'nose2.tools']

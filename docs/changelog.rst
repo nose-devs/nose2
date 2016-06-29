@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.5
+-----
+
+* Added
+    * module version number as described in PEP 396
+
 0.6.4
 -----
 

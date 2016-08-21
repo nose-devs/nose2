@@ -2,7 +2,7 @@
 This plugin implements :func:`startTestRun`, setting a test executor
 (``event.executeTests``) that just collects tests without executing
 them. To do so it calls result.startTest, result.addSuccess and
-result.stopTest for ech test, without calling the test itself.
+result.stopTest for each test, without calling the test itself.
 """
 from nose2.events import Plugin
 from nose2.compat import unittest

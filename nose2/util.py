@@ -237,12 +237,16 @@ def has_module_fixtures(test):
 def has_class_fixtures(test):
     # hasattr would be the obvious thing to use here. Unfortunately, all tests
     # inherit from unittest2.case.TestCase, and that *always* has setUpClass and
-    # tearDownClass methods. Thus, the following (ugly) solution:
-    name = 'unittest.case'
+    # tearDownClass methods. Thus, exclude the unitest and unittest2 base
+    # classes from the lookup.
+    def is_not_base_class(c):
+        return (
+            "unittest.case" not in c.__module__ and
+            "unittest2.case" not in c.__module__)
     has_class_setups = any(
-        'setUpClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+        'setUpClass' in c.__dict__ for c in test.__class__.__mro__ if is_not_base_class(c))
     has_class_teardowns = any(
-        'tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
+        'tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if is_not_base_class(c))
     return has_class_setups or has_class_teardowns
 
 

@@ -10,12 +10,12 @@
    :target: https://landscape.io/github/nose-devs/nose2/master
    :alt: Code Health
     
-.. image:: https://pypip.in/v/nose2/badge.png
-    :target: https://crate.io/packages/nose2/
+.. image:: https://img.shields.io/pypi/v/nose2.svg
+    :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/nose2/badge.png
-    :target: https://crate.io/packages/nose2/
+.. image:: https://img.shields.io/pypi/dm/nose2.svg
+    :target: https://pypi.org/project/nose2/
     :alt: Number of PyPI downloads
     
 .. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png

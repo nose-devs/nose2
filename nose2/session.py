@@ -87,6 +87,7 @@ class Session(object):
         self.testResult = None
         self.testLoader = None
         self.logLevel = logging.WARN
+        self.configCache = dict()
 
     def get(self, section):
         """Get a config section.
@@ -95,11 +96,17 @@ class Session(object):
         :returns: instance of self.configClass.
 
         """
-        # FIXME cache these
+        # If section exists in cache, return cached version
+        if section in self.configCache:
+            return self.configCache[section]
+
+        # If section doesn't exist in cache, parse config file
+        # (and cache result)
         items = []
         if self.config.has_section(section):
             items = self.config.items(section)
-        return self.configClass(items)
+        self.configCache[section] = self.configClass(items)
+        return self.configCache[section]
 
     def loadConfigFiles(self, *filenames):
         """Load config files.

@@ -125,7 +125,7 @@ you would run nose2 like this::
 
   nose2 "test_such.having an expensive fixture.test 0000: should do more things"
 
-That is, for the a generated test case, the **group description** is
+That is, for the generated test case, the **group description** is
 the **class name**, and the **test case description** is the **test
 case name**. As you can see if you run an individual test with the
 layer reporter active, all of the group fixtures execute in proper

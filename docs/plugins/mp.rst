@@ -61,7 +61,7 @@ address or host-name which python can recognize as such, bind, *and*
 connect is acceptable.  While ``0.0.0.0`` can be use for listening, 
 it is not necessarily an address to which the OS can connect.  When
 the port address is ``0`` or omitted, a random open port is used.  If
-the setting is omitted or or blank, then sockets are not used unless
+the setting is omitted or blank, then sockets are not used unless
 nose is being executed on Windows.  In which case, an address on
 the loop back interface and a random port are used.  Whenever used,
 processes employ a random shared key for authentication.

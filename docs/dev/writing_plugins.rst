@@ -156,7 +156,7 @@ Recipes
 * Writing a plugin that monitors or controls test result output
 
   Implement any of the ``report*`` hook methods, especially if you
-  want to output to the console. If outputing to file or other system,
+  want to output to the console. If outputting to file or other system,
   you might implement :func:`testOutcome` instead.
 
   Example: :class:`nose2.plugins.result.ResultReporter`

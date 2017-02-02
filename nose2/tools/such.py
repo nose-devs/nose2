@@ -59,6 +59,10 @@ def Layer(description, desc_pre=None, desc_post=None):
       it.createTests(globals())
 
     """
+    if desc_pre is None:
+        desc_pre = ""
+    if desc_post is None:
+        desc_post = ""
     yield Scenario(
         description,
         desc_pre=desc_pre,

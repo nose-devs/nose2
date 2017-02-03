@@ -257,6 +257,12 @@ class Scenario(object):
         else:
             setattr(self._helper, attr, value)
 
+    def __delattr__(self, attr):
+        if attr in self.__dict__.keys() or attr == "_group":
+            super(Scenario, self).__delattr__(attr)
+        else:
+            delattr(self._helper, attr)
+
     def createTests(self, mod):
         """Generate test cases for this scenario.
 

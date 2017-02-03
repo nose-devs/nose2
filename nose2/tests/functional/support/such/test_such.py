@@ -13,6 +13,18 @@ class SomeLayer(object):
     def tearDown(cls):
         del it.somelayer
 
+
+#
+# Layers of test fixtures, tests, and other layers can be defined ahead of time
+# for later use in multiple places. They all also share the same attribute
+# namespace, so referencing `external.somelayer` will get you the same object
+# that `it.somelayer` references in the next Such Scenario.
+#
+with such.Layer('having a case inside the external fixture') as external:
+    @external.should('still have access to that fixture')
+    def test(case):
+        assert external.somelayer
+
 #
 # Such tests start with a declaration about the system under test
 # and will typically bind the test declaration to a variable with
@@ -142,10 +154,7 @@ with such.A('system with complex setup') as it:
             def test(case):
                 assert it.somelayer
 
-            with it.having('a case inside the external fixture'):
-                @it.should('still have access to that fixture')
-                def test(case):
-                    assert it.somelayer
+            it.uses(external)
 
 #
 # To convert the layer definitions into test cases, you have to call

@@ -31,27 +31,27 @@ class SessionFunctionalTests(FunctionalTestCase):
 
         # Create new session (generic one likely already cached
         # depending on test order)
-        cachesess = session.Session()
-        cachesess.loadConfigFiles(support_file('cfg', 'a.cfg'))
+        cache_sess = session.Session()
+        cache_sess.loadConfigFiles(support_file('cfg', 'a.cfg'))
 
         # First access to given section, should read from config file
-        firstaccess = cachesess.get('a')
+        firstaccess = cache_sess.get('a')
         assert firstaccess.as_int("a") == 1
 
         # Hack cached Config object internals to make the stored value
         # something different
-        cachesess.configCache["a"]._mvd["a"] = "0"
+        cache_sess.configCache["a"]._mvd["a"] = "0"
         newitems = []
-        for item in cachesess.configCache["a"]._items:
+        for item in cache_sess.configCache["a"]._items:
             if item != ("a", "1"):
                 newitems.append(item)
             else:
                 newitems.append(("a", "0"))
-        cachesess.configCache["a"]._items = newitems
+        cache_sess.configCache["a"]._items = newitems
 
         # Second access to given section, confirm returns cached value
         # rather than parsing config file again
-        secondaccess = cachesess.get("a")
+        secondaccess = cache_sess.get("a")
         assert secondaccess.as_int("a") == 0
 
 

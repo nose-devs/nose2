@@ -11,15 +11,23 @@ class NullHandler(logging.Handler):
         pass
 
 
-class StubPdb(object):
+class StubPdbModule(object):
 
     def __init__(self):
+
         self.called = False
         self.tb = None
 
-    def post_mortem(self, tb):
-        self.called = True
-        self.tb = tb
+        class Pdb(object):
+
+            def reset(_):
+                pass
+
+            def interaction(_, frame, tb):
+                self.called = True
+                self.tb = tb
+
+        self.Pdb = Pdb
 
 
 class NoInteraction(events.Plugin):
@@ -50,7 +58,7 @@ class TestDebugger(TestCase):
         self.case = Test
 
         self.pdb = self.plugin.pdb
-        self.plugin.pdb = StubPdb()
+        self.plugin.pdb = StubPdbModule()
 
         self.plugin.register()
 

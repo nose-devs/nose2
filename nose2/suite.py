@@ -1,5 +1,4 @@
 import sys
-import inspect
 import logging
 
 from nose2 import util
@@ -147,8 +146,7 @@ class LayerSuite(unittest.BaseTestSuite):
     def _inLayer(self, layer, test, method):
         meth = self._getBoundClassmethod(layer, method)
         if meth:
-            args, _, _, _ = inspect.getargspec(meth)
-            if len(args) > 1:
+            if util.num_expected_args(meth) > 1:
                 meth(test)
             else:
                 meth()

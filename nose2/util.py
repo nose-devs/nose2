@@ -12,6 +12,7 @@ import sys
 import traceback
 import platform
 import six
+import inspect
 from inspect import isgeneratorfunction  # new in 2.6
 
 
@@ -373,3 +374,21 @@ def ancestry(layer):
 
 def bases_and_mixins(layer):
     return (layer.__bases__ + getattr(layer, 'mixins', ()))
+
+
+def num_expected_args(func):
+    """Return the number of arguments that :func: expects"""
+    if six.PY2:
+        return len(inspect.getargspec(func)[0])
+    else:
+        return len(inspect.getfullargspec(func)[0])
+
+
+def call_with_args_if_expected(func, *args):
+    """Take :func: and call it with supplied :args:, in case that signature expects any.
+    Otherwise call the function without any arguments.
+    """
+    if num_expected_args(func) > 0:
+        func(*args)
+    else:
+        func()

@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import inspect
 import logging
 import sys
 
@@ -8,6 +7,7 @@ import six
 from nose2.compat import unittest
 from nose2 import util
 from nose2.main import PluggableTestProgram
+
 
 log = logging.getLogger(__name__)
 
@@ -273,21 +273,13 @@ class Scenario(object):
         if setups:
             def setUp(self):
                 for func in setups:
-                    args, _, _, _ = inspect.getargspec(func)
-                    if args:
-                        func(self)
-                    else:
-                        func()
+                    util.call_with_args_if_expected(func, self)
             attr['setUp'] = setUp
         teardowns = getattr(parent_layer, 'testTeardowns', []) + group._test_teardowns[:]
         if teardowns:
             def tearDown(self):
                 for func in teardowns:
-                    args, _, _, _ = inspect.getargspec(func)
-                    if args:
-                        func(self)
-                    else:
-                        func()
+                    util.call_with_args_if_expected(func, self)
             attr['tearDown'] = tearDown
 
         def methodDescription(self):
@@ -302,19 +294,11 @@ class Scenario(object):
 
         def setUp(cls):
             for func in cls.setups:
-                args, _, _, _ = inspect.getargspec(func)
-                if args:
-                    func(self)
-                else:
-                    func()
+                util.call_with_args_if_expected(func, self)
 
         def tearDown(cls):
             for func in cls.teardowns:
-                args, _, _, _ = inspect.getargspec(func)
-                if args:
-                    func(self)
-                else:
-                    func()
+                util.call_with_args_if_expected(func, self)
 
         attr = {
             'description': group.description,
@@ -410,11 +394,7 @@ class Case(object):
     def __call__(self, testcase, *args):
         # ... only if it takes an arg
         self._helper = testcase
-        funcargs, _, _, _ = inspect.getargspec(self.func)
-        if funcargs:
-            self.func(testcase, *args)
-        else:
-            self.func()
+        util.call_with_args_if_expected(self.func, testcase, *args)
 
     def __getattr__(self, attr):
         return getattr(self._helper, attr)

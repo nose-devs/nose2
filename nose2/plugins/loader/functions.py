@@ -54,7 +54,6 @@ to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
 
 
 import sys
-import inspect
 import types
 
 from nose2 import util
@@ -89,8 +88,8 @@ class Functions(Plugin):
         parent, obj, name, index = result
         if (isinstance(obj, types.FunctionType) and not
             util.isgenerator(obj) and not
-            hasattr(obj, 'paramList') and not
-            inspect.getargspec(obj).args):
+            hasattr(obj, 'paramList') and
+            util.num_expected_args(obj) == 0):
             suite = event.loader.suiteClass()
             suite.addTests(self._createTests(obj))
             event.handled = True
@@ -103,7 +102,7 @@ class Functions(Plugin):
         def is_test(obj):
             if not obj.__name__.startswith(self.session.testMethodPrefix):
                 return False
-            if inspect.getargspec(obj).args:
+            if util.num_expected_args(obj) > 0:
                 return False
             return True
 

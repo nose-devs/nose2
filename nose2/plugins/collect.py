@@ -5,7 +5,7 @@ them. To do so it calls result.startTest, result.addSuccess and
 result.stopTest for each test, without calling the test itself.
 """
 from nose2.events import Plugin
-from nose2.compat import unittest
+import unittest
 
 
 __unittest = True

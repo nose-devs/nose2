@@ -6,11 +6,10 @@
 
 import logging
 import traceback
-
 import six
+import unittest
 
 from nose2 import events
-from nose2.compat import unittest
 
 
 log = logging.getLogger(__name__)

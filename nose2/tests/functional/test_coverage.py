@@ -1,6 +1,6 @@
 import os.path
 import platform
-from nose2.compat import unittest
+import unittest
 
 from nose2.tests._common import FunctionalTestCase
 

@@ -1,5 +1,5 @@
 from nose2 import events, session
-from nose2.compat import unittest
+import unittest
 
 
 class SessionUnitTests(unittest.TestCase):

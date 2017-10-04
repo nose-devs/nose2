@@ -48,7 +48,6 @@ import unittest
 
 from nose2 import exceptions, util
 from nose2.events import Plugin
-from nose2.compat import unittest as ut2
 from nose2.plugins.loader.testclasses import MethodTestCase
 
 
@@ -56,11 +55,11 @@ log = logging.getLogger(__name__)
 __unittest = True
 
 
-class ParamsFunctionCase(ut2.FunctionTestCase):
+class ParamsFunctionCase(unittest.FunctionTestCase):
 
     def __init__(self, name, func, **args):
         self._funcName = name
-        ut2.FunctionTestCase.__init__(self, func, **args)
+        unittest.FunctionTestCase.__init__(self, func, **args)
 
     def __repr__(self):
         return self._funcName

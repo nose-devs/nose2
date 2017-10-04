@@ -1,4 +1,4 @@
-from nose2.compat import unittest
+import unittest
 
 
 class Layer1(object):

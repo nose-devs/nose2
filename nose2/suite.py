@@ -1,8 +1,8 @@
 import sys
 import logging
+import unittest
 
 from nose2 import util
-from nose2.compat import unittest
 from nose2 import events
 
 log = logging.getLogger(__name__)

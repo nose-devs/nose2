@@ -73,7 +73,6 @@ import unittest
 import sys
 
 from nose2 import events, util
-from nose2.compat import unittest as ut2
 
 __unittest = True
 
@@ -186,13 +185,13 @@ class TestClassLoader(events.Plugin):
 # to prevent unit2 discover from running this as a test, need to
 # hide it inside of a factory func. ugly!
 def MethodTestCase(cls):
-    class _MethodTestCase(ut2.TestCase):
+    class _MethodTestCase(unittest.TestCase):
 
         def __init__(self, method):
             self.method = method
             self._name = "%s.%s.%s" % (cls.__module__, cls.__name__, method)
             self.obj = cls()
-            ut2.TestCase.__init__(self, 'runTest')
+            unittest.TestCase.__init__(self, 'runTest')
 
         @classmethod
         def setUpClass(klass):

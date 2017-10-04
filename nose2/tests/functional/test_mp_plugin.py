@@ -1,7 +1,6 @@
 import sys
 
 from nose2 import session
-from nose2.compat import unittest
 from nose2.plugins.mp import MultiProcess, procserver
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
@@ -10,6 +9,7 @@ from six.moves import queue
 import multiprocessing
 import threading
 import time
+import unittest
 from multiprocessing import connection
 
 

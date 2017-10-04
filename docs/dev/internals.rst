@@ -9,7 +9,6 @@ you want to contribute to nose2.
    :maxdepth: 2
 
    main
-   compat
    exceptions
    loader
    result

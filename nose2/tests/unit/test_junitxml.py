@@ -1,6 +1,5 @@
 from xml.etree import ElementTree as ET
 from nose2.tests._common import TestCase
-from nose2.compat import unittest
 from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml, logcapture
 from nose2.plugins.loader import generators, parameters, testcases
@@ -9,6 +8,7 @@ import logging
 import os
 import six
 import sys
+import unittest
 
 
 class TestJunitXmlPlugin(TestCase):
@@ -64,7 +64,8 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin = junitxml.JUnitXmlReporter(session=self.session)
         self.plugin.register()
 
-        # unittest2 needs this
+        # Python 2.7 needs this
+        # assertRegexpMatches() was renamed to assertRegex() in 3.2
         if not hasattr(self, 'assertRegex'):
             self.assertRegex = self.assertRegexpMatches
 

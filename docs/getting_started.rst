@@ -19,9 +19,8 @@ Dependencies
 ~~~~~~~~~~~~
 
 For Python 2.7, Python 3.2 and pypy, nose2 requires `six`_ version
-1.1. For Python 2.6, nose2 also requires `argparse`_ version 1.2.1 and
-`unittest2`_ version 0.5.1. When installing with pip, distribute or
-setuptools, these dependencies will be installed automatically.
+1.1. When installing with pip, distribute or setuptools, these dependencies
+will be installed automatically.
 
 
 Development version
@@ -64,5 +63,3 @@ see :doc:`usage` and :doc:`configuration`.
 .. _pip : http://pypi.python.org/pypi/pip/1.0.2
 .. _pypi : http://pypi.python.org/pypi
 .. _six : http://pypi.python.org/pypi/six/1.1.0
-.. _argparse : http://pypi.python.org/pypi/argparse/1.2.1
-.. _unittest2 : http://pypi.python.org/pypi/unittest2/0.5.1

@@ -4,10 +4,9 @@ import tempfile
 import shutil
 import subprocess
 import sys
-
 import six
+import unittest
 
-from nose2.compat import unittest
 from nose2 import discover, util
 
 
@@ -82,6 +81,8 @@ class FunctionalTestCase(unittest.TestCase):
         if cmd_stdout is None:
             cmd_stdout, cmd_stderr = proc.communicate()
             self._output[proc.pid] = cmd_stdout, cmd_stderr
+        # Python 2.7 needs this
+        # assertRegexpMatches() was renamed to assertRegex() in 3.2
         testf = self.assertRegex if hasattr(self, 'assertRegex') \
             else self.assertRegexpMatches
         if stdout:

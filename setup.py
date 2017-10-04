@@ -5,7 +5,7 @@ NAME = 'nose2'
 VERSION = '0.6.2'
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
             'nose2.tests', 'nose2.tests.functional', 'nose2.tests.unit',
-            'nose2.tools', 'nose2.backports']
+            'nose2.tools']
 SCRIPTS = ['bin/nose2']
 DESCRIPTION = 'nose2 is the next generation of nicer testing for Python'
 URL = 'https://github.com/nose-devs/nose2'
@@ -18,7 +18,6 @@ CLASSIFIERS = [
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.2',
     'Programming Language :: Python :: 3.3',
@@ -66,8 +65,6 @@ except ImportError:
 else:
 
     REQS = ['six>=1.1']
-    if sys.version_info < (2, 7):
-        REQS.extend(['unittest2>=0.5.1,<0.6', 'argparse>=1.2.1,<1.3'])
 
     params['entry_points'] = {
         'console_scripts': [
@@ -76,6 +73,6 @@ else:
         ],
     }
     params['install_requires'] = REQS
-    params['test_suite'] = 'nose2.compat.unittest.collector'
+    params['test_suite'] = 'unittest.collector'
 
 setup(**params)

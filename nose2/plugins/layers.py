@@ -5,7 +5,7 @@ import six
 
 from nose2 import events, util, exceptions
 from nose2.suite import LayerSuite
-from nose2.compat import OrderedDict
+from collections import OrderedDict
 
 BRIGHT = r'\033[1m'
 RESET = r'\033[0m'
@@ -249,7 +249,7 @@ class LayerReporter(events.Plugin):
 
 # for debugging
 # def printtree(suite, indent=''):
-#     from nose2.compat import unittest
+#     import unittest
 #     six.print_('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
 #     for test in suite:
 #         if isinstance(test, unittest.BaseTestSuite):

@@ -144,11 +144,11 @@ class TestProcserver(FunctionalTestCase):
                     ('setTestOutcome', {
                      'outcome': 'failed',
                      'expected': False,
-                     'metadata': {'stdout': 'Hello stdout\n'}}),
+                     'metadata': {'stdout': '-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------'}}),
                     ('testOutcome', {
                      'outcome': 'failed',
                      'expected': False,
-                     'metadata': {'stdout': 'Hello stdout\n'}}),
+                     'metadata': {'stdout': '-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------'}}),
                     ('stopTest', {})]
                    ),
                   ]
@@ -258,3 +258,14 @@ class MPPluginTestRuns(FunctionalTestCase):
             proc.kill()
         self.assertIsNone(exc, str(exc))
 
+    def test_with_output_buffer(self):
+        proc = self.runIn(
+            'scenario/module_fixtures',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '--plugin=nose2.plugins.buffer',
+            '-N=2',
+            '-B',
+            )
+        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+        self.assertEqual(proc.poll(), 0)

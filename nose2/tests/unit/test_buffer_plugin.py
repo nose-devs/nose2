@@ -58,7 +58,7 @@ class TestBufferPlugin(TestCase):
             test(self.result)
             assert "hello" not in buf.getvalue()
             assert "hello" in self.watcher.events[
-                0].metadata['stdout'].getvalue()
+                0].metadata['stdout']
         finally:
             sys.stdout = out
 
@@ -72,7 +72,7 @@ class TestBufferPlugin(TestCase):
             test(self.result)
             assert "goodbye" not in buf.getvalue()
             assert "goodbye" in self.watcher.events[
-                0].metadata['stderr'].getvalue()
+                0].metadata['stderr']
         finally:
             sys.stderr = err
 

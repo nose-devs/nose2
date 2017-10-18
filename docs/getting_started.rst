@@ -18,9 +18,9 @@ you must install nose2's dependencies manually.
 Dependencies
 ~~~~~~~~~~~~
 
-For Python 2.7, Python 3.2 and pypy, nose2 requires `six`_ version
-1.1. When installing with pip, distribute or setuptools, these dependencies
-will be installed automatically.
+For Python 2.7 and pypy, nose2 requires `six`_ version 1.1. When installing
+with pip, distribute or setuptools, these dependencies will be installed
+automatically.
 
 
 Development version

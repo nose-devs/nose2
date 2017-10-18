@@ -1,7 +1,7 @@
 try:
     from unittest import mock
 except ImportError:
-    # Older python versions dont have mock by default
+    # Python versions older than 3.3 don't have mock by default
     import mock
 
 from nose2.tests._common import TestCase, RedirectStdStreams

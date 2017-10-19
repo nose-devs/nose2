@@ -36,7 +36,7 @@ function, for example:
    test.teardown = teardown
 
 The setup attribute may be named ``setup``, ``setUp`` or ``setUpFunc``. The
-teardown attribute may be named ``teardown``, 'tearDown`` or ``tearDownFunc``.
+teardown attribute may be named ``teardown``, ``tearDown`` or ``tearDownFunc``.
 
 Other attributes
 ----------------

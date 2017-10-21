@@ -1,6 +1,5 @@
 include AUTHORS
 include requirements.txt
-include requirements-py26.txt
 include requirements-docs.txt
 include tox.ini
 include unittest.cfg

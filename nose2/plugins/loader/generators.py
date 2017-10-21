@@ -32,7 +32,6 @@ import unittest
 
 from nose2 import exceptions, util
 from nose2.events import Plugin
-from nose2.compat import unittest as ut2
 
 
 log = logging.getLogger(__name__)
@@ -226,11 +225,11 @@ class Generators(Plugin):
             yield test
 
 
-class GeneratorFunctionCase(ut2.FunctionTestCase):
+class GeneratorFunctionCase(unittest.FunctionTestCase):
 
     def __init__(self, name, **args):
         self._funcName = name
-        ut2.FunctionTestCase.__init__(self, None, **args)
+        unittest.FunctionTestCase.__init__(self, None, **args)
 
     _testFunc = property(lambda self: getattr(self, self._funcName),
                          lambda self, func: None)

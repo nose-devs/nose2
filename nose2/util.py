@@ -238,11 +238,7 @@ def has_class_fixtures(test):
     # hasattr would be the obvious thing to use here. Unfortunately, all tests
     # inherit from unittest2.case.TestCase, and that *always* has setUpClass and
     # tearDownClass methods. Thus, the following (ugly) solution:
-    ver = platform.python_version_tuple()
-    if float('{0}.{1}'.format(*ver[:2])) >= 2.7:
-        name = 'unittest.case'
-    else:
-        name = 'unittest2.case'
+    name = 'unittest.case'
     has_class_setups = any(
         'setUpClass' in c.__dict__ for c in test.__class__.__mro__ if c.__module__.find(name) == -1)
     has_class_teardowns = any(

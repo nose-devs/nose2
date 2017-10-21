@@ -1,7 +1,7 @@
 from nose2.tests._common import TestCase
 from nose2.plugins import failfast
 from nose2 import result, session
-from nose2.compat import unittest
+import unittest
 
 
 class TestFailFast(TestCase):

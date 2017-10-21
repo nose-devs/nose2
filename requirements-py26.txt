@@ -1,5 +1,0 @@
-mock
-unittest2==0.5.1
---allow-external argparse
---allow-unverified argparse
-argparse>=1.2.1

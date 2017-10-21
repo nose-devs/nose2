@@ -1,8 +1,8 @@
 import logging
 import os
 import sys
+import unittest
 
-from nose2.compat import unittest
 from nose2 import events, loader, runner, session, util
 
 

@@ -1,10 +1,9 @@
 from contextlib import contextmanager
 import logging
 import sys
-
 import six
+import unittest
 
-from nose2.compat import unittest
 from nose2 import util
 from nose2.main import PluggableTestProgram
 
@@ -256,7 +255,7 @@ class Scenario(object):
             def _test(s, *args):
                 case(s, *args)
             return _test
-            
+
         for index, case in enumerate(group._cases):
             name = 'test %04d: %s' % (index, case.description)
             _test = _make_test_func(case)

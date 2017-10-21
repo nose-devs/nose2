@@ -55,10 +55,10 @@ to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
 
 import sys
 import types
+import unittest
 
 from nose2 import util
 from nose2.events import Plugin
-from nose2.compat import unittest
 
 
 __unittest = True

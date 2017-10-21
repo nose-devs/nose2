@@ -1,5 +1,5 @@
 import sys
-from nose2.compat import unittest
+import unittest
 from nose2.plugins import layers
 from nose2 import events, loader, session, exceptions
 from nose2.tests._common import TestCase

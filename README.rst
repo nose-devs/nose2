@@ -22,6 +22,10 @@
     :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
     :alt: Dependencies Status    
 
+.. image:: https://badges.gitter.im/gitterHQ/gitter.png
+    :target: https://gitter.im/nose2
+    :alt: Gitter Channel
+
 Welcome to nose2
 ================
 

@@ -175,7 +175,7 @@ class ResultReporter(events.Plugin):
             stream.writeln(self.separator1)
             stream.writeln("%s: %s" % (flavour, desc))
             stream.writeln(self.separator2)
-            stream.writeln("%s" % err)
+            stream.writeln(err)
 
     def _printSummary(self, reportEvent):
         self.session.hooks.beforeSummaryReport(reportEvent)

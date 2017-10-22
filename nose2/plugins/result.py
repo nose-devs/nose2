@@ -5,7 +5,7 @@ This plugin implements the primary user interface for nose2. It
 collects test outcomes and reports on them to the console, as well as
 firing several hooks for other plugins to do their own reporting.
 
-To see this report, nose2 MUST be run with the "verbose" flag::
+To see this report, nose2 MUST be run with the :option:`verbose` flag::
 
   nose2 --verbose
 
@@ -16,9 +16,9 @@ want. Note, however, that customer categories are *not* treated as
 errors or failures for the purposes of determining whether a test run
 has succeeded.
 
-Don't disable this plugin unless you a) have another one doing the
-same job or b) really don't want any test results (and want all test
-runs to exit(1))
+Don't disable this plugin, unless you (a) have another one doing the
+same job, or (b) really don't want any test results (and want all test
+runs to ``exit(1)``).
 """
 # This module contains some code copied from unittest2/runner.py and other
 # code developed in reference to that module and others within unittest2.
@@ -26,6 +26,7 @@ runs to exit(1))
 # Rights Reserved. See: http://docs.python.org/license.html
 
 import sys
+import unittest
 
 from nose2 import events, result, util
 
@@ -148,7 +149,6 @@ class ResultReporter(events.Plugin):
         self._report(event, 'reportSuccess', '.', 'ok')
 
     def _reportSummary(self, event):
-        self.stream.writeln('')
         # let others print something
         evt = events.ReportSummaryEvent(
             event, self.stream, self.reportCategories)
@@ -158,6 +158,7 @@ class ResultReporter(events.Plugin):
         errors = cats.get('errors', [])
         failures = cats.get('failures', [])
         # use evt.stream so plugins can replace/wrap/spy it
+        evt.stream.writeln('')
         self._printErrorList('ERROR', errors, evt.stream)
         self._printErrorList('FAIL', failures, evt.stream)
 
@@ -173,14 +174,14 @@ class ResultReporter(events.Plugin):
             err = self._getOutcomeDetail(event)
             stream.writeln(self.separator1)
             stream.writeln("%s: %s" % (flavour, desc))
-            self.stream.writeln(self.separator2)
+            stream.writeln(self.separator2)
             stream.writeln(err)
 
     def _printSummary(self, reportEvent):
-        self.stream.writeln(self.separator2)
         self.session.hooks.beforeSummaryReport(reportEvent)
 
         stream = reportEvent.stream
+        stream.writeln(self.separator2)
         run = self.testsRun
         msg = (
             "Ran %d test%s in %.3fs\n" %
@@ -198,7 +199,7 @@ class ResultReporter(events.Plugin):
         errored = len(reportEvent.reportCategories.get('errors', []))
         skipped = len(reportEvent.reportCategories.get('skipped', []))
         expectedFails = len(
-            reportEvent.reportCategories.get('expectedFails', []))
+            reportEvent.reportCategories.get('expectedFailures', []))
         unexpectedSuccesses = len(
             reportEvent.reportCategories.get('unexpectedSuccesses', []))
 
@@ -228,6 +229,8 @@ class ResultReporter(events.Plugin):
         self.session.hooks.afterSummaryReport(reportEvent)
 
     def _getDescription(self, test, errorList):
+        if not isinstance(test, unittest.TestCase):
+            return test.__class__.__name__
         doc_first_line = test.shortDescription()
         if self.descriptions and doc_first_line:
             desc = '\n'.join((str(test), doc_first_line))

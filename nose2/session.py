@@ -72,7 +72,7 @@ class Session(object):
 
     """
     configClass = config.Config
-
+    
     def __init__(self):
         self.argparse = argparse.ArgumentParser(prog='nose2', add_help=False)
         self.pluginargs = self.argparse.add_argument_group(
@@ -87,6 +87,7 @@ class Session(object):
         self.testResult = None
         self.testLoader = None
         self.logLevel = logging.WARN
+        self.configCache = dict()
 
     def get(self, section):
         """Get a config section.
@@ -95,11 +96,17 @@ class Session(object):
         :returns: instance of self.configClass.
 
         """
-        # FIXME cache these
+        # If section exists in cache, return cached version
+        if section in self.configCache:
+            return self.configCache[section]
+
+        # If section doesn't exist in cache, parse config file
+        # (and cache result)
         items = []
         if self.config.has_section(section):
             items = self.config.items(section)
-        return self.configClass(items)
+        self.configCache[section] = self.configClass(items)
+        return self.configCache[section]
 
     def loadConfigFiles(self, *filenames):
         """Load config files.
@@ -209,3 +216,14 @@ class Session(object):
     @property
     def unittest(self):
         return self.get('unittest')
+
+    def isPluginLoaded(self, pluginName):
+        """Returns ``True`` if a given plugin is loaded.
+
+        :param pluginName: the name of the plugin module: e.g. "nose2.plugins.layers".
+
+        """
+        for plugin in self.plugins:
+            if pluginName == plugin.__class__.__module__:
+                return True
+        return False

@@ -1,15 +1,15 @@
 """
-Loader that implements the load_tests protocol.
+Loader that implements the ``load_tests`` protocol.
 
-This plugin implements the load_tests protocol as detailed in the
-documentation for unittest2.
+This plugin implements the ``load_tests`` protocol as detailed in the
+documentation for :mod:`unittest2`.
 
 See the `load_tests protocol`_ documentation for more information.
 
 .. warning ::
 
-   Test suites using the load_tests protocol do not work correctly
-   with the multiprocess plugin as of nose2 04. This will be
+   Test suites using the ``load_tests`` protocol do not work correctly
+   with the :mod:`multiprocess` plugin as of nose2 04. This will be
    fixed in a future release.
 
 .. _load_tests protocol: http://docs.python.org/library/unittest.html#load-tests-protocol
@@ -34,7 +34,7 @@ class LoadTestsLoader(events.Plugin):
         event.pluginClasses.append(self.__class__)
 
     def moduleLoadedSuite(self, event):
-        """Run load_tests in a module.
+        """Run ``load_tests`` in a module.
 
         May add to or filter tests loaded in module.
 
@@ -55,10 +55,10 @@ class LoadTestsLoader(events.Plugin):
             return suite
 
     def handleDir(self, event):
-        """Run load_tests in packages.
+        """Run ``load_tests`` in packages.
 
         If a package itself matches the test file pattern, run
-        load_tests in its __init__.py, and stop default test
+        ``load_tests`` in its :file:`__init__.py`, and stop default test
         discovery for that package.
 
         """
@@ -67,7 +67,7 @@ class LoadTestsLoader(events.Plugin):
 
         if (self._match(event.name, event.pattern) and
             util.ispackage(event.path)):
-            name = util.name_from_path(event.path)
+            name, _package_path = util.name_from_path(event.path)
             module = util.module_from_name(name)
 
             load_tests = getattr(module, 'load_tests', None)

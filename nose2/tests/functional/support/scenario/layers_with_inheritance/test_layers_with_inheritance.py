@@ -1,4 +1,4 @@
-from nose2.compat import unittest
+import unittest
 
 
 class L1(object):

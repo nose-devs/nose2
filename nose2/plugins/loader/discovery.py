@@ -3,11 +3,11 @@ Discovery-based test loader.
 
 This plugin implements nose2's automatic test module discovery. It
 looks for test modules in packages and directories whose names start
-with 'test', then fires the :func:`loadTestsFromModule` hook for each
+with ``test``, then fires the :func:`loadTestsFromModule` hook for each
 one to allow other plugins to load the actual tests.
 
 It also fires :func:`handleFile` for every file that it sees, and
-:func:`matchPath` for every python module, to allow other plugins to
+:func:`matchPath` for every Python module, to allow other plugins to
 load tests from other kinds of files and to influence which modules
 are examined for tests.
 
@@ -51,7 +51,7 @@ class DirectoryHandler(object):
                 yield result
             self.event_handled = True
             return
-        
+
         evt = events.MatchPathEvent(dirname, full_path, pattern)
         result = self.session.hooks.matchDirPath(evt)
         if evt.handled and not result:
@@ -59,7 +59,7 @@ class DirectoryHandler(object):
 
 
 class Discoverer(object):
-    
+
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name
@@ -73,7 +73,9 @@ class Discoverer(object):
             # try name as a dotted module name first
             __import__(name)
             module = sys.modules[name]
-        except ImportError:
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
             # if that fails, try it as a file or directory
             event.extraTests.extend(
                 self._find_tests(event, name, top_level_dir))
@@ -121,9 +123,8 @@ class Discoverer(object):
         try:
             start_dir, top_level_dir = self._getStartDirs()
         except (OSError, ImportError):
-            _, ev, _ = sys.exc_info()
             return loader.suiteClass(
-                loader.failedLoadTests(self.session.startDir, ev))
+                loader.failedLoadTests(self.session.startDir, sys.exc_info()))
         log.debug("_discover in %s (%s)", start_dir, top_level_dir)
         tests = list(self._find_tests(event, start_dir, top_level_dir))
         return loader.suiteClass(tests)
@@ -143,7 +144,7 @@ class Discoverer(object):
             for test in self._find_tests_in_file(
                 event, start, full_path, top_level):
                 yield test
-        
+
     def _find_tests_in_dir(self, event, full_path, top_level):
         if not os.path.isdir(full_path):
             return
@@ -194,8 +195,8 @@ class Discoverer(object):
             return
 
         if module_name is None:
-            module_name = util.name_from_path(full_path)
-        
+            module_name, package_path = util.name_from_path(full_path)
+            util.ensure_importable(package_path)
         try:
             module = util.module_from_name(module_name)
         except:

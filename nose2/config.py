@@ -24,8 +24,8 @@ class Config(object):
     def as_bool(self, key, default=None):
         """Get key value as boolean
 
-        1, t, true, on, yes and y (case insensitive) are accepted as True
-        values. All other values are False.
+        1, t, true, on, yes and y (case insensitive) are accepted as ``True``
+        values. All other values are ``False``.
 
         """
         try:

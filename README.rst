@@ -5,18 +5,26 @@
 .. image:: https://coveralls.io/repos/nose-devs/nose2/badge.png?branch=master
     :target: https://coveralls.io/r/nose-devs/nose2?branch=master
     :alt: Coverage Status
-
-.. image:: https://pypip.in/v/nose2/badge.png
-    :target: https://crate.io/packages/nose2/
+    
+.. image:: https://landscape.io/github/nose-devs/nose2/master/landscape.png
+   :target: https://landscape.io/github/nose-devs/nose2/master
+   :alt: Code Health
+    
+.. image:: https://img.shields.io/pypi/v/nose2.svg
+    :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/nose2/badge.png
-    :target: https://crate.io/packages/nose2/
+.. image:: https://img.shields.io/pypi/dm/nose2.svg
+    :target: https://pypi.org/project/nose2/
     :alt: Number of PyPI downloads
     
 .. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png
     :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
     :alt: Dependencies Status    
+
+.. image:: https://badges.gitter.im/gitterHQ/gitter.png
+    :target: https://gitter.im/nose2
+    :alt: Gitter Channel
 
 Welcome to nose2
 ================
@@ -28,7 +36,7 @@ on the plugins branch of unittest2. nose2 aims to improve on nose by:
  * being easier for users to configure
  * simplifying internal interfaces and processes
  * supporting Python 2 and 3 from the same codebase, without translation
- * encourging greater community involvement in its development
+ * encouraging greater community involvement in its development
 
 In service of some those goals, some features of nose *will not* be
 supported in nose2. See `differences`_ for a thorough rundown.
@@ -41,4 +49,4 @@ plugins branch, and overrides various unittest2 objects.
 You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
 new direction!
 
-.. _differences: http://readthedocs.org/docs/nose2/en/latest/differences.html
+.. _differences: https://nose2.readthedocs.io/en/latest/differences.html

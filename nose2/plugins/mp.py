@@ -69,7 +69,7 @@ class MultiProcess(events.Plugin):
 
     def _runmp(self, test, result):
         flat = list(self._flatten(test))
-        procs = self._startProcs()
+        procs = self._startProcs(len(flat))
 
         # send one initial task to each process
         for proc, conn in procs:
@@ -92,6 +92,7 @@ class MultiProcess(events.Plugin):
 
                 if remote_events is None:
                     # XXX proc is done, how to mark it dead?
+                    log.debug("Conn closed %s", conn)
                     rdrs.remove(conn)
                     continue
 
@@ -120,13 +121,13 @@ class MultiProcess(events.Plugin):
 
     def _prepConns(self):
         """
-        If the bind_host is not none, return:
+        If the ``bind_host`` is not ``None``, return:
             (multiprocessing.connection.Listener, (address, port, authkey))
         else:
             (parent_connection, child_connection)
 
-        For the former case: accept must be called on the listener. In order
-        to get a Connection object for the socket.
+        For the former case: ``accept`` must be called on the listener. In order
+        to get a ``Connection`` object for the socket.
         """
         if self.bind_host is not None:
             #prevent "accidental" wire crossing
@@ -139,10 +140,10 @@ class MultiProcess(events.Plugin):
 
     def _acceptConns(self, parent_conn):
         """
-        When listener is is a connection.Listener instance: accept the next
-        incoming connection.  However, a timeout mechanism is needed.  Since,
-        this functionality was added to support mp over inet sockets, will
-        assume a Socket based listen and will accept the private _socket
+        When listener is is a :class:`connection.Listener` instance: accept the next
+        incoming connection.  However, a timeout mechanism is needed.  Since
+        this functionality was added to support mp over inet sockets, this method
+        assumes a Socket-based listen, and will accept the private _socket
         member to get a low_level socket to do a select on.
         """
         if isinstance(parent_conn, connection.Listener):
@@ -157,11 +158,13 @@ class MultiProcess(events.Plugin):
         else:
             return parent_conn
 
-    def _startProcs(self):
+    def _startProcs(self, test_count):
         # XXX create session export
         session_export = self._exportSession()
         procs = []
-        for i in range(0, self.procs):
+        count = min(test_count, self.procs)
+        log.debug("Creating %i worker processes", count)
+        for i in range(0, count):
             parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn))
@@ -177,6 +180,7 @@ class MultiProcess(events.Plugin):
         # or module fixtures and group them that way into names
         # of test classes or modules
         # ALSO record all test cases in self.cases
+        log.debug("Flattening test into list of IDs")
         mods = {}
         classes = {}
         stack = [suite]

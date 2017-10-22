@@ -3,11 +3,11 @@ Egg-based discovery test loader.
 
 This plugin implements nose2's automatic test module discovery inside Egg Files.
 It looks for test modules in packages whose names start
-with 'test', then fires the :func:`loadTestsFromModule` hook for each
+with ``test``, then fires the :func:`loadTestsFromModule` hook for each
 one to allow other plugins to load the actual tests.
 
 It also fires :func:`handleFile` for every file that it sees, and
-:func:`matchPath` for every python module, to allow other plugins to
+:func:`matchPath` for every Python module, to allow other plugins to
 load tests from other kinds of files and to influence which modules
 are examined for tests.
 
@@ -29,8 +29,7 @@ except ImportError:
 
 
 class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
-
-    """Loader plugin that can discover tests"""
+    """Loader plugin that can discover tests inside Egg Files"""
     alwaysOn = True
     configSection = 'discovery'
 
@@ -70,9 +69,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         if os.path.exists(full_path):
-            for test in discovery.Discoverer._find_tests_in_dir(self,
-                event, full_path, top_level):
-                yield test
+            return
         elif pkg_resources and full_path.find('.egg') != -1:
             egg_path = full_path.split('.egg')[0] + '.egg'
             for dist in pkg_resources.find_distributions(egg_path):

@@ -8,8 +8,12 @@ from nose2 import util
 class UtilTests(TestCase):
 
     def test_name_from_path(self):
+        test_module = support_file('scenario/tests_in_package/pkg1/test/test_things.py')
+        test_package_path = support_file('scenario/tests_in_package')
         self.assertEqual(
-            util.name_from_path(support_file('scenario/tests_in_package/pkg1/test/test_things.py')), 'pkg1.test.test_things')
+        util.name_from_path(test_module),
+            ('pkg1.test.test_things', test_package_path)
+        )
 
     def test_non_ascii_output(self):
         class D:
@@ -22,5 +26,4 @@ class UtilTests(TestCase):
         decorated = util._WritelnDecorator(stream)
         string = six.u('\u00dcnic\u00f6de')
         decorated.write(string)
-        # fails on py2 if output is not properly encoded
         str("".join(stream.out))

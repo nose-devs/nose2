@@ -1,2 +1,0 @@
--r requirements.txt
--r requirements-py26.txt

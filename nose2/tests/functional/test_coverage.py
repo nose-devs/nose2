@@ -11,12 +11,14 @@ class TestCoverage(FunctionalTestCase):
             '--with-coverage',
             '--coverage=lib/'
         )
-        STATS = '           8      5    38%'
-
+        STATS = '\s+8\s+5\s+38%'
+        expected = os.path.join('lib', 'mod1(.py)?')
+        expected = expected.replace('\\', r'\\')
+        expected = expected + STATS
         stdout, stderr = proc.communicate()
         self.assertTestRunOutputMatches(
             proc,
-            stderr=os.path.join('lib', 'mod1').replace('\\', r'\\') + STATS)
+            stderr=expected)
         self.assertTestRunOutputMatches(
             proc,
-            stderr='TOTAL   ' + STATS)
+            stderr='TOTAL\s+' + STATS)

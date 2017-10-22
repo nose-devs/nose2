@@ -2,10 +2,10 @@
 This plugin implements :func:`startTestRun`, setting a test executor
 (``event.executeTests``) that just collects tests without executing
 them. To do so it calls result.startTest, result.addSuccess and
-result.stopTest for ech test, without calling the test itself.
+result.stopTest for each test, without calling the test itself.
 """
 from nose2.events import Plugin
-from nose2.compat import unittest
+import unittest
 
 
 __unittest = True
@@ -17,7 +17,7 @@ class CollectOnly(Plugin):
 
     configSection = 'collect-only'
     commandLineSwitch = (None, 'collect-only',
-                         'Collect and output test names, do not run any tests')
+                         'Collect and output test names; do not run any tests')
     _mpmode = False
 
     def registerInSubprocess(self, event):
@@ -25,7 +25,7 @@ class CollectOnly(Plugin):
         self._mpmode = True
 
     def startTestRun(self, event):
-        """Replace event.executeTests"""
+        """Replace ``event.executeTests``"""
         if self._mpmode:
             return
         event.executeTests = self.collectTests
@@ -34,9 +34,9 @@ class CollectOnly(Plugin):
         event.executeTests = self.collectTests
 
     def collectTests(self, suite, result):
-        """Collect tests but don't run them"""
+        """Collect tests, but don't run them"""
         for test in suite:
-            if isinstance(test, unittest.TestSuite):
+            if isinstance(test, unittest.BaseTestSuite):
                 self.collectTests(test, result)
                 continue
             result.startTest(test)

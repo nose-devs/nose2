@@ -1,8 +1,7 @@
 import os.path
 import shutil
 import tempfile
-
-from nose2.compat import unittest
+import unittest
 
 
 class Test(unittest.TestCase):

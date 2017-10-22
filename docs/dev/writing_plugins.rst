@@ -113,11 +113,11 @@ Guidelines
 Events
 ------
 
-nose2's plugin api is based on the api in unittest2's
-under-development plugins branch. It differs from nose's plugins api
 in one major area: what it passes to hooks. Where nose passes a
 variety of arguments, nose2 *always passes an event*. The events are
 listed in the :doc:`event_reference`.
+nose2's plugin API is based on the API in unittest2's
+``plugins`` branch (under-development). Its differs from nose's 
 
 Here's the key thing about that: *event attributes are
 read-write*. Unless stated otherwise in the documentation for a hook,
@@ -156,7 +156,7 @@ Recipes
 * Writing a plugin that monitors or controls test result output
 
   Implement any of the ``report*`` hook methods, especially if you
-  want to output to the console. If outputing to file or other system,
+  want to output to the console. If outputting to file or other system,
   you might implement :func:`testOutcome` instead.
 
   Example: :class:`nose2.plugins.result.ResultReporter`

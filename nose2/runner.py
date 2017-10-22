@@ -31,7 +31,7 @@ class PluggableTestRunner(object):
     def run(self, test):
         """Run tests.
 
-        :param test: A unittest TestSuite or TestClass.
+        :param test: A unittest :class:`TestSuite`` or :class:`TestClass`.
         :returns: Test result
 
         Fires :func:`startTestRun` and :func:`stopTestRun` hooks.

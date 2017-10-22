@@ -41,7 +41,8 @@ class DocTestLoader(Plugin):
         elif not util.valid_module_name(os.path.basename(path)):
             return
 
-        name = util.name_from_path(path)
+        name, package_path = util.name_from_path(path)
+        util.ensure_importable(package_path)
         try:
             module = util.module_from_name(name)
         except Exception:
@@ -52,7 +53,7 @@ class DocTestLoader(Plugin):
         try:
             suite = doctest.DocTestSuite(module)
         except ValueError:
-            # doctest, very annoyingly, raises ValueError when
-            # a module has no tests.
+            # with python <= 3.5, doctest, very annoyingly, raises ValueError
+            # when a module has no tests.
             return
         event.extraTests.append(suite)

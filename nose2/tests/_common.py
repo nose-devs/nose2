@@ -4,10 +4,9 @@ import tempfile
 import shutil
 import subprocess
 import sys
-
 import six
+import unittest
 
-from nose2.compat import unittest
 from nose2 import discover, util
 
 
@@ -19,7 +18,7 @@ class TestCase(unittest.TestCase):
 
     """TestCase extension.
 
-    If the class variable _RUN_IN_TEMP is True (default: False), tests will be
+    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will be
     performed in a temporary directory, which is deleted afterwards.
     """
     _RUN_IN_TEMP = False
@@ -41,6 +40,32 @@ class TestCase(unittest.TestCase):
             os.chdir(self._orig_dir)
             shutil.rmtree(self._work_dir, ignore_errors=True)
 
+    def __str__(self):
+        """
+        In python 3.5, the unittest.TestCase.__str__() output changed.
+        This makes it conform to previous version.
+        """
+        if sys.version_info >= (3, 5):
+            test_module = self.__class__.__module__
+            test_class = self.__class__.__name__
+            test_method = self._testMethodName
+            return "%s (%s.%s)" % (test_method, test_module, test_class)
+        else:
+            return super(TestCase, self).__str__()
+
+    def id(self):
+        """
+        In python 3.5, the unittest.TestCase.__id__() output changed.
+        This makes it conform to previous version.
+        """
+        if sys.version_info >= (3, 5):
+            test_module = self.__class__.__module__
+            test_class = self.__class__.__name__
+            test_method = self._testMethodName
+            return "%s.%s.%s" % (test_module, test_class, test_method)
+        else:
+            return super(TestCase, self).id()
+
 
 class FunctionalTestCase(unittest.TestCase):
     tags = ['functional']
@@ -56,6 +81,8 @@ class FunctionalTestCase(unittest.TestCase):
         if cmd_stdout is None:
             cmd_stdout, cmd_stderr = proc.communicate()
             self._output[proc.pid] = cmd_stdout, cmd_stderr
+        # Python 2.7 needs this
+        # assertRegexpMatches() was renamed to assertRegex() in 3.2
         testf = self.assertRegex if hasattr(self, 'assertRegex') \
             else self.assertRegexpMatches
         if stdout:
@@ -66,13 +93,13 @@ class FunctionalTestCase(unittest.TestCase):
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)
 
-    def runModuleAsMain(self, testmodule):
-        return run_module_as_main(testmodule)
+    def runModuleAsMain(self, testmodule, *args):
+        return run_module_as_main(testmodule, *args)
 
 
 class _FakeEventBase(object):
 
-    """Baseclass for fake Events."""
+    """Baseclass for fake :class:`~nose2.events.Event`\s."""
 
     def __init__(self):
         self.handled = False
@@ -95,7 +122,7 @@ class FakeHandleFileEvent(_FakeEventBase):
 
 class FakeStartTestEvent(_FakeEventBase):
 
-    """Fake StartTestEvent."""
+    """Fake :class:`~nose2.events.StartTestEvent`."""
 
     def __init__(self, test):
         super(FakeStartTestEvent, self).__init__()
@@ -107,7 +134,7 @@ class FakeStartTestEvent(_FakeEventBase):
 
 class FakeLoadFromNameEvent(_FakeEventBase):
 
-    """Fake LoadFromNameEvent."""
+    """Fake :class:`~nose2.events.LoadFromNameEvent`."""
 
     def __init__(self, name):
         super(FakeLoadFromNameEvent, self).__init__()
@@ -116,7 +143,7 @@ class FakeLoadFromNameEvent(_FakeEventBase):
 
 class FakeLoadFromNamesEvent(_FakeEventBase):
 
-    """Fake LoadFromNamesEvent."""
+    """Fake :class:`~nose2.events.LoadFromNamesEvent`."""
 
     def __init__(self, names):
         super(FakeLoadFromNamesEvent, self).__init__()
@@ -125,7 +152,7 @@ class FakeLoadFromNamesEvent(_FakeEventBase):
 
 class FakeStartTestRunEvent(_FakeEventBase):
 
-    """Fake StartTestRunEvent"""
+    """Fake :class:`~nose2.events.StartTestRunEvent`"""
 
     def __init__(self, runner=None, suite=None, result=None, startTime=None,
                  executeTests=None):
@@ -160,10 +187,10 @@ def run_nose2(*nose2_args, **nose2_kwargs):
     return NotReallyAProc(nose2_args, **nose2_kwargs)
 
 
-def run_module_as_main(test_module):
+def run_module_as_main(test_module, *args):
     if not os.path.isabs(test_module):
         test_module = support_file(test_module)
-    return subprocess.Popen([sys.executable, test_module],
+    return subprocess.Popen([sys.executable, test_module] + list(args),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
@@ -173,6 +200,7 @@ class NotReallyAProc(object):
         self.args = args
         self.chdir = cwd
         self.kwargs = kwargs
+        self.result = None
 
     def __enter__(self):
         self._stdout = sys.__stdout__
@@ -198,7 +226,7 @@ class NotReallyAProc(object):
                     argv=('nose2',) + self.args, exit=False,
                     **self.kwargs)
             except SystemExit as e:
-                return "", "EXIT CODE %s" % str(e)
+                pass
             return self.stdout.getvalue(), self.stderr.getvalue()
 
     @property
@@ -206,13 +234,15 @@ class NotReallyAProc(object):
         return id(self)
 
     def poll(self):
+        if self.result is None:
+            return 1
         return not self.result.result.wasSuccessful()
 
 
 class RedirectStdStreams(object):
 
     """
-    Context manager that replaces the stdin/out streams with StringIO
+    Context manager that replaces the stdin/stdout streams with :class:`StringIO`
     buffers.
     """
 

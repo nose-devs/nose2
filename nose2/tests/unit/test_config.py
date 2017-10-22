@@ -1,5 +1,5 @@
 from nose2 import config
-from nose2.compat import unittest
+import unittest
 
 
 class TestConfig(unittest.TestCase):

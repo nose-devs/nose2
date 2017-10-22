@@ -3,9 +3,9 @@ import re
 
 import six
 
-from nose2 import events, util
+from nose2 import events, util, exceptions
 from nose2.suite import LayerSuite
-from nose2.compat import unittest, OrderedDict
+from collections import OrderedDict
 
 BRIGHT = r'\033[1m'
 RESET = r'\033[0m'
@@ -15,95 +15,174 @@ __unittest = True
 log = logging.getLogger(__name__)
 
 
+class MissingParentLayer(Exception):
+    pass
+
+
 class Layers(events.Plugin):
     alwaysOn = True
 
     def startTestRun(self, event):
-        event.suite = self._makeLayerSuite(event)
-
-    def _makeLayerSuite(self, event):
-        return self._sortByLayers(
+        event.suite = self.make_suite(
             event.suite, self.session.testLoader.suiteClass)
 
-    def _sortByLayers(self, suite, suiteClass):
-        top = suiteClass()
-        # first find all of the layers mentioned
-        layers = OrderedDict()
-        for test in self._flatten(suite):
-            # split tests up into buckets by layer
+    def get_layers_from_suite(self, suite, suiteClass):
+        top_layer = suiteClass()
+        layers_dict = OrderedDict()
+        for test in self.flatten_suite(suite):
             layer = getattr(test, 'layer', None)
             if layer:
-                layers.setdefault(layer, LayerSuite(layer=layer)).addTest(test)
+                if layer not in layers_dict:
+                    layers_dict[layer] = LayerSuite(self.session, layer=layer)
+                layers_dict[layer].addTest(test)
             else:
-                top.addTest(test)
+                top_layer.addTest(test)
+        self.get_parent_layers(layers_dict)
+        return top_layer, layers_dict
 
-        # then organize layers into a tree
-        remaining = list(layers.keys())
-        seen = set()
-        tree = {}
-        while remaining:
-            ly = remaining.pop()
-            if ly in seen:
-                continue
-            seen.add(ly)
-            # superclasses of this layer
-            if ly is None:
-                deps = []
-            else:
-                deps = [cls for cls in util.bases_and_mixins(ly)
-                        if cls is not object]
-                deps.reverse()
-            if not deps:
-                # layer is top-level
-                self._addToTree(tree, ly, None)
-            else:
-                outer = ly
-                while deps:
-                    inner, outer = outer, deps.pop()
-                    self._addToTree(tree, inner, outer)
-                    if outer not in layers:
-                        remaining.append(outer)
-                        layers[outer] = LayerSuite(layer=outer)
-
-        # finally build the top-level suite
-        self._treeToSuite(tree, None, top, layers)
-        # printtree(top)
-        return top
-
-    def _addToTree(self, tree, inner, outer):
-        found = False
-        for k, v in tree.items():
-            if inner in v:
-                found = True
-                if outer is not None:
-                    v.remove(inner)
+    def get_parent_layers(self, layers_dict):
+        while True:
+            missing_parents = []
+            for layer in layers_dict.keys():
+                for parent in layer.__bases__:
+                    if parent is object:
+                        continue
+                    if parent not in layers_dict:
+                        missing_parents.append(parent)
+            if not missing_parents:
                 break
-        if outer is not None or not found:
-            tree.setdefault(outer, []).append(inner)
+            for parent in missing_parents:
+                layers_dict[parent] = LayerSuite(self.session, layer=parent)
 
-    def _treeToSuite(self, tree, key, suite, layers):
-        mysuite = layers.get(key, None)
-        if mysuite:
-            suite.addTest(mysuite)
-            suite = mysuite
+    def make_suite(self, suite, suiteClass):
+        top_layer, layers_dict = self.get_layers_from_suite(suite, suiteClass)
+        tree = {}
+        unresolved_layers = self.update_layer_tree(tree, layers_dict.keys())
+        while unresolved_layers:
+            remaining = self.update_layer_tree(tree, unresolved_layers)
+            if len(remaining) == len(unresolved_layers):
+                raise exceptions.LoadTestsFailure(
+                    'Could not resolve layer dependencies')
+            unresolved_layers = remaining
+        for layer in tree.keys():
+            if layer and layer not in layers_dict:
+                layers_dict[layer] = LayerSuite(self.session, layer=layer)
+        self.tree_to_suite(tree, None, top_layer, layers_dict)
+        return top_layer
+
+    @classmethod
+    def update_layer_tree(cls, tree, layers):
+        remaining = []
+        for layer in layers:
+            try:
+                cls.add_layer_to_tree(tree, layer)
+            except MissingParentLayer:
+                remaining.append(layer)
+        return remaining
+
+    @classmethod
+    def insert_mixins(cls, tree, layer, outer):
+        mixins = getattr(layer, 'mixins', None)
+        if not mixins:
+            return outer
+        last = outer
+        for mixin in mixins:
+            mixin_ancestor = cls.get_oldest_parent(mixin)
+            if last is None:
+                tree.setdefault(None, []).append(mixin_ancestor)
+            else:
+                # The mixin_ancestor can be a layer that has been added to the
+                # tree already. If so, it should a base layer, since it's the
+                # last ancestor. We need to remove it from there, and insert it
+                # in the "last" layer.
+                if mixin_ancestor in tree[None]:
+                    tree[None].remove(mixin_ancestor)
+                tree[last].append(mixin_ancestor)
+                if mixin_ancestor not in tree:
+                    tree[mixin_ancestor] = []
+            if mixin not in tree:
+                tree[mixin] = []
+            last = mixin
+        return last
+
+    @classmethod
+    def insert_layer(cls, tree, layer, outer):
+        if outer is object:
+            outer = cls.insert_mixins(tree, layer, None)
+        elif outer in tree:
+            outer = cls.insert_mixins(tree, layer, outer)
+        else:
+            err = '{0} not found in {1}'.format(outer, tree)
+            raise exceptions.LoadTestsFailure(err)
+        if outer is None:
+            tree.setdefault(None, []).append(layer)
+        else:
+            tree[outer].append(layer)
+        tree[layer] = []
+
+    @staticmethod
+    def get_parents_from_tree(layer, tree):
+        parents = []
+        for key, value in tree.items():
+            if layer in value:
+                parents.append(key)
+
+    @classmethod
+    def get_oldest_parent(cls, layer):
+        # FIXME: we assume that there is only one oldest parent
+        # it should be the case most of the time but it will break sometimes.
+        oldest = True
+        for parent in layer.__bases__:
+            if parent in [None, object]:
+                continue
+            else:
+                oldest = False
+                return cls.get_oldest_parent(parent)
+        if oldest:
+            return layer
+
+    @classmethod
+    def add_layer_to_tree(cls, tree, layer):
+        parents = layer.__bases__
+        if not parents:
+            err = 'Invalid layer {0}: should at least inherit from `object`'
+            raise exceptions.LoadTestsFailure(err.format(layer))
+        for parent in parents:
+            if parent not in tree and parent is not object:
+                raise MissingParentLayer()
+        # if we reached that point, then all the parents are in the tree
+        # if there are multiple parents, we first try to get the closest
+        # to the current layer.
+        for parent in parents:
+            if not cls.get_parents_from_tree(parent, tree):
+                cls.insert_layer(tree, layer, parent)
+                return
+        raise exceptions.LoadTestsFailure('Failed to add {0}'.format(layer))
+
+    @classmethod
+    def tree_to_suite(cls, tree, key, suite, layers):
+        _suite = layers.get(key, None)
+        if _suite:
+            suite.addTest(_suite)
+            suite = _suite
         sublayers = tree.get(key, [])
         # ensure that layers with a set order are in order
-        sublayers.sort(key=self._sortKey)
-        log.debug('sorted sublayers of %s (%s): %s', mysuite,
-                  getattr(mysuite, 'layer', 'no layer'), sublayers)
+        sublayers.sort(key=cls.get_layer_position)
         for layer in sublayers:
-            self._treeToSuite(tree, layer, suite, layers)
+            cls.tree_to_suite(tree, layer, suite, layers)
 
-    def _flatten(self, suite):
+    @classmethod
+    def flatten_suite(cls, suite):
         out = []
         for test in suite:
             try:
-                out.extend(self._flatten(test))
+                out.extend(cls.flatten_suite(test))
             except TypeError:
                 out.append(test)
         return out
 
-    def _sortKey(self, layer):
+    @staticmethod
+    def get_layer_position(layer):
         pos = getattr(layer, 'position', None)
         # ... lame
         if pos is not None:
@@ -169,11 +248,12 @@ class LayerReporter(events.Plugin):
 
 
 # for debugging
-def printtree(suite, indent=''):
-    six.print_('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
-    for test in suite:
-        if isinstance(test, unittest.BaseTestSuite):
-            printtree(test, indent + '  ')
-        else:
-            six.print_('%s %s' % (indent, test))
-    six.print_('%s<- %s' % (indent, getattr(suite, 'layer', 'no layer')))
+# def printtree(suite, indent=''):
+#     import unittest
+#     six.print_('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
+#     for test in suite:
+#         if isinstance(test, unittest.BaseTestSuite):
+#             printtree(test, indent + '  ')
+#         else:
+#             six.print_('%s %s' % (indent, test))
+#     six.print_('%s<- %s' % (indent, getattr(suite, 'layer', 'no layer')))

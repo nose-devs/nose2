@@ -6,72 +6,74 @@ Organizing Test Fixtures into Layers
 
    New in version 0.4
 
-Layers allow more flexible organization of test fixtures than test-,
-class- and module- level fixtures. Layers in nose2 are inspired by
-and aim to be compatible with the layers used by Zope's testrunner.
+Layers allow more flexible organization of test fixtures than test-, class- and
+module- level fixtures. Layers in nose2 are inspired by and aim to be
+compatible with the layers used by Zope's testrunner.
 
 Using layers, you can do things like:
 
-* Implement package-level fixtures by sharing a layer among all
-  test cases in the package.
+* Implement package-level fixtures by sharing a layer among all test cases in
+  the package.
 
-* Share fixtures across tests in different modules without
-  having them run multiple times.
+* Share fixtures across tests in different modules without having them run
+  multiple times.
 
-* Create a fixture tree deeper than three levels (test, class and
-  module).
+* Create a fixture tree deeper than three levels (test, class and module).
 
 * Make fixtures available for other packages or projects to use.
 
 A layer is a *new-style* class that implements at least a ``setUp``
 classmethod:
 
-.. code-block :: python
+.. code-block:: python
 
-  class Layer(object):
-      @classmethod
-      def setUp(cls):
-          # ...
+    class Layer(object):
+       @classmethod
+       def setUp(cls):
+           # ...
 
-It may also implement ``tearDown``, ``testSetUp`` and
-``testTearDown``, all as classmethods.
+It may also implement ``tearDown``, ``testSetUp`` and ``testTearDown``, all as
+classmethods.
 
-To assign a layer to a test case, set the test case's ``layer``
-property::
+To assign a layer to a test case, set the test case's ``layer`` property:
 
-  class Test(unittest.TestCase):
-      layer = Layer
+.. code-block:: python
 
-Note that the layer *class* is assigned, not an instance of the
-layer. Typically layer classes are not instantiated.
+    class Test(unittest.TestCase):
+        layer = Layer
+
+Note that the layer *class* is assigned, not an instance of the layer.
+Typically layer classes are not instantiated.
 
 Sub-layers
 ==========
 
 Layers may subclass other layers:
 
-.. code-block :: python
+.. code-block:: python
 
-  class SubLayer(Layer):
-      @classmethod
-      def setUp(cls):
-          # ...
+    class SubLayer(Layer):
+        @classmethod
+        def setUp(cls):
+            # ...
 
-In this case, all tests that belong to the sub-layer also belong to
-the base layer. For example for this test case::
+In this case, all tests that belong to the sub-layer also belong to the base
+layer. For example for this test case:
 
-  class SubTest(unittest.TestCase):
-      layer = SubLayer
+.. code-block:: python
 
-The ``setUp`` methods from *both* ``SubLayer`` and ``Layer`` will run
-before any tests are run. The superclass's setup will always run
-before the subclass's setup. For teardown, the reverse: the subclass's
-teardown runs before the superclass's.
+    class SubTest(unittest.TestCase):
+        layer = SubLayer
 
-.. warning ::
+The ``setUp`` methods from *both* ``SubLayer`` and ``Layer`` will run before
+any tests are run. The superclass's setup will always run before the subclass's
+setup. For ``teardown``, the reverse: the subclass's ``teardown`` runs before
+the superclass's.
+
+.. warning::
 
    One important thing to note: layers that subclass other layers *must
-   not* call their superclass's ``setUp``, ``tearDown``, etc. -- the test
+   not* call their superclass's ``setUp``, ``tearDown``, etc. The test
    runner will take care of organizing tests so that the superclass's
    methods are called in the right order::
 
@@ -94,21 +96,21 @@ teardown runs before the superclass's.
 Layer method reference
 ======================
 
-.. class :: Layer
+.. class:: Layer
 
    Not an actual class, but reference documentation for
    the methods layers can implement. There is no layer
    base class. Layers must be subclasses of :class:`object`
    or other layers.
 
-   .. classmethod :: setUp(cls)
+   .. classmethod:: setUp(cls)
 
       The layer's ``setUp`` method is called before any tests belonging to
       that layer are executed. If no tests belong to the layer (or one of
       its sub-layers) then the ``setUp`` method will not
       be called.
 
-   .. classmethod :: tearDown(cls)
+   .. classmethod:: tearDown(cls)
 
       The layer's ``tearDown`` method is called after any tests
       belonging to the layer are executed, if the layer's ``setUp``
@@ -116,7 +118,7 @@ Layer method reference
       be called if the layer has no ``setUp`` method, or if that
       method did not run or did raise an exception.
 
-   .. classmethod :: testSetUp(cls[, test])
+   .. classmethod:: testSetUp(cls[, test])
 
       The layer's ``testSetUp`` method is called before each test
       belonging to the layer (and its sub-layers). If
@@ -124,7 +126,7 @@ Layer method reference
       instance is passed to the method. The method may also be
       defined to take no arguments.
 
-   .. classmethod :: testTearDown(cls[, test])
+   .. classmethod:: testTearDown(cls[, test])
 
       The layer's ``testTearDown`` method is called after each test
       belonging to the layer (and its sub-layers), if
@@ -184,16 +186,16 @@ Will instead look like this::
   OK
 
 The layer reporter plugin can also optionally colorize the keywords
-('A', 'having', and 'should' by default) in output from tests defined
+(by default, 'A', 'having', and 'should') in output from tests defined
 with the :doc:`such DSL <../such_dsl>`.
 
-If you would like to change how the layer is displayed you need to set the description attribute.
+If you would like to change how the layer is displayed, set the ``description`` attribute.
 
-.. code-block :: python
+.. code-block:: python
 
   class LayerD(Layer):
       description = '*** This is a very important custom layer description ***'
-      
+
 Now the output will be the following::
 
 
@@ -234,16 +236,16 @@ from one module executing interleaved with tests from a different
 module.
 
 
-Mixing layers with setUpClass and module fixtures
--------------------------------------------------
+Mixing layers with ``setUpClass`` and module fixtures
+-----------------------------------------------------
 
 **Don't cross the streams.**
 
 The implementation of class- and module-level fixtures in unittest2
 depends on introspecting the class hierarchy inside of the
-unittest.TestSuite. Since the suites that the layers plugin uses to
-organize tests derive from :class:`unittest.BaseTestSuite` not
-:class:`unittest.TestSuite`, class- and module- level fixtures in
+``unittest.TestSuite``. Since the suites that the ``layers`` plugin uses to
+organize tests derive from :class:`unittest.BaseTestSuite` (instead of 
+:class:`unittest.TestSuite`), class- and module- level fixtures in
 TestCase classes that use layers will be ignored.
 
 Mixing layers and multiprocess testing

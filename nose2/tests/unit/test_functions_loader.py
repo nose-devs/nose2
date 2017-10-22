@@ -1,4 +1,4 @@
-from nose2.compat import unittest
+import unittest
 from nose2 import events, loader, session
 from nose2.plugins.loader import functions
 from nose2.tests._common import TestCase

@@ -11,8 +11,7 @@ python:
 - '3.4'
 - '3.5'
 install:
-- travis_retry pip install -r requirements-${TRAVIS_PYTHON_VERSION}.txt --allow-external
-  argparse
+- travis_retry pip install .
 - travis_retry pip install coveralls
 - travis_retry pip install coverage
 script:

@@ -1,6 +1,8 @@
 import os
 import sys
 
+from os.path import dirname
+
 NAME = 'nose2'
 VERSION = open('nose2/_version.py').readlines()[-1].split()[-1].strip('"\'')
 PACKAGES = ['nose2', 'nose2.plugins', 'nose2.plugins.loader',
@@ -52,10 +54,28 @@ params = dict(
 )
 
 
-py_version = sys.version[:3]
+py_version = sys.version_info
 
 SCRIPT1 = 'nose2'
-SCRIPT2 = 'nose2-%s' % (py_version,)
+SCRIPT2 = 'nose2-%s.%s' % (py_version.major, py_version.minor)
+
+
+def parse_requirements(requirement_file):
+    requirements = []
+    with open(requirement_file) as file_pointer:
+        for line in file_pointer:
+            if line.strip() and not line.strip().startswith('#'):
+                requirements.append(line.strip())
+    return requirements
+
+
+def per_version_requirements(extra_requires_dict):
+    for current_file in os.listdir(dirname(__file__) or '.'):  # the '.' allows tox to be run locally
+        if not current_file.startswith('requirements-') or 'docs' in current_file:
+            continue
+        python_version = current_file[len('requirements-'):-len('.txt')]
+        extra_requires_key = ':python_version == "{}"'.format(python_version)
+        extra_requires_dict[extra_requires_key] = parse_requirements(current_file)
 
 try:
     from setuptools import setup
@@ -63,15 +83,15 @@ except ImportError:
     from distutils.core import setup
 else:
 
-    REQS = ['six>=1.1']
-
     params['entry_points'] = {
         'console_scripts': [
             '%s = nose2:discover' % SCRIPT1,
             '%s = nose2:discover' % SCRIPT2,
         ],
     }
-    params['install_requires'] = REQS
+    params['install_requires'] = parse_requirements('requirements.txt')
     params['test_suite'] = 'unittest.collector'
+    params['extras_require']['doc'] = parse_requirements('requirements-docs.txt')
+    per_version_requirements(params)
 
 setup(**params)

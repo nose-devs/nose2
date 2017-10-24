@@ -11,11 +11,11 @@ python:
 - '3.4'
 - '3.5'
 install:
-- travis_retry pip install .
+- travis_retry pip install tox-travis
 - travis_retry pip install coveralls
 - travis_retry pip install coverage
 script:
-  PYTHONPATH=. coverage run -m nose2.__main__ -v
+  tox
 after_success:
 - coveralls
 deploy:

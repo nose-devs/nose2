@@ -69,13 +69,15 @@ def parse_requirements(requirement_file):
     return requirements
 
 
-def per_version_requirements(extra_requires_dict):
+def add_per_version_requirements():
+    extra_requires_dict = {}
     for current_file in os.listdir(dirname(__file__) or '.'):  # the '.' allows tox to be run locally
         if not current_file.startswith('requirements-') or 'docs' in current_file:
             continue
         python_version = current_file[len('requirements-'):-len('.txt')]
         extra_requires_key = ':python_version == "{}"'.format(python_version)
         extra_requires_dict[extra_requires_key] = parse_requirements(current_file)
+    return extra_requires_dict
 
 try:
     from setuptools import setup
@@ -92,6 +94,6 @@ else:
     params['install_requires'] = parse_requirements('requirements.txt')
     params['test_suite'] = 'unittest.collector'
     params['extras_require']['doc'] = parse_requirements('requirements-docs.txt')
-    per_version_requirements(params)
+    params['extras_require'].update(add_per_version_requirements())
 
 setup(**params)

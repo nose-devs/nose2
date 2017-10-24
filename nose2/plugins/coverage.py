@@ -1,11 +1,11 @@
 """
 Use this plugin to activate coverage report.
 
-To use this plugin, you need to install ``cov-core``:
+To use this plugin, you need to install ``coverage``:
 
 ::
 
-    $ pip install cov-core
+    $ pip install coverage
 
 
 Then, you can enable coverage reporting with :
@@ -22,6 +22,8 @@ Or with this lines in ``unittest.cfg`` :
     always-on = True
 
 """
+from __future__ import absolute_import
+
 from nose2.events import Plugin
 
 
@@ -70,30 +72,35 @@ class Coverage(Plugin):
 
         Only called if active so, safe to just start without checking flags"""
         try:
-            import cov_core
-        except:
+            import coverage
+        except ImportError:
             print('Warning: you need to install [coverage-plugin] '
                   'extra requirements to use this plugin')
             return
 
-        self.covController = cov_core.Central(self.covSource,
-                                              self.covReport,
-                                              self.covConfig)
-        self.covController.start()
-
-    def createdTestSuite(self, event):
-        """Pause coverage collection until we begin running tests."""
-        if self.covController:
-            self.covController.cov.stop()
+        self.covController = coverage.Coverage(source=self.covSource,
+                                               config_file=self.covConfig)
 
     def startTestRun(self, event):
         """Resume coverage collection before running tests."""
         if self.covController:
-            self.covController.cov.start()
+            self.covController.start()
 
     def afterSummaryReport(self, event):
         """Only called if active so stop coverage and produce reports."""
-
         if self.covController:
-            self.covController.finish()
-            self.covController.summary(event.stream)
+            self.covController.stop()
+            if 'term' in self.covReport or 'term-missing' in self.covReport:
+                # only pass `show_missing` if "term-missing" was given
+                # otherwise, just allow coverage to load show_missing from
+                # config
+                kwargs = {}
+                if 'term-missing' in self.covReport:
+                    kwargs['show_missing'] = True
+                self.covController.report(file=event.stream, **kwargs)
+            if 'annotate' in self.covReport:
+                self.covController.annotate()
+            if 'html' in self.covReport:
+                self.covController.html_report()
+            if 'xml' in self.covReport:
+                self.covController.xml_report()

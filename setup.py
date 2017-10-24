@@ -49,7 +49,7 @@ params = dict(
     classifiers=CLASSIFIERS,
     keywords=KEYWORDS,
     extras_require={
-        'coverage_plugin': ["cov-core>=1.12"],
+        'coverage_plugin': ["coverage>=4.4.1"],
     }
 )
 

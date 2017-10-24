@@ -1,2 +1,2 @@
 six>=1.7
-cov-core>=1.12
+coverage>=4.4.1

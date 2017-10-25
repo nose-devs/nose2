@@ -14,10 +14,6 @@
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/dm/nose2.svg
-    :target: https://pypi.org/project/nose2/
-    :alt: Number of PyPI downloads
-    
 .. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png
     :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
     :alt: Dependencies Status    

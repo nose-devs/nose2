@@ -30,6 +30,45 @@ def A(description):
     yield Scenario(description)
 
 
+@contextmanager
+def Layer(description, desc_pre=None, desc_post=None):
+    """Test scenario layer context manager.
+
+    This works exactly like ``such.A``, but the text before and after the
+    description can be customized, and both are blank by default. It is
+    primarily used to predefine a group of tests, fixtures, and sub-groups that
+    can be used repeatedly, anywhere you want it, including in other
+    :class:`nose2.tools.such.Scenario` instances made with this function, and
+    even in other modules.
+
+    Yields a :class:`nose2.tools.such.Scenario` instance with the desired
+    description beginning and ending text (both blank by default), which by
+    convention is not bound to ``it``, as it would cause a naming conflict
+    between itself and the :class:`nose2.tools.such.Scenario` instance that
+    will actually be used to create the tests.
+
+    .. code-block :: python
+
+      with such.Layer('Some Layer') as SomeLayer:
+          # tests and fixtures
+
+      with such.A('test scenario') as it:
+          it.uses(SomeLayer)
+
+      it.createTests(globals())
+
+    """
+    if desc_pre is None:
+        desc_pre = ""
+    if desc_post is None:
+        desc_post = ""
+    yield Scenario(
+        description,
+        desc_pre=desc_pre,
+        desc_post=desc_post,
+    )
+
+
 class Helper(unittest.TestCase):
 
     def runTest(self):
@@ -47,9 +86,15 @@ class Scenario(object):
     that depend on those fixtures.
     """
     _helper = helper
+    desc_pre = "A "
+    desc_post = ""
 
-    def __init__(self, description):
-        self._group = Group('A %s' % description, 0)
+    def __init__(self, description, desc_pre=None, desc_post=None):
+        if desc_pre is None:
+            desc_pre = self.desc_pre
+        if desc_post is None:
+            desc_post = self.desc_post
+        self._group = Group('%s%s%s' % (desc_pre, description, desc_post))
 
     @contextmanager
     def having(self, description):
@@ -73,8 +118,13 @@ class Scenario(object):
         self._group = last
 
     def uses(self, layer):
-        log.debug("Adding %s as mixin to %s", layer, self._group)
-        self._group.mixins.append(layer)
+        if isinstance(layer, Scenario):
+            log.debug("Embedding %s as child group of %s", layer, self._group)
+            layer._group.parent = self._group
+            self._group._children.append(layer._group)
+        else:
+            log.debug("Adding %s as mixin to %s", layer, self._group)
+            self._group.mixins.append(layer)
 
     def has_setup(self, func):
         """Add a :func:`setup` method to this group.
@@ -199,6 +249,18 @@ class Scenario(object):
 
     def __getattr__(self, attr):
         return getattr(self._helper, attr)
+
+    def __setattr__(self, attr, value):
+        if attr in self.__dict__.keys() or attr == "_group":
+            super(Scenario, self).__setattr__(attr, value)
+        else:
+            setattr(self._helper, attr, value)
+
+    def __delattr__(self, attr):
+        if attr in self.__dict__.keys() or attr == "_group":
+            super(Scenario, self).__delattr__(attr)
+        else:
+            delattr(self._helper, attr)
 
     def createTests(self, mod):
         """Generate test cases for this scenario.
@@ -330,9 +392,8 @@ class Group(object):
 
     """A group of tests, with common fixtures and description"""
 
-    def __init__(self, description, indent=0, parent=None, base_layer=None):
+    def __init__(self, description, parent=None, base_layer=None):
         self.description = description
-        self.indent = indent
         self.parent = parent
         self.base_layer = base_layer
         self.mixins = []
@@ -346,7 +407,6 @@ class Group(object):
     def addCase(self, case):
         if not self._cases:
             case.first = True
-        case.indent = self.indent
         self._cases.append(case)
 
     def addSetup(self, func):
@@ -371,7 +431,7 @@ class Group(object):
         return ' '.join(d)
 
     def child(self, description, base_layer=None):
-        child = Group(description, self.indent + 1, self, base_layer)
+        child = Group(description, self, base_layer)
         self._children.append(child)
         return child
 

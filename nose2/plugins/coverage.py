@@ -1,11 +1,11 @@
 """
 Use this plugin to activate coverage report.
 
-To use this plugin, you need to install ``coverage``:
+To use this plugin, you need to install ``nose2[coverage-plugin]``. e.g.
 
 ::
 
-    $ pip install coverage
+    $ pip install nose2[coverage-plugin]>=0.6.5
 
 
 Then, you can enable coverage reporting with :
@@ -74,8 +74,9 @@ class Coverage(Plugin):
         try:
             import coverage
         except ImportError:
-            print('Warning: you need to install [coverage-plugin] '
-                  'extra requirements to use this plugin')
+            print('Warning: you need to install "coverage-plugin" '
+                  'extra requirements to use this plugin. '
+                  'e.g. `pip install nose2[coverage-plugin]`')
             return
 
         self.covController = coverage.Coverage(source=self.covSource,

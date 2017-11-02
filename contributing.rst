@@ -4,6 +4,10 @@ Contributing to nose2
 Please do! nose2 cannot move forward without contributions from the
 testing community.
 
+If you're unsure how to get started, feel free to ask for help from the nose2
+community on `gitter <https://gitter.im/nose2>`_. We welcome contributors with
+all levels of experience.
+
 This document is a set of guidelines, not strict rules.
 Use your best judgement, and feel free to propose changes to this document
 in a pull request.
@@ -25,13 +29,14 @@ development. This means:
 Coding Guidelines
 -----------------
 
-The main rule is: *any patch that touches code must include tests.*
-And of course all tests must pass under all supported versions of Python.
+The main rule is: *any patch that touches code should include tests.*
+And of course all tests should pass under all supported versions of Python.
 
-Fortunately that's easy to check: nose2 uses `tox`_ to manage its test
-scenarios, so simply running ``tox`` in nose2's root directory will
-run all of the tests with all supported python versions. When your
-patch gets all green, send a pull request!
+If you aren't sure how to add tests, or you don't know why existing tests fail
+on your changes, submit your patch and ask for help testing it.
+
+Tests are easy to run. Just install `tox`_ (``pip install tox``), and run
+``tox`` in the nose2 root directory.
 
 Some additional tips for the python and documentation in this project.
 
@@ -64,22 +69,13 @@ A few basic ground rules for what ideal commits should look like.
 - No lines over 72 characters
 - No GitHub emoji -- use your words
 - Reference issues and pull requests where appropriate
-- Present tense and imperative mood
+- Prefer present tense and imperative mood
+  e.g. rather than "added feature foo" (past indicative)
+  or "adds feature foo" (present indicative)
+  the best option is "add feature foo" (present imperative)
 
-Workflow and Merging
---------------------
-
-Get Started
-~~~~~~~~~~~
-
-The ``bootstrap.sh`` script in the root of the nose2 distribution can be
-used to get a new local clone up and running quickly. It requires that
-you have `virtualenvwrapper`_ installed. Run this script once to set
-up a nose2 virtualenv, install nose2's dependencies, and set up the
-git submodule that pulls in the `Sphinx`_ theme that the docs use.
-
-Branching and Pull Requests
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Workflow, Branching and Pull Requests
+-------------------------------------
 
 The basic workflow should be to do the work in a topic branch in your fork
 then post a pull request for that branch.
@@ -92,16 +88,8 @@ For any pull request,
 - *Make sure it meets the standards set in this document*
 - *Make sure it merges cleanly*
 - *List any issues closed by the pull request*
-- *Squash intermediate commits*. Use ``git rebase --interactive`` to squash
-  typo fixes, aborted implementations, etc.
-
-Merging
-~~~~~~~
-
-When merging via GitHub, please elect to create a merge commit (the default).
-When you merge manually, please use ``--no-ff``.
-
-This ensures that we have a record of all merges in the form of merge commits.
+- *Squash intermediate commits*. Consider using ``git rebase --interactive`` to
+  squash typo fixes, aborted implementations, etc.
 
 Reporting Bugs
 --------------
@@ -124,6 +112,8 @@ In many cases, you can help by including the following information:
 - *What other python packages do you have installed?* The best thing in this
   case is to show us the results of ``pip freeze``
 
+If you are willing and able, *write a failing test*.
+
 Requesting Enhancements
 -----------------------
 
@@ -141,5 +131,3 @@ When requesting new features,
 .. _github: https://github.com/
 .. _pep8: http://www.python.org/dev/peps/pep-0008/
 .. _tox: http://pypi.python.org/pypi/tox
-.. _virtualenvwrapper: http://pypi.python.org/pypi/virtualenvwrapper
-.. _Sphinx: http://sphinx.pocoo.org/

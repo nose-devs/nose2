@@ -23,8 +23,11 @@ Or with this lines in ``unittest.cfg`` :
 
 """
 from __future__ import absolute_import
+import logging
 
 from nose2.events import Plugin
+
+log = logging.getLogger(__name__)
 
 
 class Coverage(Plugin):
@@ -78,6 +81,14 @@ class Coverage(Plugin):
                   'extra requirements to use this plugin. '
                   'e.g. `pip install nose2[coverage-plugin]`')
             return
+
+        if event.handled:
+            log.error(
+                'createTests already handled -- '
+                'coverage reporting will be inaccurate')
+        else:
+            log.debug(
+                'createTests not already handled. coverage should work')
 
         self.covController = coverage.Coverage(source=self.covSource,
                                                config_file=self.covConfig)

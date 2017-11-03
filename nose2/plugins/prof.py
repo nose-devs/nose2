@@ -8,6 +8,12 @@ before the final test summary time. Config file options ``filename``,
 ``sort`` and ``restrict`` can be used to change where profiling
 information is saved and how it is presented.
 
+Load this plugin by running nose2 with the
+`--plugin=nose2.plugins.prof` option and activate it
+with the `--profile` option,or put the corresponding
+entries (`plugin` and `always_on`) in the respective
+sections of the configuration file.
+
 """
 try:
     import hotshot

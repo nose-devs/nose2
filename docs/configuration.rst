@@ -7,6 +7,11 @@ Configuration Files
 Most configuration of nose2 is done via config files. These are
 standard, .ini-style config files, with sections marked off by
 brackets ("``[unittest]``") and ``key = value`` pairs within those sections.
+When the value is a list, put each value into its own line with proper
+indentation ::
+
+    key_expecting_list = value1
+                         value2
 
 Two command line options, :option:`-c` and :option:`--no-user-config`
 may be used to determine which config files are loaded.
@@ -105,6 +110,7 @@ section in a config file.
    It bears repeating that in both :config:`plugins` and
    :config:`exclude-plugins` entries, you specify the plugin *module*,
    not the plugin *class*.
+   The module is specified by the (dot-separated) *fully qualified* name.
 
 Examples:
 

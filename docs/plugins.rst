@@ -6,10 +6,10 @@ Built in and Loaded by Default
 ==============================
 
 These plugins are loaded by default. To exclude one of these plugins
-from loading, add the plugin's module name to the ``exclude-plugins``
-list in a config file's ``[unittest]`` section, or pass the plugin
-module with the ``--exclude-plugin`` argument on the command line. You
-can also pass plugin module names to exclude to a
+from loading, add the plugin's fully qualified module name to the
+``exclude-plugins`` list in a config file's ``[unittest]`` section,
+or pass the plugin module with the ``--exclude-plugin`` argument
+on the command line. You can also pass plugin module names to exclude to a
 :class:`nose2.main.PluggableTestProgram` using the ``excludePlugins``
 keyword argument.
 
@@ -37,7 +37,8 @@ Built in but *not* Loaded by Default
 
 These plugins are available as part of the nose2 package but *are not
 loaded by default*. To load one of these plugins, add the plugin module
-name to the ``plugins`` list in a config file's ``[unittest]``
+name (as dot-separated, fully qualified name) to the ``plugins`` list
+in a config file's ``[unittest]``
 section, or pass the plugin module with the ``--plugin`` argument on
 the command line. You can also pass plugin module names to a
 :class:`nose2.main.PluggableTestProgram` using the ``plugins`` keyword

@@ -81,11 +81,9 @@ class Coverage(Plugin):
 
         self.covController = coverage.Coverage(source=self.covSource,
                                                config_file=self.covConfig)
-
-    def startTestRun(self, event):
-        """Resume coverage collection before running tests."""
-        if self.covController:
-            self.covController.start()
+        # start immediately (don't wait until startTestRun) so that coverage
+        # will pick up on things which happen at import time
+        self.covController.start()
 
     def afterSummaryReport(self, event):
         """Only called if active so stop coverage and produce reports."""

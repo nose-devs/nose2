@@ -169,7 +169,7 @@ These hooks are called for registered plugins only.
 .. function :: startLayerSetup(self, event)
 
    :param event: A :class:`nose2.events.StartLayerSetupEvent` instance (only
-   available in suites with layers).
+                 available in suites with layers).
 
    Plugins can use this hook to take action before the start of the ``setUp``
    in a layer.
@@ -177,7 +177,7 @@ These hooks are called for registered plugins only.
 .. function :: stopLayerSetup(self, event)
 
    :param event: A :class:`nose2.events.StopLayerSetupEvent` instance (only
-   available in suites with layers).
+                available in suites with layers).
 
    Plugins can use this hook to take action after ``setUp`` finishes, in a
    layer.
@@ -185,7 +185,7 @@ These hooks are called for registered plugins only.
 .. function :: startLayerSetupTest(self, event)
 
    :param event: A :class:`nose2.events.StartLayerSetupTestEvent` instance
-   (only available in suites with layers).
+                (only available in suites with layers).
 
    Plugins can use this hook to take action before the start of ``testSetUp``
    in a layer.
@@ -193,7 +193,7 @@ These hooks are called for registered plugins only.
 .. function :: stopLayerSetupTest(self, event)
 
    :param event: A :class:`nose2.events.StopLayerSetupTestEvent` instance (only
-   available in suites with layers).
+                 available in suites with layers).
 
    Plugins can use this hook to take action after ``testSetUp`` finishes, in a
    layer.
@@ -321,7 +321,7 @@ These hooks are called for registered plugins only.
 .. function :: startLayerTeardownTest(self, event)
 
    :param event: A :class:`nose2.events.StartLayerTeardownTestEvent` instance
-   (only available in suites with layers).
+                 (only available in suites with layers).
 
    Plugins can use this hook to take action before the start of
    ``testTearDown()`` in a layer.
@@ -329,7 +329,7 @@ These hooks are called for registered plugins only.
 .. function :: stopLayerTeardownTest(self, event)
 
    :param event: A :class:`nose2.events.StopLayerTeardownTestEvent` instance
-   (only available in suites with layers).
+                 (only available in suites with layers).
 
    Plugins can use this hook to take action after ``testTearDown()`` finishes,
    in a layer.
@@ -337,7 +337,7 @@ These hooks are called for registered plugins only.
 .. function :: startLayerTeardown(self, event)
 
    :param event: A :class:`nose2.events.StartLayerTeardownEvent` instance (only
-   available in suites with layers).
+                 available in suites with layers).
 
    Plugins can use this hook to take action before the start of the
    ``tearDown()`` in a layer.
@@ -345,7 +345,7 @@ These hooks are called for registered plugins only.
 .. function :: stopLayerTeardown(self, event)
 
    :param event: A :class:`nose2.events.StopLayerTeardownEvent` instance (only
-   available in suites with layers).
+                 available in suites with layers).
 
    Plugins can use this hook to take action after ``tearDown()`` finishes, in a
    layer.

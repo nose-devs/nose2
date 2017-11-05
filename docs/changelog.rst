@@ -1,6 +1,28 @@
 Changelog
 =========
 
+0.7.0
+-----
+
+* BREAKING Dropped unsupported Python 2.6, 3.2, 3.3
+    * Added support for Python 3.4, 3.5
+    * ``nose2.compat`` is removed because it is no longer needed. If you have ``from nose2.compat import unittest`` in your code, you will need to replace it with ``import unittest``.
+
+* Replace cov-core with coverage plugin
+
+* Fixed
+    * Prevent crashing from UnicodeDecodeError
+    * Fix unicode stream encoding
+
+* Features
+    * Add layer fixture events and hooks
+    * junit-xml: add logs in "system-out"
+    * Give better error when cannot import a testname
+    * Give full exc_info to loader.failedLoadTests
+    * Better errors when tests fail to load
+    * Reduce the processes created in the MP plugin if there are not enough tests.
+    * Allow combination of MP and OutputBuffer plugins on Python 3
+
 0.6.2
 -----
 

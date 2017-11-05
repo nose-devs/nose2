@@ -25,6 +25,8 @@
 Welcome to nose2
 ================
 
+**Note**: As of 0.7.0 we have support for 2.6, 3.2, 3.3 and removed ``nose2.compat``.
+
 nose2 is the next generation of nicer testing for Python, based
 on the plugins branch of unittest2. nose2 aims to improve on nose by:
 

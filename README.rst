@@ -47,4 +47,15 @@ plugins branch, and overrides various unittest2 objects.
 You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
 new direction!
 
+Workflow
+--------
+
+If you want to make contributions, you can use the ``Makefile`` to get started
+quickly and easily::
+
+    # no prior setup necessary!
+    make test
+
+Use ``make help`` to see other options.
+
 .. _differences: https://nose2.readthedocs.io/en/latest/differences.html

@@ -100,6 +100,16 @@ class Coverage(Plugin):
         """Only called if active so stop coverage and produce reports."""
         if self.covController:
             self.covController.stop()
+
+            # write to .coverage file
+            # do this explicitly (instead of passing auto_data=True to
+            # Coverage constructor) in order to not load an existing .coverage
+            # this better imitates the behavior of invoking `coverage` from the
+            # command-line, which sets `Coverage._auto_save` (triggers atexit
+            # saving to this file), but not `Coverage._auto_load`
+            # requesting a better fix in nedbat/coveragepy#34
+            self.covController.save()
+
             if 'term' in self.covReport or 'term-missing' in self.covReport:
                 # only pass `show_missing` if "term-missing" was given
                 # otherwise, just allow coverage to load show_missing from

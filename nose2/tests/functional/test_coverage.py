@@ -1,7 +1,8 @@
+import os
 import os.path
 import unittest
 
-from nose2.tests._common import FunctionalTestCase
+from nose2.tests._common import FunctionalTestCase, support_file
 
 
 class TestCoverage(FunctionalTestCase):
@@ -31,6 +32,13 @@ class TestCoverage(FunctionalTestCase):
             stderr='TOTAL\s+' + total_stats)
 
     def test_run(self):
+        # ensure there is no .coverage file at the start of test
+        reportfile = support_file('scenario/test_with_module/.coverage')
+        try:
+            os.remove(reportfile)
+        except OSError:
+            pass
+
         proc = self.runIn(
             'scenario/test_with_module',
             '-v',
@@ -38,6 +46,7 @@ class TestCoverage(FunctionalTestCase):
             '--coverage=lib/'
         )
         self.assertProcOutputPattern(proc, 'lib', '\s+8\s+5\s+38%')
+        self.assertTrue(os.path.exists(reportfile))
 
     def test_run_coverage_configs(self):
         STATS = '\s+8\s+5\s+38%\s+1, 7-10'

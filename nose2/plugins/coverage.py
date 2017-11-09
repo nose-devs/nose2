@@ -36,9 +36,13 @@ class Coverage(Plugin):
 
     def __init__(self):
         """Get our config and add our command line arguments."""
-        self.conSource = self.config.as_list('coverage', [])
-        self.conReport = self.config.as_list('coverage-report', [])
-        self.conConfig = self.config.as_str('coverage-config', '').strip()
+
+        self.covSource = (self.config.as_list('coverage', []) or
+                          ['.'])
+        self.covReport = (self.config.as_list('coverage-report', []) or
+                          ['term'])
+        self.covConfig = (self.config.as_str('coverage-config', '').strip() or
+                          '.coveragerc')
 
         group = self.session.pluginargs
         group.add_argument(
@@ -62,13 +66,9 @@ class Coverage(Plugin):
 
     def handleArgs(self, event):
         """Get our options in order command line, config file, hard coded."""
-
-        self.covSource = (event.args.coverage_source or
-                          self.conSource or ['.'])
-        self.covReport = (event.args.coverage_report or
-                          self.conReport or ['term'])
-        self.covConfig = (event.args.coverage_config or
-                          self.conConfig or '.coveragerc')
+        self.covSource = event.args.coverage_source or self.covSource
+        self.covReport = event.args.coverage_report or self.covReport
+        self.covConfig = event.args.coverage_config or self.covConfig
 
     def createTests(self, event):
         """Start coverage early to catch imported modules.

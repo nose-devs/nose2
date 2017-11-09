@@ -236,8 +236,9 @@ class NotReallyAProc(object):
     def poll(self):
         if self.result is None:
             return 1
-        return not self.result.result.wasSuccessful()
 
+        # subprocess.poll should return None or the Integer exitcode
+        return int(not self.result.result.wasSuccessful())
 
 class RedirectStdStreams(object):
 

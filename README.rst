@@ -27,8 +27,7 @@ Welcome to nose2
 
 **Note**: As of 0.7.0 we no longer support 2.6, 3.2, or 3.3. We also removed ``nose2.compat``.
 
-nose2 is the next generation of nicer testing for Python, based
-on the plugins branch of unittest2. nose2 aims to improve on nose by:
+``nose2`` aims to improve on nose by:
 
  * providing a better plugin api
  * being easier for users to configure
@@ -36,16 +35,8 @@ on the plugins branch of unittest2. nose2 aims to improve on nose by:
  * supporting Python 2 and 3 from the same codebase, without translation
  * encouraging greater community involvement in its development
 
-In service of some those goals, some features of nose *will not* be
-supported in nose2. See `differences`_ for a thorough rundown.
-
-In time -- once unittest2 supports plugins -- nose2 should be able to
-become just a collection of plugins and configuration defaults. For
-now, it provides a plugin api similar to the one in the unittest2
-plugins branch, and overrides various unittest2 objects.
-
-You are witnesses at the new birth of nose, mark 2. Hope you enjoy our
-new direction!
+In service of some those goals, some features of ``nose`` *are not*
+supported in ``nose2``. See `differences`_ for a thorough rundown.
 
 Workflow
 --------
@@ -58,4 +49,29 @@ quickly and easily::
 
 Use ``make help`` to see other options.
 
+Original Mission & Present Goals
+--------------------------------
+
+When ``nose2`` was first written, the plan for its future was to wait for
+``unittest2`` plugins to be released (``nose2`` is actually based on the
+plugins branch of ``unittest2``).
+Once that was done, ``nose2`` was to become a set of plugins and default
+configuration for ``unittest2``.
+
+However, based on the current status of ``unittest2``, it is doubtful that this
+plan will ever be carried out.
+
+Current Goals
+~~~~~~~~~~~~~
+
+Even though ``unittest2`` plugins never arrived, ``nose2`` is still being
+maintained!
+We have a small community interested in continuing to work on and use ``nose2``
+
+However, given the current climate, with much more interest accruing around
+`pytest`_, ``nose2`` is prioritizing bugfixes and maintenance ahead of new
+feature development.
+
 .. _differences: https://nose2.readthedocs.io/en/latest/differences.html
+
+.. _pytest: http://pytest.readthedocs.io/en/latest/

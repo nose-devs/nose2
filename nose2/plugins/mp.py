@@ -68,7 +68,22 @@ class MultiProcess(events.Plugin):
         return False
 
     def _runmp(self, test, result):
+        # flatten technically modifies a hash of test cases, let's
+        # only run it once per run.
         flat = list(self._flatten(test))
+
+        # do not send import failures to the subprocesses, which will mangle them
+        # but 'run' them in the main process.
+        failed_import_id = 'nose2.loader.LoadTestsFailure'
+        result_ = self.session.testResult
+        for testid in flat:
+            if testid.startswith(failed_import_id):
+                self.cases[testid].run(result_)
+
+        # XXX The length of the filtered list needs to be known
+        # for _startProcs, until this can be cleaned up.  This
+        # wasn't the best way to deal with too few tests
+        flat = [x for x in flat if not x.startswith(failed_import_id)]
         procs = self._startProcs(len(flat))
 
         # send one initial task to each process

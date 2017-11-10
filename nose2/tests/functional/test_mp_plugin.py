@@ -269,3 +269,20 @@ class MPPluginTestRuns(FunctionalTestCase):
             )
         self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)
+
+    def test_unknown_module(self):
+        proc = self.runIn(
+            'scenario/module_fixtures',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            '-B',
+            'does.not.exists.module',
+            'does.not.exists.module2'
+            )
+        expected_results = (
+            r"does\.not\.exists\.module2 (\S+) \.\.\. ERROR\n"
+            r"does\.not\.exists\.module (\S+) \.\.\. ERROR"
+        )
+        self.assertTestRunOutputMatches(proc, stderr=expected_results)
+        self.assertEqual(proc.poll(), 1)

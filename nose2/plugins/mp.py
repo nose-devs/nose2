@@ -248,19 +248,27 @@ class MultiProcess(events.Plugin):
                                  "main process" % event.test))._tests[0]
 
     def _exportSession(self):
-        # argparse isn't pickleable
-        # no plugin instances
-        # no hooks
+        """
+        Generate the session information passed to work process.
+
+        CAVEAT: The entire contents of which *MUST* be pickeable
+        and safe to use in the subprocess.
+
+        This probably includes:
+        * No argparse namespaces/named-tuples
+        * No plugin instances
+        * No hokes
+        :return:
+        """
         export = {'config': self.session.config,
                   'verbosity': self.session.verbosity,
                   'startDir': self.session.startDir,
                   'topLevelDir': self.session.topLevelDir,
                   'logLevel': self.session.logLevel,
-                  # XXX classes or modules?
                   'pluginClasses': []}
-        # XXX fire registerInSubprocess -- add those plugin classes
-        # (classes must be pickleable!)
-        event = RegisterInSubprocessEvent()  # FIXME should be own event type
+        event = RegisterInSubprocessEvent()
+        # fire registerInSubprocess on plugins -- add those plugin classes
+        # CAVEAT: classes must be pickleable!
         self.session.hooks.registerInSubprocess(event)
         export['pluginClasses'].extend(event.pluginClasses)
         return export

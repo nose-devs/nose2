@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.7.1
+-----
+
+* Fixed
+  * Automatically create .coverage file during coverage reporting
+  * Better handling of import failures
+
+* Developer workflow changes
+    * Add Makefile to enable "quickstart" workflow
+    * Removed bootstrap.sh and test.sh
+
 0.7.0
 -----
 

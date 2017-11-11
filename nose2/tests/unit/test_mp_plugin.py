@@ -59,7 +59,7 @@ class TestMPPlugin(TestCase):
         finally:
             sys.platform = platform
 
-    def test_session import(self):
+    def test_session_import(self):
         config = configparser.ConfigParser()
         config.add_section(mp.MultiProcess.configSection)
         export_session = {

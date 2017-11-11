@@ -24,3 +24,4 @@ build
 .*.sw[nop]
 .dir-locals.el
 six-*.egg
+.venv-*

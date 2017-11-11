@@ -174,7 +174,7 @@ class MultiProcess(events.Plugin):
             return parent_conn
 
     def _startProcs(self, test_count):
-        # XXX create session export
+        # Create session export
         session_export = self._exportSession()
         procs = []
         count = min(test_count, self.procs)
@@ -190,11 +190,15 @@ class MultiProcess(events.Plugin):
         return procs
 
     def _flatten(self, suite):
-        # XXX
-        # examine suite tests to find out if they have class
-        # or module fixtures and group them that way into names
-        # of test classes or modules
-        # ALSO record all test cases in self.cases
+        """
+        Flatten test-suite into list of IDs, AND record all test case
+        into self.cases
+
+        CAVEAT:  Due to current limitation of the MP plugin, examine the suite
+                 tests to find out if they have class or module fixtures and
+                 group them that way into name of test classes or module.
+                 This is aid in their dispatch.
+        """
         log.debug("Flattening test into list of IDs")
         mods = {}
         classes = {}

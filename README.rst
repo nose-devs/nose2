@@ -44,8 +44,13 @@ Workflow
 If you want to make contributions, you can use the ``Makefile`` to get started
 quickly and easily::
 
-    # no prior setup necessary!
+    # All you need is a supported version of python and virtualenv installed
     make test
+
+tox will run our full test suite
+against all supported version of python that you have installed locally.
+Don't worry if you don't have all supported versions installed.
+Your changes will get tested automatically when you make a PR.
 
 Use ``make help`` to see other options.
 

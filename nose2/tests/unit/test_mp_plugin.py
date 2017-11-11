@@ -65,8 +65,8 @@ class TestMPPlugin(TestCase):
         export_session = {
             "config": config,
             "verbosity": None,
-            "startDir": None,
-            "topLevelDir": None,
+            "startDir": '',
+            "topLevelDir": '',
             "pluginClasses": [mp.MultiProcess]
         }
         import logging

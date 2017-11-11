@@ -326,7 +326,7 @@ def procserver(session_export, conn):
         # deal with the case that testid is something other
         # than a simple string.
         test = event.loader.loadTestsFromName(testid)
-        # xxx try/except?
+        # XXX If there a need to protect the loop? try/except?
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)
         events = [e for e in ssn.hooks.flush()]

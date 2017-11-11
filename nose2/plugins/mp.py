@@ -286,31 +286,16 @@ def procserver(session_export, conn):
     rlog.setLevel(session_export['logLevel'])
 
     # make a real session from the "session" we got
-    ssn = session.Session()
-    ssn.config = session_export['config']
-    ssn.hooks = RecordingPluginInterface()
-    ssn.verbosity = session_export['verbosity']
-    ssn.startDir = session_export['startDir']
-    ssn.topLevelDir = session_export['topLevelDir']
-    ssn.prepareSysPath()
-    loader_ = loader.PluggableTestLoader(ssn)
-    ssn.testLoader = loader_
-    result_ = result.PluggableTestResult(ssn)
-    ssn.testResult = result_
-    runner_ = runner.PluggableTestRunner(ssn)  # needed??
-    ssn.testRunner = runner_
-    # load and register plugins
-    ssn.plugins = [
-        plugin(session=ssn) for plugin in session_export['pluginClasses']]
-    rlog.debug("Plugins loaded: %s", ssn.plugins)
-    for plugin in ssn.plugins:
-        plugin.register()
-        rlog.debug("Registered %s in subprocess", plugin)
+    ssn = import_session(rlog, session_export)
 
     if isinstance(conn, collections.Sequence):
         conn = connection.Client(conn[:2], authkey=conn[2])
 
-    event = SubprocessEvent(loader_, result_, runner_, ssn.plugins, conn)
+    event = SubprocessEvent(ssn.testLoader,
+                            ssn.testResult,
+                            ssn.testRunner,
+                            ssn.plugins,
+                            conn)
     res = ssn.hooks.startSubprocess(event)
     if event.handled and not res:
         conn.send(None)
@@ -335,6 +320,34 @@ def procserver(session_export, conn):
     conn.send(None)
     conn.close()
     ssn.hooks.stopSubprocess(event)
+
+
+def import_session(rlog, session_export):
+    ssn = session.Session()
+    ssn.config = session_export['config']
+    ssn.hooks = RecordingPluginInterface()
+    ssn.verbosity = session_export['verbosity']
+    ssn.startDir = session_export['startDir']
+    ssn.topLevelDir = session_export['topLevelDir']
+    ssn.prepareSysPath()
+    loader_ = loader.PluggableTestLoader(ssn)
+    ssn.testLoader = loader_
+    result_ = result.PluggableTestResult(ssn)
+    ssn.testResult = result_
+    runner_ = runner.PluggableTestRunner(ssn)  # needed??
+    ssn.testRunner = runner_
+    # load and register plugins
+    ssn.plugins = [
+        plugin(session=ssn) for plugin in session_export['pluginClasses']]
+    rlog.debug("Plugins loaded: %s", ssn.plugins)
+    for plugin in ssn.plugins:
+        plugin.register()
+        rlog.debug("Registered %s in subprocess", plugin)
+
+    mp_plug = MultiProcess()
+    mp_plug.session = ssn
+    mp_plug.pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
+    return ssn
 
 
 # test generator

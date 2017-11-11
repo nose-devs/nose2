@@ -1,6 +1,7 @@
 from nose2 import session
 from nose2.tests._common import TestCase, Conn
 from nose2.plugins import mp
+from six.moves import configparser
 import sys
 
 
@@ -58,3 +59,19 @@ class TestMPPlugin(TestCase):
         finally:
             sys.platform = platform
 
+    def test_session import(self):
+        config = configparser.ConfigParser()
+        config.add_section(mp.MultiProcess.configSection)
+        export_session = {
+            "config": config,
+            "verbosity": None,
+            "startDir": None,
+            "topLevelDir": None,
+            "pluginClasses": [mp.MultiProcess]
+        }
+        import logging
+        session = mp.import_session(logging.root, export_session)
+        self.assertIn('registerInSubprocess', session.hooks.methods)
+        self.assertIn('startSubprocess', session.hooks.methods)
+        self.assertIn('stopSubprocess', session.hooks.methods)
+        pass

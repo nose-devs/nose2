@@ -80,8 +80,8 @@ class MultiProcess(events.Plugin):
             if testid.startswith(failed_import_id):
                 self.cases[testid].run(result_)
 
-        # XXX The length of the filtered list needs to be known
-        # for _startProcs, until this can be cleaned up.  This
+        # XXX Process-Handling: The length of the filtered list needs to be
+        # known for _startProcs, until this can be cleaned up.  This
         # wasn't the best way to deal with too few tests
         flat = [x for x in flat if not x.startswith(failed_import_id)]
         procs = self._startProcs(len(flat))
@@ -91,22 +91,26 @@ class MultiProcess(events.Plugin):
             if not flat:
                 break
             caseid = flat.pop(0)
+            # NOTE: it throws errors on broken pipes and bad serialization
             conn.send(caseid)
 
         rdrs = [conn for proc, conn in procs if proc.is_alive()]
         while flat or rdrs:
             ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
             for conn in ready:
-                # XXX proc could be dead
+                # XXX Process-Handling: If we get an EOFError on receive the
+                # process finished= or we lost the process and the test it was
+                # working on.  Also do we rebuild the process?
                 try:
                     remote_events = conn.recv()
                 except EOFError:
                     # probably dead/12
                     log.warning("Subprocess connection closed unexpectedly")
-                    continue  # XXX or die?
+                    continue
 
+                # If remote_events is None, the process exited normally,
+                # which should mean that we didn't any more tests for it.
                 if remote_events is None:
-                    # XXX proc is done, how to mark it dead?
                     log.debug("Conn closed %s", conn)
                     rdrs.remove(conn)
                     continue
@@ -119,9 +123,10 @@ class MultiProcess(events.Plugin):
                     self._localize(event)
                     getattr(self.session.hooks, hook)(event)
 
-                # send a new test to the worker if there is one left
+                # Send the next test_id
+                # NOTE: send throws errors on broken pipes and bad serialization
                 if not flat:
-                    # if there isn't send None - it's the 'done' flag
+                    # If there are no more, send None - it's the 'done' flag
                     conn.send(None)
                     continue
                 caseid = flat.pop(0)
@@ -129,6 +134,7 @@ class MultiProcess(events.Plugin):
 
         for _, conn in procs:
             conn.close()
+
         # ensure we wait until all processes are done before
         # exiting, to allow plugins running there to finalize
         for proc, _ in procs:

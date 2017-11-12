@@ -336,17 +336,21 @@ def import_session(rlog, session_export):
     ssn.testResult = result_
     runner_ = runner.PluggableTestRunner(ssn)  # needed??
     ssn.testRunner = runner_
-    # load and register plugins
+    # load and register plugins, forcing multiprocess to the end
     ssn.plugins = [
-        plugin(session=ssn) for plugin in session_export['pluginClasses']]
+        plugin(session=ssn) for plugin in session_export['pluginClasses']
+        if plugin is not MultiProcess
+    ]
     rlog.debug("Plugins loaded: %s", ssn.plugins)
+
     for plugin in ssn.plugins:
         plugin.register()
         rlog.debug("Registered %s in subprocess", plugin)
 
-    mp_plug = MultiProcess()
-    mp_plug.session = ssn
-    mp_plug.pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
+    # instantiating the plugin will register it.
+    ssn.plugins.append(MultiProcess(session=ssn))
+    rlog.debug("Registered %s in subprocess", MultiProcess)
+    ssn.plugins[-1].pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
     return ssn
 
 

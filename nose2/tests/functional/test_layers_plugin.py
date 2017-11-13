@@ -56,7 +56,7 @@ class TestLayers(FunctionalTestCase):
 Base
   test \(test_layers.Outer\) ... ok
   LayerD
-    test \(test_layers.InnerD\) ... ok
+    test \(test_layers.InnerD\) test with docstring ... ok
   LayerA
     test \(test_layers.InnerA\) ... ok
   LayerB

@@ -235,6 +235,9 @@ class LayerReporter(events.Plugin):
         if event.errorList and hasattr(event.test, 'layer'):
             # walk back layers to build full description
             self.describeLayers(event)
+        # we need to remove "\n" from description to keep a well indented report when tests have docstrings
+        # see https://github.com/nose-devs/nose2/issues/327 for more information
+        event.description = event.description.replace('\n', ' ')
 
     def describeLayers(self, event):
         desc = [event.description]

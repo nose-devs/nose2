@@ -29,3 +29,8 @@ deploy:
     repo: nose-devs/nose2
 matrix:
   fast_finish: true
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/11076bd53e2156a9a00b
+    on_start: never

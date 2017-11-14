@@ -1,8 +1,15 @@
 Changelog
 =========
 
+0.7.2
+-----
+* Fixed
+  * Proper indentation of test with docstring in layers 
+  * MP plugin now calls startSubprocess in subprocess
+
 0.7.1
 -----
+(Built but never deployed.)
 
 * Fixed
   * Automatically create .coverage file during coverage reporting

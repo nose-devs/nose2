@@ -80,8 +80,8 @@ class MultiProcess(events.Plugin):
             if testid.startswith(failed_import_id):
                 self.cases[testid].run(result_)
 
-        # XXX The length of the filtered list needs to be known
-        # for _startProcs, until this can be cleaned up.  This
+        # XXX Process-Handling: The length of the filtered list needs to be
+        # known for _startProcs, until this can be cleaned up.  This
         # wasn't the best way to deal with too few tests
         flat = [x for x in flat if not x.startswith(failed_import_id)]
         procs = self._startProcs(len(flat))
@@ -91,22 +91,26 @@ class MultiProcess(events.Plugin):
             if not flat:
                 break
             caseid = flat.pop(0)
+            # NOTE: it throws errors on broken pipes and bad serialization
             conn.send(caseid)
 
         rdrs = [conn for proc, conn in procs if proc.is_alive()]
         while flat or rdrs:
             ready, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
             for conn in ready:
-                # XXX proc could be dead
+                # XXX Process-Handling: If we get an EOFError on receive the
+                # process finished= or we lost the process and the test it was
+                # working on.  Also do we rebuild the process?
                 try:
                     remote_events = conn.recv()
                 except EOFError:
                     # probably dead/12
                     log.warning("Subprocess connection closed unexpectedly")
-                    continue  # XXX or die?
+                    continue
 
+                # If remote_events is None, the process exited normally,
+                # which should mean that we didn't any more tests for it.
                 if remote_events is None:
-                    # XXX proc is done, how to mark it dead?
                     log.debug("Conn closed %s", conn)
                     rdrs.remove(conn)
                     continue
@@ -119,9 +123,10 @@ class MultiProcess(events.Plugin):
                     self._localize(event)
                     getattr(self.session.hooks, hook)(event)
 
-                # send a new test to the worker if there is one left
+                # Send the next test_id
+                # NOTE: send throws errors on broken pipes and bad serialization
                 if not flat:
-                    # if there isn't send None - it's the 'done' flag
+                    # If there are no more, send None - it's the 'done' flag
                     conn.send(None)
                     continue
                 caseid = flat.pop(0)
@@ -129,6 +134,7 @@ class MultiProcess(events.Plugin):
 
         for _, conn in procs:
             conn.close()
+
         # ensure we wait until all processes are done before
         # exiting, to allow plugins running there to finalize
         for proc, _ in procs:
@@ -174,7 +180,7 @@ class MultiProcess(events.Plugin):
             return parent_conn
 
     def _startProcs(self, test_count):
-        # XXX create session export
+        # Create session export
         session_export = self._exportSession()
         procs = []
         count = min(test_count, self.procs)
@@ -190,11 +196,15 @@ class MultiProcess(events.Plugin):
         return procs
 
     def _flatten(self, suite):
-        # XXX
-        # examine suite tests to find out if they have class
-        # or module fixtures and group them that way into names
-        # of test classes or modules
-        # ALSO record all test cases in self.cases
+        """
+        Flatten test-suite into list of IDs, AND record all test case
+        into self.cases
+
+        CAVEAT:  Due to current limitation of the MP plugin, examine the suite
+                 tests to find out if they have class or module fixtures and
+                 group them that way into name of test classes or module.
+                 This is aid in their dispatch.
+        """
         log.debug("Flattening test into list of IDs")
         mods = {}
         classes = {}
@@ -244,19 +254,27 @@ class MultiProcess(events.Plugin):
                                  "main process" % event.test))._tests[0]
 
     def _exportSession(self):
-        # argparse isn't pickleable
-        # no plugin instances
-        # no hooks
+        """
+        Generate the session information passed to work process.
+
+        CAVEAT: The entire contents of which *MUST* be pickeable
+        and safe to use in the subprocess.
+
+        This probably includes:
+        * No argparse namespaces/named-tuples
+        * No plugin instances
+        * No hokes
+        :return:
+        """
         export = {'config': self.session.config,
                   'verbosity': self.session.verbosity,
                   'startDir': self.session.startDir,
                   'topLevelDir': self.session.topLevelDir,
                   'logLevel': self.session.logLevel,
-                  # XXX classes or modules?
                   'pluginClasses': []}
-        # XXX fire registerInSubprocess -- add those plugin classes
-        # (classes must be pickleable!)
-        event = RegisterInSubprocessEvent()  # FIXME should be own event type
+        event = RegisterInSubprocessEvent()
+        # fire registerInSubprocess on plugins -- add those plugin classes
+        # CAVEAT: classes must be pickleable!
         self.session.hooks.registerInSubprocess(event)
         export['pluginClasses'].extend(event.pluginClasses)
         return export
@@ -268,31 +286,16 @@ def procserver(session_export, conn):
     rlog.setLevel(session_export['logLevel'])
 
     # make a real session from the "session" we got
-    ssn = session.Session()
-    ssn.config = session_export['config']
-    ssn.hooks = RecordingPluginInterface()
-    ssn.verbosity = session_export['verbosity']
-    ssn.startDir = session_export['startDir']
-    ssn.topLevelDir = session_export['topLevelDir']
-    ssn.prepareSysPath()
-    loader_ = loader.PluggableTestLoader(ssn)
-    ssn.testLoader = loader_
-    result_ = result.PluggableTestResult(ssn)
-    ssn.testResult = result_
-    runner_ = runner.PluggableTestRunner(ssn)  # needed??
-    ssn.testRunner = runner_
-    # load and register plugins
-    ssn.plugins = [
-        plugin(session=ssn) for plugin in session_export['pluginClasses']]
-    rlog.debug("Plugins loaded: %s", ssn.plugins)
-    for plugin in ssn.plugins:
-        plugin.register()
-        rlog.debug("Registered %s in subprocess", plugin)
+    ssn = import_session(rlog, session_export)
 
     if isinstance(conn, collections.Sequence):
         conn = connection.Client(conn[:2], authkey=conn[2])
 
-    event = SubprocessEvent(loader_, result_, runner_, ssn.plugins, conn)
+    event = SubprocessEvent(ssn.testLoader,
+                            ssn.testResult,
+                            ssn.testRunner,
+                            ssn.plugins,
+                            conn)
     res = ssn.hooks.startSubprocess(event)
     if event.handled and not res:
         conn.send(None)
@@ -308,7 +311,7 @@ def procserver(session_export, conn):
         # deal with the case that testid is something other
         # than a simple string.
         test = event.loader.loadTestsFromName(testid)
-        # xxx try/except?
+        # XXX If there a need to protect the loop? try/except?
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)
         events = [e for e in ssn.hooks.flush()]
@@ -317,6 +320,38 @@ def procserver(session_export, conn):
     conn.send(None)
     conn.close()
     ssn.hooks.stopSubprocess(event)
+
+
+def import_session(rlog, session_export):
+    ssn = session.Session()
+    ssn.config = session_export['config']
+    ssn.hooks = RecordingPluginInterface()
+    ssn.verbosity = session_export['verbosity']
+    ssn.startDir = session_export['startDir']
+    ssn.topLevelDir = session_export['topLevelDir']
+    ssn.prepareSysPath()
+    loader_ = loader.PluggableTestLoader(ssn)
+    ssn.testLoader = loader_
+    result_ = result.PluggableTestResult(ssn)
+    ssn.testResult = result_
+    runner_ = runner.PluggableTestRunner(ssn)  # needed??
+    ssn.testRunner = runner_
+    # load and register plugins, forcing multiprocess to the end
+    ssn.plugins = [
+        plugin(session=ssn) for plugin in session_export['pluginClasses']
+        if plugin is not MultiProcess
+    ]
+    rlog.debug("Plugins loaded: %s", ssn.plugins)
+
+    for plugin in ssn.plugins:
+        plugin.register()
+        rlog.debug("Registered %s in subprocess", plugin)
+
+    # instantiating the plugin will register it.
+    ssn.plugins.append(MultiProcess(session=ssn))
+    rlog.debug("Registered %s in subprocess", MultiProcess)
+    ssn.plugins[-1].pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
+    return ssn
 
 
 # test generator

@@ -10,7 +10,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'nose2.sphinxext']
+              'nose2.sphinxext',
+              'sphinxcontrib.mermaid']
 source_suffix = '.rst'
 master_doc = 'index'
 project = u'nose2'

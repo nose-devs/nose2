@@ -37,23 +37,23 @@ class TestMPPlugin(TestCase):
             sys.platform = "linux"
             host = "1.2.3.4"
             port = 245
-            self.plugin.setAddress(host)
+            self.plugin.set_address(host)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, 0))
-            self.plugin.setAddress("%s:%i" % (host, port))
+            self.plugin.set_address("%s:%i" % (host, port))
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, port))
-            self.plugin.setAddress(None)
+            self.plugin.set_address(None)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (None, 0))
             sys.platform = "win32"
-            self.plugin.setAddress(host)
+            self.plugin.set_address(host)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, 0))
-            self.plugin.setAddress("%s:%i" % (host, port))
+            self.plugin.set_address("%s:%i" % (host, port))
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              (host, port))
-            self.plugin.setAddress(None)
+            self.plugin.set_address(None)
             self.assertEqual((self.plugin.bind_host, self.plugin.bind_port),
                              ("127.116.157.163", 0))
         finally:

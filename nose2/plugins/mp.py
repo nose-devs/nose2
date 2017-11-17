@@ -16,33 +16,81 @@ log = logging.getLogger(__name__)
 
 
 class MultiProcess(events.Plugin):
+    """
+    Handle parallel test run by poping up subprocesses and submitting tests to them.
+
+    mp working flow is :
+
+    .. mermaid::
+
+        graph TB
+            start(Get all tests, keep module and class names)
+            sess(create session)
+            registerInSubprocess
+            ifproc{"If test number >= num_process"}
+            gt(pops up num_process processes)
+            lt(pops up nb_test processes)
+            while{has test in queue}
+            submit(submit test to available process)
+            start --> sess
+            subgraph _exportSession
+            sess --> registerInSubprocess
+            end
+            subgraph _startprocs
+            registerInSubprocess --> ifproc
+            ifproc -- yes -->gt
+            ifproc -- no -->lt
+
+            end
+            subgraph _runmp
+            lt-->while
+            gt-->while
+            while-. yes.->submit
+            while-. no .->endtest[End of test run]
+            submit --> run
+            end
+            run --> endtest
+
+    . attribute ::  bind_host
+
+        the address we will bind the subprocess server. it will default to ``127.116.157.163`` on \
+    windows.
+    . attribute :: bind_port
+
+        the port we will bind the subprocess server. it will default to ``0``.
+    """
     configSection = 'multiprocess'
 
     def __init__(self):
-        self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
+        self.addArgument(self.set_procs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self.procs = self.config.as_int(
             'processes', multiprocessing.cpu_count())
-        self.setAddress(self.config.as_str('bind_address', None))
+        self.set_address(self.config.as_str('bind_address', None))
 
         self.cases = {}
 
-    def setProcs(self, num):
+    def set_procs(self, num):
         self.procs = int(num[0])  # FIXME merge n fix
         self.register()
 
-    def setAddress(self, address):
+    def set_address(self, address):
+        """
+        split ``address`` and sets up ``self.bind_host`` and ``self.bind_port``
+
+        :param address: the bind_address formatted as ``{bind_host}:{bind_port}``. The ``bind_port`` is not mandatory.
+        """
         if address is None or address.strip() == '':
             address = []
         else:
             address = [x.strip() for x in address.split(':')[:2]]
 
-        #Background:  On Windows, select.select only works on sockets.  So the
-        #ability to select a bindable address and optionally port for the mp
-        #plugin was added.  Pipes should support a form of select, but this
-        #would require using pywin32.  There are altnernatives but all have
-        #some kind of downside.  An alternative might be creating a connection
-        #like object using a shared queue for incomings events. 
+        # Background:  On Windows, select.select only works on sockets.  So the
+        # ability to select a bindable address and optionally port for the mp
+        # plugin was added.  Pipes should support a form of select, but this
+        # would require using pywin32.  There are altnernatives but all have
+        # some kind of downside.  An alternative might be creating a connection
+        # like object using a shared queue for incomings events.
         self.bind_host = None
         self.bind_port = 0
 
@@ -67,7 +115,7 @@ class MultiProcess(events.Plugin):
         event.handled = True
         return False
 
-    def _runmp(self, test, result):
+    def _runmp(self, test, test_result):
         # flatten technically modifies a hash of test cases, let's
         # only run it once per run.
         flat = list(self._flatten(test))
@@ -116,9 +164,9 @@ class MultiProcess(events.Plugin):
                     continue
 
                 # replay events
-                testid, events = remote_events
+                testid, attached_events = remote_events
                 log.debug("Received results for %s", testid)
-                for (hook, event) in events:
+                for (hook, event) in attached_events:
                     log.debug("Received %s(%s)", hook, event)
                     self._localize(event)
                     getattr(self.session.hooks, hook)(event)
@@ -151,7 +199,7 @@ class MultiProcess(events.Plugin):
         to get a ``Connection`` object for the socket.
         """
         if self.bind_host is not None:
-            #prevent "accidental" wire crossing
+            # prevent "accidental" wire crossing
             authkey = os.urandom(20)
             address = (self.bind_host, self.bind_port)
             listener = connection.Listener(address, authkey=authkey)
@@ -168,7 +216,7 @@ class MultiProcess(events.Plugin):
         member to get a low_level socket to do a select on.
         """
         if isinstance(parent_conn, connection.Listener):
-            #ick private interface
+            # ick private interface
             rdrs = [parent_conn._listener._socket]
             readable, _, _ = select.select(rdrs, [], [],
                                            self.testRunTimeout)
@@ -264,7 +312,8 @@ class MultiProcess(events.Plugin):
         * No argparse namespaces/named-tuples
         * No plugin instances
         * No hokes
-        :return:
+        :return: exported session
+        :rtype: dict
         """
         export = {'config': self.session.config,
                   'verbosity': self.session.verbosity,
@@ -405,7 +454,7 @@ class SubprocessEvent(events.Event):
         self.runner = runner
         self.plugins = plugins
         self.connection = connection
-        self.executeTests = lambda test, result: test(result)
+        self.executeTests = lambda test, test_result: test(test_result)
         super(SubprocessEvent, self).__init__(**metadata)
 
 

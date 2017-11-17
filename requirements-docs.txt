@@ -1,3 +1,4 @@
 Sphinx>=1.6.5
 sphinx_rtd_theme
 mock
+sphinxcontrib-mermaid==0.3

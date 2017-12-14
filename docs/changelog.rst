@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.7.3
+-----
+* Fixed
+  * Tests failing due to .coveragerc not in MANIFEST
+
+Added support for python 3.6.
+
 0.7.2
 -----
 * Fixed

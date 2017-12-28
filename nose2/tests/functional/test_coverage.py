@@ -7,7 +7,7 @@ from nose2.tests._common import FunctionalTestCase, support_file
 
 class TestCoverage(FunctionalTestCase):
     def assertProcOutputPattern(self, proc, libname, stats,
-                                total_stats=None):
+                                total_stats=None, assert_exit_status=0):
         """
         - proc: a popen proc to check output on
         - libname: the name of the covered library, to build the output pattern
@@ -23,6 +23,9 @@ class TestCoverage(FunctionalTestCase):
         expected = expected + stats
 
         stdout, stderr = proc.communicate()
+
+        if assert_exit_status is not None:
+            self.assertEqual(assert_exit_status, proc.poll())
 
         self.assertTestRunOutputMatches(
             proc,
@@ -81,3 +84,17 @@ class TestCoverage(FunctionalTestCase):
         )
         self.assertProcOutputPattern(proc, 'lib20171102',
                                      stats='\s+3\s+0\s+100%')
+
+    def test_run_coverage_fail_under(self):
+        STATS = '\s+8\s+5\s+38%\s+1, 7-10'
+        TOTAL_STATS = '\s+8\s+5\s+38%\s'
+
+        proc = self.runIn(
+            'scenario/coverage_config_fail_under',
+            '-v',
+            '--with-coverage',
+            '--coverage=covered_lib/'
+        )
+        self.assertProcOutputPattern(proc, 'covered_lib', STATS,
+                                     total_stats=TOTAL_STATS,
+                                     assert_exit_status=1)

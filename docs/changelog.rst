@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+* Running `nose2` via `setuptools` will now trigger `CreateTestsEvent` and `CreatedTestSuiteEvent`
+
 0.7.3
 -----
 * Fixed

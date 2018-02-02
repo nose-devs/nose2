@@ -57,6 +57,11 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
         if dir_handler.event_handled:
             return
         for path in dist.resource_listdir(rel_path):
+            # on setuptools==38.2.5 , resource_listdir() can yield ""
+            # if that happens, skip processing it to avoid infinite recursion
+            if path == '':
+                continue
+
             entry_path = os.path.join(rel_path, path)
             if dist.resource_isdir(entry_path):
                 for test in self._find_tests_in_egg_dir(event, entry_path, dist):

@@ -21,11 +21,30 @@ class MultiProcess(events.Plugin):
     def __init__(self):
         self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
-        self.procs = self.config.as_int(
-            'processes', multiprocessing.cpu_count())
+        self._procs = self.config.as_int(
+            'processes', 0)
         self.setAddress(self.config.as_str('bind_address', None))
 
         self.cases = {}
+
+    @property
+    def procs(self):
+        """Get the appropriate number of procs for self.procs if self._procs is
+        0."""
+
+        if self._procs == 0:
+            try:
+                self._procs = multiprocessing.cpu_count()
+            except NotImplementedError as e:
+                self._procs = 1
+        return self._procs
+
+    @procs.setter
+    def procs(self, value):
+        """Setter for procs property"""
+        if value <= 0:
+            raise AttributeError("Can't set the procs number to less than 1")
+        self._procs = value
 
     def setProcs(self, num):
         self.procs = int(num[0])  # FIXME merge n fix

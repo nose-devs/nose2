@@ -41,7 +41,8 @@ config file::
    If you make the plugin always active by setting ``always-on`` in
    the ``[multiprocess]`` section of a config file, but do not set
    ``processes`` or pass :option:`-N`, the number of processes
-   defaults to the number of CPUs available.
+   defaults to the number of CPUs available. Also note that a value of 0 will
+   set the actual number of processes to the number of CPUs on the computer.
 
 Should one wish to specify the use of internet sockets for 
 interprocess communications, specify the ``bind_address``

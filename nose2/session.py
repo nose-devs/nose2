@@ -137,7 +137,7 @@ class Session(object):
         exclude = set(exclude)
         all_ = (set(modules) | set(more_plugins)) - exclude
         log.debug("Loading plugin modules: %s", all_)
-        for module in all_:
+        for module in sorted(all_):
             self.loadPluginsFromModule(util.module_from_name(module))
         self.hooks.pluginsLoaded(events.PluginsLoadedEvent(self.plugins))
 

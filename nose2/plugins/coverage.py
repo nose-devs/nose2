@@ -21,8 +21,15 @@ Or with this lines in ``unittest.cfg`` :
     [coverage]
     always-on = True
 
+
+You can further specify coverage behaviors with a ``.coveragerc`` file, as
+specified by `Coverage Config
+<http://coverage.readthedocs.io/en/latest/config.html>`_.
+However, when doing so you should also be aware of
+`Differences From coverage`_.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
+import six
 import logging
 
 from nose2.events import Plugin
@@ -36,6 +43,11 @@ class Coverage(Plugin):
 
     def __init__(self):
         """Get our config and add our command line arguments."""
+        # tracking var for any decision which marks the entire run as failed
+        self.decided_failure = False
+        # buffer for error output data
+        self.error_output_buffer = six.StringIO()
+
         self.conSource = self.config.as_list('coverage', [])
         self.conReport = self.config.as_list('coverage-report', [])
         self.conConfig = self.config.as_str('coverage-config', '').strip()
@@ -96,7 +108,7 @@ class Coverage(Plugin):
         # will pick up on things which happen at import time
         self.covController.start()
 
-    def afterSummaryReport(self, event):
+    def beforeSummaryReport(self, event):
         """Only called if active so stop coverage and produce reports."""
         if self.covController:
             self.covController.stop()
@@ -110,6 +122,8 @@ class Coverage(Plugin):
             # requesting a better fix in nedbat/coveragepy#34
             self.covController.save()
 
+            percent_coverage = None
+
             if 'term' in self.covReport or 'term-missing' in self.covReport:
                 # only pass `show_missing` if "term-missing" was given
                 # otherwise, just allow coverage to load show_missing from
@@ -117,10 +131,26 @@ class Coverage(Plugin):
                 kwargs = {}
                 if 'term-missing' in self.covReport:
                     kwargs['show_missing'] = True
-                self.covController.report(file=event.stream, **kwargs)
+                percent_coverage = self.covController.report(
+                    file=self.error_output_buffer, **kwargs)
             if 'annotate' in self.covReport:
-                self.covController.annotate()
+                percent_coverage = self.covController.annotate()
             if 'html' in self.covReport:
-                self.covController.html_report()
+                percent_coverage = self.covController.html_report()
             if 'xml' in self.covReport:
-                self.covController.xml_report()
+                percent_coverage = self.covController.xml_report()
+
+            fail_under = self.covController.get_option("report:fail_under")
+            if (fail_under is not None and percent_coverage is not None and
+                    fail_under > percent_coverage):
+                self.decided_failure = True
+
+    def wasSuccessful(self, event):
+        """Mark full test run as successful or unsuccessful"""
+        if event.success and self.decided_failure:
+            event.success = False
+
+    def afterSummaryReport(self, event):
+        """Reporting data is collected, failure status determined and set.
+        Now print any buffered error output saved from beforeSummaryReport"""
+        print(self.error_output_buffer.getvalue(), file=event.stream)

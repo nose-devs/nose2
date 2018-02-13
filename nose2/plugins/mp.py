@@ -42,8 +42,8 @@ class MultiProcess(events.Plugin):
     @procs.setter
     def procs(self, value):
         """Setter for procs property"""
-        if value <= 0:
-            raise AttributeError("Can't set the procs number to less than 1")
+        if value < 0:
+            raise AttributeError("Can't set the procs number to less than 0, (0 = Auto)")
         self._procs = value
 
     def setProcs(self, num):

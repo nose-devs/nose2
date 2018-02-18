@@ -1,31 +1,43 @@
 Changelog
 =========
 
-Unreleased
+0.7.4
 ----------
 
-* Running `nose2` via `setuptools` will now trigger `CreateTestsEvent` and `CreatedTestSuiteEvent`
+* Fixed
+    * Respect `fail_under` in converage config
+    * Avoid infinite recursion when loading setuptools from zipped egg
+    * Manpage now renders reproducably
+    * MP doc build now reproducable
+  
+* Features 
+    * Setup tools invocation now handles coverage
+
+* Notes
+    * Running `nose2` via `setuptools` will now trigger `CreateTestsEvent` and `CreatedTestSuiteEvent`
 
 0.7.3
 -----
+
 * Fixed
-  * Tests failing due to .coveragerc not in MANIFEST
+    * Tests failing due to .coveragerc not in MANIFEST
 
 Added support for python 3.6.
 
 0.7.2
 -----
+
 * Fixed
-  * Proper indentation of test with docstring in layers 
-  * MP plugin now calls startSubprocess in subprocess
+    * Proper indentation of test with docstring in layers 
+    * MP plugin now calls startSubprocess in subprocess
 
 0.7.1
 -----
 (Built but never deployed.)
 
 * Fixed
-  * Automatically create .coverage file during coverage reporting
-  * Better handling of import failures
+    * Automatically create .coverage file during coverage reporting
+    * Better handling of import failures
 
 * Developer workflow changes
     * Add Makefile to enable "quickstart" workflow

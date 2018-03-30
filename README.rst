@@ -35,7 +35,7 @@ Welcome to nose2
  * supporting Python 2 and 3 from the same codebase, without translation
  * encouraging greater community involvement in its development
 
-In service of some those goals, some features of ``nose`` *are not*
+In service of some of those goals, some features of ``nose`` *are not*
 supported in ``nose2``. See `differences`_ for a thorough rundown.
 
 Workflow

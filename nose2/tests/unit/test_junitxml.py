@@ -2,7 +2,7 @@ from xml.etree import ElementTree as ET
 from nose2.tests._common import TestCase
 from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml, logcapture
-from nose2.plugins.loader import generators, parameters, testcases
+from nose2.plugins.loader import generators, parameters, testcases, functions
 
 import logging
 import os
@@ -199,6 +199,20 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(len(xml), 2)
         self.assertEqual(xml[0].get('name'), 'test_gen:1 (1, 1)')
         self.assertEqual(xml[1].get('name'), 'test_gen:2 (1, 2)')
+
+    def test_function_classname_is_module(self):
+        fun = functions.Functions(session=self.session)
+        fun.register()
+
+        def test_func():
+            pass
+
+        cases = fun._createTests(test_func)
+        self.assertEqual(len(cases), 1)
+        cases[0](self.result)
+        xml = self.plugin.tree.findall('testcase')
+        self.assertEqual(len(xml), 1)
+        self.assertTrue(xml[0].get('classname').endswith('test_junitxml'))
 
     def test_params_test_name_correct(self):
         # param test loading is a bit more complex than generator

@@ -130,6 +130,8 @@ class JUnitXmlReporter(events.Plugin):
 
         testcase = ET.SubElement(self.tree, 'testcase')
         testcase.set('time', "%.6f" % self._time())
+        if not classname:
+            classname = test.__module__
         testcase.set('classname', classname)
         testcase.set('name', method)
 

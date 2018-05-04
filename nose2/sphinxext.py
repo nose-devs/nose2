@@ -71,7 +71,7 @@ class AutoPlugin(Directive):
 
         # config options
         if config.vars:
-            self.add_config(rst, config)
+            self.add_config(rst, config, plugin)
 
         # command-line options
         if opts.opts:
@@ -87,7 +87,7 @@ class AutoPlugin(Directive):
         rst.append(u'   :members:', AD)
         rst.append(u'', AD)
 
-    def add_config(self, rst, config):
+    def add_config(self, rst, config, plugin):
         headline = u'Configuration [%s]' % config.section
         self.headline(rst, headline)
 
@@ -104,6 +104,9 @@ class AutoPlugin(Directive):
                    u'the following in a :file:`unittest.cfg` file.', AD)
         rst.append(u'', AD)
         rst.append(u'.. code-block:: ini', AD)
+        rst.append(u'  ', AD)
+        rst.append(u'  [unittest]', AD)
+        rst.append(u'  plugins = %s' % plugin.__module__, AD)
         rst.append(u'  ', AD)
         rst.append(u'  [%s]' % config.section, AD)
         for var in sorted(config.vars.keys()):

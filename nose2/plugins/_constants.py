@@ -13,4 +13,5 @@ DEFAULT_PLUGINS = (
     'nose2.plugins.buffer',
     'nose2.plugins.failfast',
     'nose2.plugins.debugger',
+    'nose2.plugins.prettyassert',
 )

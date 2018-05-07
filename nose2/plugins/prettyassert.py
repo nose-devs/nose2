@@ -12,6 +12,7 @@ add additional detail to the error report.
 
 from __future__ import print_function
 
+import collections
 import inspect
 import re
 import six
@@ -127,59 +128,6 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
         A collection of token descriptions, name=val suitable for directly
         adding to output
     """
-    # a collection of found, relevant tokens
-    # ultimately, we want this to contain the values of tokens found in the
-    # assert statement which failed
-    collect_tokens = []
-    # track which tokens we've seen to avoid duplicates if a name appears
-    # twice, as in `assert x != x`
-    seen_tokens = set()
-
-    def process_tokens(toktype, tok, start, end, line):
-        """
-        A tokenization processor for tokenize.generate_tokens
-        Skips certain token types, class names, etc
-
-        When an identifiable/usable token is found, add it to
-        collect_tokens
-        (which we add to extraDetail later)
-
-        When an "assert" statement is found, reset the token collection
-        and return the start line (relative to the text being tokenized)
-        """
-        # skip non "NAME" tokens
-        if toktype != tokenize.NAME:
-            return
-
-        # assert statement was reached, reset
-        # return the start line (start = (startrow, startcol))
-        if tok == 'assert':
-            del collect_tokens[:]
-            seen_tokens.clear()
-            return start[0]
-
-        # skip tokens we've seen
-        if tok in seen_tokens:
-            return
-        # add it (so we don't try it again unless we hit a new assert and
-        # reset
-        seen_tokens.add(tok)
-
-        # try to resolve to a value
-        try:
-            value = f_locals[tok]
-        except KeyError:
-            try:
-                value = f_globals[tok]
-            except KeyError:
-                # unresolveable name -- short circuit
-                return
-
-        # okay, get repr() for a good string representation
-        value = repr(value)
-        # append in the form we want to print
-        collect_tokens.append('    {} = {}'.format(tok, value))
-
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
     filelike_context = six.StringIO(textwrap.dedent(''.join(source_lines)))
@@ -204,10 +152,13 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
     # also works because we truncated source_lines to remove the final
     # assert, which we didn't reach during execution
     assert_startline = None
+
+    token_processor = TokenProcessor(f_locals, f_globals)
+
     # tokenize and process each token
     for tokty, tok, start, end, tok_lineno in (
             tokenize.generate_tokens(filelike_context.readline)):
-        ret = process_tokens(tokty, tok, start, end, tok_lineno)
+        ret = token_processor.process(tokty, tok, start, end, tok_lineno)
         if ret:
             assert_startline = ret
 
@@ -216,4 +167,147 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
     if assert_startline:
         assert_startline -= 1
 
+    collect_tokens = []
+    for (name, obj) in token_processor.get_token_collection().items():
+        # okay, get repr() for a good string representation
+        strvalue = repr(obj)
+        # append in the form we want to print
+        collect_tokens.append('    {} = {}'.format(name, strvalue))
+
     return assert_startline, collect_tokens
+
+
+class TokenProcessor(object):
+    def __init__(self, f_locals, f_globals):
+        # local and global variables from the frame which we're inspecting
+        self.f_locals, self.f_globals = f_locals, f_globals
+
+        # None or a tuple of (object, name) where
+        # - "object" is the object whose attributes we are currently resolving
+        # - "name" is its name, as we would like to display it
+        #
+        # start each time we see a sequence of NAME OP NAME OP NAME (etc.)
+        # end each time we see a token which is neither NAME nor OP
+        self.doing_resolution = None
+
+        # an index of known token names (including the long "x.y.z" names we
+        # get from attribute resolution) to their values, in the order in which
+        # they were encountered
+        # track which tokens we've seen to avoid duplicates if a name appears
+        # twice, as in `assert x != x`
+        self.seen_tokens = collections.OrderedDict()
+
+        # the previous token seen as a tuple of (tok_type, token_name)
+        # (or None when we start)
+        self.last_tok = None
+
+    def get_token_collection(self):
+        return self.seen_tokens
+
+    def process(self, toktype, tok, start, end, line):
+        """
+        A tokenization processor for tokenize.generate_tokens
+        Skips certain token types, class names, etc
+
+        When an identifiable/usable token is found, add it to
+        collect_tokens
+        (which we add to extraDetail later)
+
+        When an "assert" statement is found, reset the token collection
+        and return the start line (relative to the text being tokenized)
+        """
+        prior_tok = self.last_tok
+        self.last_tok = (toktype, tok)
+
+        # CASE 0: skip non "NAME" or "OP" tokens and clear current resolution
+        #
+        # NAME is most identifiers and keywords
+        # OP is operators, including .
+        if toktype not in (tokenize.NAME, tokenize.OP):
+            self.doing_resolution = None
+            return
+
+        """
+        CASE 1: Operator token
+
+        skip tokens and either leave resolution in progress or reset, depending
+
+        continue resolution for
+          "."
+            because that's what attribute resolution *is*
+          ")"
+            this is handy, as it means that "(x).y" works
+
+        reset resolution for everything else, e.g. "[", "]", ":"
+        special note: reset resolution for "("
+
+        failing to filter out ")" can result in badness in cases like this:
+            >>> def foo():
+            >>>     return [1]
+            >>> foo.pop = 2
+            >>> ...
+            >>> def test_foo():
+            >>>    assert foo().pop() == 2
+
+        if we stop resolution when we see an LPAREN, we resolve `foo`
+        successfully, fail on `pop` and everything is OK, but if we try to
+        traverse the LPAREN, we get `foo.pop = 2` in our values, which is
+        wrong
+        """
+        if toktype == tokenize.OP:
+            if tok not in (".", ")"):
+                self.doing_resolution = None
+            return
+
+        # CASE 2: "assert" statement
+        # assert statement was reached, reset
+        # return the start line (start = (startrow, startcol))
+        if tok == 'assert':
+            self.seen_tokens.clear()
+            self.doing_resolution = None
+            return start[0]
+
+        # handle tokens
+
+        # CASE 3: a name is being resolved,
+        #         there is a previous token,
+        #         and it's a "." operator
+        if self.doing_resolution and prior_tok and (
+                prior_tok[0] == tokenize.OP and prior_tok[1] == '.'):
+            # unpack and look for the attribute
+            obj, name = self.doing_resolution
+            if hasattr(obj, tok):
+                obj = getattr(obj, tok)
+                name = name + '.' + tok
+                self.doing_resolution = (obj, name)
+                self.seen_tokens[name] = obj
+            # if we couldn't find a relevant attribute, reset on resolution so
+            # that we can try afresh
+            else:
+                self.doing_resolution = None
+
+        # CASE 4: a name is being resolved and there is no preceding "." or
+        #         resolution was explicitly stopped
+        else:
+            # skip tokens we've seen, but grab them as the current things under
+            # resolution
+            if tok in self.seen_tokens:
+                self.doing_resolution = (self.seen_tokens[tok], tok)
+                return
+            # we've never seen this token before
+            else:
+                # try to resolve to a value
+                try:
+                    value = self.f_locals[tok]
+                except KeyError:
+                    try:
+                        value = self.f_globals[tok]
+                    except KeyError:
+                        # unresolveable name -- short circuit
+                        return
+
+                # add it (so we don't try it again unless we hit a new assert
+                # and reset)
+                self.seen_tokens[tok] = value
+
+                self.doing_resolution = (value, tok)

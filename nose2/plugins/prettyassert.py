@@ -48,7 +48,7 @@ class PrettyAssert(events.Plugin):
         """
         Add details to output regarding AssertionError and its context
         """
-        source_lines, f_locals, f_globals, statement = (
+        source_lines, f_locals, f_globals, statement, can_tokenize = (
             _get_inspection_info(tb))
 
         # no message was given
@@ -57,8 +57,12 @@ class PrettyAssert(events.Plugin):
         else:
             message = exc.args[0]
 
-        assert_startline, token_descriptions = _tokenize_assert(
-            source_lines, f_locals, f_globals)
+        if can_tokenize:
+            assert_startline, token_descriptions = _tokenize_assert(
+                source_lines, f_locals, f_globals)
+        else:
+            assert_startline = None
+            token_descriptions = None
 
         #
         # actually add exception info to detail
@@ -97,20 +101,59 @@ def _get_inspection_info(tb):
     - lines of source (truncated)
     - locals and globals from execution frame
     - statement which failed (which can be garbage -- don't trust it)
+    - can_tokenize: a bool indicating that the lines of source can be parsed
     """
     (frame, fname, lineno, funcname, context, ctx_index) = (
         inspect.getinnerframes(tb)[-1])
-    source_lines, firstlineno = inspect.getsourcelines(frame)
+    original_source_lines, firstlineno = inspect.getsourcelines(frame)
+
     # truncate to the code in this frame
     # - remove test function definition line
     # - remove anything after current assert statement
-    source_lines = source_lines[1:(lineno - firstlineno + 1)]
+    last_index = (lineno - firstlineno + 1)
+    source_lines = original_source_lines[1:last_index]
+
+    # in case the current line is actually an incomplete expression, as in
+    #   assert x == (y
+    #                ).z
+    #
+    # in which case the the current line is "assert x == (y", which is not a
+    # complete expression
+    # try to append lines to complete the expression, retrying parsing each and
+    # every time until it succeeds
+    for line in original_source_lines[last_index:]:
+        if _can_tokenize(source_lines):
+            break
+        else:
+            source_lines.append(line)
 
     # the assertion line without its indent -- it may or may not be
     # something useful, as multiline expressions mess this up easily
     statement = context[ctx_index].strip()
 
-    return source_lines, frame.f_locals, frame.f_globals, statement
+    return (
+        source_lines,
+        frame.f_locals, frame.f_globals, statement,
+        _can_tokenize(source_lines)
+    )
+
+
+def _can_tokenize(source_lines):
+    """
+    Check if a list of lines of source can successfully be tokenized
+    """
+    # tokenize.generate_tokens requires a file-like object, so we need to
+    # convert source_lines to a StringIO to give it that interface
+    filelike = six.StringIO(textwrap.dedent(''.join(source_lines)))
+
+    try:
+        for tokty, tok, start, end, tok_lineno in (
+                tokenize.generate_tokens(filelike.readline)):
+            pass
+    except tokenize.TokenError:
+        return False
+
+    return True
 
 
 def _tokenize_assert(source_lines, f_locals, f_globals):
@@ -223,8 +266,12 @@ class TokenProcessor(object):
         #
         # NAME is most identifiers and keywords
         # OP is operators, including .
+        #
+        # special note: don't clear resolution for whitespace (e.g. newline)
         if toktype not in (tokenize.NAME, tokenize.OP):
-            self.doing_resolution = None
+            # only newline for now, maybe we'll find others
+            if toktype not in (tokenize.NEWLINE,):
+                self.doing_resolution = None
             return
 
         """

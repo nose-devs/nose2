@@ -98,3 +98,16 @@ class TestCoverage(FunctionalTestCase):
         self.assertProcOutputPattern(proc, 'covered_lib', STATS,
                                      total_stats=TOTAL_STATS,
                                      assert_exit_status=1)
+
+    def test_run_coverage_fail_under2(self):
+        """Check with coverage settings in config, not CLI"""
+        STATS = '\s+8\s+5\s+38%\s+1, 7-10'
+        TOTAL_STATS = '\s+8\s+5\s+38%\s'
+
+        proc = self.runIn(
+            'scenario/coverage_config_fail_under2',
+            '-v'
+        )
+        self.assertProcOutputPattern(proc, 'part_covered_lib', STATS,
+                                     total_stats=TOTAL_STATS,
+                                     assert_exit_status=1)

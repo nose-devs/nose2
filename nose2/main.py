@@ -3,7 +3,7 @@ import os
 import sys
 import unittest
 
-from nose2 import events, loader, runner, session, util
+from nose2 import events, loader, runner, session, util, plugins
 
 
 log = logging.getLogger(__name__)
@@ -71,22 +71,9 @@ class PluggableTestProgram(unittest.TestProgram):
     _currentSession = None
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
-    defaultPlugins = ('nose2.plugins.loader.discovery',
-                      'nose2.plugins.loader.testcases',
-                      'nose2.plugins.loader.functions',
-                      'nose2.plugins.loader.testclasses',
-                      'nose2.plugins.loader.generators',
-                      'nose2.plugins.loader.parameters',
-                      'nose2.plugins.loader.loadtests',
-                      'nose2.plugins.dundertest',
-                      'nose2.plugins.coverage',
-                      'nose2.plugins.result',
-                      'nose2.plugins.logcapture',
-                      'nose2.plugins.buffer',
-                      'nose2.plugins.failfast',
-                      'nose2.plugins.debugger',
-                      )
+    defaultPlugins = plugins.DEFAULT_PLUGINS
     excludePlugins = ()
+
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
     def __init__(self, **kw):
         plugins = kw.pop('plugins', [])

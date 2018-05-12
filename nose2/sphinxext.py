@@ -4,7 +4,7 @@ from docutils import nodes
 from docutils.statemachine import ViewList
 from docutils.parsers.rst import Directive, directives
 
-from nose2 import events, session, util
+from nose2 import events, session, util, plugins
 
 
 AD = u'<autodoc>'
@@ -88,6 +88,31 @@ class AutoPlugin(Directive):
         rst.append(u'', AD)
 
     def add_config(self, rst, config, plugin):
+        # add docs on enabling non-default plugins
+        plugin_modname = plugin.__module__
+        if plugin_modname not in plugins.DEFAULT_PLUGINS:
+            self.headline(rst, u'Enable this Plugin')
+            rst.append(
+                u'This plugin is built-in, but not loaded by default.', AD)
+            rst.append(u'', AD)
+            rst.append(
+                u'Even if you specify ``always-on = True`` in the '
+                u'configuration, it will not run unless you also enable it. '
+                u'You can do so by putting the following in a '
+                u':file:`unittest.cfg` or :file:`nose2.cfg` file',
+                AD)
+            rst.append(u'', AD)
+            rst.append(u'.. code-block:: ini', AD)
+            rst.append(u'', AD)
+            rst.append(u'  [unittest]', AD)
+            rst.append(u'  plugins = %s' % plugin_modname, AD)
+            rst.append(u'', AD)
+            rst.append(
+                u'The ``plugins`` parameter may contain a list of plugin '
+                u'names, including ``%s``' % plugin_modname,
+                AD)
+            rst.append(u'', AD)
+
         headline = u'Configuration [%s]' % config.section
         self.headline(rst, headline)
 
@@ -104,9 +129,6 @@ class AutoPlugin(Directive):
                    u'the following in a :file:`unittest.cfg` file.', AD)
         rst.append(u'', AD)
         rst.append(u'.. code-block:: ini', AD)
-        rst.append(u'  ', AD)
-        rst.append(u'  [unittest]', AD)
-        rst.append(u'  plugins = %s' % plugin.__module__, AD)
         rst.append(u'  ', AD)
         rst.append(u'  [%s]' % config.section, AD)
         for var in sorted(config.vars.keys()):
@@ -219,7 +241,7 @@ class OptBucket(object):
         return self.doc.replace('%prog', self.prog).replace(':\n', '::\n')
 
     def add_argument(self, *arg, **kw):
-        if not arg in self.seen:
+        if arg not in self.seen:
             self.opts.append(Opt(*arg, **kw))
             self.seen.add(arg)
 

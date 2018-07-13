@@ -57,10 +57,10 @@ class LayerSuite(unittest.BaseTestSuite):
         if self.layer is None:
             return
 
-        setup = self._getBoundClassmethod(self.layer, 'setUp')
-
         event = events.StartLayerSetupEvent(self.layer)
         self.session.hooks.startLayerSetup(event)
+
+        setup = self._getBoundClassmethod(self.layer, 'setUp')
 
         if setup:
             setup()
@@ -113,9 +113,9 @@ class LayerSuite(unittest.BaseTestSuite):
         if self.layer is None:
             return
 
-        teardown = self._getBoundClassmethod(self.layer, 'tearDown')
         event = events.StartLayerTeardownEvent(self.layer)
         self.session.hooks.startLayerTeardown(event)
+        teardown = self._getBoundClassmethod(self.layer, 'tearDown')
         if teardown:
             teardown()
         event = events.StopLayerTeardownEvent(self.layer)

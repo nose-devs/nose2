@@ -96,3 +96,21 @@ class TestPrettyAsserts(FunctionalTestCase):
             "",
         ])
         self.assertProcOutputPattern(proc, expected)
+
+    def test_assert_attribute_resolution2(self):
+        proc = self.runIn(
+            'scenario/pretty_asserts/attribute_resolution2',
+            '-v', '--pretty-assert',
+        )
+        expected = "\n".join([
+            ">>> assert foo\\(\\).x \\!= self.x",
+            "",
+            "values:",
+            ("    foo = <function (TestFoo.test_ohnoez.<locals>.|)foo at "
+             "0x[a-z0-9]+>"),
+            ("    self = <test_prettyassert_attribute_resolution2.TestFoo"
+             " testMethod=test_ohnoez>"),
+            "    self.x = 1",
+            "",
+        ])
+        self.assertProcOutputPattern(proc, expected)

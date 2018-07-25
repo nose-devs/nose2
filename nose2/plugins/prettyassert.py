@@ -37,19 +37,26 @@ class PrettyAssert(events.Plugin):
             return
 
         # unpack, but skip if it's not an AssertionError
-        excty, exc, tb = event.outcomeEvent.exc_info
+        excty, exc, trace = event.outcomeEvent.exc_info
         if excty is not AssertionError:
             return
 
-        self.addAssertDetail(event.extraDetail, exc, tb)
+        self.addAssertDetail(event.extraDetail, exc, trace)
 
     @staticmethod
-    def addAssertDetail(extraDetail, exc, tb):
+    def addAssertDetail(extraDetail, exc, trace):
         """
         Add details to output regarding AssertionError and its context
+
+        extraDetail: a list of lines which will be joined with newlines and
+        added to the output for this test failure -- defined as part of the
+        event format
+
+        exc: the AssertionError exception which was thrown
+
+        trace: a traceback object for the exception
         """
-        source_lines, f_locals, f_globals, statement, can_tokenize = (
-            _get_inspection_info(tb))
+        assert_statement, token_descriptions = _collect_assert_data(trace)
 
         # no message was given
         if len(exc.args) == 0:
@@ -57,45 +64,61 @@ class PrettyAssert(events.Plugin):
         else:
             message = exc.args[0]
 
-        if can_tokenize:
-            assert_startline, token_descriptions = _tokenize_assert(
-                source_lines, f_locals, f_globals)
-        else:
-            assert_startline = None
-            token_descriptions = None
-
         #
         # actually add exception info to detail
         #
 
-        # if we found an "assert" (we might not, if someone raises
-        # AssertionError themselves), grab the whole assertion statement
-        if assert_startline is not None:
-            # dedented, no trailing newline, >>> prefix
-            extraDetail.append(
-                re.sub(
-                    '^', '>>> ',
-                    textwrap.dedent(
-                        ''.join(source_lines[assert_startline:]
-                                ).rstrip('\n')
-                    ),
-                    flags=re.MULTILINE
-                )
+        # add the assert statement to output with '>>>' prefix
+        extraDetail.append(
+            re.sub(
+                '^', '>>> ',
+                assert_statement,
+                flags=re.MULTILINE
             )
-        # as a fallback, grab whatever we think the statement was
-        # easily deceived by multiline expressions
-        else:
-            extraDetail.append('>>> {}'.format(statement))
+        )
+
         if message:
             extraDetail.append('\nmessage:')
             extraDetail.append('    {}'.format(message))
 
         if token_descriptions:
             extraDetail.append('\nvalues:')
-            extraDetail.extend(token_descriptions)
+            for k, v in token_descriptions.items():
+                extraDetail.append('    {} = {}'.format(k, v))
 
 
-def _get_inspection_info(tb):
+def _collect_assert_data(trace):
+    """
+    Given a traceback, extract the assertion statement and get the set of bound
+    variable names (i.e. tokens)
+    """
+    # inspect the trace, collecting various data and determining whether or not
+    # it can be tokenized at all
+    source_lines, frame_locals, frame_globals, statement, can_tokenize = (
+        _get_inspection_info(trace))
+
+    # if things will tokenize cleanly, actually do it
+    if can_tokenize:
+        assert_startline, token_descriptions = _tokenize_assert(
+            source_lines, frame_locals, frame_globals)
+    # otherwise, indicate that we can't render detail by use of Nones
+    else:
+        assert_startline = None
+        token_descriptions = None
+
+    # if we found an "assert" (we might not, if someone raises
+    # AssertionError themselves), grab the whole assertion statement
+    #
+    # as a fallback, stick with whatever we think the statement was
+    # - this is easily deceived by multiline expressions
+    if assert_startline is not None:
+        statement = textwrap.dedent(
+            ''.join(source_lines[assert_startline:]).rstrip('\n'))
+
+    return statement, token_descriptions
+
+
+def _get_inspection_info(trace):
     """
     Pick apart a traceback for the info we actually want to inspect from it
     - lines of source (truncated)
@@ -104,7 +127,7 @@ def _get_inspection_info(tb):
     - can_tokenize: a bool indicating that the lines of source can be parsed
     """
     (frame, fname, lineno, funcname, context, ctx_index) = (
-        inspect.getinnerframes(tb)[-1])
+        inspect.getinnerframes(trace)[-1])
     original_source_lines, firstlineno = inspect.getsourcelines(frame)
 
     # truncate to the code in this frame
@@ -156,7 +179,7 @@ def _can_tokenize(source_lines):
     return True
 
 
-def _tokenize_assert(source_lines, f_locals, f_globals):
+def _tokenize_assert(source_lines, frame_locals, frame_globals):
     """
     Given a set of lines of source ending in a failing assert, plus the frame
     locals and globals, tokenize source.
@@ -168,8 +191,7 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
         The line on which the assert starts (relative to start of
         source_lines)
 
-        A collection of token descriptions, name=val suitable for directly
-        adding to output
+        A collection of token descriptions as a name=val ordered dict
     """
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
@@ -196,12 +218,12 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
     # assert, which we didn't reach during execution
     assert_startline = None
 
-    token_processor = TokenProcessor(f_locals, f_globals)
+    token_processor = TokenProcessor(frame_locals, frame_globals)
 
     # tokenize and process each token
     for tokty, tok, start, end, tok_lineno in (
             tokenize.generate_tokens(filelike_context.readline)):
-        ret = token_processor.process(tokty, tok, start, end, tok_lineno)
+        ret = token_processor.handle_token(tokty, tok, start, end, tok_lineno)
         if ret:
             assert_startline = ret
 
@@ -210,20 +232,20 @@ def _tokenize_assert(source_lines, f_locals, f_globals):
     if assert_startline:
         assert_startline -= 1
 
-    collect_tokens = []
+    token_descriptions = collections.OrderedDict()
     for (name, obj) in token_processor.get_token_collection().items():
         # okay, get repr() for a good string representation
         strvalue = repr(obj)
-        # append in the form we want to print
-        collect_tokens.append('    {} = {}'.format(name, strvalue))
+        # add in the form we want to print
+        token_descriptions[name] = strvalue
 
-    return assert_startline, collect_tokens
+    return assert_startline, token_descriptions
 
 
 class TokenProcessor(object):
-    def __init__(self, f_locals, f_globals):
+    def __init__(self, frame_locals, frame_globals):
         # local and global variables from the frame which we're inspecting
-        self.f_locals, self.f_globals = f_locals, f_globals
+        self.frame_locals, self.frame_globals = frame_locals, frame_globals
 
         # None or a tuple of (object, name) where
         # - "object" is the object whose attributes we are currently resolving
@@ -247,14 +269,13 @@ class TokenProcessor(object):
     def get_token_collection(self):
         return self.seen_tokens
 
-    def process(self, toktype, tok, start, end, line):
+    def handle_token(self, toktype, tok, start, end, line):
         """
         A tokenization processor for tokenize.generate_tokens
         Skips certain token types, class names, etc
 
-        When an identifiable/usable token is found, add it to
-        collect_tokens
-        (which we add to extraDetail later)
+        When an identifiable/usable token is found, add it to the token
+        collection (self.seen_tokens)
 
         When an "assert" statement is found, reset the token collection
         and return the start line (relative to the text being tokenized)
@@ -274,33 +295,32 @@ class TokenProcessor(object):
                 self.doing_resolution = None
             return
 
-        """
-        CASE 1: Operator token
-
-        skip tokens and either leave resolution in progress or reset, depending
-
-        continue resolution for
-          "."
-            because that's what attribute resolution *is*
-          ")"
-            this is handy, as it means that "(x).y" works
-
-        reset resolution for everything else, e.g. "[", "]", ":"
-        special note: reset resolution for "("
-
-        failing to filter out ")" can result in badness in cases like this:
-            >>> def foo():
-            >>>     return [1]
-            >>> foo.pop = 2
-            >>> ...
-            >>> def test_foo():
-            >>>    assert foo().pop() == 2
-
-        if we stop resolution when we see an LPAREN, we resolve `foo`
-        successfully, fail on `pop` and everything is OK, but if we try to
-        traverse the LPAREN, we get `foo.pop = 2` in our values, which is
-        wrong
-        """
+        # CASE 1: Operator token
+        #
+        # skip tokens and either leave resolution in progress or reset,
+        # depending
+        #
+        # continue resolution for
+        #   "."
+        #     because that's what attribute resolution *is*
+        #   ")"
+        #     this is handy, as it means that "(x).y" works
+        #
+        # reset resolution for everything else, e.g. "[", "]", ":"
+        # special note: reset resolution for "("
+        #
+        # failing to filter out "(" can result in badness in cases like this:
+        #     >>> def foo():
+        #     >>>     return [1]
+        #     >>> foo.pop = 2
+        #     >>> ...
+        #     >>> def test_foo():
+        #     >>>    assert foo().pop() == 2
+        #
+        # if we stop resolution when we see an LPAREN, we resolve `foo`
+        # successfully, fail on `pop` and everything is OK, but if we try to
+        # traverse the LPAREN, we get `foo.pop = 2` in our values, which is
+        # wrong
         if toktype == tokenize.OP:
             if tok not in (".", ")"):
                 self.doing_resolution = None
@@ -345,12 +365,14 @@ class TokenProcessor(object):
             else:
                 # try to resolve to a value
                 try:
-                    value = self.f_locals[tok]
+                    value = self.frame_locals[tok]
                 except KeyError:
                     try:
-                        value = self.f_globals[tok]
+                        value = self.frame_globals[tok]
                     except KeyError:
                         # unresolveable name -- short circuit
+                        # shows up in some cases like `f().x` in which `x`
+                        # might not be a name bound to a value
                         return
 
                 # add it (so we don't try it again unless we hit a new assert

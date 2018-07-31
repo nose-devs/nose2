@@ -1,8 +1,17 @@
 Changelog
 =========
 
+0.8.0
+-----
+
+* Fixed
+    * For junitxml plugin use test module in place of classname if no classname exists
+* Features
+    * Add code to enable plugins to documentation
+* Dropped support for python 3.3
+
 0.7.4
-----------
+-----
 
 * Fixed
     * Respect `fail_under` in converage config

@@ -69,6 +69,7 @@ plan will ever be carried out.
 Current Goals
 ~~~~~~~~~~~~~
 
+
 Even though ``unittest2`` plugins never arrived, ``nose2`` is still being
 maintained!
 We have a small community interested in continuing to work on and use ``nose2``

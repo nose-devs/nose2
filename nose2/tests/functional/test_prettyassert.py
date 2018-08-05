@@ -13,8 +13,9 @@ class TestPrettyAsserts(FunctionalTestCase):
             self.assertEqual(assert_exit_status, proc.poll())
 
         self.assertTestRunOutputMatches(
-            proc,
-            stderr=expected)
+            proc, stderr=expected)
+
+        return stderr
 
     def test_simple_global(self):
         proc = self.runIn(
@@ -114,3 +115,38 @@ class TestPrettyAsserts(FunctionalTestCase):
             "",
         ])
         self.assertProcOutputPattern(proc, expected)
+
+    def test_assert_ignore_passing(self):
+        proc = self.runIn(
+            'scenario/pretty_asserts/ignore_passing',
+            '-v', '--pretty-assert',
+        )
+        expected1 = "\n".join([
+            ">>> assert x; assert y",
+            "",
+            "values:",
+            "    y = False",
+            "",
+        ])
+        expected2 = "\n".join([
+            ">>> assert q",
+            "",
+            "values:",
+            "    q = 0",
+            "",
+        ])
+        self.assertProcOutputPattern(proc, expected1)
+        self.assertProcOutputPattern(proc, expected2)
+
+    def test_unittest_assertion(self):
+        proc = self.runIn(
+            'scenario/pretty_asserts/unittest_assertion',
+            '-v', '--pretty-assert',
+        )
+        # look for typical unittest output
+        expected = "self.assertTrue\\(x\\)\nAssertionError: False is not true"
+        stderr = self.assertProcOutputPattern(proc, expected)
+        # the assertion line wasn't reprinted by prettyassert
+        self.assertNotIn('>>> self.assertTrue', stderr)
+        # the assertion values weren't printed by prettyassert
+        self.assertNotIn('values:', stderr)

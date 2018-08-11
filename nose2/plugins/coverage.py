@@ -146,7 +146,7 @@ class Coverage(Plugin):
 
     def wasSuccessful(self, event):
         """Mark full test run as successful or unsuccessful"""
-        if event.success and self.decided_failure:
+        if self.decided_failure:
             event.success = False
 
     def afterSummaryReport(self, event):

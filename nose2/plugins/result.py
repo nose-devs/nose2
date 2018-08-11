@@ -107,7 +107,11 @@ class ResultReporter(events.Plugin):
         self._reportSummary(event)
 
     def wasSuccessful(self, event):
-        event.success = True
+        # if another plugin did not set it already, start by setting
+        # success=True
+        if event.success is None:
+            event.success = True
+
         for name, events in self.reportCategories.items():
             for e in events:
                 if (e.outcome == result.ERROR or

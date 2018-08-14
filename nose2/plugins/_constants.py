@@ -7,6 +7,7 @@ DEFAULT_PLUGINS = (
     'nose2.plugins.loader.parameters',
     'nose2.plugins.loader.loadtests',
     'nose2.plugins.dundertest',
+    'nose2.plugins.checklabels',
     'nose2.plugins.coverage',
     'nose2.plugins.result',
     'nose2.plugins.logcapture',

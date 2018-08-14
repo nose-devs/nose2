@@ -162,6 +162,10 @@ class PluggableTestProgram(unittest.TestProgram):
             '--log-level', default=logging.WARN,
             help='Set logging level for message logged to console.')
 
+        self.argparse.add_argument(
+            '--labels', '-l', default="",
+            help='Select test(s) with specified labels')
+
     def handleCfgArgs(self, cfg_args):
         """Handle initial arguments.
 
@@ -180,6 +184,10 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
         self.session.setStartDir()
         self.session.prepareSysPath()
+        # store the labels as session attribute which will later processed
+        # by checklabels plugin to choose tests
+        self.session.labels = cfg_args.labels
+
         if cfg_args.load_plugins:
             self.defaultPlugins.extend(cfg_args.plugins)
             self.excludePlugins.extend(cfg_args.exclude_plugins)

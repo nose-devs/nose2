@@ -70,6 +70,9 @@ class Session(object):
 
        The config section for nose2 itself.
 
+    .. attribute :: labels
+        labels to match in tests before selecting to run
+
     """
     configClass = config.Config
     
@@ -88,6 +91,8 @@ class Session(object):
         self.testLoader = None
         self.logLevel = logging.WARN
         self.configCache = dict()
+        # labels to look for in tests
+        self.labels = ""
 
     def get(self, section):
         """Get a config section.

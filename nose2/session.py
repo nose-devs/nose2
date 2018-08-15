@@ -72,7 +72,7 @@ class Session(object):
 
     """
     configClass = config.Config
-    
+
     def __init__(self):
         self.argparse = argparse.ArgumentParser(prog='nose2', add_help=False)
         self.pluginargs = self.argparse.add_argument_group(
@@ -81,6 +81,8 @@ class Session(object):
         self.config = configparser.ConfigParser()
         self.hooks = events.PluginInterface()
         self.plugins = []
+        # this will be reset later, whenever handleCfgArgs happens, but it
+        # starts at 1 so that it always has a non-negative integer value
         self.verbosity = 1
         self.startDir = None
         self.topLevelDir = None
@@ -183,9 +185,32 @@ class Session(object):
                 log.debug("Register method %s for plugin %s", method, plugin)
                 self.hooks.register(method, plugin)
 
-    def setStartDir(self):
-        if self.startDir is None:
-            self.startDir = self.unittest.as_str('start-dir', '.')
+    def setVerbosity(self, args_verbosity, args_verbose, args_quiet):
+        """
+        Determine verbosity from various (possibly conflicting) sources of info
+
+        :param args_verbosity: The --verbosity argument value
+        :param args_verbose: count of -v options
+        :param args_quiet: count of -q options
+
+        start with config, override with any given --verbosity, then adjust
+        up/down with -vvv -qq, etc
+        """
+        self.verbosity = self.unittest.as_int('verbosity', 1)
+        if args_verbosity is not None:
+            self.verbosity = args_verbosity
+        # adjust up or down, depending on the difference of these counts
+        self.verbosity += args_verbose - args_quiet
+        # floor the value at 0 -- verbosity is always a non-negative integer
+        self.verbosity = max(self.verbosity, 0)
+
+    def setStartDir(self, args_start_dir=None):
+        """
+        start dir comes from config and may be overridden by an argument
+        """
+        self.startDir = self.unittest.as_str('start-dir', '.')
+        if args_start_dir is not None:
+            self.startDir = args_start_dir
 
     def prepareSysPath(self):
         """Add code directories to sys.path"""
@@ -220,7 +245,8 @@ class Session(object):
     def isPluginLoaded(self, pluginName):
         """Returns ``True`` if a given plugin is loaded.
 
-        :param pluginName: the name of the plugin module: e.g. "nose2.plugins.layers".
+        :param pluginName: the name of the plugin module:
+                           e.g. "nose2.plugins.layers".
 
         """
         for plugin in self.plugins:

@@ -155,9 +155,17 @@ class PluggableTestProgram(unittest.TestProgram):
             dest='exclude_plugins', default=[],
             help="Do not load this plugin module")
         self.argparse.add_argument(
-            '--verbose', '-v', action='count', default=0, help="print test case names and statuses")
-        self.argparse.add_argument('--quiet', action='store_const',
-                                   dest='verbose', const=0)
+            '--verbosity', type=int,
+            help=("Set starting verbosity level (int). "
+                  "Applies before -v and -q"))
+        self.argparse.add_argument(
+            '--verbose', '-v', action='count', default=0,
+            help=("Print test case names and statuses. "
+                  "Use multiple '-v's for higher verbosity."))
+        self.argparse.add_argument(
+            '--quiet', '-q', action='count', default=0, dest='quiet',
+            help=("Reduce verbosity. Multiple '-q's result in "
+                  "lower verbosity."))
         self.argparse.add_argument(
             '--log-level', default=logging.WARN,
             help='Set logging level for message logged to console.')
@@ -172,13 +180,13 @@ class PluggableTestProgram(unittest.TestProgram):
         self.session.logLevel = util.parse_log_level(cfg_args.log_level)
         logging.basicConfig(level=self.session.logLevel)
         log.debug('logging initialized %s', cfg_args.log_level)
-        if cfg_args.verbose:
-            self.session.verbosity += cfg_args.verbose
-        self.session.startDir = cfg_args.start_dir
         if cfg_args.top_level_directory:
             self.session.topLevelDir = cfg_args.top_level_directory
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
-        self.session.setStartDir()
+        # set verbosity from config + opts
+        self.session.setVerbosity(
+            cfg_args.verbosity, cfg_args.verbose, cfg_args.quiet)
+        self.session.setStartDir(args_start_dir=cfg_args.start_dir)
         self.session.prepareSysPath()
         if cfg_args.load_plugins:
             self.defaultPlugins.extend(cfg_args.plugins)

@@ -88,6 +88,9 @@ class TestJunitXmlPlugin(TestCase):
             def test_skip(self):
                 self.skipTest('skip')
 
+            def test_skip_no_reason(self):
+                self.skipTest('')
+
             def test_bad_xml(self):
                 raise RuntimeError(TestJunitXmlPlugin.BAD_FOR_XML_U)
 
@@ -172,6 +175,17 @@ class TestJunitXmlPlugin(TestCase):
         case = self.plugin.tree.find('testcase')
         skip = case.find('skipped')
         assert skip is not None
+        self.assertEqual(skip.get('message'), 'test skipped')
+        self.assertEqual(skip.text, 'skip')
+
+    def test_skip_includes_skipped_no_reason(self):
+        test = self.case('test_skip_no_reason')
+        test(self.result)
+        case = self.plugin.tree.find('testcase')
+        skip = case.find('skipped')
+        assert skip is not None
+        self.assertIsNone(skip.get('message'))
+        self.assertIsNone(skip.text)
 
     def test_generator_test_name_correct(self):
         gen = generators.Generators(session=self.session)
@@ -234,7 +248,7 @@ class TestJunitXmlPlugin(TestCase):
         for case in event.extraTests:
             case(self.result)
         xml = self.plugin.tree.findall('testcase')
-        self.assertEqual(len(xml), 12)
+        self.assertEqual(len(xml), 13)
         params = [x for x in xml if x.get('name').startswith('test_params')]
         self.assertEqual(len(params), 3)
         self.assertEqual(params[0].get('name'), 'test_params:1')
@@ -259,7 +273,7 @@ class TestJunitXmlPlugin(TestCase):
         for case in event.extraTests:
             case(self.result)
         xml = self.plugin.tree.findall('testcase')
-        self.assertEqual(len(xml), 12)
+        self.assertEqual(len(xml), 13)
         params = [x for x in xml if x.get('name').startswith('test_params')]
         self.assertEqual(len(params), 3)
         self.assertEqual(params[0].get('name'), 'test_params:1 (1)')

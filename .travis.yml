@@ -10,9 +10,12 @@ python:
 - '3.4'
 - '3.5'
 - '3.6'
-# include 3.7-dev, but put it in allow_failures (so we can easily view status,
-# but not block on it)
-- '3.7-dev'
+matrix:
+  fast_finish: true
+  include!
+  - python: '3.7'
+    dist: xenial    # required for Python 3.7 (travis-ci/travis-ci#9069)
+    sudo: required  # required for Python 3.7 (travis-ci/travis-ci#9069)
 install:
 - travis_retry pip install tox-travis
 - travis_retry pip install coveralls
@@ -30,10 +33,6 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: nose-devs/nose2
-matrix:
-  fast_finish: true
-  allow_failures:
-  - python: "3.7-dev"
 notifications:
   webhooks:
     urls:

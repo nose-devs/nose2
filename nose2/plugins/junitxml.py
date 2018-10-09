@@ -277,7 +277,7 @@ ILLEGAL_REGEX_STR = \
     six.u(']')
 RESTRICTED_REGEX_STR = \
     six.u('[') + \
-    six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
+    six.u('').join(["%s-%s" % (six.unichr(l), six.unichr(h))
                     for (l, h) in RESTRICTED_RANGES]) + \
     six.u(']')
 

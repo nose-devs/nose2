@@ -248,15 +248,6 @@ class JUnitXmlReporter(events.Plugin):
 # xml utility functions
 #
 
-# six doesn't include a unichr function
-
-
-def _unichr(string):
-    if six.PY3:
-        return chr(string)
-    else:
-        return unichr(string)
-
 # etree outputs XML 1.0 so the 1.1 Restricted characters are invalid.
 # and there are no characters that can be given as entities aside
 # form & < > ' " which ever have to be escaped (etree handles these fine)
@@ -281,12 +272,12 @@ if sys.maxunicode > 0xFFFF:
 
 ILLEGAL_REGEX_STR = \
     six.u('[') + \
-    six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
+    six.u('').join(["%s-%s" % (six.unichr(l), six.unichr(h))
                     for (l, h) in ILLEGAL_RANGES]) + \
     six.u(']')
 RESTRICTED_REGEX_STR = \
     six.u('[') + \
-    six.u('').join(["%s-%s" % (_unichr(l), _unichr(h))
+    six.u('').join(["%s-%s" % (six.unichr(l), six.unichr(h))
                     for (l, h) in RESTRICTED_RANGES]) + \
     six.u(']')
 

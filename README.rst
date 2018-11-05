@@ -1,15 +1,15 @@
-.. image:: https://travis-ci.org/nose-devs/nose2.png?branch=master
+.. image:: https://travis-ci.org/nose-devs/nose2.svg?branch=master
     :target: https://travis-ci.org/nose-devs/nose2
     :alt: Build Status
-    
-.. image:: https://coveralls.io/repos/nose-devs/nose2/badge.png?branch=master
-    :target: https://coveralls.io/r/nose-devs/nose2?branch=master
+
+.. image:: https://coveralls.io/repos/github/nose-devs/nose2/badge.svg?branch=master
+    :target: https://coveralls.io/github/nose-devs/nose2?branch=master
     :alt: Coverage Status
-    
+
 .. image:: https://landscape.io/github/nose-devs/nose2/master/landscape.png
    :target: https://landscape.io/github/nose-devs/nose2/master
    :alt: Code Health
-    
+
 .. image:: https://img.shields.io/pypi/v/nose2.svg
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
@@ -18,7 +18,7 @@
     :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
     :alt: Dependencies Status    
 
-.. image:: https://badges.gitter.im/gitterHQ/gitter.png
+.. image:: https://badges.gitter.im/gitterHQ/gitter.svg
     :target: https://gitter.im/nose2
     :alt: Gitter Channel
 

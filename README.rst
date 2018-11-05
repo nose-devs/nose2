@@ -6,17 +6,9 @@
     :target: https://coveralls.io/github/nose-devs/nose2?branch=master
     :alt: Coverage Status
 
-.. image:: https://landscape.io/github/nose-devs/nose2/master/landscape.png
-   :target: https://landscape.io/github/nose-devs/nose2/master
-   :alt: Code Health
-
 .. image:: https://img.shields.io/pypi/v/nose2.svg
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
-
-.. image:: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/badge.png
-    :target: https://www.versioneye.com/user/projects/52037a30632bac57a00257ea/
-    :alt: Dependencies Status    
 
 .. image:: https://badges.gitter.im/gitterHQ/gitter.svg
     :target: https://gitter.im/nose2

@@ -11,7 +11,7 @@ Python Versions
 ^^^^^^^^^^^^^^^
 
 nose supports Python 2.4 and above, but nose2 *only supports Python
-2.7, 3.3, 3.4, 3.5 and pypy*. Unfortunately, supporting Pythons
+2.7, 3.4+, and pypy*. Unfortunately, supporting Pythons
 older than 2.7 along with Python 3 in the same codebase is not practical.
 Since that is one of the core goals of nose2, support for older versions of
 Python had to be sacrificed.

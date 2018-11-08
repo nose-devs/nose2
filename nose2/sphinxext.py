@@ -134,16 +134,17 @@ class AutoPlugin(Directive):
         for var in sorted(config.vars.keys()):
             info = config.vars[var]
             entry = '  %s = ' % (var)
-            if info['type'] != 'list':
+            if info['type'] == 'list':
+                if info['default']:
+                    pad = ' ' * len(entry)
+                    entry = u'%s%s' % (entry, info['default'][0])
+                    rst.append(entry, AD)
+                    for val in info['default'][1:]:
+                        rst.append(u'%s%s' % (pad, val), AD)
+                else:
+                    rst.append(entry, AD)
+            elif info['default'] is not None:
                 entry = u'%s%s' % (entry, info['default'])
-                rst.append(entry, AD)
-            elif info['default']:
-                pad = ' ' * len(entry)
-                entry = u'%s%s' % (entry, info['default'][0])
-                rst.append(entry, AD)
-                for val in info['default'][1:]:
-                    rst.append(u'%s%s' % (pad, val), AD)
-            else:
                 rst.append(entry, AD)
         rst.append(u'', AD)
 

@@ -118,7 +118,7 @@ class PluggableTestResult(object):
         try:
             return self._success
         except AttributeError:
-            event = events.ResultSuccessEvent(self, False)
+            event = events.ResultSuccessEvent(self, None)
             self.session.hooks.wasSuccessful(event)
             self._success = event.success
             return self._success

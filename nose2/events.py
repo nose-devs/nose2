@@ -1063,6 +1063,9 @@ class ResultSuccessEvent(Event):
        Set this to ``True`` to indicate that the test run was
        successful. If no plugin sets the ``success`` to
        ``True``, the test run fails.
+       Should be initialized to ``None`` to indicate that the status has not
+       been set yet (so that plugins can always differentiate an explicit
+       failure in an earlier hook from no pass/fail status having been set yet.
 
     """
     _attrs = Event._attrs + ('result', 'success')

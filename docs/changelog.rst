@@ -103,6 +103,37 @@ Added support for python 3.6.
     * Make the ``collect`` plugin work with layers
     * Fix coverage plugin to take import-time coverage into account
 
+0.5.0
+-----
+
+* Added
+    * Add with_setup and with_teardown decorators to set the setup & teardown
+      on a function
+    * dundertests plugin to skip tests with `__test__ == False`
+    * Add `cartesian_params` decorator
+    * Add coverage plugin
+    * Add EggDiscoveryLoader for discovering tests within Eggs
+    * Support `params` with `such`
+    * `such` errors early if Layers plugin is not loaded
+    * Include logging output in junit XML
+
+* Fixed
+    * Such DSL ignores two `such.A` with the same description
+    * Record skipped tests as 'skipped' instead of 'skips'
+    * Result output failed on unicode characters
+    * Fix multiprocessing plugin on Windows
+    * Allow use of `nose2.main()` from within a test module
+    * Ensure plugins write to the event stream
+    * multiprocessing could lock master proc and fail to exit
+    * junit report path was sensitive to changes in cwd
+    * Test runs would crash if a TestCase `__init__` threw an exception
+    * Plugin failures no longer crash the whole test run
+    * Handle errors in test setup and teardown
+    * Fix reporting of xfail tests
+    * Log capture was waiting too long to render mutable objects to strings
+    * Layers plugin was not running testSetUp/testTearDown from higher `such` layers
+
+
 0.4.7
 -----
 

@@ -13,7 +13,7 @@ import traceback
 import platform
 import six
 import inspect
-from inspect import isgeneratorfunction  # new in 2.6
+from inspect import isgeneratorfunction
 
 
 __unittest = True

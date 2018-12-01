@@ -1,8 +1,0 @@
-#! /usr/bin/env python
-
-__unittest = True
-
-from nose2 import discover
-
-if __name__ == '__main__':
-  discover()

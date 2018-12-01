@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.9.0 (Unreleased)
+------------------
+
+* Fix: Result reporter respects failure status set by other plugins
+
+* New plugin: Add the `prettyassert` plugin, enabled with `--pretty-assert`
+
+* JUnit XML plugin now includes the skip reason in its output
+
+* Update trove classifier to "beta" from "alpha" status
+
+* Dropped support for `distutils`. Installation now requires `setuptools`
+
+* Cleanup code for EOLed python versions
+
 0.8.0
 -----
 
@@ -18,8 +33,8 @@ Changelog
     * Avoid infinite recursion when loading setuptools from zipped egg
     * Manpage now renders reproducably
     * MP doc build now reproducable
-  
-* Features 
+
+* Features
     * Setup tools invocation now handles coverage
 
 * Notes

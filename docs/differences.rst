@@ -98,22 +98,21 @@ itself -- completely bypassing the test runner and test result that
 setuptools/unittest create. This may be incompatible with some
 projects.
 
-New Plugin API
-^^^^^^^^^^^^^^
+Plugin API
+^^^^^^^^^^
 
 nose2 implements a new plugin API based on the work done by Michael
 Foord in unittest2's ``plugins`` branch. This API is greatly superior to
 the one in nose, especially in how it allows plugins to interact with
 each other. But it is different enough from the API in nose that
-supporting nose plugins in nose2 will not be practical: *plugins must
+supporting nose plugins in nose2 is not practical: *plugins must
 be rewritten to work with nose2*. See: :doc:`dev/writing_plugins` for more.
 
 Missing Plugins
 ^^^^^^^^^^^^^^^
 
-*nose2 does not (yet) include some of the more commonly-used plugins
-in nose*. Most of these should arrive in future releases. However,
-some of nose's builtin plugins cannot be ported to nose2 due to
+*nose2 does not include some of the more commonly-used plugins in nose*.
+Some of nose's builtin plugins could not be ported to nose2 due to
 differences in internals. See: :doc:`plugins` for information on the
 plugins built in to nose2.
 
@@ -145,11 +144,6 @@ nicer and easier to understand. It aims to give developers
 flexibility, power and transparency, so that common test scenarios
 require no extra work, and uncommon test scenarios can be supported
 with minimal fuss and magic.
-
-People
-^^^^^^
-
-nose2 is being developed by the same people who maintain nose.
 
 nose2 is not (exactly) unittest2/plugins
 ----------------------------------------

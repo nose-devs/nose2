@@ -17,21 +17,31 @@
 Welcome to nose2
 ================
 
-**Note**: As of 0.7.0 we no longer support 2.6, 3.2, or 3.3. We also removed ``nose2.compat``.
+``nose2`` is the successor to ``nose``.
 
-``nose2`` aims to improve on nose by:
+It's ``unittest`` with plugins.
 
- * providing a better plugin api
- * being easier for users to configure
- * simplifying internal interfaces and processes
- * supporting Python 2 and 3 from the same codebase, without translation
- * encouraging greater community involvement in its development
+``nose2`` is a new project and does not support all of the features of
+``nose``. See `differences`_ for a thorough rundown.
 
-In service of some of those goals, some features of ``nose`` *are not*
-supported in ``nose2``. See `differences`_ for a thorough rundown.
+nose2's purpose is to extend ``unittest`` to make testing nicer and easier to
+understand.
 
-Workflow
---------
+nose2 vs pytest
+---------------
+
+``nose2`` may or may not be a good fit for your project.
+
+If you are new to python testing, we encourage you to also consider `pytest`_,
+a popular testing framework.
+
+Full Docs
+---------
+
+Full documentation for ``nose`` is available on `readthedocs`_.
+
+Contributing
+------------
 
 If you want to make contributions, you can use the ``Makefile`` to get started
 quickly and easily::
@@ -39,36 +49,16 @@ quickly and easily::
     # All you need is a supported version of python and virtualenv installed
     make test
 
-tox will run our full test suite
-against all supported version of python that you have installed locally.
 Don't worry if you don't have all supported versions installed.
 Your changes will get tested automatically when you make a PR.
 
-Use ``make help`` to see other options.
-
-Original Mission & Present Goals
---------------------------------
-
-When ``nose2`` was first written, the plan for its future was to wait for
-``unittest2`` plugins to be released (``nose2`` is actually based on the
-plugins branch of ``unittest2``).
-Once that was done, ``nose2`` was to become a set of plugins and default
-configuration for ``unittest2``.
-
-However, based on the current status of ``unittest2``, it is doubtful that this
-plan will ever be carried out.
-
-Current Goals
-~~~~~~~~~~~~~
-
-Even though ``unittest2`` plugins never arrived, ``nose2`` is still being
-maintained!
-We have a small community interested in continuing to work on and use ``nose2``
-
-However, given the current climate, with much more interest accruing around
-`pytest`_, ``nose2`` is prioritizing bugfixes and maintenance ahead of new
-feature development.
+Use ``make help`` to see other options, and read the `contributing`_ guide for
+full detail.
 
 .. _differences: https://nose2.readthedocs.io/en/latest/differences.html
 
 .. _pytest: http://pytest.readthedocs.io/en/latest/
+
+.. _contributing: https://github.com/nose-devs/nose2/blob/master/contributing.rst
+
+.. _readthedocs: https://nose2.readthedocs.io/en/latest/

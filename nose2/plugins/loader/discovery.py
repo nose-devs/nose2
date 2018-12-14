@@ -140,7 +140,7 @@ class Discoverer(object):
             for test in self._find_tests_in_dir(
                 event, full_path, top_level):
                 yield test
-        elif os.path.isfile(start):
+        elif os.path.isfile(start) and stat.S_ISREG((os.stat(start)).st_mode):
             for test in self._find_tests_in_file(
                 event, start, full_path, top_level):
                 yield test

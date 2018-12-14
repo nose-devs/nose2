@@ -40,6 +40,12 @@ class DiscoveryFunctionalTest(FunctionalTestCase):
         self.assertEqual(len(self.watcher.called), 1)
         self.assertEqual(self.watcher.called[0].module.__name__, 'tests')
 
+    def test_discovery_non_regular_file(self):
+        self.session.startDir = support_file('scenario/non_regular_file')
+        event = events.LoadFromNamesEvent(self.loader, [], None)
+        result = self.session.hooks.loadTestsFromNames(event)
+        self.assertEqual(len(result._tests),0)
+
     def test_match_path_event_can_prevent_discovery(self):
         class NoTestsForYou(events.Plugin):
 

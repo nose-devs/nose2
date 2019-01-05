@@ -78,7 +78,9 @@ class Session(object):
         self.pluginargs = self.argparse.add_argument_group(
             'plugin arguments',
             'Command-line arguments added by plugins:')
-        self.config = configparser.ConfigParser()
+        # py2/py3 compatible load of SafeConfigParser/ConfigParser
+        self.config = getattr(configparser, "SafeConfigParser",
+                              configparser.ConfigParser)()
         self.hooks = events.PluginInterface()
         self.plugins = []
         # this will be reset later, whenever handleCfgArgs happens, but it

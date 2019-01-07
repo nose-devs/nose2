@@ -19,3 +19,13 @@ class LogCaptureFunctionalTest(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 1 test in')
         self.assertTestRunOutputMatches(proc, stderr='FAILED')
         self.assertTestRunOutputMatches(proc, stderr='foo: {}')
+
+    def test_logging_config_interpolation(self):
+        proc = self.runIn('scenario/logging_config', '-v',
+                          'logging_config')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test in')
+        self.assertTestRunOutputMatches(proc, stderr='FAILED')
+        self.assertTestRunOutputMatches(
+            proc, stderr=r'\[logging_config\] \[DEBUG\] foo')
+        self.assertTestRunOutputMatches(
+            proc, stderr=r'\[logging_config\] \[INFO\] bar')

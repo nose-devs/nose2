@@ -1,0 +1,9 @@
+# WARNING WARNING WARNING
+#
+# this is not the true requirements file for nose2!
+#
+# it is needed for the readthedocs build until we can get access sorted out so
+# that we can fix that build
+#
+
+-e .[doc]

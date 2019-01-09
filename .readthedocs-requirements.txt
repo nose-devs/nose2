@@ -1,0 +1,3 @@
+# use a requirements file to specify to readthedocs that doc builds need the
+# "doc" extra
+-e .[doc]

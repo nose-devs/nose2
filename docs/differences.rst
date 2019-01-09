@@ -10,11 +10,8 @@ What's Different
 Python Versions
 ^^^^^^^^^^^^^^^
 
-nose supports Python 2.4 and above, but nose2 *only supports Python
-2.7, 3.4+, and pypy*. Unfortunately, supporting Pythons
-older than 2.7 along with Python 3 in the same codebase is not practical.
-Since that is one of the core goals of nose2, support for older versions of
-Python had to be sacrificed.
+nose supports Python 2.4 and above, but nose2 only supports Python versions
+currently supported by the Python team.
 
 Test Discovery and Loading
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -152,8 +149,8 @@ nose2 is based on the unittest2 ``plugins`` branch, but differs from it in
 several substantial ways. The *event api not exactly the same* because
 nose2 can't replace unittest.TestCase, and *does not configure the test
 run or plugin set globally*. nose2 also has a *wholly different
-reporting API* from unittest2's plugins, one which we feel better
-supports some common cases (like adding extra information to error
+reporting API* from unittest2's plugins, to better
+support some common cases (like adding extra information to error
 output). nose2 also *defers more work to plugins* than unittest2: the
 test loader, runner and result are just plugin callers, and all of the
 logic of test discovery, running and reporting is implemented in

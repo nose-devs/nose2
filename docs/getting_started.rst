@@ -8,32 +8,6 @@ The recommended way to install nose2 is with `pip`_ ::
 
   pip install nose2
 
-You can also install from source by downloading the source
-distribution from `pypi`_, un-taring it, and running
-``python setup.py install`` in the source directory. Note that if you
-install this way, and do not have distribute or setuptools installed,
-you must install nose2's dependencies manually.
-
-
-Dependencies
-~~~~~~~~~~~~
-
-For Python 2.7 and pypy, nose2 requires `six`_ version 1.1. When installing
-with pip, distribute or setuptools, these dependencies will be installed
-automatically.
-
-
-Development version
-~~~~~~~~~~~~~~~~~~~
-
-You can install the development version of nose2 from github with `pip`_::
-
-  pip install -e git+git://github.com/nose-devs/nose2.git#egg=nose2
-
-You can also download a package from github, or clone the source and install
-from there with ``python setup.py install``.
-
-
 Running tests
 -------------
 

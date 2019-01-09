@@ -30,6 +30,7 @@ keyword argument.
    plugins/failfast
    plugins/logcapture
    plugins/coverage
+   plugins/prettyassert
 
 
 Built in but *not* Loaded by Default

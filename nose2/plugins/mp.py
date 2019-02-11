@@ -334,8 +334,13 @@ def procserver(session_export, conn):
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)
         events = [e for e in ssn.hooks.flush()]
-        conn.send((testid, events))
-        rlog.debug("Log for %s returned", testid)
+        try:
+            conn.send((testid, events))
+            rlog.debug("Log for %s returned", testid)
+        except:
+            rlog.exception("Fail sending event %s: %s" % (testid, events))
+            # Send empty event list to unblock the conn.recv on main process.
+            conn.send((testid, []))
     conn.send(None)
     conn.close()
     ssn.hooks.stopSubprocess(event)

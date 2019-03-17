@@ -10,9 +10,10 @@
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
 
-.. image:: https://badges.gitter.im/gitterHQ/gitter.svg
-    :target: https://gitter.im/nose2
-    :alt: Gitter Channel
+ [![Google group : SSFAM News](https://img.shields.io/badge/Google%20Group-SSFAM%20News-blue.svg)](https://groups.google.com/forum/#!forum/ssfam-news)
+.. image:: https://img.shields.io/badge/Mailing%20list-discuss%40nose2.io-blue.svg
+    :target: https://groups.google.com/a/nose2.io/forum/#!forum/discuss
+    :alt: Join discuss@nose2.io
 
 Welcome to nose2
 ================
@@ -38,22 +39,12 @@ a popular testing framework.
 Full Docs
 ---------
 
-Full documentation for ``nose`` is available on `readthedocs`_.
+Full documentation for ``nose2`` is available at _nose2docs
 
 Contributing
 ------------
 
-If you want to make contributions, you can use the ``Makefile`` to get started
-quickly and easily::
-
-    # All you need is a supported version of python and virtualenv installed
-    make test
-
-Don't worry if you don't have all supported versions installed.
-Your changes will get tested automatically when you make a PR.
-
-Use ``make help`` to see other options, and read the `contributing`_ guide for
-full detail.
+If you want to make contributions, please read the `contributing`_ guide.
 
 .. _differences: https://nose2.readthedocs.io/en/latest/differences.html
 
@@ -61,4 +52,4 @@ full detail.
 
 .. _contributing: https://github.com/nose-devs/nose2/blob/master/contributing.rst
 
-.. _readthedocs: https://nose2.readthedocs.io/en/latest/
+.. _nose2docs: https://docs.nose2.io/en/latest/

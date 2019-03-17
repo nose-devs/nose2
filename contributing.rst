@@ -5,12 +5,8 @@ Please do! nose2 cannot move forward without contributions from the
 testing community.
 
 If you're unsure how to get started, feel free to ask for help from the nose2
-community on `gitter <https://gitter.im/nose2>`_. We welcome contributors with
-all levels of experience.
-
-This document is a set of guidelines, not strict rules.
-Use your best judgement, and feel free to propose changes to this document
-in a pull request.
+community via the `mailing list <mailto:discuss@nose2.io>`_.
+We welcome contributors with all levels of experience.
 
 The Basics
 ----------
@@ -36,7 +32,8 @@ If you aren't sure how to add tests, or you don't know why existing tests fail
 on your changes, submit your patch and ask for help testing it.
 
 Tests are easy to run. Just install `tox`_ (``pip install tox``), and run
-``tox`` in the nose2 root directory.
+``tox`` in the nose2 root directory. You can also use ``make test`` to easily
+install and run tox correctly.
 
 Some additional tips for the python and documentation in this project.
 
@@ -49,39 +46,12 @@ Some additional tips for the python and documentation in this project.
 - Try to use raw strings for docstrings -- ensures that ReST won't be
   confused by characters like ``\\``
 - For complex functionality, include sample usage in docstrings
-- Comment liberally, but don't comment on every line of code
-- Use examples very liberally in documentation
-- Use double-quotes for strings, except when quoting a string containing
-  double-quotes but not containing single quotes
-- Use absolute imports everywhere
-- Avoid circular imports whenever possible -- given the choice between adding
-  a new module or adding a circular import, add the new module
-- Import non-``nose2`` modules and packages before importing from within
-  ``nose2``
-- Think very hard before adding a new dependency -- keep the dependencies of
-  ``nose2`` as lightweight as possible
-
-Commit Messages
-~~~~~~~~~~~~~~~
-
-A few basic ground rules for what ideal commits should look like.
-
-- No lines over 72 characters
-- No GitHub emoji -- use your words
-- Reference issues and pull requests where appropriate
-- Prefer present tense and imperative mood
-  e.g. rather than "added feature foo" (past indicative)
-  or "adds feature foo" (present indicative)
-  the best option is "add feature foo" (present imperative)
 
 Workflow, Branching and Pull Requests
 -------------------------------------
 
 The basic workflow should be to do the work in a topic branch in your fork
 then post a pull request for that branch.
-
-Core devs should not merge their own work -- unless it's trivial -- without
-giving other developers a chance to review it.
 
 For any pull request,
 

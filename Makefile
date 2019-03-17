@@ -1,10 +1,6 @@
-# control the py version used to install tox
-# use like
-#   NOSE2_PYTHON_VERSION=python3.6 make docs
-NOSE2_PYTHON_VERSION?=python
-VIRTUALENV=.venv-$(NOSE2_PYTHON_VERSION)
+.PHONY: help docs test clean init build
 
-.PHONY: help docs test clean
+NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d "'" -f2)
 
 help:
 	@echo 'Easy setup for local nose2 development'
@@ -13,15 +9,24 @@ help:
 	@echo 'make test    Test nose2'
 	@echo 'make clean   Cleanup'
 
-$(VIRTUALENV)/bin/tox:
-	virtualenv --python "$(NOSE2_PYTHON_VERSION)" $(VIRTUALENV)
-	$(VIRTUALENV)/bin/pip install tox==2.9.1
+.venv:
+	virtualenv --python python3 .venv
+	.venv/bin/pip install -U tox twine
 
-test: $(VIRTUALENV)/bin/tox
-	$(VIRTUALENV)/bin/tox
-docs: $(VIRTUALENV)/bin/tox
-	$(VIRTUALENV)/bin/tox -e docs
+test: .venv
+	.venv/bin/tox
+docs: .venv
+	.venv/bin/tox -e docs
+
+build: .venv
+	rm -rf dist/
+	.venv/bin/python setup.py sdist bdist_wheel
+
+release: build
+	.venv/bin/twine upload dist/*
+	git tag -s "$(NOSE2_VERSION)" -m "v$(NOSE2_VERSION)"
+
 
 clean:
 	$(MAKE) -C docs/ clean
-	rm -rf .venv-*
+	rm -rf .venv

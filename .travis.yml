@@ -24,17 +24,3 @@ script:
   tox
 after_success:
 - coveralls
-deploy:
-  provider: pypi
-  user: the_drow
-  password:
-    secure: UprHllwkY0QzmO5mGl30LpJcpdnyf9wRkrXjifeEuOFjBAosWISa0vOPd6OMv8oZ5zWlEODiMRPVxHvBsjqo2nKLxSRh98Vc6vZCZBNc1GZEcbkAQDntQCnUwQhwWlrE8imcgjHAWlOvFUzzhrCF6l97TLFe7hRJl/Ms4LLJ1QI=
-  on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: nose-devs/nose2
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/11076bd53e2156a9a00b
-    on_start: never

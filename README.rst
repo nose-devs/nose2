@@ -39,7 +39,7 @@ a popular testing framework.
 Full Docs
 ---------
 
-Full documentation for ``nose2`` is available at _nose2docs
+Full documentation for ``nose2`` is available at `docs.nose2.io`_
 
 Contributing
 ------------
@@ -52,4 +52,4 @@ If you want to make contributions, please read the `contributing`_ guide.
 
 .. _contributing: https://github.com/nose-devs/nose2/blob/master/contributing.rst
 
-.. _nose2docs: https://docs.nose2.io/en/latest/
+.. _docs.nose2.io: https://docs.nose2.io/en/latest/

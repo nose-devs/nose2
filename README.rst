@@ -36,6 +36,94 @@ nose2 vs pytest
 If you are new to python testing, we encourage you to also consider `pytest`_,
 a popular testing framework.
 
+Quickstart
+----------
+
+Because ``nose2`` is based on unittest, you can start from the Python Standard
+Library's `documentation for unittest <https://docs.python.org/library/unittest.html>`_
+and then use nose2 to add value on top of that.
+
+``nose2`` looks for tests in python files whose names start with ``test`` and
+runs every test function it discovers.
+
+Here's an example of a simple test, written in typical unittest style:
+
+.. code-block:: python
+
+    # in test_simple.py
+    import unittest
+
+    class TestStrings(unittest.TestCase):
+        def test_upper(self):
+            self.assertEqual("spam".upper(), "SPAM")
+
+You can then run this test like so::
+
+    $ nose2 -v
+    test_upper (test_simple.TestStrings) ... ok
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.000s
+
+    OK
+
+However, ``nose2`` supports more testing configuration and provides more tools
+than ``unittest`` on its own.
+
+For example, this test exercises just a few of ``nose2``'s features:
+
+.. code-block:: python
+
+    # in test_fancy.py
+    from nose2.tools import params
+
+    @params("Sir Bedevere", "Miss Islington", "Duck")
+    def test_is_knight(value):
+        assert value.startswith('Sir')
+
+and then run this like so::
+
+    $ nose2 -v --pretty-assert
+    test_fancy.test_is_knight:1
+    'Sir Bedevere' ... ok
+    test_fancy.test_is_knight:2
+    'Miss Islington' ... FAIL
+    test_fancy.test_is_knight:3
+    'Duck' ... FAIL
+
+    ======================================================================
+    FAIL: test_fancy.test_is_knight:2
+    'Miss Islington'
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/mnt/ebs/home/sirosen/tmp/test_fancy.py", line 6, in test_is_knight
+        assert value.startswith('Sir')
+    AssertionError
+
+    >>> assert value.startswith('Sir')
+
+    values:
+        value = 'Miss Islington'
+        value.startswith = <built-in method startswith of str object at 0x7f3c3172f430>
+    ======================================================================
+    FAIL: test_fancy.test_is_knight:3
+    'Duck'
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/mnt/ebs/home/sirosen/tmp/test_fancy.py", line 6, in test_is_knight
+        assert value.startswith('Sir')
+    AssertionError
+
+    >>> assert value.startswith('Sir')
+
+    values:
+        value = 'Duck'
+        value.startswith = <built-in method startswith of str object at 0x7f3c3172d490>
+    ----------------------------------------------------------------------
+    Ran 3 tests in 0.001s
+
+    FAILED (failures=2)
+
 Full Docs
 ---------
 

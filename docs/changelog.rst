@@ -10,6 +10,7 @@ Unreleased
 Fixed
 ~~~~~
 
+* the prettyassert plugin mishandled multi-line function definitions
 * Using a plugin's CLI flag when the plugin is already enabled via config no
   longer errors -- it is a no-op instead
 

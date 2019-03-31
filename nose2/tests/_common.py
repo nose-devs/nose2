@@ -201,6 +201,7 @@ class NotReallyAProc(object):
         self.chdir = cwd
         self.kwargs = kwargs
         self.result = None
+        self._exit_code = None
 
     def __enter__(self):
         self._stdout = sys.__stdout__
@@ -226,7 +227,7 @@ class NotReallyAProc(object):
                     argv=('nose2',) + self.args, exit=False,
                     **self.kwargs)
             except SystemExit as e:
-                pass
+                self._exit_code = e.code
             return self.stdout.getvalue(), self.stderr.getvalue()
 
     @property
@@ -235,7 +236,7 @@ class NotReallyAProc(object):
 
     def poll(self):
         if self.result is None:
-            return 1
+            return self._exit_code if self._exit_code is not None else 1
 
         # subprocess.poll should return None or the Integer exitcode
         return int(not self.result.result.wasSuccessful())

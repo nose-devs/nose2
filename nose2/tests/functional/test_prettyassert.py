@@ -45,6 +45,33 @@ class TestPrettyAsserts(FunctionalTestCase):
         ])
         self.assertProcOutputPattern(proc, expected)
 
+    def test_conf_on_suppresses_clihelp(self):
+        proc = self.runIn(
+            'scenario/pretty_asserts/conf_on',
+            '--help',
+        )
+        stdout, stderr = proc.communicate()
+        exit_status = proc.poll()
+        assert '--pretty-assert' not in stdout
+        assert '--pretty-assert' not in stderr
+        assert exit_status == 0
+
+    def test_conf_on_plus_arg(self):
+        """ensures that #432 stays fixed"""
+        proc = self.runIn(
+            'scenario/pretty_asserts/conf_on',
+            '-v',
+            '--pretty-assert',
+        )
+        expected = "\n".join([
+            ">>> assert myglob == 2",
+            "",
+            "values:",
+            "    myglob = 1",
+            ""
+        ])
+        self.assertProcOutputPattern(proc, expected)
+
     def test_assign_after_assert(self):
         proc = self.runIn(
             'scenario/pretty_asserts/assign_after_assert',

@@ -7,6 +7,12 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 Unreleased
 ----------
 
+Fixed
+~~~~~
+
+* Using a plugin's CLI flag when the plugin is already enabled via config no
+  longer errors -- it is a no-op instead
+
 0.9.0
 -----
 

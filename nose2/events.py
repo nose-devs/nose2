@@ -40,13 +40,17 @@ class PluginMeta(type):
             'always-on', default=instance.alwaysOn)
 
         instance.__init__(*args, **kwargs)
+
         if always_on:
             instance.register()
-        else:
-            if switch is not None:
-                short_opt, long_opt, help = switch
-                instance.addOption(
-                    instance._register_cb, short_opt, long_opt, help)
+
+        if switch is not None:
+            short_opt, long_opt, help = switch
+            if always_on:  # always-on plugins should hide their options
+                help = argparse.SUPPRESS
+            instance.addOption(
+                instance._register_cb, short_opt, long_opt, help)
+
         return instance
 
 
@@ -127,7 +131,8 @@ class Plugin(six.with_metaclass(PluginMeta)):
                     self.session.hooks.register(method, plugin)
 
     def _register_cb(self, *_):
-        self.register()
+        if not self.registered:
+            self.register()
 
     def addFlag(self, callback, short_opt, long_opt, help_text=None):
         """Add command-line flag that takes no arguments

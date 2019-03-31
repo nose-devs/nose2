@@ -106,6 +106,40 @@ class TestPrettyAsserts(FunctionalTestCase):
         ])
         self.assertProcOutputPattern(proc, expected)
 
+    def test_multiline_funcdef(self):
+        proc = self.runIn(
+            'scenario/pretty_asserts/multiline_funcdef',
+            '--pretty-assert',
+        )
+        expected1 = "\n".join([
+            '>>> assert x > y, \\"oh noez, x <= y\\"',
+            '',
+            'message:',
+            '    oh noez, x <= y',
+            '',
+            'values:',
+            '    x = 1',
+            '    y = 2',
+            ''
+        ])
+        expected2 = "\n".join([
+            '>>> assert not value',
+            '',
+            'values:',
+            "    value = 'foo'",
+            ''
+        ])
+        expected3 = "\n".join([
+            '>>> assert not value',
+            '',
+            'values:',
+            "    value = 'bar'",
+            ''
+        ])
+        self.assertProcOutputPattern(proc, expected1)
+        self.assertProcOutputPattern(proc, expected2)
+        self.assertProcOutputPattern(proc, expected3)
+
     def test_assert_attribute_resolution(self):
         proc = self.runIn(
             'scenario/pretty_asserts/attribute_resolution',

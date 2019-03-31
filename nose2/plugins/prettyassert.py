@@ -140,11 +140,10 @@ def _get_inspection_info(trace):
         inspect.getinnerframes(trace)[-1])
     original_source_lines, firstlineno = inspect.getsourcelines(frame)
 
-    # truncate to the code in this frame
-    # - remove test function definition line
-    # - remove anything after current assert statement
+    # truncate to the code in this frame to remove anything after current
+    # assert statement
     last_index = (lineno - firstlineno + 1)
-    source_lines = original_source_lines[1:last_index]
+    source_lines = original_source_lines[:last_index]
 
     # in case the current line is actually an incomplete expression, as in
     #   assert x == (y

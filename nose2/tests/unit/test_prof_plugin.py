@@ -9,19 +9,20 @@ class TestProfPlugin(TestCase):
 
     def setUp(self):
         self.plugin = prof.Profiler(session=session.Session())
-        self.hotshot = prof.hotshot
-        self.stats = prof.stats
-        prof.hotshot = Stub()
-        prof.stats = Stub()
+        # stub out and save the cProfile and pstats modules
+        self.cProfile = prof.cProfile
+        self.pstats = prof.pstats
+        prof.cProfile = Stub()
+        prof.pstats = Stub()
 
     def tearDown(self):
-        prof.hotshot = self.hotshot
-        prof.stats = self.stats
+        prof.cProfile = self.cProfile
+        prof.pstats = self.pstats
 
     def test_startTestRun_sets_executeTests(self):
         _prof = Stub()
         _prof.runcall = object()
-        prof.hotshot.Profile = lambda filename: _prof
+        prof.cProfile.Profile = lambda: _prof
         event = StartTestRunEvent(runner=None, suite=None, result=None,
                                   startTime=None, executeTests=None)
         self.plugin.startTestRun(event)

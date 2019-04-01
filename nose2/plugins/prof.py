@@ -1,8 +1,8 @@
 """
-Profile test execution using hotshot.
+Profile test execution using cProfile.
 
 This plugin implements :func:`startTestRun` and replaces
-``event.executeTests`` with :meth:`hotshot.Profile.runcall`. It
+``event.executeTests`` with :meth:`cProfile.Profile.runcall`. It
 implements :func:`beforeSummaryReport` to output profiling information
 before the final test summary time. Config file options ``filename``,
 ``sort`` and ``restrict`` can be used to change where profiling
@@ -15,14 +15,9 @@ entries (`plugin` and `always_on`) in the respective
 sections of the configuration file.
 
 """
-try:
-    import hotshot
-    from hotshot import stats
-except ImportError:
-    hotshot, stats = None, None
+import cProfile
+import pstats
 import logging
-import os
-import tempfile
 
 from nose2 import events, util
 
@@ -41,20 +36,11 @@ class Profiler(events.Plugin):
         self.pfile = self.config.as_str('filename', '')
         self.sort = self.config.as_str('sort', 'cumulative')
         self.restrict = self.config.as_list('restrict', [])
-        self.clean = False
         self.fileno = None
-
-    def register(self):
-        """Don't register if hotshot is not found"""
-        if hotshot is None:
-            log.error("Unable to profile: hotshot module not available")
-            return
-        super(Profiler, self).register()
 
     def startTestRun(self, event):
         """Set up the profiler"""
-        self.createPfile()
-        self.prof = hotshot.Profile(self.pfile)
+        self.prof = cProfile.Profile()
         event.executeTests = self.prof.runcall
 
     def beforeSummaryReport(self, event):
@@ -68,34 +54,16 @@ class Profiler(events.Plugin):
                     event.stream.write(' ')
                 event.stream.flush()
         stream = Stream()
-        self.prof.close()
-        prof_stats = stats.load(self.pfile)
+        prof_stats = pstats.Stats(self.prof, stream=stream)
         prof_stats.sort_stats(self.sort)
         event.stream.writeln(util.ln("Profiling results"))
-        tmp = prof_stats.stream
-        prof_stats.stream = stream
-        try:
-            if self.restrict:
-                prof_stats.print_stats(*self.restrict)
-            else:
-                prof_stats.print_stats()
-        finally:
-            prof_stats.stream = tmp
-        self.prof.close()
+        if self.restrict:
+            prof_stats.print_stats(*self.restrict)
+        else:
+            prof_stats.print_stats()
+
+        if self.pfile:
+            prof_stats.dump_stats(self.pfile)
+
+        self.prof.disable()
         event.stream.writeln('')
-
-        if self.clean:
-            if self.fileno:
-                try:
-                    os.close(self.fileno)
-                except OSError:
-                    pass
-            try:
-                os.unlink(self.pfile)
-            except OSError:
-                pass
-
-    def createPfile(self):
-        if not self.pfile:
-            self.fileno, self.pfile = tempfile.mkstemp()
-            self.clean = True

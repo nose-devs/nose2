@@ -7,6 +7,11 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 Unreleased
 ----------
 
+Changed
+~~~~~~~
+
+* skipped tests now include the user's reason in junit XML's "message" field
+
 Fixed
 ~~~~~
 

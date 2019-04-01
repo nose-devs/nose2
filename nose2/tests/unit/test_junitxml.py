@@ -175,7 +175,7 @@ class TestJunitXmlPlugin(TestCase):
         case = self.plugin.tree.find('testcase')
         skip = case.find('skipped')
         assert skip is not None
-        self.assertEqual(skip.get('message'), 'test skipped')
+        self.assertEqual(skip.get('message'), 'test skipped: skip')
         self.assertEqual(skip.text, 'skip')
 
     def test_skip_includes_skipped_no_reason(self):

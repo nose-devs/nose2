@@ -161,7 +161,10 @@ class JUnitXmlReporter(events.Plugin):
             self.skipped += 1
             skipped = ET.SubElement(testcase, 'skipped')
             if msg:
-                skipped.set('message', 'test skipped')
+                skipmsg = 'test skipped'
+                if event.reason:
+                    skipmsg = 'test skipped: {}'.format(event.reason)
+                skipped.set('message', skipmsg)
                 skipped.text = msg
         elif event.outcome == result.FAIL and event.expected:
             self.skipped += 1

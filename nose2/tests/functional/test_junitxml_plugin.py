@@ -87,7 +87,6 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
                         "Searched for " + junit_report)
 
     def test_report_includes_properties(self):
-        scenario = ('scenario', 'junitxml', 'with_properties')
         work_dir = os.getcwd()
         with open(os.path.join(work_dir, 'properties.json'), 'w') as fh:
             fh.write('{"PROPERTY_NAME":"PROPERTY_VALUE"}')
@@ -106,6 +105,30 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         assert 'value' in prop.attrib
         self.assertEqual(prop.get('name'), 'PROPERTY_NAME')
         self.assertEqual(prop.get('value'), 'PROPERTY_VALUE')
+
+    def test_skip_reason_in_message(self):
+        junit_report, proc = self.run_with_junitxml_loaded(
+            ("scenario", "junitxml", "skip_reason"), "--junit-xml")
+
+        self.assertTestRunOutputMatches(
+            proc,
+            stderr=r"test \(test_junitxml_skip_reason.Test\) \.* skip")
+
+        exit_status = proc.poll()
+        assert exit_status == 0
+
+        with open(junit_report, "r") as fh:
+            tree = ET.parse(fh).getroot()
+
+        num_test_cases = len(tree.findall('testcase'))
+        assert num_test_cases == 1
+
+        num_skipped = len(tree.find('testcase').findall("skipped"))
+        assert num_skipped == 1
+        skip_node = tree.find('testcase').find("skipped")
+        assert "message" in skip_node.attrib
+        skip_message = skip_node.get("message")
+        assert skip_message == "test skipped: ohai"
 
 
 class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):

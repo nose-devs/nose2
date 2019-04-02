@@ -7,15 +7,22 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 Unreleased
 ----------
 
+0.9.1
+-----
+
 Changed
 ~~~~~~~
 
-* skipped tests now include the user's reason in junit XML's "message" field
+* the prof plugin now uses `cProfile` instead of `hotshot` for profiling, and
+  therefore now supports python versions which do not include `hotshot`
+
+* skipped tests now include the user's reason in junit XML's `message` field
 
 Fixed
 ~~~~~
 
 * the prettyassert plugin mishandled multi-line function definitions
+
 * Using a plugin's CLI flag when the plugin is already enabled via config no
   longer errors -- it is a no-op instead
 

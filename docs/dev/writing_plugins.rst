@@ -113,11 +113,11 @@ Guidelines
 Events
 ------
 
+nose2's plugin API is based on the API in unittest2's
+``plugins`` branch (under-development). Its differs from nose's 
 in one major area: what it passes to hooks. Where nose passes a
 variety of arguments, nose2 *always passes an event*. The events are
 listed in the :doc:`event_reference`.
-nose2's plugin API is based on the API in unittest2's
-``plugins`` branch (under-development). Its differs from nose's 
 
 Here's the key thing about that: *event attributes are
 read-write*. Unless stated otherwise in the documentation for a hook,

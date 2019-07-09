@@ -94,7 +94,8 @@ class JUnitXmlReporter(events.Plugin):
 
     def __init__(self):
         # Read argument from configuration file, or filled with default
-        self.path = os.path.abspath(self.config.as_str('path', default='') or 'nose2-junit.xml')
+        self.path = os.path.realpath(
+                self.config.as_str('path', default='nose2-junit.xml'))
         self.keep_restricted = self.config.as_bool(
             'keep_restricted', default=False)
         self.test_properties = self.config.as_str(
@@ -120,7 +121,8 @@ class JUnitXmlReporter(events.Plugin):
     def handleArgs(self, event):
         """Read option from command line and override the value in config file
         when necessary"""
-        self.path = os.path.abspath(event.args.path) or self.path
+        if event.args.path:
+            self.path = os.path.realpath(event.args.path)
 
     def startTest(self, event):
         """Count test, record start time"""

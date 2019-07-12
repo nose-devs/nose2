@@ -10,10 +10,10 @@ from xml.etree import ElementTree as ET
 class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
     _RUN_IN_TEMP = True
 
-    def run_with_junitxml_loaded(self, scenario, *args):
+    def run_with_junitxml_loaded(self, scenario, *args, **kwargs):
         work_dir = os.getcwd()
         test_dir = support_file(*scenario)
-        junit_report = os.path.join(work_dir, 'nose2-junit.xml')
+        junit_report = os.path.join(work_dir, kwargs.get('junit_report', 'nose2-junit.xml'))
         config = os.path.join(test_dir, 'unittest.cfg')
         config_args = ()
         if os.path.exists(junit_report):
@@ -129,6 +129,39 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         assert "message" in skip_node.attrib
         skip_message = skip_node.get("message")
         assert skip_message == "test skipped: ohai"
+
+    def test_xml_path_override_by_config(self):
+        junit_report, proc = self.run_with_junitxml_loaded(
+                ("scenario", "junitxml", "non_default_path"),
+                "--junit-xml",
+                junit_report="a.xml"
+        )
+
+        self.assertTestRunOutputMatches(
+                proc,
+                stderr='test \(test_junitxml_non_default_path.Test\) \.* ok')
+
+        exit_status = proc.poll()
+        assert exit_status == 0
+
+        self.assertTrue(os.path.isfile(junit_report))
+
+    def test_xml_path_override_by_command(self):
+        junit_report, proc = self.run_with_junitxml_loaded(
+                ("scenario", "junitxml", "non_default_path"),
+                "--junit-xml",
+                "--junit-xml-path=b.xml",
+                junit_report="b.xml"
+        )
+
+        self.assertTestRunOutputMatches(
+                proc,
+                stderr='test \(test_junitxml_non_default_path.Test\) \.* ok')
+
+        exit_status = proc.poll()
+        assert exit_status == 0
+
+        self.assertTrue(os.path.isfile(junit_report))
 
 
 class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):

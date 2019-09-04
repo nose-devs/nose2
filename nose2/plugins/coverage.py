@@ -40,6 +40,8 @@ log = logging.getLogger(__name__)
 class Coverage(Plugin):
     configSection = 'coverage'
     commandLineSwitch = ('C', 'with-coverage', 'Turn on coverage reporting')
+    _mpmode = False
+    _subprocess = False
 
     def __init__(self):
         """Get our config and add our command line arguments."""
@@ -75,6 +77,10 @@ class Coverage(Plugin):
         )
         self.covController = None
 
+    def registerInSubprocess(self, event):
+        event.pluginClasses.append(self.__class__)
+        self._mpmode = True
+
     def handleArgs(self, event):
         """Get our options in order command line, config file, hard coded."""
         self.covSource = event.args.coverage_source or self.covSource
@@ -85,14 +91,6 @@ class Coverage(Plugin):
         """Start coverage early to catch imported modules.
 
         Only called if active so, safe to just start without checking flags"""
-        try:
-            import coverage
-        except ImportError:
-            print('Warning: you need to install "coverage_plugin" '
-                  'extra requirements to use this plugin. '
-                  'e.g. `pip install nose2[coverage_plugin]`')
-            return
-
         if event.handled:
             log.error(
                 'createTests already handled -- '
@@ -101,11 +99,7 @@ class Coverage(Plugin):
             log.debug(
                 'createTests not already handled. coverage should work')
 
-        self.covController = coverage.Coverage(source=self.covSource,
-                                               config_file=self.covConfig)
-        # start immediately (don't wait until startTestRun) so that coverage
-        # will pick up on things which happen at import time
-        self.covController.start()
+        self._start_coverage()
 
     def beforeSummaryReport(self, event):
         """Only called if active so stop coverage and produce reports."""
@@ -120,6 +114,9 @@ class Coverage(Plugin):
             # saving to this file), but not `Coverage._auto_load`
             # requesting a better fix in nedbat/coveragepy#34
             self.covController.save()
+
+            if self._mpmode:
+                self.covController.combine(strict=True)
 
             percent_coverage = None
 
@@ -144,6 +141,15 @@ class Coverage(Plugin):
                     fail_under > percent_coverage):
                 self.decided_failure = True
 
+    def startSubprocess(self, event):
+        self._mpmode = True
+        self._subprocess = True
+        self._start_coverage()
+
+    def stopSubprocess(self, event):
+        self.covController.stop()
+        self.covController.save()
+
     def wasSuccessful(self, event):
         """Mark full test run as successful or unsuccessful"""
         if self.decided_failure:
@@ -153,3 +159,25 @@ class Coverage(Plugin):
         """Reporting data is collected, failure status determined and set.
         Now print any buffered error output saved from beforeSummaryReport"""
         print(self.error_output_buffer.getvalue(), file=event.stream)
+
+    def _start_coverage(self):
+        try:
+            import coverage
+        except ImportError:
+            print('Warning: you need to install "coverage_plugin" '
+                  'extra requirements to use this plugin. '
+                  'e.g. `pip install nose2[coverage_plugin]`')
+            return
+
+        self.covController = coverage.Coverage(
+            source=self.covSource,
+            config_file=self.covConfig,
+            data_suffix=self._mpmode,
+        )
+        # Call erase() to remove old files. This is important in multiprocess
+        # mode, where per-process coverage files are unlikely to be
+        # overwritten.
+        self.covController.erase()
+        # start immediately (don't wait until startTestRun) so that coverage
+        # will pick up on things which happen at import time
+        self.covController.start()

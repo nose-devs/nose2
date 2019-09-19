@@ -26,6 +26,7 @@ class MultiProcess(events.Plugin):
         self.setAddress(self.config.as_str('bind_address', None))
 
         self.cases = {}
+        self.pluginClasses = []
 
     @property
     def procs(self):
@@ -200,14 +201,14 @@ class MultiProcess(events.Plugin):
 
     def _startProcs(self, test_count):
         # Create session export
-        session_export = self._exportSession()
+        self._exportSession()
         procs = []
         count = min(test_count, self.procs)
         log.debug("Creating %i worker processes", count)
         for i in range(0, count):
             parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
-                target=procserver, args=(session_export, child_conn))
+                target=procserver, args=(self, child_conn))
             proc.daemon = True
             proc.start()
             parent_conn = self._acceptConns(parent_conn)
@@ -272,40 +273,55 @@ class MultiProcess(events.Plugin):
                     RuntimeError("Unable to locate test case for %s in "
                                  "main process" % event.test))._tests[0]
 
+    def _fresh_session(self, rlog):
+        """
+        Generate a fresh nose2 session based on the current session. This is
+        intended to be called once by each subprocess before running tests.
+        """
+        ssn = session.Session()
+        ssn.config = self.session.config
+        ssn.hooks = RecordingPluginInterface()
+        ssn.verbosity = self.session.verbosity
+        ssn.startDir = self.session.startDir
+        ssn.topLevelDir = self.session.topLevelDir
+        ssn.prepareSysPath()
+        loader_ = loader.PluggableTestLoader(ssn)
+        ssn.testLoader = loader_
+        result_ = result.PluggableTestResult(ssn)
+        ssn.testResult = result_
+        runner_ = runner.PluggableTestRunner(ssn)  # needed??
+        ssn.testRunner = runner_
+        # load and register plugins, forcing multiprocess to the end
+        ssn.plugins = [
+            plugin(session=ssn) for plugin in self.pluginClasses
+            if plugin is not MultiProcess
+        ]
+        rlog.debug("Plugins loaded: %s", ssn.plugins)
+
+        for plugin in ssn.plugins:
+            plugin.register()
+            rlog.debug("Registered %s in subprocess", plugin)
+
+        # instantiating the plugin will register it.
+        ssn.plugins.append(MultiProcess(session=ssn))
+        rlog.debug("Registered %s in subprocess", MultiProcess)
+        ssn.plugins[-1].pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
+        return ssn
+
     def _exportSession(self):
-        """
-        Generate the session information passed to work process.
-
-        CAVEAT: The entire contents of which *MUST* be pickeable
-        and safe to use in the subprocess.
-
-        This probably includes:
-        * No argparse namespaces/named-tuples
-        * No plugin instances
-        * No hokes
-        :return:
-        """
-        export = {'config': self.session.config,
-                  'verbosity': self.session.verbosity,
-                  'startDir': self.session.startDir,
-                  'topLevelDir': self.session.topLevelDir,
-                  'logLevel': self.session.logLevel,
-                  'pluginClasses': []}
         event = RegisterInSubprocessEvent()
         # fire registerInSubprocess on plugins -- add those plugin classes
-        # CAVEAT: classes must be pickleable!
         self.session.hooks.registerInSubprocess(event)
-        export['pluginClasses'].extend(event.pluginClasses)
-        return export
+        self.pluginClasses.extend(event.pluginClasses)
 
 
-def procserver(session_export, conn):
+def procserver(mp, conn):
     # init logging system
     rlog = multiprocessing.log_to_stderr()
-    rlog.setLevel(session_export['logLevel'])
+    rlog.setLevel(mp.session.logLevel)
 
-    # make a real session from the "session" we got
-    ssn = import_session(rlog, session_export)
+    # make a new session based on the old session in the mp object
+    ssn = mp._fresh_session(rlog)
 
     if isinstance(conn, collections.Sequence):
         conn = connection.Client(conn[:2], authkey=conn[2])
@@ -344,38 +360,6 @@ def procserver(session_export, conn):
     conn.send(None)
     conn.close()
     ssn.hooks.stopSubprocess(event)
-
-
-def import_session(rlog, session_export):
-    ssn = session.Session()
-    ssn.config = session_export['config']
-    ssn.hooks = RecordingPluginInterface()
-    ssn.verbosity = session_export['verbosity']
-    ssn.startDir = session_export['startDir']
-    ssn.topLevelDir = session_export['topLevelDir']
-    ssn.prepareSysPath()
-    loader_ = loader.PluggableTestLoader(ssn)
-    ssn.testLoader = loader_
-    result_ = result.PluggableTestResult(ssn)
-    ssn.testResult = result_
-    runner_ = runner.PluggableTestRunner(ssn)  # needed??
-    ssn.testRunner = runner_
-    # load and register plugins, forcing multiprocess to the end
-    ssn.plugins = [
-        plugin(session=ssn) for plugin in session_export['pluginClasses']
-        if plugin is not MultiProcess
-    ]
-    rlog.debug("Plugins loaded: %s", ssn.plugins)
-
-    for plugin in ssn.plugins:
-        plugin.register()
-        rlog.debug("Registered %s in subprocess", plugin)
-
-    # instantiating the plugin will register it.
-    ssn.plugins.append(MultiProcess(session=ssn))
-    rlog.debug("Registered %s in subprocess", MultiProcess)
-    ssn.plugins[-1].pluginsLoaded(events.PluginsLoadedEvent(ssn.plugins))
-    return ssn
 
 
 # test generator

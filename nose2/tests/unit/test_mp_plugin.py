@@ -59,19 +59,15 @@ class TestMPPlugin(TestCase):
         finally:
             sys.platform = platform
 
-    def test_session_import(self):
-        config = configparser.ConfigParser()
-        config.add_section(mp.MultiProcess.configSection)
-        export_session = {
-            "config": config,
-            "verbosity": None,
-            "startDir": '',
-            "topLevelDir": '',
-            "pluginClasses": [mp.MultiProcess]
-        }
+    def test_fresh_session(self):
         import logging
-        session = mp.import_session(logging.root, export_session)
+        self.session.config = configparser.ConfigParser()
+        self.session.config.add_section(mp.MultiProcess.configSection)
+        self.session.verbosity = None
+        self.session.startDir = ''
+        self.session.topLevelDir = ''
+        self.plugin._exportSession()
+        session = self.plugin._fresh_session(logging.root)
         self.assertIn('registerInSubprocess', session.hooks.methods)
         self.assertIn('startSubprocess', session.hooks.methods)
         self.assertIn('stopSubprocess', session.hooks.methods)
-        pass

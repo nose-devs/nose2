@@ -109,28 +109,18 @@ class TestMpPlugin(FunctionalTestCase):
         self.assertTrue(hasattr(conn, "send"))
         self.assertTrue(hasattr(conn, "recv"))
 
-
-class TestProcserver(FunctionalTestCase):
-
-    def setUp(self):
-        super(TestProcserver, self).setUp()
-        self.session = session.Session()
-
     def test_dispatch_tests_receive_events(self):
-        ssn = {
-            'config': self.session.config,
-            'verbosity': 1,
-            'startDir': support_file('scenario/tests_in_package'),
-            'topLevelDir': support_file('scenario/tests_in_package'),
-            'logLevel': 100,
-            'pluginClasses': [discovery.DiscoveryLoader,
+        self.session.verbosity = 1
+        self.session.startDir = support_file('scenario/tests_in_package')
+        self.session.topLevelDir = support_file('scenario/tests_in_package')
+        self.session.logLevel = 100
+        self.pluginClasses = [discovery.DiscoveryLoader,
                               testcases.TestCaseLoader,
                               buffer.OutputBufferPlugin]
 
-        }
         conn = Conn(['pkg1.test.test_things.SomeTests.test_ok',
                      'pkg1.test.test_things.SomeTests.test_failed'])
-        procserver(ssn, conn)
+        procserver(self.plugin, conn)
 
         # check conn calls
         expect = [('pkg1.test.test_things.SomeTests.test_ok',

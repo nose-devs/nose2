@@ -7,7 +7,7 @@ Running Tests in Parallel with Multiple Processes
    New in version 0.3
 
 Use the ``mp`` plugin to enable distribution of tests across multiple
-processes. Doing his may speed up your test run if your tests are
+processes. Doing this may speed up your test run if your tests are
 heavily IO or CPU bound. But it *imposes an overhead cost* that is not
 trivial, and it *complicates the use of test fixtures* and may *conflict
 with plugins that are not designed to work with it*.

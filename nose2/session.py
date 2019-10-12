@@ -3,6 +3,7 @@ import os
 
 import argparse
 # py2/py3 compatible load of SafeConfigParser/ConfigParser
+import sys
 if sys.version_info < (3, 2):
     from ConfigParser import SafeConfigParser as ConfigParser
 else:

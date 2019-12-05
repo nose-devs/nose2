@@ -3,7 +3,10 @@ import logging
 import multiprocessing
 import select
 import unittest
-import collections
+try:
+    from collections.abc import Sequence
+except ImportError:
+    from collections import Sequence
 
 import os
 import sys
@@ -307,7 +310,7 @@ def procserver(session_export, conn):
     # make a real session from the "session" we got
     ssn = import_session(rlog, session_export)
 
-    if isinstance(conn, collections.Sequence):
+    if isinstance(conn, Sequence):
         conn = connection.Client(conn[:2], authkey=conn[2])
 
     event = SubprocessEvent(ssn.testLoader,

@@ -44,9 +44,9 @@ config file::
    defaults to the number of CPUs available. Also note that a value of 0 will
    set the actual number of processes to the number of CPUs on the computer.
 
-Should one wish to specify the use of internet sockets for 
+Should one wish to specify the use of internet sockets for
 interprocess communications, specify the ``bind_address``
-setting in the ``[multiprocess]`` section of the config file, 
+setting in the ``[multiprocess]`` section of the config file,
 for example::
 
   [multiprocess]
@@ -57,9 +57,9 @@ This will bind to port 1024 of ``127.0.0.1``.  Also::
   [multiprocess]
   bind_address = 127.1.2.3
 
-will bind to any random open port on ``127.1.2.3``.  Any internet 
-address or host-name which python can recognize as such, bind, *and* 
-connect is acceptable.  While ``0.0.0.0`` can be use for listening, 
+will bind to any random open port on ``127.1.2.3``.  Any internet
+address or host-name which python can recognize as such, bind, *and*
+connect is acceptable.  While ``0.0.0.0`` can be use for listening,
 it is not necessarily an address to which the OS can connect.  When
 the port address is ``0`` or omitted, a random open port is used.  If
 the setting is omitted or blank, then sockets are not used unless
@@ -72,7 +72,7 @@ Guidelines for Test Authors
 
 Not every test suite will work well, or work at all, when run in
 parallel. For some test suites, parallel execution makes no sense. For
-others, it will expose bugs and ordering dependencies test cases and
+others, it will expose bugs and ordering dependencies in test cases and
 test modules.
 
 Overhead Cost
@@ -81,7 +81,7 @@ Overhead Cost
 Starting subprocesses and dispatching tests takes time. A test run
 that includes a relatively small number of tests that are not I/O or
 CPU bound (or calling ``time.sleep()``) is likely to be *slower* when run
-in parallel. 
+in parallel.
 
 As of this writing, for instance, nose2's test suite
 takes about 10 times as long to run when using ``multiprocessing``, due to
@@ -113,14 +113,14 @@ Random Execution Order
 Tests do not execute in the same order when run in parallel. Results
 will be returned in effectively random order, and tests in the same
 module (*as long as they do not share fixtures*) may execute in any
-order and in different processes. Some tests suites have ordering
+order and in different processes. Some test suites have ordering
 dependencies, intentional or not, and those that do will fail randomly
 when run with this plugin.
 
 Guidelines for Plugin Authors
 -----------------------------
 
-The MultiProcess plugin is designed to work with other plugins. But
+The MultiProcess plugin is designed to work with other plugins, but
 other plugins may have to return the favor, especially if they load
 tests or care about something that happens *during* test execution.
 
@@ -130,7 +130,7 @@ New Methods
 
 The ``MultiProcess`` plugin adds a few plugin hooks that other plugins can
 use to set themselves up for multiprocess test runs. Plugins don't
-have to do anything special to register for these hooks, just
+have to do anything special to register for these hooks; just
 implement the methods as normal.
 
 .. function :: registerInSubprocess(self, event)
@@ -257,11 +257,11 @@ Interacting with Users
 Possible Issues On Windows
 --------------------------
 
-On windows, there are a few know bugs with respect to multiprocessing.
+On windows, there are a few known bugs with respect to multiprocessing.
 
 First, on python 2.X or old versions of 3.X, if the __main__ module
 accessing nose2 is a __main__.py, an assertion in python code module
-``multiprocessing.forking`` may fail.  The bug for 3.2 is 
+``multiprocessing.forking`` may fail.  The bug for 3.2 is
 http://bugs.python.org/issue10845.
 
 Secondly, python on windows does not use fork().  It bootstraps from a

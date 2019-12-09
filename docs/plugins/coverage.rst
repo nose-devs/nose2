@@ -18,3 +18,18 @@ Otherwise, please be aware of the following known differences:
 
 - The ``fail_under`` parameter results in an exit status of 2 for ``coverage``,
   but an exit status of 1 for ``nose2``
+
+Compatibility with mp plugin
+----------------------------
+
+The ``coverage`` and ``mp`` plugins may be used in conjuction to enable
+multiprocess testing with coverage reporting.
+
+Special instructions:
+
+- Due to the way the plugin is reloaded in subprocesses, command-line options
+  for the ``coverage`` plugin have no effect. If you need to change any
+  ``coverage`` plugin options, use a configuration file.
+- Do *not* use the ``concurrency`` option within a ``.coveragerc`` file ; this
+  interferes with the ``coverage`` plugin, which automatically handles
+  multiprocess coverage reporting.

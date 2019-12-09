@@ -2,7 +2,12 @@ import logging
 import os
 
 import argparse
-from six.moves import configparser
+# py2/py3 compatible load of SafeConfigParser/ConfigParser
+import sys
+if sys.version_info < (3, 2):
+    from ConfigParser import SafeConfigParser as ConfigParser
+else:
+    from configparser import ConfigParser
 
 from nose2 import config, events, util
 
@@ -78,9 +83,7 @@ class Session(object):
         self.pluginargs = self.argparse.add_argument_group(
             'plugin arguments',
             'Command-line arguments added by plugins:')
-        # py2/py3 compatible load of SafeConfigParser/ConfigParser
-        self.config = getattr(configparser, "SafeConfigParser",
-                              configparser.ConfigParser)()
+        self.config = ConfigParser()
         self.hooks = events.PluginInterface()
         self.plugins = []
         # this will be reset later, whenever handleCfgArgs happens, but it

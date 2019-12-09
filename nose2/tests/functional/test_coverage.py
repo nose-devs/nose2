@@ -67,11 +67,29 @@ class TestCoverage(FunctionalTestCase):
         proc = self.runIn(
             'scenario/test_coverage_config/nose2cfg',
             '-v',
-            '--with-coverage',
-            '--coverage=covered_lib_nose2cfg/'
         )
         self.assertProcOutputPattern(proc, 'covered_lib_nose2cfg', STATS,
                                      total_stats=TOTAL_STATS)
+
+
+    def test_run_with_mp(self):
+        # this test needs to be done with nose2 config because (as of 2019-12)
+        # multiprocessing does not allow each test process to pick up on
+        # command line arguments
+
+        # run with 4 processes -- this will fail if `coverage` isn't running in
+        # a "parallel" mode (with a "data suffix" set and combining results for
+        # reporting)
+        proc = self.runIn(
+            'scenario/test_coverage_config/nose2cfg',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N', '4',
+        )
+        self.assertProcOutputPattern(
+            proc, 'covered_lib_nose2cfg',
+            r'\s+8\s+5\s+38%\s+1, 7-10', total_stats=r'\s+8\s+5\s+38%'
+        )
 
     # FIXME: figure out why this fails and remove @skip
     @unittest.skip('fails in testsuite but passes in real-world conditions')

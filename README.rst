@@ -10,7 +10,6 @@
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
 
- [![Google group : SSFAM News](https://img.shields.io/badge/Google%20Group-SSFAM%20News-blue.svg)](https://groups.google.com/forum/#!forum/ssfam-news)
 .. image:: https://img.shields.io/badge/Mailing%20list-discuss%40nose2.io-blue.svg
     :target: https://groups.google.com/a/nose2.io/forum/#!forum/discuss
     :alt: Join discuss@nose2.io

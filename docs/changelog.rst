@@ -7,6 +7,22 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 Unreleased
 ----------
 
+0.9.2
+-----
+
+Added
+~~~~~
+
+* Add `--junit-xml-path` to the junit plugin argument list
+
+Fixed
+~~~~~
+
+* It is now possible to use the multiprocess and coverage plugins together, as
+  long as all of the coverage config is put into the config file
+
+* Minor changes to be compatible with newer pythons (3.8, 3.9)
+
 0.9.1
 -----
 

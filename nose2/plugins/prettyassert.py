@@ -15,21 +15,24 @@ from __future__ import print_function
 import collections
 import inspect
 import re
-import six
 import textwrap
 import tokenize
 
+import six
 from nose2 import events
-
 
 __unittest = True
 
 
 class PrettyAssert(events.Plugin):
     """Add pretty output for "assert" statements"""
-    configSection = 'pretty-assert'
+
+    configSection = "pretty-assert"
     commandLineSwitch = (
-        None, 'pretty-assert', 'Add pretty output for "assert" statements')
+        None,
+        "pretty-assert",
+        'Add pretty output for "assert" statements',
+    )
 
     def outcomeDetail(self, event):
         # skip if no exception or expected error
@@ -77,22 +80,16 @@ class PrettyAssert(events.Plugin):
         #
 
         # add the assert statement to output with '>>>' prefix
-        extraDetail.append(
-            re.sub(
-                '^', '>>> ',
-                assert_statement,
-                flags=re.MULTILINE
-            )
-        )
+        extraDetail.append(re.sub("^", ">>> ", assert_statement, flags=re.MULTILINE))
 
         if message:
-            extraDetail.append('\nmessage:')
-            extraDetail.append('    {}'.format(message))
+            extraDetail.append("\nmessage:")
+            extraDetail.append("    {}".format(message))
 
         if token_descriptions:
-            extraDetail.append('\nvalues:')
+            extraDetail.append("\nvalues:")
             for k, v in token_descriptions.items():
-                extraDetail.append('    {} = {}'.format(k, v))
+                extraDetail.append("    {} = {}".format(k, v))
 
 
 def _collect_assert_data(trace):
@@ -102,13 +99,15 @@ def _collect_assert_data(trace):
     """
     # inspect the trace, collecting various data and determining whether or not
     # it can be tokenized at all
-    source_lines, frame_locals, frame_globals, can_tokenize = (
-        _get_inspection_info(trace))
+    source_lines, frame_locals, frame_globals, can_tokenize = _get_inspection_info(
+        trace
+    )
 
     # if things will tokenize cleanly, actually do it
     if can_tokenize:
         assert_startline, token_descriptions = _tokenize_assert(
-            source_lines, frame_locals, frame_globals)
+            source_lines, frame_locals, frame_globals
+        )
     # otherwise, indicate that we can't render detail by use of Nones
     else:
         assert_startline = None
@@ -121,7 +120,8 @@ def _collect_assert_data(trace):
     # - this is easily deceived by multiline expressions
     if assert_startline is not None:
         statement = textwrap.dedent(
-            ''.join(source_lines[assert_startline:]).rstrip('\n'))
+            "".join(source_lines[assert_startline:]).rstrip("\n")
+        )
     else:
         statement = None
 
@@ -136,13 +136,14 @@ def _get_inspection_info(trace):
     - statement which failed (which can be garbage -- don't trust it)
     - can_tokenize: a bool indicating that the lines of source can be parsed
     """
-    (frame, fname, lineno, funcname, context, ctx_index) = (
-        inspect.getinnerframes(trace)[-1])
+    (frame, fname, lineno, funcname, context, ctx_index) = inspect.getinnerframes(
+        trace
+    )[-1]
     original_source_lines, firstlineno = inspect.getsourcelines(frame)
 
     # truncate to the code in this frame to remove anything after current
     # assert statement
-    last_index = (lineno - firstlineno + 1)
+    last_index = lineno - firstlineno + 1
     source_lines = original_source_lines[:last_index]
 
     # in case the current line is actually an incomplete expression, as in
@@ -159,11 +160,7 @@ def _get_inspection_info(trace):
         else:
             source_lines.append(line)
 
-    return (
-        source_lines,
-        frame.f_locals, frame.f_globals,
-        _can_tokenize(source_lines)
-    )
+    return (source_lines, frame.f_locals, frame.f_globals, _can_tokenize(source_lines))
 
 
 def _can_tokenize(source_lines):
@@ -172,11 +169,12 @@ def _can_tokenize(source_lines):
     """
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
-    filelike = six.StringIO(textwrap.dedent(''.join(source_lines)))
+    filelike = six.StringIO(textwrap.dedent("".join(source_lines)))
 
     try:
-        for tokty, tok, start, end, tok_lineno in (
-                tokenize.generate_tokens(filelike.readline)):
+        for tokty, tok, start, end, tok_lineno in tokenize.generate_tokens(
+            filelike.readline
+        ):
             pass
     except tokenize.TokenError:
         return False
@@ -200,7 +198,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
     """
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
-    filelike_context = six.StringIO(textwrap.dedent(''.join(source_lines)))
+    filelike_context = six.StringIO(textwrap.dedent("".join(source_lines)))
 
     # track the first line of the assert statement
     # when the assert is on oneline, we'll have it easily, but a multiline
@@ -226,8 +224,9 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
     token_processor = TokenProcessor(frame_locals, frame_globals)
 
     # tokenize and process each token
-    for tokty, tok, start, end, tok_lineno in (
-            tokenize.generate_tokens(filelike_context.readline)):
+    for tokty, tok, start, end, tok_lineno in tokenize.generate_tokens(
+        filelike_context.readline
+    ):
         ret = token_processor.handle_token(tokty, tok, start, end, tok_lineno)
         if ret:
             assert_startline = ret
@@ -334,7 +333,7 @@ class TokenProcessor(object):
         # CASE 2: "assert" statement
         # assert statement was reached, reset
         # return the start line (start = (startrow, startcol))
-        if tok == 'assert':
+        if tok == "assert":
             self.seen_tokens.clear()
             self.doing_resolution = None
             return start[0]
@@ -344,13 +343,16 @@ class TokenProcessor(object):
         # CASE 3: a name is being resolved,
         #         there is a previous token,
         #         and it's a "." operator
-        if self.doing_resolution and prior_tok and (
-                prior_tok[0] == tokenize.OP and prior_tok[1] == '.'):
+        if (
+            self.doing_resolution
+            and prior_tok
+            and (prior_tok[0] == tokenize.OP and prior_tok[1] == ".")
+        ):
             # unpack and look for the attribute
             obj, name = self.doing_resolution
             if hasattr(obj, tok):
                 obj = getattr(obj, tok)
-                name = name + '.' + tok
+                name = name + "." + tok
                 self.doing_resolution = (obj, name)
                 self.seen_tokens[name] = obj
             # if we couldn't find a relevant attribute, reset on resolution so

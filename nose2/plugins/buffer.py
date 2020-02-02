@@ -17,17 +17,14 @@ talk to the user.
 import sys
 import traceback
 
-from six import StringIO
-
 from nose2 import events
 from nose2.util import ln
-
+from six import StringIO
 
 __unittest = True
 
 
 class _Buffer(object):
-
     def __init__(self, stream):
         self._stream = stream
         self._buffer = StringIO()
@@ -37,7 +34,7 @@ class _Buffer(object):
 
     def __getattr__(self, attr):
         # this happens on unpickling
-        if attr == '_buffer':
+        if attr == "_buffer":
             raise AttributeError("No _buffer yet")
         return getattr(self._buffer, attr)
 
@@ -57,12 +54,13 @@ class _Buffer(object):
 class OutputBufferPlugin(events.Plugin):
 
     """Buffer output during test execution"""
-    commandLineSwitch = ('B', 'output-buffer', 'Enable output buffer')
-    configSection = 'output-buffer'
+
+    commandLineSwitch = ("B", "output-buffer", "Enable output buffer")
+    configSection = "output-buffer"
 
     def __init__(self):
-        self.captureStdout = self.config.as_bool('stdout', default=True)
-        self.captureStderr = self.config.as_bool('stderr', default=False)
+        self.captureStdout = self.config.as_bool("stdout", default=True)
+        self.captureStderr = self.config.as_bool("stderr", default=False)
         self.bufStdout = self.bufStderr = None
         self.realStdout = sys.__stdout__
         self.realStderr = sys.__stderr__
@@ -86,7 +84,7 @@ class OutputBufferPlugin(events.Plugin):
         self._restore()
 
     def _get_stream_unicode_save(self, stream, buffer):
-        buf = ''
+        buf = ""
         stream_buffer_exc_info = None
         try:
             buf = buffer.getvalue()
@@ -108,30 +106,41 @@ class OutputBufferPlugin(events.Plugin):
             # [2] <https://github.com/nose-devs/nose/issues/816>
             stream_buffer_exc_info = sys.exc_info()
         extraDetail = []
-        extraDetail.append(
-            ln('>> begin captured %s <<' % stream))
+        extraDetail.append(ln(">> begin captured %s <<" % stream))
         extraDetail.append(buf)
-        extraDetail.append(ln('>> end captured %s <<' % stream))
+        extraDetail.append(ln(">> end captured %s <<" % stream))
         if stream_buffer_exc_info:
-            extraDetail.append('OUTPUT ERROR: Could not get captured %s output.' % stream)
-            extraDetail.append("The test might've printed both 'unicode' strings and non-ASCII 8-bit 'str' strings.")
-            extraDetail.append(ln('>> begin captured %s exception traceback <<' % stream))
-            extraDetail.append(''.join(traceback.format_exception(*stream_buffer_exc_info)))
-            extraDetail.append(ln('>> end captured %s exception traceback <<' % stream))
+            extraDetail.append(
+                "OUTPUT ERROR: Could not get captured %s output." % stream
+            )
+            extraDetail.append(
+                "The test might've printed both 'unicode' strings and non-ASCII 8-bit 'str' strings."
+            )
+            extraDetail.append(
+                ln(">> begin captured %s exception traceback <<" % stream)
+            )
+            extraDetail.append(
+                "".join(traceback.format_exception(*stream_buffer_exc_info))
+            )
+            extraDetail.append(ln(">> end captured %s exception traceback <<" % stream))
         return "\n".join(extraDetail)
 
     def setTestOutcome(self, event):
         """Attach buffer(s) to event.metadata"""
         if self._disable:
             return
-        if self.captureStdout and 'stdout' not in event.metadata:
-            event.metadata['stdout'] = self._get_stream_unicode_save('stdout', self.bufStdout)
-        if self.captureStderr and 'stderr' not in event.metadata:
-            event.metadata['stderr'] = self._get_stream_unicode_save('stderr', self.bufStderr)
+        if self.captureStdout and "stdout" not in event.metadata:
+            event.metadata["stdout"] = self._get_stream_unicode_save(
+                "stdout", self.bufStdout
+            )
+        if self.captureStderr and "stderr" not in event.metadata:
+            event.metadata["stderr"] = self._get_stream_unicode_save(
+                "stderr", self.bufStderr
+            )
 
     def outcomeDetail(self, event):
         """Add buffered output to event.extraDetail"""
-        for stream in ('stdout', 'stderr'):
+        for stream in ("stdout", "stderr"):
             if stream in event.outcomeEvent.metadata:
                 b = event.outcomeEvent.metadata[stream]
                 if b:

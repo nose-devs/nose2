@@ -4,4 +4,4 @@
 # The following line *must* be the last in the module, exactly as formatted:
 # could also use advice from
 # https://packaging.python.org/guides/single-sourcing-package-version/
-__version__ = '0.9.2'
+__version__ = "0.9.2"

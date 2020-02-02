@@ -6,11 +6,10 @@
 
 import logging
 import traceback
-import six
 import unittest
 
+import six
 from nose2 import events
-
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -27,6 +26,7 @@ class PluggableTestLoader(object):
        Suite class to use. Default: :class:`unittest.TestSuite`.
 
     """
+
     suiteClass = unittest.TestSuite
 
     def __init__(self, session):
@@ -56,16 +56,14 @@ class PluggableTestLoader(object):
         Fires :func:`loadTestsFromNames` hook.
 
         """
-        event = events.LoadFromNamesEvent(
-            self, testNames, module)
+        event = events.LoadFromNamesEvent(self, testNames, module)
         result = self.session.hooks.loadTestsFromNames(event)
-        log.debug('loadTestsFromNames event %s result %s', event, result)
+        log.debug("loadTestsFromNames event %s result %s", event, result)
         if event.handled:
             suites = result or []
         else:
             if event.names:
-                suites = [self.loadTestsFromName(name, module)
-                          for name in event.names]
+                suites = [self.loadTestsFromName(name, module) for name in event.names]
             elif module:
                 suites = self.loadTestsFromModule(module)
         if event.extraTests:
@@ -78,7 +76,7 @@ class PluggableTestLoader(object):
         Fires :func:`loadTestsFromName` hook.
 
         """
-        log.debug('loadTestsFromName %s/%s', name, module)
+        log.debug("loadTestsFromName %s/%s", name, module)
         event = events.LoadFromNameEvent(self, name, module)
         result = self.session.hooks.loadTestsFromName(event)
         if event.handled:
@@ -88,17 +86,16 @@ class PluggableTestLoader(object):
 
     def failedImport(self, name):
         """Make test case representing a failed import."""
-        message = 'Failed to import test module: %s' % name
-        if hasattr(traceback, 'format_exc'):
+        message = "Failed to import test module: %s" % name
+        if hasattr(traceback, "format_exc"):
             # Python 2.3 compatibility
             # format_exc returns two frames of discover.py as well XXX ?
-            message += '\n%s' % traceback.format_exc()
-        return self._makeFailedTest(
-            'ModuleImportFailure', name, ImportError(message))
+            message += "\n%s" % traceback.format_exc()
+        return self._makeFailedTest("ModuleImportFailure", name, ImportError(message))
 
     def failedLoadTests(self, name, exception):
         """Make test case representing a failed test load."""
-        return self._makeFailedTest('LoadTestsFailure', name, exception)
+        return self._makeFailedTest("LoadTestsFailure", name, exception)
 
     def sortTestMethodsUsing(self, name):
         """Sort key for test case test methods."""
@@ -120,9 +117,10 @@ class PluggableTestLoader(object):
             else:
                 # exception tuple (type, value, traceback)
                 six.reraise(*exception)
+
         attrs = {methodname: testFailure}
         TestClass = type(classname, (unittest.TestCase,), attrs)
         return self.suiteClass((TestClass(methodname),))
 
     def __repr__(self):
-        return '<%s>' % self.__class__.__name__
+        return "<%s>" % self.__class__.__name__

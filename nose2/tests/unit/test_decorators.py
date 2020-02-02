@@ -18,8 +18,8 @@ class WithSetupDecoratorTests(TestCase):
         expected = with_setup(self.fake_setup)(sut).setup
 
         self.assertEquals(expected, self.fake_setup)
-        
-        
+
+
 class WithTeardownDecoratorTests(TestCase):
     def fake_teardown(self):
         pass

@@ -7,7 +7,6 @@ import time
 
 from nose2 import events, result
 
-
 __unittest = True
 
 
@@ -23,6 +22,7 @@ class PluggableTestRunner(object):
        :class:`nose2.result.PluggableTestResult`.
 
     """
+
     resultClass = result.PluggableTestResult
 
     def __init__(self, session):
@@ -40,8 +40,7 @@ class PluggableTestRunner(object):
         result = self._makeResult()
         executor = lambda suite, result: suite(result)
         startTime = time.time()
-        event = events.StartTestRunEvent(
-            self, test, result, startTime, executor)
+        event = events.StartTestRunEvent(self, test, result, startTime, executor)
         self.session.hooks.startTestRun(event)
 
         # allows startTestRun to modify test suite
@@ -67,4 +66,4 @@ class PluggableTestRunner(object):
         return event.result
 
     def __repr__(self):
-        return '<%s>' % self.__class__.__name__
+        return "<%s>" % self.__class__.__name__

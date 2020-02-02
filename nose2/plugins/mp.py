@@ -1,32 +1,31 @@
-
 import logging
 import multiprocessing
+import multiprocessing.connection as connection
+import os
 import select
+import sys
 import unittest
+
+import six
+from nose2 import events, loader, result, runner, session, util
+
 try:
     from collections.abc import Sequence
 except ImportError:
     from collections import Sequence
 
-import os
-import sys
-import six
-
-import multiprocessing.connection as connection
-from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
 
 
 class MultiProcess(events.Plugin):
-    configSection = 'multiprocess'
+    configSection = "multiprocess"
 
     def __init__(self):
-        self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
-        self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
-        self._procs = self.config.as_int(
-            'processes', 0)
-        self.setAddress(self.config.as_str('bind_address', None))
+        self.addArgument(self.setProcs, "N", "processes", "# o procs")
+        self.testRunTimeout = self.config.as_float("test-run-timeout", 60.0)
+        self._procs = self.config.as_int("processes", 0)
+        self.setAddress(self.config.as_str("bind_address", None))
 
         self.cases = {}
 
@@ -46,7 +45,9 @@ class MultiProcess(events.Plugin):
     def procs(self, value):
         """Setter for procs property"""
         if value < 0:
-            raise AttributeError("Can't set the procs number to less than 0, (0 = Auto)")
+            raise AttributeError(
+                "Can't set the procs number to less than 0, (0 = Auto)"
+            )
         self._procs = value
 
     def setProcs(self, num):
@@ -54,32 +55,31 @@ class MultiProcess(events.Plugin):
         self.register()
 
     def setAddress(self, address):
-        if address is None or address.strip() == '':
+        if address is None or address.strip() == "":
             address = []
         else:
-            address = [x.strip() for x in address.split(':')[:2]]
+            address = [x.strip() for x in address.split(":")[:2]]
 
-        #Background:  On Windows, select.select only works on sockets.  So the
-        #ability to select a bindable address and optionally port for the mp
-        #plugin was added.  Pipes should support a form of select, but this
-        #would require using pywin32.  There are altnernatives but all have
-        #some kind of downside.  An alternative might be creating a connection
-        #like object using a shared queue for incomings events. 
+        # Background:  On Windows, select.select only works on sockets.  So the
+        # ability to select a bindable address and optionally port for the mp
+        # plugin was added.  Pipes should support a form of select, but this
+        # would require using pywin32.  There are altnernatives but all have
+        # some kind of downside.  An alternative might be creating a connection
+        # like object using a shared queue for incomings events.
         self.bind_host = None
         self.bind_port = 0
 
         if sys.platform == "win32" or address:
-            self.bind_host = '127.116.157.163'
+            self.bind_host = "127.116.157.163"
             if address and address[0]:
                 self.bind_host = address[0]
-            
+
             self.bind_port = 0
             if len(address) >= 2:
                 self.bind_port = int(address[1])
 
     def pluginsLoaded(self, event):
-        self.addMethods('registerInSubprocess', 'startSubprocess',
-                        'stopSubprocess')
+        self.addMethods("registerInSubprocess", "startSubprocess", "stopSubprocess")
 
     def startTestRun(self, event):
         event.executeTests = self._runmp
@@ -96,7 +96,7 @@ class MultiProcess(events.Plugin):
 
         # do not send import failures to the subprocesses, which will mangle them
         # but 'run' them in the main process.
-        failed_import_id = 'nose2.loader.LoadTestsFailure'
+        failed_import_id = "nose2.loader.LoadTestsFailure"
         result_ = self.session.testResult
         for testid in flat:
             if testid.startswith(failed_import_id):
@@ -173,7 +173,7 @@ class MultiProcess(events.Plugin):
         to get a ``Connection`` object for the socket.
         """
         if self.bind_host is not None:
-            #prevent "accidental" wire crossing
+            # prevent "accidental" wire crossing
             authkey = os.urandom(20)
             address = (self.bind_host, self.bind_port)
             listener = connection.Listener(address, authkey=authkey)
@@ -190,14 +190,13 @@ class MultiProcess(events.Plugin):
         member to get a low_level socket to do a select on.
         """
         if isinstance(parent_conn, connection.Listener):
-            #ick private interface
+            # ick private interface
             rdrs = [parent_conn._listener._socket]
-            readable, _, _ = select.select(rdrs, [], [],
-                                           self.testRunTimeout)
+            readable, _, _ = select.select(rdrs, [], [], self.testRunTimeout)
             if readable:
                 return parent_conn.accept()
             else:
-                raise RuntimeError('MP: Socket Connection Failed')
+                raise RuntimeError("MP: Socket Connection Failed")
         else:
             return parent_conn
 
@@ -210,7 +209,8 @@ class MultiProcess(events.Plugin):
         for i in range(0, count):
             parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
-                target=procserver, args=(session_export, child_conn))
+                target=procserver, args=(session_export, child_conn)
+            )
             proc.daemon = True
             proc.start()
             parent_conn = self._acceptConns(parent_conn)
@@ -240,13 +240,13 @@ class MultiProcess(events.Plugin):
                     testid = util.test_name(test)
                     self.cases[testid] = test
                     if util.has_module_fixtures(test):
-                        mods.setdefault(test.__class__.__module__, []).append(
-                            testid)
+                        mods.setdefault(test.__class__.__module__, []).append(testid)
                     elif util.has_class_fixtures(test):
                         classes.setdefault(
-                            "%s.%s" % (test.__class__.__module__,
-                                       test.__class__.__name__),
-                            []).append(testid)
+                            "%s.%s"
+                            % (test.__class__.__module__, test.__class__.__name__),
+                            [],
+                        ).append(testid)
                     else:
                         yield testid
 
@@ -259,21 +259,24 @@ class MultiProcess(events.Plugin):
         # XXX set loader, case, result etc to local ones, if present in event
         # (event case will be just the id)
         # (traceback in exc_info if any won't be real!)
-        if hasattr(event, 'result'):
+        if hasattr(event, "result"):
             event.result = self.session.testResult
-        if hasattr(event, 'loader'):
+        if hasattr(event, "loader"):
             event.loader = self.session.testLoader
-        if hasattr(event, 'runner'):
+        if hasattr(event, "runner"):
             event.runner = self.session.testRunner
-        if hasattr(event, 'test') and isinstance(event.test, six.string_types):
+        if hasattr(event, "test") and isinstance(event.test, six.string_types):
             # remote event.case is the test id
             try:
                 event.test = self.cases[event.test]
             except KeyError:
                 event.test = self.session.testLoader.failedLoadTests(
-                    'test_not_found',
-                    RuntimeError("Unable to locate test case for %s in "
-                                 "main process" % event.test))._tests[0]
+                    "test_not_found",
+                    RuntimeError(
+                        "Unable to locate test case for %s in "
+                        "main process" % event.test
+                    ),
+                )._tests[0]
 
     def _exportSession(self):
         """
@@ -288,24 +291,26 @@ class MultiProcess(events.Plugin):
         * No hokes
         :return:
         """
-        export = {'config': self.session.config,
-                  'verbosity': self.session.verbosity,
-                  'startDir': self.session.startDir,
-                  'topLevelDir': self.session.topLevelDir,
-                  'logLevel': self.session.logLevel,
-                  'pluginClasses': []}
+        export = {
+            "config": self.session.config,
+            "verbosity": self.session.verbosity,
+            "startDir": self.session.startDir,
+            "topLevelDir": self.session.topLevelDir,
+            "logLevel": self.session.logLevel,
+            "pluginClasses": [],
+        }
         event = RegisterInSubprocessEvent()
         # fire registerInSubprocess on plugins -- add those plugin classes
         # CAVEAT: classes must be pickleable!
         self.session.hooks.registerInSubprocess(event)
-        export['pluginClasses'].extend(event.pluginClasses)
+        export["pluginClasses"].extend(event.pluginClasses)
         return export
 
 
 def procserver(session_export, conn):
     # init logging system
     rlog = multiprocessing.log_to_stderr()
-    rlog.setLevel(session_export['logLevel'])
+    rlog.setLevel(session_export["logLevel"])
 
     # make a real session from the "session" we got
     ssn = import_session(rlog, session_export)
@@ -313,11 +318,9 @@ def procserver(session_export, conn):
     if isinstance(conn, Sequence):
         conn = connection.Client(conn[:2], authkey=conn[2])
 
-    event = SubprocessEvent(ssn.testLoader,
-                            ssn.testResult,
-                            ssn.testRunner,
-                            ssn.plugins,
-                            conn)
+    event = SubprocessEvent(
+        ssn.testLoader, ssn.testResult, ssn.testRunner, ssn.plugins, conn
+    )
     res = ssn.hooks.startSubprocess(event)
     if event.handled and not res:
         conn.send(None)
@@ -351,11 +354,11 @@ def procserver(session_export, conn):
 
 def import_session(rlog, session_export):
     ssn = session.Session()
-    ssn.config = session_export['config']
+    ssn.config = session_export["config"]
     ssn.hooks = RecordingPluginInterface()
-    ssn.verbosity = session_export['verbosity']
-    ssn.startDir = session_export['startDir']
-    ssn.topLevelDir = session_export['topLevelDir']
+    ssn.verbosity = session_export["verbosity"]
+    ssn.startDir = session_export["startDir"]
+    ssn.topLevelDir = session_export["topLevelDir"]
     ssn.prepareSysPath()
     loader_ = loader.PluggableTestLoader(ssn)
     ssn.testLoader = loader_
@@ -365,7 +368,8 @@ def import_session(rlog, session_export):
     ssn.testRunner = runner_
     # load and register plugins, forcing multiprocess to the end
     ssn.plugins = [
-        plugin(session=ssn) for plugin in session_export['pluginClasses']
+        plugin(session=ssn)
+        for plugin in session_export["pluginClasses"]
         if plugin is not MultiProcess
     ]
     rlog.debug("Plugins loaded: %s", ssn.plugins)
@@ -458,7 +462,6 @@ class RegisterInSubprocessEvent(events.Event):
 
 # custom hook system that records calls and events
 class RecordingHook(events.Hook):
-
     def __init__(self, method, interface):
         super(RecordingHook, self).__init__(method)
         self.interface = interface
@@ -472,8 +475,14 @@ class RecordingHook(events.Hook):
 class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
     noLogMethods = set(
-        ['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
-         'registerInSubprocess', 'moduleLoadedSuite'])
+        [
+            "getTestCaseNames",
+            "startSubprocess",
+            "stopSubprocess",
+            "registerInSubprocess",
+            "moduleLoadedSuite",
+        ]
+    )
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()
@@ -497,8 +506,8 @@ class RecordingPluginInterface(events.PluginInterface):
         self._hookForMethod(method).append(plugin)
 
     def __getattr__(self, attr):
-        if attr.startswith('__'):
-            raise AttributeError('No %s in %s' % (attr, self))
+        if attr.startswith("__"):
+            raise AttributeError("No %s in %s" % (attr, self))
         return self._hookForMethod(attr)
 
     def _hookForMethod(self, method):
@@ -508,7 +517,7 @@ class RecordingPluginInterface(events.PluginInterface):
         try:
             return self.hooks[method]
         except KeyError:
-            if method in self.noLogMethods or method.startswith('loadTest'):
+            if method in self.noLogMethods or method.startswith("loadTest"):
                 hook = events.Hook(method)
             else:
                 hook = self.hookClass(method, self)

@@ -13,7 +13,6 @@ def tearDownModule():
 
 
 class Test(unittest.TestCase):
-
     def test_1(self):
         assert THINGS, "setup didn't run"
 

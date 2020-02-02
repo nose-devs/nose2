@@ -2,11 +2,10 @@ import time
 
 from nose2 import events
 
-
-ERROR = 'error'
-FAIL = 'failed'
-SKIP = 'skipped'
-PASS = 'passed'
+ERROR = "error"
+FAIL = "failed"
+SKIP = "skipped"
+PASS = "passed"
 __unittest = True
 
 
@@ -135,4 +134,4 @@ class PluggableTestResult(object):
         self.shouldStop = event.shouldStop
 
     def __repr__(self):
-        return '<%s>' % self.__class__.__name__
+        return "<%s>" % self.__class__.__name__

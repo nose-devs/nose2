@@ -1,14 +1,13 @@
 import logging
 import re
-
-import six
-
-from nose2 import events, util, exceptions
-from nose2.suite import LayerSuite
 from collections import OrderedDict
 
-BRIGHT = r'\033[1m'
-RESET = r'\033[0m'
+import six
+from nose2 import events, exceptions, util
+from nose2.suite import LayerSuite
+
+BRIGHT = r"\033[1m"
+RESET = r"\033[0m"
 
 __unittest = True
 
@@ -23,14 +22,13 @@ class Layers(events.Plugin):
     alwaysOn = True
 
     def startTestRun(self, event):
-        event.suite = self.make_suite(
-            event.suite, self.session.testLoader.suiteClass)
+        event.suite = self.make_suite(event.suite, self.session.testLoader.suiteClass)
 
     def get_layers_from_suite(self, suite, suiteClass):
         top_layer = suiteClass()
         layers_dict = OrderedDict()
         for test in self.flatten_suite(suite):
-            layer = getattr(test, 'layer', None)
+            layer = getattr(test, "layer", None)
             if layer:
                 if layer not in layers_dict:
                     layers_dict[layer] = LayerSuite(self.session, layer=layer)
@@ -62,7 +60,8 @@ class Layers(events.Plugin):
             remaining = self.update_layer_tree(tree, unresolved_layers)
             if len(remaining) == len(unresolved_layers):
                 raise exceptions.LoadTestsFailure(
-                    'Could not resolve layer dependencies')
+                    "Could not resolve layer dependencies"
+                )
             unresolved_layers = remaining
         for layer in tree.keys():
             if layer and layer not in layers_dict:
@@ -82,7 +81,7 @@ class Layers(events.Plugin):
 
     @classmethod
     def insert_mixins(cls, tree, layer, outer):
-        mixins = getattr(layer, 'mixins', None)
+        mixins = getattr(layer, "mixins", None)
         if not mixins:
             return outer
         last = outer
@@ -112,7 +111,7 @@ class Layers(events.Plugin):
         elif outer in tree:
             outer = cls.insert_mixins(tree, layer, outer)
         else:
-            err = '{0} not found in {1}'.format(outer, tree)
+            err = "{0} not found in {1}".format(outer, tree)
             raise exceptions.LoadTestsFailure(err)
         if outer is None:
             tree.setdefault(None, []).append(layer)
@@ -145,7 +144,7 @@ class Layers(events.Plugin):
     def add_layer_to_tree(cls, tree, layer):
         parents = layer.__bases__
         if not parents:
-            err = 'Invalid layer {0}: should at least inherit from `object`'
+            err = "Invalid layer {0}: should at least inherit from `object`"
             raise exceptions.LoadTestsFailure(err.format(layer))
         for parent in parents:
             if parent not in tree and parent is not object:
@@ -157,7 +156,7 @@ class Layers(events.Plugin):
             if not cls.get_parents_from_tree(parent, tree):
                 cls.insert_layer(tree, layer, parent)
                 return
-        raise exceptions.LoadTestsFailure('Failed to add {0}'.format(layer))
+        raise exceptions.LoadTestsFailure("Failed to add {0}".format(layer))
 
     @classmethod
     def tree_to_suite(cls, tree, key, suite, layers):
@@ -183,7 +182,7 @@ class Layers(events.Plugin):
 
     @staticmethod
     def get_layer_position(layer):
-        pos = getattr(layer, 'position', None)
+        pos = getattr(layer, "position", None)
         # ... lame
         if pos is not None:
             key = six.u("%04d") % pos
@@ -194,60 +193,63 @@ class Layers(events.Plugin):
 
 class LayerReporter(events.Plugin):
     commandLineSwitch = (
-        None, 'layer-reporter', 'Add layer information to test reports')
-    configSection = 'layer-reporter'
+        None,
+        "layer-reporter",
+        "Add layer information to test reports",
+    )
+    configSection = "layer-reporter"
 
     def __init__(self):
-        self.indent = self.config.as_str('indent', '  ')
-        self.colors = self.config.as_bool('colors', False)
-        self.highlight_words = self.config.as_list('highlight-words',
-                                                   ['A', 'having', 'should'])
-        self.highlight_re = re.compile(
-            r'\b(%s)\b' % '|'.join(self.highlight_words))
+        self.indent = self.config.as_str("indent", "  ")
+        self.colors = self.config.as_bool("colors", False)
+        self.highlight_words = self.config.as_list(
+            "highlight-words", ["A", "having", "should"]
+        )
+        self.highlight_re = re.compile(r"\b(%s)\b" % "|".join(self.highlight_words))
         self.layersReported = set()
 
     def reportStartTest(self, event):
         if self.session.verbosity < 2:
             return
         test = event.testEvent.test
-        layer = getattr(test, 'layer', None)
+        layer = getattr(test, "layer", None)
         if not layer:
             return
         for ix, lys in enumerate(util.ancestry(layer)):
             for layer in lys:
                 if layer not in self.layersReported:
                     desc = self.describeLayer(layer)
-                    event.stream.writeln('%s%s' % (self.indent * ix, desc))
+                    event.stream.writeln("%s%s" % (self.indent * ix, desc))
                     self.layersReported.add(layer)
         event.stream.write(self.indent * (ix + 1))
 
     def describeLayer(self, layer):
-        return self.format(getattr(layer, 'description', layer.__name__))
+        return self.format(getattr(layer, "description", layer.__name__))
 
     def format(self, st):
         if self.colors:
-            return self.highlight_re.sub(r'%s\1%s' % (BRIGHT, RESET), st)
+            return self.highlight_re.sub(r"%s\1%s" % (BRIGHT, RESET), st)
         return st
 
     def describeTest(self, event):
-        if hasattr(event.test, 'methodDescription'):
+        if hasattr(event.test, "methodDescription"):
             event.description = self.format(event.test.methodDescription())
-        if event.errorList and hasattr(event.test, 'layer'):
+        if event.errorList and hasattr(event.test, "layer"):
             # walk back layers to build full description
             self.describeLayers(event)
         # we need to remove "\n" from description to keep a well indented report when tests have docstrings
         # see https://github.com/nose-devs/nose2/issues/327 for more information
-        event.description = event.description.replace('\n', ' ')
+        event.description = event.description.replace("\n", " ")
 
     def describeLayers(self, event):
         desc = [event.description]
         base = event.test.layer
-        for layer in (base.__mro__ + getattr(base, 'mixins', ())):
+        for layer in base.__mro__ + getattr(base, "mixins", ()):
             if layer is object:
                 continue
             desc.append(self.describeLayer(layer))
         desc.reverse()
-        event.description = ' '.join(desc)
+        event.description = " ".join(desc)
 
 
 # for debugging

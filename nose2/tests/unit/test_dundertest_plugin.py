@@ -6,7 +6,7 @@ from nose2.tests._common import TestCase
 
 
 class TestDunderTestPlugin(TestCase):
-    tags = ['unit']
+    tags = ["unit"]
 
     def setUp(self):
         class DummyCase(TestCase):
@@ -20,12 +20,12 @@ class TestDunderTestPlugin(TestCase):
         self.plugin.register()
 
     def test_undefined_dunder_test_attribute_keeps_test(self):
-        self.suite.addTest(self.caseClass('test_a'))
+        self.suite.addTest(self.caseClass("test_a"))
         self.plugin.removeNonTests(self.suite)
         self.assertEqual(len(list(self.suite)), 1)
 
     def test_false_dunder_test_attribute_removes_test(self):
-        dummyTest = self.caseClass('test_a')
+        dummyTest = self.caseClass("test_a")
         dummyTest.__test__ = False
         self.suite.addTest(dummyTest)
         self.plugin.removeNonTests(self.suite)

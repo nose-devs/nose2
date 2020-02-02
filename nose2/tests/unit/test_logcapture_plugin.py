@@ -1,15 +1,13 @@
 import logging
 
-from nose2.tests._common import TestCase
-from nose2.plugins import logcapture
 from nose2 import session
-
+from nose2.plugins import logcapture
+from nose2.tests._common import TestCase
 
 log = logging.getLogger(__name__)
 
 
 class StubLogging(object):
-
     def __init__(self, name=None):
         self.name = name
         self.handlers = []
@@ -31,11 +29,10 @@ class StubLogging(object):
 
 
 class StubRecord(object):
-
     def __init__(self, message):
         self.message = message
-        self.name = 'stub'
-        self.levelname = 'stub'
+        self.name = "stub"
+        self.levelname = "stub"
         self.exc_info = None
         self.exc_text = None
         self.stack_info = None
@@ -45,7 +42,7 @@ class StubRecord(object):
 
 
 class LogCaptureUnitTest(TestCase):
-    tags = ['unit']
+    tags = ["unit"]
 
     def setUp(self):
         self.session = session.Session()
@@ -64,7 +61,7 @@ class LogCaptureUnitTest(TestCase):
     def test_buffer_cleared_after_each_test(self):
         self.plugin.startTestRun(None)
         self.plugin.startTest(None)
-        logcapture.logging.getLogger('test').debug("hello")
+        logcapture.logging.getLogger("test").debug("hello")
         assert self.plugin.handler.buffer
         self.plugin.setTestOutcome(self.event())
         assert self.plugin.handler.buffer
@@ -74,11 +71,11 @@ class LogCaptureUnitTest(TestCase):
     def test_buffered_logs_attached_to_event(self):
         self.plugin.startTestRun(None)
         self.plugin.startTest(None)
-        logcapture.logging.getLogger('test').debug("hello")
+        logcapture.logging.getLogger("test").debug("hello")
         assert self.plugin.handler.buffer
         e = self.event()
         self.plugin.setTestOutcome(e)
-        assert 'logs' in e.metadata, "No log in %s" % e.metadata
+        assert "logs" in e.metadata, "No log in %s" % e.metadata
 
 
 class Event:

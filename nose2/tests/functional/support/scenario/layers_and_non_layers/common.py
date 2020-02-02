@@ -1,5 +1,6 @@
-import unittest
 import logging
+import unittest
+
 log = logging.getLogger(__name__)
 
 
@@ -9,8 +10,7 @@ class UniqueResource(object):
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super(UniqueResource, cls).__new__(
-                cls, *args, **kwargs)
+            cls._instance = super(UniqueResource, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
     def lock(self):
@@ -27,7 +27,6 @@ class UniqueResource(object):
 
 
 class NormalTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         log.info("Called setUpClass in NormalTest")
@@ -44,7 +43,6 @@ class NormalTest(unittest.TestCase):
 
 
 class NormalTestTwo(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         log.info("Called setUpClass in NormalTestTwo")

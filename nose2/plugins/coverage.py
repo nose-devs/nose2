@@ -29,17 +29,18 @@ However, when doing so you should also be aware of
 `Differences From coverage`_.
 """
 from __future__ import absolute_import, print_function
-import six
+
 import logging
 
+import six
 from nose2.events import Plugin
 
 log = logging.getLogger(__name__)
 
 
 class Coverage(Plugin):
-    configSection = 'coverage'
-    commandLineSwitch = ('C', 'with-coverage', 'Turn on coverage reporting')
+    configSection = "coverage"
+    commandLineSwitch = ("C", "with-coverage", "Turn on coverage reporting")
     _mpmode = False
     _subprocess = False
 
@@ -50,30 +51,38 @@ class Coverage(Plugin):
         # buffer for error output data
         self.error_output_buffer = six.StringIO()
 
-        self.covSource = (self.config.as_list('coverage', []) or
-                          ['.'])
-        self.covReport = (self.config.as_list('coverage-report', []) or
-                          ['term'])
-        self.covConfig = (self.config.as_str('coverage-config', '').strip() or
-                          '.coveragerc')
+        self.covSource = self.config.as_list("coverage", []) or ["."]
+        self.covReport = self.config.as_list("coverage-report", []) or ["term"]
+        self.covConfig = (
+            self.config.as_str("coverage-config", "").strip() or ".coveragerc"
+        )
 
         group = self.session.pluginargs
         group.add_argument(
-            '--coverage', action='append', default=[], metavar='PATH',
-            dest='coverage_source',
-            help='Measure coverage for filesystem path (multi-allowed)'
+            "--coverage",
+            action="append",
+            default=[],
+            metavar="PATH",
+            dest="coverage_source",
+            help="Measure coverage for filesystem path (multi-allowed)",
         )
         group.add_argument(
-            '--coverage-report', action='append', default=[], metavar='TYPE',
-            choices=['term', 'term-missing', 'annotate', 'html', 'xml'],
-            dest='coverage_report',
-            help='Generate selected reports, available types:'
-                 ' term, term-missing, annotate, html, xml (multi-allowed)'
+            "--coverage-report",
+            action="append",
+            default=[],
+            metavar="TYPE",
+            choices=["term", "term-missing", "annotate", "html", "xml"],
+            dest="coverage_report",
+            help="Generate selected reports, available types:"
+            " term, term-missing, annotate, html, xml (multi-allowed)",
         )
         group.add_argument(
-            '--coverage-config', action='store', default='', metavar='FILE',
-            dest='coverage_config',
-            help='Config file for coverage, default: .coveragerc'
+            "--coverage-config",
+            action="store",
+            default="",
+            metavar="FILE",
+            dest="coverage_config",
+            help="Config file for coverage, default: .coveragerc",
         )
         self.covController = None
 
@@ -93,11 +102,11 @@ class Coverage(Plugin):
         Only called if active so, safe to just start without checking flags"""
         if event.handled:
             log.error(
-                'createTests already handled -- '
-                'coverage reporting will be inaccurate')
+                "createTests already handled -- "
+                "coverage reporting will be inaccurate"
+            )
         else:
-            log.debug(
-                'createTests not already handled. coverage should work')
+            log.debug("createTests not already handled. coverage should work")
 
         self._start_coverage()
 
@@ -120,25 +129,29 @@ class Coverage(Plugin):
 
             percent_coverage = None
 
-            if 'term' in self.covReport or 'term-missing' in self.covReport:
+            if "term" in self.covReport or "term-missing" in self.covReport:
                 # only pass `show_missing` if "term-missing" was given
                 # otherwise, just allow coverage to load show_missing from
                 # config
                 kwargs = {}
-                if 'term-missing' in self.covReport:
-                    kwargs['show_missing'] = True
+                if "term-missing" in self.covReport:
+                    kwargs["show_missing"] = True
                 percent_coverage = self.covController.report(
-                    file=self.error_output_buffer, **kwargs)
-            if 'annotate' in self.covReport:
+                    file=self.error_output_buffer, **kwargs
+                )
+            if "annotate" in self.covReport:
                 percent_coverage = self.covController.annotate()
-            if 'html' in self.covReport:
+            if "html" in self.covReport:
                 percent_coverage = self.covController.html_report()
-            if 'xml' in self.covReport:
+            if "xml" in self.covReport:
                 percent_coverage = self.covController.xml_report()
 
             fail_under = self.covController.get_option("report:fail_under")
-            if (fail_under is not None and percent_coverage is not None and
-                    fail_under > percent_coverage):
+            if (
+                fail_under is not None
+                and percent_coverage is not None
+                and fail_under > percent_coverage
+            ):
                 self.decided_failure = True
 
     def startSubprocess(self, event):
@@ -164,15 +177,15 @@ class Coverage(Plugin):
         try:
             import coverage
         except ImportError:
-            print('Warning: you need to install "coverage_plugin" '
-                  'extra requirements to use this plugin. '
-                  'e.g. `pip install nose2[coverage_plugin]`')
+            print(
+                'Warning: you need to install "coverage_plugin" '
+                "extra requirements to use this plugin. "
+                "e.g. `pip install nose2[coverage_plugin]`"
+            )
             return
 
         self.covController = coverage.Coverage(
-            source=self.covSource,
-            config_file=self.covConfig,
-            data_suffix=self._mpmode,
+            source=self.covSource, config_file=self.covConfig, data_suffix=self._mpmode
         )
         # Call erase() to remove old files. This is important in multiprocess
         # mode, where per-process coverage files are unlikely to be

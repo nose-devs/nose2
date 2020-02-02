@@ -15,12 +15,15 @@ class AttributeSelector(Plugin):
         self.attribs = []
         self.eval_attribs = []
         self.addArgument(
-            self.attribs, "A", "attribute",
-            "Select tests with matching attribute")
+            self.attribs, "A", "attribute", "Select tests with matching attribute"
+        )
         self.addArgument(
-            self.eval_attribs, "E", "eval-attribute",
+            self.eval_attribs,
+            "E",
+            "eval-attribute",
             "Select tests for whose attributes the "
-            "given Python expression evaluates to ``True``")
+            "given Python expression evaluates to ``True``",
+        )
 
     def handleArgs(self, args):
         """Register if any attribs defined"""
@@ -29,17 +32,17 @@ class AttributeSelector(Plugin):
 
     def moduleLoadedSuite(self, event):
         """Filter event.suite by specified attributes"""
-        log.debug('Attribute selector attribs %s/%s',
-                  self.attribs, self.eval_attribs)
+        log.debug("Attribute selector attribs %s/%s", self.attribs, self.eval_attribs)
         attribs = []
         for attr in self.eval_attribs:
+
             def eval_in_context(expr, obj):
                 try:
                     return eval(expr, None, ContextHelper(obj))
                 except Exception as e:
-                    log.warning(
-                        "%s raised exception %s with test %s", expr, e, obj)
+                    log.warning("%s raised exception %s with test %s", expr, e, obj)
                     return False
+
             attribs.append([(attr, eval_in_context)])
         for attr in self.attribs:
             # all attributes within an attribute group must match
@@ -89,7 +92,7 @@ class AttributeSelector(Plugin):
             match = True
             for key, value in group:
                 neg = False
-                if key.startswith('!'):
+                if key.startswith("!"):
                     neg, key = True, key[1:]
                 obj_value = _get_attr(test, key)
                 if callable(value):
@@ -108,8 +111,7 @@ class AttributeSelector(Plugin):
                         break
                 elif type(obj_value) in (list, tuple):
                     # value must be found in the list attribute
-                    found = str(value).lower() in [str(x).lower()
-                                                   for x in obj_value]
+                    found = str(value).lower() in [str(x).lower() for x in obj_value]
                     if found and neg:
                         match = False
                         break
@@ -118,8 +120,10 @@ class AttributeSelector(Plugin):
                         break
                 else:
                     # value must match, convert to string and compare
-                    if (value != obj_value
-                        and str(value).lower() != str(obj_value).lower()):
+                    if (
+                        value != obj_value
+                        and str(value).lower() != str(obj_value).lower()
+                    ):
                         match = False
                         break
             any_ = any_ or match
@@ -128,18 +132,19 @@ class AttributeSelector(Plugin):
 
 # helpers
 
+
 def _get_attr(test, key):
     # FIXME for vals that are lists (or just mutable?), combine all levels
     val = getattr(test, key, undefined)
     if val is not undefined:
         return val
-    if hasattr(test, '_testFunc'):
+    if hasattr(test, "_testFunc"):
         val = getattr(test._testFunc, key, undefined)
         if val is not undefined:
             return val
-    elif hasattr(test, '_testMethodName'):
+    elif hasattr(test, "_testMethodName"):
         # testclasses support
-        if test.__class__.__name__ == '_MethodTestCase':
+        if test.__class__.__name__ == "_MethodTestCase":
             meth = getattr(test.obj, test.method, undefined)
         else:
             meth = getattr(test, test._testMethodName, undefined)
@@ -150,7 +155,6 @@ def _get_attr(test, key):
 
 
 class ContextHelper:
-
     def __init__(self, obj):
         self.obj = obj
 

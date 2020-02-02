@@ -6,5 +6,7 @@ class TestFoo(unittest.TestCase):
 
     def test_ohnoez(self):
         x = self
+        # fmt: off
         assert x.x != (self
                        ).x
+        # fmt: on

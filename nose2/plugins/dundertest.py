@@ -3,6 +3,7 @@ This plugin implements :func:`startTestRun`, which excludes all test objects
 that define a ``__test__`` attribute that evaluates to ``False``.
 """
 from unittest import TestSuite
+
 from nose2 import events
 
 __unittest = True
@@ -12,6 +13,7 @@ class DunderTestFilter(events.Plugin):
     """
     Exclude all tests defining a ``__test__`` attribute that evaluates to ``False``.
     """
+
     alwaysOn = True
 
     def startTestRun(self, event):
@@ -23,7 +25,7 @@ class DunderTestFilter(events.Plugin):
 
     def removeNonTests(self, suite):
         for test in list(suite):
-            if not getattr(test, '__test__', True):
+            if not getattr(test, "__test__", True):
                 suite._tests.remove(test)
             elif isinstance(test, TestSuite):
                 self.removeNonTests(test)

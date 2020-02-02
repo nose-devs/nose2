@@ -15,20 +15,22 @@ To disable loading doctests from text files, configure an empty extensions list:
 import doctest
 import os
 
-from nose2.events import Plugin
 from nose2 import util
-
+from nose2.events import Plugin
 
 __unittest = True
 
 
 class DocTestLoader(Plugin):
-    configSection = 'doctest'
-    commandLineSwitch = (None, 'with-doctest',
-                         'Load doctests from text files and modules')
+    configSection = "doctest"
+    commandLineSwitch = (
+        None,
+        "with-doctest",
+        "Load doctests from text files and modules",
+    )
 
     def __init__(self):
-        self.extensions = self.config.as_list('extensions', ['.txt', '.rst'])
+        self.extensions = self.config.as_list("extensions", [".txt", ".rst"])
 
     def handleFile(self, event):
         """Load doctests from text files and modules"""
@@ -51,7 +53,7 @@ class DocTestLoader(Plugin):
         except Exception:
             # XXX log warning here?
             return
-        if hasattr(module, '__test__') and not module.__test__:
+        if hasattr(module, "__test__") and not module.__test__:
             return
         try:
             suite = doctest.DocTestSuite(module)

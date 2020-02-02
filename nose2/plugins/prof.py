@@ -16,8 +16,8 @@ sections of the configuration file.
 
 """
 import cProfile
-import pstats
 import logging
+import pstats
 
 from nose2 import events, util
 
@@ -29,13 +29,13 @@ class Profiler(events.Plugin):
 
     """Profile the test run"""
 
-    configSection = 'profiler'
-    commandLineSwitch = ('P', 'profile', 'Run tests under profiler')
+    configSection = "profiler"
+    commandLineSwitch = ("P", "profile", "Run tests under profiler")
 
     def __init__(self):
-        self.pfile = self.config.as_str('filename', '')
-        self.sort = self.config.as_str('sort', 'cumulative')
-        self.restrict = self.config.as_list('restrict', [])
+        self.pfile = self.config.as_str("filename", "")
+        self.sort = self.config.as_str("sort", "cumulative")
+        self.restrict = self.config.as_list("restrict", [])
         self.fileno = None
 
     def startTestRun(self, event):
@@ -47,12 +47,12 @@ class Profiler(events.Plugin):
         """Output profiling results"""
         # write prof output to stream
         class Stream:
-
             def write(self, *msg):
                 for m in msg:
                     event.stream.write(m)
-                    event.stream.write(' ')
+                    event.stream.write(" ")
                 event.stream.flush()
+
         stream = Stream()
         prof_stats = pstats.Stats(self.prof, stream=stream)
         prof_stats.sort_stats(self.sort)
@@ -66,4 +66,4 @@ class Profiler(events.Plugin):
             prof_stats.dump_stats(self.pfile)
 
         self.prof.disable()
-        event.stream.writeln('')
+        event.stream.writeln("")

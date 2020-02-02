@@ -1,14 +1,14 @@
-import sys
 import os
+import sys
+
 from nose2.tests._common import FunctionalTestCase
 
 
 class TestLayerHooks(FunctionalTestCase):
-
     @classmethod
     def setUp(cls):
         filepath = os.path.dirname(os.path.realpath(__file__))
-        cls.libpath = os.path.join(filepath, 'support', 'lib')
+        cls.libpath = os.path.join(filepath, "support", "lib")
         sys.path.append(cls.libpath)
 
     @classmethod
@@ -18,10 +18,11 @@ class TestLayerHooks(FunctionalTestCase):
 
     def test_simple_such(self):
         proc = self.runIn(
-            'scenario/layers_hooks',
-            '--plugin=nose2.plugins.layers',
-            '--plugin=layer_hooks_plugin',
-            'test_simple_such')
+            "scenario/layers_hooks",
+            "--plugin=nose2.plugins.layers",
+            "--plugin=layer_hooks_plugin",
+            "test_simple_such",
+        )
         expected = (
             "^"
             "StartLayerSetup: <class 'test_simple_such.A system:layer'>\n"
@@ -32,17 +33,19 @@ class TestLayerHooks(FunctionalTestCase):
             "StopLayerTeardownTest: <class 'test_simple_such.A system:layer'>:test 0000: should do something \(test_simple_such.A system\)\n"
             "StartLayerTeardown: <class 'test_simple_such.A system:layer'>\n"
             "StopLayerTeardown: <class 'test_simple_such.A system:layer'>\n*"
-            "$")
-        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+            "$"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
 
     def test_complex_such(self):
         proc = self.runIn(
-            'such/',
-            '--plugin=nose2.plugins.layers',
-            '--plugin=layer_hooks_plugin',
-            'test_such')
+            "such/",
+            "--plugin=nose2.plugins.layers",
+            "--plugin=layer_hooks_plugin",
+            "test_such",
+        )
         expected = (
             "StartLayerSetup: <class 'test_such.A system with complex setup:layer'>\n"
             "StopLayerSetup: <class 'test_such.A system with complex setup:layer'>\n"
@@ -102,16 +105,17 @@ class TestLayerHooks(FunctionalTestCase):
             "StopLayerTeardown: <class 'test_such.A system with complex setup:layer'>\n*"
             "$"
         )
-        self.assertTestRunOutputMatches(proc, stderr='Ran 9 tests')
+        self.assertTestRunOutputMatches(proc, stderr="Ran 9 tests")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
 
     def test_simple_layers(self):
         proc = self.runIn(
-            'scenario/layers_hooks',
-            '--plugin=nose2.plugins.layers',
-            '--plugin=layer_hooks_plugin',
-            'test_layers_simple')
+            "scenario/layers_hooks",
+            "--plugin=nose2.plugins.layers",
+            "--plugin=layer_hooks_plugin",
+            "test_layers_simple",
+        )
         expected = (
             "^"
             "StartLayerSetup: <class 'test_layers_simple.Layer1'>\n"
@@ -126,7 +130,8 @@ class TestLayerHooks(FunctionalTestCase):
             "StopLayerTeardownTest: <class 'test_layers_simple.Layer1'>:test_2 \(test_layers_simple.TestSimple\)\n"
             "StartLayerTeardown: <class 'test_layers_simple.Layer1'>\n"
             "StopLayerTeardown: <class 'test_layers_simple.Layer1'>\n*"
-            "$")
-        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+            "$"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())

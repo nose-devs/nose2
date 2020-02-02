@@ -4,9 +4,9 @@ This plugin implements :func:`startTestRun`, setting a test executor
 them. To do so it calls result.startTest, result.addSuccess and
 result.stopTest for each test, without calling the test itself.
 """
-from nose2.events import Plugin
 import unittest
 
+from nose2.events import Plugin
 
 __unittest = True
 
@@ -15,9 +15,12 @@ class CollectOnly(Plugin):
 
     """Collect but don't run tests"""
 
-    configSection = 'collect-only'
-    commandLineSwitch = (None, 'collect-only',
-                         'Collect and output test names; do not run any tests')
+    configSection = "collect-only"
+    commandLineSwitch = (
+        None,
+        "collect-only",
+        "Collect and output test names; do not run any tests",
+    )
     _mpmode = False
 
     def registerInSubprocess(self, event):

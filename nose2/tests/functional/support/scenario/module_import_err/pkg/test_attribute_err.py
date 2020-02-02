@@ -6,6 +6,5 @@ def test_foo():
 
 
 class TestFoo(unittest.TestCase):
-
     def test_foo(self):
         pass

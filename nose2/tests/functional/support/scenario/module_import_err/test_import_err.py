@@ -1,4 +1,5 @@
 import unittest
+
 raise ImportError("booms")
 
 
@@ -7,6 +8,5 @@ def test():
 
 
 class Test(unittest.TestCase):
-
     def test(self):
         pass

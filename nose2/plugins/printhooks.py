@@ -14,7 +14,6 @@ import sys
 
 from nose2 import events
 
-
 INDENT = []
 __unittest = True
 
@@ -23,9 +22,12 @@ class PrintHooks(events.Plugin):
 
     """Print hooks as they are called"""
 
-    configSection = 'print-hooks'
-    commandLineSwitch = ('P', 'print-hooks',
-                         'Print names of hooks in order of execution')
+    configSection = "print-hooks"
+    commandLineSwitch = (
+        "P",
+        "print-hooks",
+        "Print names of hooks in order of execution",
+    )
 
     def register(self):
         """Override to inject noisy hook instances.
@@ -45,7 +47,6 @@ class PrintHooks(events.Plugin):
 
 
 class NoisyHook(events.Hook):
-
     def __call__(self, event):
         _report(self.method, event)
         _indent()
@@ -56,11 +57,11 @@ class NoisyHook(events.Hook):
 
 
 def _report(method, event):
-    sys.stderr.write("\n%s%s: %s" % (''.join(INDENT), method, event))
+    sys.stderr.write("\n%s%s: %s" % ("".join(INDENT), method, event))
 
 
 def _indent():
-    INDENT.append('  ')
+    INDENT.append("  ")
 
 
 def _dedent():

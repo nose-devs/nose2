@@ -3,8 +3,7 @@ import os
 import sys
 import unittest
 
-from nose2 import events, loader, runner, session, util, plugins
-
+from nose2 import events, loader, plugins, runner, session, util
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -67,6 +66,7 @@ class PluggableTestProgram(unittest.TestProgram):
        List of default plugin modules to load.
 
     """
+
     sessionClass = session.Session
     _currentSession = None
     loaderClass = loader.PluggableTestLoader
@@ -76,9 +76,9 @@ class PluggableTestProgram(unittest.TestProgram):
 
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
     def __init__(self, **kw):
-        plugins = kw.pop('plugins', [])
-        exclude = kw.pop('excludePlugins', [])
-        hooks = kw.pop('extraHooks', [])
+        plugins = kw.pop("plugins", [])
+        exclude = kw.pop("excludePlugins", [])
+        hooks = kw.pop("extraHooks", [])
         self.defaultPlugins = list(self.defaultPlugins)
         self.excludePlugins = list(self.excludePlugins)
         self.extraHooks = hooks
@@ -109,13 +109,14 @@ class PluggableTestProgram(unittest.TestProgram):
         self.handleCfgArgs(cfg_args)
 
         # Parse arguments for plugins (if any) and test names
-        self.argparse.add_argument('testNames', nargs='*')
+        self.argparse.add_argument("testNames", nargs="*")
         # add help arg now so -h will also print plugin opts
-        self.argparse.add_argument('-h', '--help', action='help',
-                                   help=('Show this help message and exit'))
+        self.argparse.add_argument(
+            "-h", "--help", action="help", help=("Show this help message and exit")
+        )
         args, argv = self.argparse.parse_known_args(argv)
         if argv:
-            self.argparse.error("Unrecognized arguments: %s" % ' '.join(argv))
+            self.argparse.error("Unrecognized arguments: %s" % " ".join(argv))
         self.handleArgs(args)
         self.createTests()
 
@@ -127,48 +128,85 @@ class PluggableTestProgram(unittest.TestProgram):
 
         """
         self.argparse.add_argument(
-            '-s', '--start-dir', default=None,
-            help="Directory to start discovery ('.' default)")
+            "-s",
+            "--start-dir",
+            default=None,
+            help="Directory to start discovery ('.' default)",
+        )
         self.argparse.add_argument(
-            '-t', '--top-level-directory', '--project-directory',
-            help='Top level directory of project (defaults to start dir)')
+            "-t",
+            "--top-level-directory",
+            "--project-directory",
+            help="Top level directory of project (defaults to start dir)",
+        )
         self.argparse.add_argument(
-            '--config', '-c', nargs='?', action='append',
-            default=['unittest.cfg', 'nose2.cfg'],
+            "--config",
+            "-c",
+            nargs="?",
+            action="append",
+            default=["unittest.cfg", "nose2.cfg"],
             help="Config files to load, if they exist. ('unittest.cfg' "
-            "and 'nose2.cfg' in start directory default)")
+            "and 'nose2.cfg' in start directory default)",
+        )
         self.argparse.add_argument(
-            '--no-user-config', action='store_const',
-            dest='user_config', const=False, default=True,
-            help="Do not load user config files")
+            "--no-user-config",
+            action="store_const",
+            dest="user_config",
+            const=False,
+            default=True,
+            help="Do not load user config files",
+        )
         self.argparse.add_argument(
-            '--no-plugins', action='store_const',
-            dest='load_plugins', const=False, default=True,
+            "--no-plugins",
+            action="store_const",
+            dest="load_plugins",
+            const=False,
+            default=True,
             help="Do not load any plugins. Warning: nose2 does not "
-            "do anything if no plugins are loaded")
+            "do anything if no plugins are loaded",
+        )
         self.argparse.add_argument(
-            '--plugin', action='append',
-            dest='plugins', default=[],
-            help="Load this plugin module.")
+            "--plugin",
+            action="append",
+            dest="plugins",
+            default=[],
+            help="Load this plugin module.",
+        )
         self.argparse.add_argument(
-            '--exclude-plugin', action='append',
-            dest='exclude_plugins', default=[],
-            help="Do not load this plugin module")
+            "--exclude-plugin",
+            action="append",
+            dest="exclude_plugins",
+            default=[],
+            help="Do not load this plugin module",
+        )
         self.argparse.add_argument(
-            '--verbosity', type=int,
-            help=("Set starting verbosity level (int). "
-                  "Applies before -v and -q"))
+            "--verbosity",
+            type=int,
+            help=("Set starting verbosity level (int). " "Applies before -v and -q"),
+        )
         self.argparse.add_argument(
-            '--verbose', '-v', action='count', default=0,
-            help=("Print test case names and statuses. "
-                  "Use multiple '-v's for higher verbosity."))
+            "--verbose",
+            "-v",
+            action="count",
+            default=0,
+            help=(
+                "Print test case names and statuses. "
+                "Use multiple '-v's for higher verbosity."
+            ),
+        )
         self.argparse.add_argument(
-            '--quiet', '-q', action='count', default=0, dest='quiet',
-            help=("Reduce verbosity. Multiple '-q's result in "
-                  "lower verbosity."))
+            "--quiet",
+            "-q",
+            action="count",
+            default=0,
+            dest="quiet",
+            help=("Reduce verbosity. Multiple '-q's result in " "lower verbosity."),
+        )
         self.argparse.add_argument(
-            '--log-level', default=logging.WARN,
-            help='Set logging level for message logged to console.')
+            "--log-level",
+            default=logging.WARN,
+            help="Set logging level for message logged to console.",
+        )
 
     def handleCfgArgs(self, cfg_args):
         """Handle initial arguments.
@@ -179,13 +217,12 @@ class PluggableTestProgram(unittest.TestProgram):
         """
         self.session.logLevel = util.parse_log_level(cfg_args.log_level)
         logging.basicConfig(level=self.session.logLevel)
-        log.debug('logging initialized %s', cfg_args.log_level)
+        log.debug("logging initialized %s", cfg_args.log_level)
         if cfg_args.top_level_directory:
             self.session.topLevelDir = cfg_args.top_level_directory
         self.session.loadConfigFiles(*self.findConfigFiles(cfg_args))
         # set verbosity from config + opts
-        self.session.setVerbosity(
-            cfg_args.verbosity, cfg_args.verbose, cfg_args.quiet)
+        self.session.setVerbosity(cfg_args.verbosity, cfg_args.verbose, cfg_args.quiet)
         self.session.setStartDir(args_start_dir=cfg_args.start_dir)
         self.session.prepareSysPath()
         if cfg_args.load_plugins:
@@ -193,20 +230,21 @@ class PluggableTestProgram(unittest.TestProgram):
             self.excludePlugins.extend(cfg_args.exclude_plugins)
             self.loadPlugins()
         elif cfg_args.plugins or cfg_args.exclude_plugins:
-            log.warn("Both '--no-plugins' and '--plugin' or '--exclude-plugin' "
-                     "specified. No plugins were loaded.")
+            log.warn(
+                "Both '--no-plugins' and '--plugin' or '--exclude-plugin' "
+                "specified. No plugins were loaded."
+            )
 
     def findConfigFiles(self, cfg_args):
         """Find available config files"""
         filenames = cfg_args.config[:]
-        proj_opts = ('unittest.cfg', 'nose2.cfg')
+        proj_opts = ("unittest.cfg", "nose2.cfg")
         for fn in proj_opts:
             if cfg_args.top_level_directory:
-                fn = os.path.abspath(
-                    os.path.join(cfg_args.top_level_directory, fn))
+                fn = os.path.abspath(os.path.join(cfg_args.top_level_directory, fn))
             filenames.append(fn)
         if cfg_args.user_config:
-            user_opts = ('~/.unittest.cfg', '~/.nose2.cfg')
+            user_opts = ("~/.unittest.cfg", "~/.nose2.cfg")
             for fn in user_opts:
                 filenames.append(os.path.expanduser(fn))
         return filenames
@@ -242,15 +280,13 @@ class PluggableTestProgram(unittest.TestProgram):
 
     def createTests(self):
         """Create top-level test suite"""
-        event = events.CreateTestsEvent(
-            self.testLoader, self.testNames, self.module)
+        event = events.CreateTestsEvent(self.testLoader, self.testNames, self.module)
         result = self.session.hooks.createTests(event)
         if event.handled:
             test = result
         else:
             log.debug("Create tests from %s/%s", self.testNames, self.module)
-            test = self.testLoader.loadTestsFromNames(
-                self.testNames, self.module)
+            test = self.testLoader.loadTestsFromNames(self.testNames, self.module)
 
         event = events.CreatedTestSuiteEvent(test)
         result = self.session.hooks.createdTestSuite(event)
@@ -265,8 +301,8 @@ class PluggableTestProgram(unittest.TestProgram):
         try:
             self.result = runner.run(self.test)
         except Exception as e:
-            log.exception('Internal Error')
-            sys.stderr.write('Internal Error: runTests aborted: %s\n'%(e))
+            log.exception("Internal Error")
+            sys.stderr.write("Internal Error: runTests aborted: %s\n" % (e))
             if self.exit:
                 sys.exit(1)
         if self.exit:
@@ -286,6 +322,7 @@ class PluggableTestProgram(unittest.TestProgram):
         """
         return cls._currentSession
 
+
 main = PluggableTestProgram
 
 
@@ -297,5 +334,5 @@ def discover(*args, **kwargs):
     ``module`` is discarded, to force test discovery.
 
     """
-    kwargs['module'] = None
+    kwargs["module"] = None
     return main(*args, **kwargs)

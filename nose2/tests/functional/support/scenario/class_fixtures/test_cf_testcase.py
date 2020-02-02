@@ -2,7 +2,6 @@ import unittest
 
 
 class Test(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.x = 1
@@ -15,7 +14,6 @@ class Test(unittest.TestCase):
 
 
 class Test2(unittest.TestCase):
-
     def setUp(self):
         self.x = 1
 

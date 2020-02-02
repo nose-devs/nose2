@@ -37,9 +37,11 @@ def cartesian_params(*paramList):
     ``tuple`` or ``list``).
 
     """
+
     def decorator(func):
         func.paramList = itertools.product(*paramList)
         return func
+
     return decorator
 
 
@@ -68,7 +70,9 @@ def params(*paramList):
     tuples. To pass a tuple as a simple value, wrap it in another tuple.
 
     """
+
     def decorator(func):
         func.paramList = paramList
         return func
+
     return decorator

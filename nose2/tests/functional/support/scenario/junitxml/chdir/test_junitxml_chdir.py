@@ -5,7 +5,6 @@ import unittest
 
 
 class Test(unittest.TestCase):
-
     def setUp(self):
         super(Test, self).setUp()
 

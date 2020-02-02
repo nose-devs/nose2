@@ -1,4 +1,3 @@
-
 def some_other_func():
     """This is a function with an inline doctest.
 

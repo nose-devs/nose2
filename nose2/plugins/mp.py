@@ -62,7 +62,7 @@ class MultiProcess(events.Plugin):
         #Background:  On Windows, select.select only works on sockets.  So the
         #ability to select a bindable address and optionally port for the mp
         #plugin was added.  Pipes should support a form of select, but this
-        #would require using pywin32.  There are altnernatives but all have
+        #would require using pywin32.  There are alternatives but all have
         #some kind of downside.  An alternative might be creating a connection
         #like object using a shared queue for incomings events. 
         self.bind_host = None

@@ -4,6 +4,7 @@ import unittest
 from contextlib import contextmanager
 
 import six
+
 from nose2 import util
 from nose2.main import PluggableTestProgram
 
@@ -11,7 +12,10 @@ log = logging.getLogger(__name__)
 
 __unittest = True
 
-LAYERS_PLUGIN_NOT_LOADED_MESSAGE = 'Warning: Such will not function properly if the "nose2.plugins.layers" plugin not loaded!\n'
+LAYERS_PLUGIN_NOT_LOADED_MESSAGE = (
+    "Warning: Such will not function properly if "
+    'the "nose2.plugins.layers" plugin not loaded!\n'
+)
 
 
 @contextmanager
@@ -245,7 +249,8 @@ class Scenario(object):
 
         def _make_test_func(case):
             """
-            Needs to be outside of the for-loop scope, so that ``case`` is properly registered as a closure.
+            Needs to be outside of the for-loop scope, so that ``case`` is properly
+            registered as a closure.
             """
 
             def _test(s, *args):

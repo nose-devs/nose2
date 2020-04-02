@@ -207,7 +207,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn("scenario/module_import_err", "-v", "test_import_err")
         self.assertTestRunOutputMatches(proc, stderr="ImportError: booms")
         self.assertTestRunOutputMatches(
-            proc, stderr="Traceback \(most recent call last\):"
+            proc, stderr=r"Traceback \(most recent call last\):"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 1)
@@ -216,7 +216,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn("scenario/module_import_err", "-v", "test_import_err.test")
         self.assertTestRunOutputMatches(proc, stderr="ImportError: booms")
         self.assertTestRunOutputMatches(
-            proc, stderr="Traceback \(most recent call last\):"
+            proc, stderr=r"Traceback \(most recent call last\):"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 1)
@@ -225,7 +225,7 @@ class TestLoadingErrors(FunctionalTestCase):
         proc = self.runIn("scenario/module_import_err", "-v", "test_import_err.Test")
         self.assertTestRunOutputMatches(proc, stderr="ImportError: booms")
         self.assertTestRunOutputMatches(
-            proc, stderr="Traceback \(most recent call last\):"
+            proc, stderr=r"Traceback \(most recent call last\):"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 1)
@@ -236,7 +236,7 @@ class TestLoadingErrors(FunctionalTestCase):
         )
         self.assertTestRunOutputMatches(proc, stderr="ImportError: booms")
         self.assertTestRunOutputMatches(
-            proc, stderr="Traceback \(most recent call last\):"
+            proc, stderr=r"Traceback \(most recent call last\):"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 1)
@@ -250,13 +250,13 @@ class TestLoadingErrors(FunctionalTestCase):
             stderr="ImportError: Failed to import test module: pkg.test_import_err",
         )
         self.assertTestRunOutputMatches(
-            proc, stderr="Traceback \(most recent call last\):"
+            proc, stderr=r"Traceback \(most recent call last\):"
         )
         self.assertTestRunOutputMatches(proc, stderr="ValueError: booms")
         # 3 tests should run, and only one should fail. We're testing that a
         # loading error does not prevent from running other tests.
         self.assertTestRunOutputMatches(proc, stderr="Ran 3 tests")
-        self.assertTestRunOutputMatches(proc, stderr="FAILED \(errors=1\)")
+        self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(errors=1\)")
         self.assertEqual(proc.poll(), 1)
 
     def test_import_error_module_in_package(self):
@@ -326,5 +326,7 @@ class TestTestClassLoading(FunctionalTestCase):
         proc = self.runIn("scenario/expected_failures", "-v", "expected_failures")
         self.assertTestRunOutputMatches(
             proc,
-            stderr=r"FAILED \(failures=1, expected failures=1, unexpected successes=1\)",
+            stderr=(
+                r"FAILED \(failures=1, expected failures=1, unexpected successes=1\)"
+            ),
         )

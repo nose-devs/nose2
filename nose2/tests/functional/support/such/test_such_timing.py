@@ -44,7 +44,7 @@ with such.A("system with a fast initial setup layer") as it:
         it.uses(Layer2)
 
         @it.should("have obj initialized")
-        def test():
+        def test2():
             assert it.obj
 
 

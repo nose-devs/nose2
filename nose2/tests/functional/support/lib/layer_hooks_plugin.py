@@ -1,4 +1,5 @@
 import six
+
 from nose2 import events
 
 

@@ -12,7 +12,8 @@ See the `load_tests protocol`_ documentation for more information.
    with the :mod:`multiprocess` plugin as of nose2 04. This will be
    fixed in a future release.
 
-.. _load_tests protocol: http://docs.python.org/library/unittest.html#load-tests-protocol
+.. _load_tests protocol:
+    http://docs.python.org/library/unittest.html#load-tests-protocol
 """
 import logging
 from fnmatch import fnmatch

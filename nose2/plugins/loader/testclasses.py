@@ -1,4 +1,4 @@
-"""
+r"""
 Load tests from classes that are *not* :class:`unittest.TestCase` subclasses.
 
 This plugin responds to :func:`loadTestsFromModule` by adding test
@@ -155,7 +155,7 @@ class TestClassLoader(events.Plugin):
                         for name in names
                     ]
                 )
-            except:
+            except BaseException:
                 return event.loader.suiteClass(
                     event.loader.failedLoadTests(cls.__name__, sys.exc_info())
                 )

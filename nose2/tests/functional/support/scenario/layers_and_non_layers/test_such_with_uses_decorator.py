@@ -2,7 +2,7 @@ import logging
 
 from nose2.tools import such
 
-from .common import NormalTest, NormalTestTwo, UniqueResource
+from .common import NormalTest, NormalTestTwo, UniqueResource  # noqa: F401
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ with such.A("system with setup") as it:
 
         it.uses(Layer2)
 
-        @it.should("do something else")
+        @it.should("do something else")  # noqa: F811
         def test(case):
             it.assertTrue(it.unique_resource.used)
 

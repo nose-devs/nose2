@@ -5,12 +5,13 @@ import time
 import unittest
 from multiprocessing import connection
 
+from six.moves import queue
+
 from nose2 import session
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.plugins.mp import MultiProcess, procserver
 from nose2.tests._common import Conn, FunctionalTestCase, support_file
-from six.moves import queue
 
 
 class TestMpPlugin(FunctionalTestCase):
@@ -160,7 +161,11 @@ class TestProcserver(FunctionalTestCase):
                             "outcome": "failed",
                             "expected": False,
                             "metadata": {
-                                "stdout": "-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------"
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
                             },
                         },
                     ),
@@ -170,7 +175,11 @@ class TestProcserver(FunctionalTestCase):
                             "outcome": "failed",
                             "expected": False,
                             "metadata": {
-                                "stdout": "-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------"
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
                             },
                         },
                     ),

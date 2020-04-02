@@ -17,7 +17,7 @@ with such.A("another system") as it:
 
     with it.having("something"):
 
-        @it.should("do stuff")
+        @it.should("do stuff")  # noqa: F811
         def test_should_do_stuff(case):
             pass
 

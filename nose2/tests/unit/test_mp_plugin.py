@@ -1,9 +1,10 @@
 import sys
 
+from six.moves import configparser
+
 from nose2 import session
 from nose2.plugins import mp
 from nose2.tests._common import Conn, TestCase
-from six.moves import configparser
 
 
 class TestMPPlugin(TestCase):

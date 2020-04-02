@@ -8,7 +8,8 @@ the event that was passed to the hook.
 To do that, this plugin overrides :meth:`nose2.events.Plugin.register`
 and, after registration, replaces all existing
 :class:`nose2.events.Hook` instances in ``session.hooks`` with
-instances of a :class:`~nose2.events.Hook` subclass that prints information about each call.
+instances of a :class:`~nose2.events.Hook` subclass that prints information about
+each call.
 """
 import sys
 
@@ -32,8 +33,8 @@ class PrintHooks(events.Plugin):
     def register(self):
         """Override to inject noisy hook instances.
 
-        Replaces :class:`~nose2.events.Hook` instances in ``self.session.hooks.hooks`` with
-        noisier objects.
+        Replaces :class:`~nose2.events.Hook` instances in ``self.session.hooks.hooks``
+        with noisier objects.
 
         """
         super(PrintHooks, self).register()

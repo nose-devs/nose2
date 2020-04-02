@@ -1,6 +1,6 @@
 raise ValueError("booms")
 
-import unittest
+import unittest  # noqa: E402
 
 
 def test():

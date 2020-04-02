@@ -14,7 +14,7 @@ class PluggableTestResult(object):
     """Test result that defers to plugins.
 
     All test outcome recording and reporting is deferred to plugins,
-    which are expected to implement :func:`startTest`, :func:`stopTest`, 
+    which are expected to implement :func:`startTest`, :func:`stopTest`,
     :func:`testOutcome`, and :func:`wasSuccessful`.
 
     :param session: Test run session.

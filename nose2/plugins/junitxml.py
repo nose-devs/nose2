@@ -71,10 +71,10 @@ produced:
     </testcase>
 
 """
-import json
-
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
+
+import json
 import os.path
 import re
 import sys
@@ -82,6 +82,7 @@ import time
 from xml.etree import ElementTree as ET
 
 import six
+
 from nose2 import events, result, util
 
 __unittest = True

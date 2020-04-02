@@ -9,6 +9,7 @@ import traceback
 import unittest
 
 import six
+
 from nose2 import events
 
 log = logging.getLogger(__name__)

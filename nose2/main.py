@@ -317,7 +317,8 @@ class PluggableTestProgram(unittest.TestProgram):
 
     @classmethod
     def getCurrentSession(cls):
-        """Returns the current session, or ``None`` if no :class:`nose2.session.Session` is running.
+        """Returns the current session, or ``None`` if no
+        :class:`nose2.session.Session` is running.
 
         """
         return cls._currentSession

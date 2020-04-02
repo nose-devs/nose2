@@ -17,11 +17,11 @@ with such.A("system with complex setup") as it:
 
     with it.having("an expensive fixture"):
 
-        @it.has_setup
+        @it.has_setup  # noqa: F811
         def setup():
             it.things.append(2)
 
-        @it.should("do more things")
+        @it.should("do more things")  # noqa: F811
         def test(case):
             case.assertEqual(it.things[-1], 2)
 

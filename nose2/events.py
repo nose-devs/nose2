@@ -8,6 +8,7 @@ import argparse
 import logging
 
 import six
+
 from nose2 import config, util
 
 log = logging.getLogger(__name__)

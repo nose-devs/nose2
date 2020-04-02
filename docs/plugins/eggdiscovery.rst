@@ -6,7 +6,7 @@ Loader: Egg Test discovery
 What is Egg Discovery
 ---------------------
 
-Sometimes Python Eggs are marked as zip-safe and they can be installed zipped, 
+Sometimes Python Eggs are marked as zip-safe and they can be installed zipped,
 instead of unzipped in an ``.egg`` folder. See http://peak.telecommunity.com/DevCenter/PythonEggs for more details.
 The normal ``nose2.plugins.loader.discovery`` plugin ignores modules located inside zip files.
 

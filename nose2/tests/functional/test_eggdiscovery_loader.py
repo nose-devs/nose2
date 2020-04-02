@@ -1,6 +1,8 @@
 import sys
 
-import nose2.plugins.loader.eggdiscovery  # @UnusedImport This is not very elegant, but it allows eggdiscovery to be found in Travis (or when run with PYTHONPATH=.)
+# This unused import is not very elegant, but it allows eggdiscovery to be found in
+# Travis (or when run with PYTHONPATH=.)
+import nose2.plugins.loader.eggdiscovery  # noqa: F401
 from nose2.tests._common import FunctionalTestCase, support_file
 
 try:
@@ -38,7 +40,7 @@ else:
                 "pkgegg",
             )
             self.assertTestRunOutputMatches(
-                proc, stderr="FAILED \(failures=5, errors=1, skipped=1\)"
+                proc, stderr=r"FAILED \(failures=5, errors=1, skipped=1\)"
             )
 
         def test_eggdiscovery_failure_does_not_exist(self):
@@ -77,5 +79,5 @@ else:
                 "pkgunegg",
             )
             self.assertTestRunOutputMatches(
-                proc, stderr="FAILED \(failures=5, errors=1, skipped=1\)"
+                proc, stderr=r"FAILED \(failures=5, errors=1, skipped=1\)"
             )

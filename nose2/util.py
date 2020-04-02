@@ -7,7 +7,6 @@
 import inspect
 import logging
 import os
-import platform
 import re
 import sys
 import traceback
@@ -154,7 +153,7 @@ def try_import_module_from_name(splitted_name):
 
     For instance, if ``splitted_name`` is ['a', 'b', 'c'] but only ``a.b`` is
     importable, this function:
-    
+
         1. tries to import ``a.b.c`` and fails
         2. tries to import ``a.b`` and succeeds
         3. return ``a.b`` and the exception that occured at step 1.
@@ -165,11 +164,11 @@ def try_import_module_from_name(splitted_name):
         try:
             module = __import__(".".join(splitted_name))
             break
-        except:
+        except BaseException:
             import_error = sys.exc_info()
             del splitted_name[-1]
             if not splitted_name:
-                six.reraise(*sys.exc_info())
+                six.reraise(*import_error)
     return (module, import_error)
 
 

@@ -2,7 +2,7 @@ import logging
 
 from nose2.tools import such
 
-from .common import NormalTest, NormalTestTwo, UniqueResource
+from .common import NormalTest, NormalTestTwo, UniqueResource  # noqa: F401
 
 log = logging.getLogger(__name__)
 

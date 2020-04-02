@@ -52,7 +52,7 @@ with such.A("system with complex setup") as it:
     #
     with it.having("an expensive fixture"):
 
-        @it.has_setup
+        @it.has_setup  # noqa: F811
         def setup():
             it.things.append(2)
 
@@ -62,7 +62,7 @@ with such.A("system with complex setup") as it:
         # them. Tests can call any and all TestCase methods on this
         # instance.
         #
-        @it.should("do more things")
+        @it.should("do more things")  # noqa: F811
         def test(case):
             case.assertEqual(it.things[-1], 2)
 
@@ -71,15 +71,15 @@ with such.A("system with complex setup") as it:
         #
         with it.having("another precondtion"):
 
-            @it.has_setup
+            @it.has_setup  # noqa: F811
             def setup():
                 it.things.append(3)
 
-            @it.has_teardown
+            @it.has_teardown  # noqa: F811
             def teardown():
                 it.things.pop()
 
-            @it.should("do that not this")
+            @it.should("do that not this")  # noqa: F811
             def test(case):
                 it.things.append(4)
                 #
@@ -88,7 +88,7 @@ with such.A("system with complex setup") as it:
                 case.addCleanup(it.things.pop)
                 case.assertEqual(it.things[-1], 4, it.things)
 
-            @it.should("do this not that")
+            @it.should("do this not that")  # noqa: F811
             def test(case):
                 case.assertEqual(it.things[-1], 3, it.things[:])
 
@@ -106,11 +106,11 @@ with such.A("system with complex setup") as it:
             #
             it.uses(SomeLayer)
 
-            @it.has_setup
+            @it.has_setup  # noqa: F811
             def setup():
                 it.things.append(99)
 
-            @it.has_teardown
+            @it.has_teardown  # noqa: F811
             def teardown():
                 it.things.pop()
 
@@ -129,24 +129,24 @@ with such.A("system with complex setup") as it:
                 delattr(it, "is_funny")
                 delattr(case, "is_funny")
 
-            @it.should("do something else")
+            @it.should("do something else")  # noqa: F811
             def test(case):
                 assert it.things[-1] == 99
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should("have another test")
+            @it.should("have another test")  # noqa: F811
             def test(case):
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should("have access to an external fixture")
+            @it.should("have access to an external fixture")  # noqa: F811
             def test(case):
                 assert it.somelayer
 
             with it.having("a case inside the external fixture"):
 
-                @it.should("still have access to that fixture")
+                @it.should("still have access to that fixture")  # noqa: F811
                 def test(case):
                     assert it.somelayer
 

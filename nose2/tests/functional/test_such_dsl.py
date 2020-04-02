@@ -28,7 +28,7 @@ class TestSuchDSL(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
 
-    def test_regression_tests_with_the_same_having_description_under_different_fixtures_in_the_same_module_should_be_run(
+    def test_regression_tests_with_the_same_having_description_under_different_fixtures_in_the_same_module_should_be_run(  # noqa
         self,
     ):
         proc = self.runIn(

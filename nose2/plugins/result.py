@@ -123,8 +123,8 @@ class ResultReporter(events.Plugin):
         if event.success is None:
             event.success = True
 
-        for name, events in self.reportCategories.items():
-            for e in events:
+        for _name, report_events in self.reportCategories.items():
+            for e in report_events:
                 if e.outcome == result.ERROR or (
                     e.outcome == result.FAIL and not e.expected
                 ):

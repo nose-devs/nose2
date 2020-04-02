@@ -244,7 +244,7 @@ Mixing layers with ``setUpClass`` and module fixtures
 The implementation of class- and module-level fixtures in unittest2
 depends on introspecting the class hierarchy inside of the
 ``unittest.TestSuite``. Since the suites that the ``layers`` plugin uses to
-organize tests derive from :class:`unittest.BaseTestSuite` (instead of 
+organize tests derive from :class:`unittest.BaseTestSuite` (instead of
 :class:`unittest.TestSuite`), class- and module- level fixtures in
 TestCase classes that use layers will be ignored.
 

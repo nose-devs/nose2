@@ -19,6 +19,7 @@ import textwrap
 import tokenize
 
 import six
+
 from nose2 import events
 
 __unittest = True
@@ -172,7 +173,7 @@ def _can_tokenize(source_lines):
     filelike = six.StringIO(textwrap.dedent("".join(source_lines)))
 
     try:
-        for tokty, tok, start, end, tok_lineno in tokenize.generate_tokens(
+        for _tokty, _tok, _start, _end, _tok_lineno in tokenize.generate_tokens(
             filelike.readline
         ):
             pass

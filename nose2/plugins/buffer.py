@@ -17,9 +17,10 @@ talk to the user.
 import sys
 import traceback
 
+from six import StringIO
+
 from nose2 import events
 from nose2.util import ln
-from six import StringIO
 
 __unittest = True
 
@@ -88,7 +89,7 @@ class OutputBufferPlugin(events.Plugin):
         stream_buffer_exc_info = None
         try:
             buf = buffer.getvalue()
-        except (UnicodeError, UnicodeDecodeError):
+        except UnicodeError:
             # python2's StringIO.StringIO [1] class has this warning:
             #
             #     The StringIO object can accept either Unicode or 8-bit strings,
@@ -114,7 +115,8 @@ class OutputBufferPlugin(events.Plugin):
                 "OUTPUT ERROR: Could not get captured %s output." % stream
             )
             extraDetail.append(
-                "The test might've printed both 'unicode' strings and non-ASCII 8-bit 'str' strings."
+                "The test might've printed both 'unicode' strings and "
+                "non-ASCII 8-bit 'str' strings."
             )
             extraDetail.append(
                 ln(">> begin captured %s exception traceback <<" % stream)

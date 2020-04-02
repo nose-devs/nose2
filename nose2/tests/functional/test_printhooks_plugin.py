@@ -9,7 +9,7 @@ class TestPrintHooksPlugin(FunctionalTestCase):
             "scenario/no_tests", "--plugin=nose2.plugins.printhooks", "--print-hooks"
         )
         match = re.compile(
-            "\n" "handleArgs: " "CommandLineArgsEvent\(handled=False, args="
+            "\n" + r"handleArgs: CommandLineArgsEvent\(handled=False, args="
         )
         self.assertTestRunOutputMatches(proc, stderr=match)
         self.assertEqual(proc.poll(), 0)
@@ -19,7 +19,7 @@ class TestPrintHooksPlugin(FunctionalTestCase):
             "scenario/no_tests", "--plugin=nose2.plugins.printhooks", "-P"
         )
         match = re.compile(
-            "\n" "handleArgs: " "CommandLineArgsEvent\(handled=False, args="
+            "\n" + r"handleArgs: CommandLineArgsEvent\(handled=False, args="
         )
         self.assertTestRunOutputMatches(proc, stderr=match)
         self.assertEqual(proc.poll(), 0)

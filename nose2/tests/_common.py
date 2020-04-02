@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 import six
+
 from nose2 import discover, util
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -17,8 +18,8 @@ class TestCase(unittest.TestCase):
 
     """TestCase extension.
 
-    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will be
-    performed in a temporary directory, which is deleted afterwards.
+    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will
+    be performed in a temporary directory, which is deleted afterwards.
     """
 
     _RUN_IN_TEMP = False
@@ -102,7 +103,7 @@ class FunctionalTestCase(unittest.TestCase):
 
 class _FakeEventBase(object):
 
-    """Baseclass for fake :class:`~nose2.events.Event`\s."""
+    """Baseclass for fake :class:`~nose2.events.Event`s."""
 
     def __init__(self):
         self.handled = False
@@ -286,7 +287,7 @@ class Conn(object):
             raise EOFError("closed")
         try:
             return self.items.pop(0)
-        except:
+        except Exception:
             raise EOFError("EOF")
 
     def send(self, item):

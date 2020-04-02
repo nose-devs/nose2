@@ -38,7 +38,10 @@ class PluggableTestRunner(object):
 
         """
         result = self._makeResult()
-        executor = lambda suite, result: suite(result)
+
+        def executor(suite, result):
+            return suite(result)
+
         startTime = time.time()
         event = events.StartTestRunEvent(self, test, result, startTime, executor)
         self.session.hooks.startTestRun(event)

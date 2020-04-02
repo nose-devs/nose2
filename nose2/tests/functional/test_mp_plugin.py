@@ -163,7 +163,11 @@ class TestProcserver(FunctionalTestCase):
                             "outcome": "failed",
                             "expected": False,
                             "metadata": {
-                                "stdout": "-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------"
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
                             },
                         },
                     ),
@@ -173,7 +177,11 @@ class TestProcserver(FunctionalTestCase):
                             "outcome": "failed",
                             "expected": False,
                             "metadata": {
-                                "stdout": "-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------"
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
                             },
                         },
                     ),

@@ -3,6 +3,7 @@
 import sys
 
 import six
+
 from nose2 import events, result, session, util
 from nose2.plugins import buffer
 from nose2.tests._common import TestCase

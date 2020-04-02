@@ -41,21 +41,21 @@ class TestOutComesPlugin(TestCase):
         test = self.case("test_e1")
         test(self.result)
         assert self.watcher.outcomes["error"]
-        assert not "failed" in self.watcher.outcomes
+        assert "failed" not in self.watcher.outcomes
 
     def test_can_treat_as_fail(self):
         self.plugin.treatAsFail.add("KeyError")
         test = self.case("test_e1")
         test(self.result)
         assert self.watcher.outcomes["failed"]
-        assert not "error" in self.watcher.outcomes
+        assert "error" not in self.watcher.outcomes
 
     def test_can_treat_as_skip(self):
         self.plugin.treatAsSkip.add("KeyError")
         test = self.case("test_e1")
         test(self.result)
         assert self.watcher.outcomes["skipped"]
-        assert not "error" in self.watcher.outcomes
+        assert "error" not in self.watcher.outcomes
 
     def test_can_handle_multiple_events_cleanly(self):
         self.plugin.treatAsSkip.add("KeyError")

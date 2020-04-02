@@ -125,7 +125,7 @@ class LayerSuite(unittest.BaseTestSuite):
             return True
         except KeyboardInterrupt:
             raise
-        except:
+        except BaseException:
             result.addError(self, sys.exc_info())
             return False
 

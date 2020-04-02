@@ -33,6 +33,7 @@ from __future__ import absolute_import, print_function
 import logging
 
 import six
+
 from nose2.events import Plugin
 
 log = logging.getLogger(__name__)

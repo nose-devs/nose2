@@ -2,6 +2,8 @@
 import os.path
 import pickle
 
+from six import StringIO
+
 from nose2 import session
 from nose2.events import ReportTestEvent
 from nose2.plugins import testid
@@ -11,7 +13,6 @@ from nose2.tests._common import (
     FakeStartTestEvent,
     TestCase,
 )
-from six import StringIO
 
 
 class UnitTestTestId(TestCase):

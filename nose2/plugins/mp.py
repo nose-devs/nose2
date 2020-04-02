@@ -43,7 +43,7 @@ class MultiProcess(events.Plugin):
         if self._procs == 0:
             try:
                 self._procs = multiprocessing.cpu_count()
-            except NotImplementedError as e:
+            except NotImplementedError:
                 self._procs = 1
         return self._procs
 
@@ -113,7 +113,7 @@ class MultiProcess(events.Plugin):
         procs = self._startProcs(len(flat))
 
         # send one initial task to each process
-        for proc, conn in procs:
+        for _proc, conn in procs:
             if not flat:
                 break
             caseid = flat.pop(0)
@@ -210,7 +210,7 @@ class MultiProcess(events.Plugin):
         procs = []
         count = min(test_count, self.procs)
         log.debug("Creating %i worker processes", count)
-        for i in range(0, count):
+        for _ in range(0, count):
             parent_conn, child_conn = self._prepConns()
             proc = multiprocessing.Process(
                 target=procserver, args=(session_export, child_conn)
@@ -356,7 +356,7 @@ def procserver(session_export, conn):
         try:
             conn.send((testid, events))
             rlog.debug("Log for %s returned", testid)
-        except:
+        except Exception:
             rlog.exception("Fail sending event %s: %s" % (testid, events))
             # Send empty event list to unblock the conn.recv on main process.
             conn.send((testid, []))

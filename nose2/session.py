@@ -1,12 +1,11 @@
 import argparse
 import logging
 import os
-
-# py2/py3 compatible load of SafeConfigParser/ConfigParser
 import sys
 
 from nose2 import config, events, util
 
+# py2/py3 compatible load of SafeConfigParser/ConfigParser
 if sys.version_info < (3, 2):
     from ConfigParser import SafeConfigParser as ConfigParser
 else:

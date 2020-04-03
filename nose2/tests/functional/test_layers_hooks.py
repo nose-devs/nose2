@@ -23,15 +23,14 @@ class TestLayerHooks(FunctionalTestCase):
             "--plugin=layer_hooks_plugin",
             "test_simple_such",
         )
-        expected = """\
-^StartLayerSetup: <class 'test_simple_such.A system:layer'>
+        expected = r"""^StartLayerSetup: <class 'test_simple_such.A system:layer'>
 StopLayerSetup: <class 'test_simple_such.A system:layer'>
 StartLayerSetupTest: <class 'test_simple_such.A system:layer'>:test 0000: should do something \(test_simple_such.A system\)
 StopLayerSetupTest: <class 'test_simple_such.A system:layer'>:test 0000: should do something \(test_simple_such.A system\)
 StartLayerTeardownTest: <class 'test_simple_such.A system:layer'>:test 0000: should do something \(test_simple_such.A system\)
 StopLayerTeardownTest: <class 'test_simple_such.A system:layer'>:test 0000: should do something \(test_simple_such.A system\)
 StartLayerTeardown: <class 'test_simple_such.A system:layer'>
-StopLayerTeardown: <class 'test_simple_such.A system:layer'>\n*$"""  # noqa
+StopLayerTeardown: <class 'test_simple_such.A system:layer'>\n*$"""  # noqa: E501
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
@@ -43,8 +42,7 @@ StopLayerTeardown: <class 'test_simple_such.A system:layer'>\n*$"""  # noqa
             "--plugin=layer_hooks_plugin",
             "test_such",
         )
-        expected = """\
-StartLayerSetup: <class 'test_such.A system with complex setup:layer'>
+        expected = r"""StartLayerSetup: <class 'test_such.A system with complex setup:layer'>
 StopLayerSetup: <class 'test_such.A system with complex setup:layer'>
 StartLayerSetupTest: <class 'test_such.A system with complex setup:layer'>:test 0000: should do something \(test_such.A system with complex setup\)
 StopLayerSetupTest: <class 'test_such.A system with complex setup:layer'>:test 0000: should do something \(test_such.A system with complex setup\)
@@ -99,7 +97,7 @@ StopLayerTeardown: <class 'test_such.SomeLayer'>
 StartLayerTeardown: <class 'test_such.having an expensive fixture:layer'>
 StopLayerTeardown: <class 'test_such.having an expensive fixture:layer'>
 StartLayerTeardown: <class 'test_such.A system with complex setup:layer'>
-StopLayerTeardown: <class 'test_such.A system with complex setup:layer'>\n*$"""  # noqa
+StopLayerTeardown: <class 'test_such.A system with complex setup:layer'>\n*$"""  # noqa: E501
         self.assertTestRunOutputMatches(proc, stderr="Ran 9 tests")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
@@ -111,8 +109,7 @@ StopLayerTeardown: <class 'test_such.A system with complex setup:layer'>\n*$""" 
             "--plugin=layer_hooks_plugin",
             "test_layers_simple",
         )
-        expected = """\
-^StartLayerSetup: <class 'test_layers_simple.Layer1'>
+        expected = r"""^StartLayerSetup: <class 'test_layers_simple.Layer1'>
 StopLayerSetup: <class 'test_layers_simple.Layer1'>
 StartLayerSetupTest: <class 'test_layers_simple.Layer1'>:test_1 \(test_layers_simple.TestSimple\)
 StopLayerSetupTest: <class 'test_layers_simple.Layer1'>:test_1 \(test_layers_simple.TestSimple\)
@@ -123,7 +120,7 @@ StopLayerSetupTest: <class 'test_layers_simple.Layer1'>:test_2 \(test_layers_sim
 StartLayerTeardownTest: <class 'test_layers_simple.Layer1'>:test_2 \(test_layers_simple.TestSimple\)
 StopLayerTeardownTest: <class 'test_layers_simple.Layer1'>:test_2 \(test_layers_simple.TestSimple\)
 StartLayerTeardown: <class 'test_layers_simple.Layer1'>
-StopLayerTeardown: <class 'test_layers_simple.Layer1'>\n*$"""  # noqa
+StopLayerTeardown: <class 'test_layers_simple.Layer1'>\n*$"""  # noqa: E501
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertTestRunOutputMatches(proc, stdout=expected)
         self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())

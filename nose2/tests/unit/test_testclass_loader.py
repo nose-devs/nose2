@@ -1,9 +1,9 @@
-from nose2.tests._common import TestCase
-from nose2.plugins.loader.testclasses import TestClassLoader
 from nose2 import events, loader, session
+from nose2.plugins.loader.testclasses import TestClassLoader
+from nose2.tests._common import TestCase
+
 
 class TestTestClassLoader(TestCase):
-
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(session=self.session)
@@ -11,25 +11,22 @@ class TestTestClassLoader(TestCase):
 
         class Mod(object):
             pass
+
         self.module = Mod()
 
         class TestA(object):
-
             def test(self):
                 pass
 
         class TestB(object):
-
             def runTest(self):
                 pass
 
         class TestC(object):
-
             def foo(self):
                 pass
 
         class Test(TestCase):
-
             def test(self):
                 pass
 
@@ -49,10 +46,10 @@ class TestTestClassLoader(TestCase):
 
     def test_get_testmethod_names_can_override_name_selection(self):
         class FooIsOnlyTest(events.Plugin):
-
             def getTestMethodNames(self, event):
                 event.handled = True
-                return ['foo'] if 'foo' in dir(event.testCase) else []
+                return ["foo"] if "foo" in dir(event.testCase) else []
+
         foo = FooIsOnlyTest(session=self.session)
         foo.register()
         event = events.LoadFromModuleEvent(self.loader, self.module)
@@ -65,9 +62,9 @@ class TestTestClassLoader(TestCase):
 
     def test_plugins_can_exclude_test_names(self):
         class Excluder(events.Plugin):
-
             def getTestMethodNames(self, event):
-                event.excludedNames.append('test')
+                event.excludedNames.append("test")
+
         excl = Excluder(session=self.session)
         excl.register()
         event = events.LoadFromModuleEvent(self.loader, self.module)
@@ -80,7 +77,6 @@ class TestTestClassLoader(TestCase):
 
 
 class TestFailingTestClassLoader(TestCase):
-
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(session=self.session)
@@ -88,11 +84,12 @@ class TestFailingTestClassLoader(TestCase):
 
         class Mod(object):
             pass
+
         self.module = Mod()
 
         class TestA(object):
             def __init__(self):
-                raise RuntimeError('Something bad happened!')
+                raise RuntimeError("Something bad happened!")
 
             def test(self):
                 pass
@@ -105,4 +102,6 @@ class TestFailingTestClassLoader(TestCase):
         self.assertEqual(result, None)
         self.assertEqual(len(event.extraTests), 1)
         self.assertEqual(len(event.extraTests[0]._tests), 1)  # TestA
-        self.assertEqual(event.extraTests[0]._tests[0].__class__.__name__, 'LoadTestsFailure')
+        self.assertEqual(
+            event.extraTests[0]._tests[0].__class__.__name__, "LoadTestsFailure"
+        )

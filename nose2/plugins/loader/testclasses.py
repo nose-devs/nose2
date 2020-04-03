@@ -1,4 +1,4 @@
-"""
+r"""
 Load tests from classes that are *not* :class:`unittest.TestCase` subclasses.
 
 This plugin responds to :func:`loadTestsFromModule` by adding test
@@ -69,8 +69,8 @@ Here's an example of a test class::
 
 """
 
-import unittest
 import sys
+import unittest
 
 from nose2 import events, util
 
@@ -80,8 +80,9 @@ __unittest = True
 class TestClassLoader(events.Plugin):
 
     """Loader plugin that loads test functions"""
+
     alwaysOn = True
-    configSection = 'test-classes'
+    configSection = "test-classes"
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
@@ -96,19 +97,20 @@ class TestClassLoader(events.Plugin):
 
         """
         super(TestClassLoader, self).register()
-        self.addMethods('loadTestsFromTestClass', 'getTestMethodNames')
+        self.addMethods("loadTestsFromTestClass", "getTestMethodNames")
 
     def loadTestsFromModule(self, event):
         """Load test classes from event.module"""
         module = event.module
         for name in dir(module):
             obj = getattr(module, name)
-            if (isinstance(obj, type) and
-                not issubclass(obj, unittest.TestCase) and
-                not issubclass(obj, unittest.TestSuite) and
-                name.lower().startswith(self.session.testMethodPrefix)):
-                event.extraTests.append(
-                    self._loadTestsFromTestClass(event, obj))
+            if (
+                isinstance(obj, type)
+                and not issubclass(obj, unittest.TestCase)
+                and not issubclass(obj, unittest.TestSuite)
+                and name.lower().startswith(self.session.testMethodPrefix)
+            ):
+                event.extraTests.append(self._loadTestsFromTestClass(event, obj))
 
     def loadTestsFromName(self, event):
         """Load tests from event.name if it names a test class/method"""
@@ -125,14 +127,18 @@ class TestClassLoader(events.Plugin):
         if isinstance(obj, type) and not issubclass(obj, unittest.TestCase):
             # name is a test case class
             event.extraTests.append(self._loadTestsFromTestClass(event, obj))
-        elif (isinstance(parent, type) and
-              not issubclass(parent, unittest.TestCase) and
-              not util.isgenerator(obj) and
-              not hasattr(obj, 'paramList')):
+        elif (
+            isinstance(parent, type)
+            and not issubclass(parent, unittest.TestCase)
+            and not util.isgenerator(obj)
+            and not hasattr(obj, "paramList")
+        ):
             # name is a single test method
             event.extraTests.append(
-                util.transplant_class(
-                    MethodTestCase(parent), parent.__module__)(obj.__name__))
+                util.transplant_class(MethodTestCase(parent), parent.__module__)(
+                    obj.__name__
+                )
+            )
 
     def _loadTestsFromTestClass(self, event, cls):
         # ... fire event for others to load from
@@ -144,12 +150,15 @@ class TestClassLoader(events.Plugin):
             names = self._getTestMethodNames(event, cls)
             try:
                 loaded_suite = event.loader.suiteClass(
-                    [util.transplant_class(
-                     MethodTestCase(cls), cls.__module__)(name)
-                        for name in names])
-            except:
+                    [
+                        util.transplant_class(MethodTestCase(cls), cls.__module__)(name)
+                        for name in names
+                    ]
+                )
+            except BaseException:
                 return event.loader.suiteClass(
-                    event.loader.failedLoadTests(cls.__name__, sys.exc_info()))
+                    event.loader.failedLoadTests(cls.__name__, sys.exc_info())
+                )
         if evt.extraTests:
             loaded_suite.addTests(evt.extraTests)
         # ... add extra tests
@@ -163,10 +172,11 @@ class TestClassLoader(events.Plugin):
             # FIXME allow plugs to change prefix
             prefix = self.session.testMethodPrefix
             return (
-                attrname.startswith(prefix) and
-                hasattr(getattr(cls, attrname), '__call__') and
-                attrname not in excluded
+                attrname.startswith(prefix)
+                and hasattr(getattr(cls, attrname), "__call__")
+                and attrname not in excluded
             )
+
         evt = GetTestMethodNamesEvent(event.loader, cls, isTestMethod)
         result = self.session.hooks.getTestMethodNames(evt)
         if evt.handled:
@@ -174,8 +184,7 @@ class TestClassLoader(events.Plugin):
         else:
             excluded.update(evt.excludedNames)
 
-            test_names = [entry for entry in dir(cls)
-                          if isTestMethod(entry)]
+            test_names = [entry for entry in dir(cls) if isTestMethod(entry)]
 
         if event.loader.sortTestMethodsUsing:
             test_names.sort(key=event.loader.sortTestMethodsUsing)
@@ -186,39 +195,40 @@ class TestClassLoader(events.Plugin):
 # hide it inside of a factory func. ugly!
 def MethodTestCase(cls):
     class _MethodTestCase(unittest.TestCase):
-
         def __init__(self, method):
             self.method = method
             self._name = "%s.%s.%s" % (cls.__module__, cls.__name__, method)
             self.obj = cls()
-            unittest.TestCase.__init__(self, 'runTest')
+            unittest.TestCase.__init__(self, "runTest")
 
         @classmethod
         def setUpClass(klass):
-            if hasattr(cls, 'setUpClass'):
+            if hasattr(cls, "setUpClass"):
                 cls.setUpClass()
 
         @classmethod
         def tearDownClass(klass):
-            if hasattr(cls, 'tearDownClass'):
+            if hasattr(cls, "tearDownClass"):
                 cls.tearDownClass()
 
         def setUp(self):
-            if hasattr(self.obj, 'setUp'):
+            if hasattr(self.obj, "setUp"):
                 self.obj.setUp()
 
         def tearDown(self):
-            if hasattr(self.obj, 'tearDown'):
+            if hasattr(self.obj, "tearDown"):
                 self.obj.tearDown()
 
         def __repr__(self):
             return self._name
+
         id = __str__ = __repr__
 
         def runTest(self):
             getattr(self.obj, self.method)()
 
     return _MethodTestCase
+
 
 #
 # Event classes

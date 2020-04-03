@@ -1,45 +1,45 @@
-import sys
-
-from nose2 import session
-from nose2.plugins.mp import MultiProcess, procserver
-from nose2.plugins import buffer
-from nose2.plugins.loader import discovery, testcases
-from nose2.tests._common import FunctionalTestCase, support_file, Conn
-from six.moves import queue
 import multiprocessing
+import sys
 import threading
 import time
 import unittest
 from multiprocessing import connection
 
+from six.moves import queue
+
+from nose2 import session
+from nose2.plugins import buffer
+from nose2.plugins.loader import discovery, testcases
+from nose2.plugins.mp import MultiProcess, procserver
+from nose2.tests._common import Conn, FunctionalTestCase, support_file
+
 
 class TestMpPlugin(FunctionalTestCase):
-
     def setUp(self):
         super(TestMpPlugin, self).setUp()
         self.session = session.Session()
         self.plugin = MultiProcess(session=self.session)
 
     def test_flatten_without_fixtures(self):
-        sys.path.append(support_file('scenario/slow'))
+        sys.path.append(support_file("scenario/slow"))
         import test_slow as mod
 
         suite = unittest.TestSuite()
-        suite.addTest(mod.TestSlow('test_ok'))
-        suite.addTest(mod.TestSlow('test_fail'))
-        suite.addTest(mod.TestSlow('test_err'))
+        suite.addTest(mod.TestSlow("test_ok"))
+        suite.addTest(mod.TestSlow("test_fail"))
+        suite.addTest(mod.TestSlow("test_err"))
 
         flat = list(self.plugin._flatten(suite))
         self.assertEqual(len(flat), 3)
 
     def test_flatten_nested_suites(self):
-        sys.path.append(support_file('scenario/slow'))
+        sys.path.append(support_file("scenario/slow"))
         import test_slow as mod
 
         suite = unittest.TestSuite()
-        suite.addTest(mod.TestSlow('test_ok'))
-        suite.addTest(mod.TestSlow('test_fail'))
-        suite.addTest(mod.TestSlow('test_err'))
+        suite.addTest(mod.TestSlow("test_ok"))
+        suite.addTest(mod.TestSlow("test_fail"))
+        suite.addTest(mod.TestSlow("test_err"))
 
         suite2 = unittest.TestSuite()
         suite2.addTest(suite)
@@ -48,33 +48,37 @@ class TestMpPlugin(FunctionalTestCase):
         self.assertEqual(len(flat), 3)
 
     def test_flatten_respects_module_fixtures(self):
-        sys.path.append(support_file('scenario/module_fixtures'))
+        sys.path.append(support_file("scenario/module_fixtures"))
         import test_mf_testcase as mod
 
         suite = unittest.TestSuite()
-        suite.addTest(mod.Test('test_1'))
-        suite.addTest(mod.Test('test_2'))
+        suite.addTest(mod.Test("test_1"))
+        suite.addTest(mod.Test("test_2"))
 
         flat = list(self.plugin._flatten(suite))
-        self.assertEqual(flat, ['test_mf_testcase'])
+        self.assertEqual(flat, ["test_mf_testcase"])
 
     def test_flatten_respects_class_fixtures(self):
-        sys.path.append(support_file('scenario/class_fixtures'))
+        sys.path.append(support_file("scenario/class_fixtures"))
         import test_cf_testcase as mod
 
         suite = unittest.TestSuite()
-        suite.addTest(mod.Test('test_1'))
-        suite.addTest(mod.Test('test_2'))
-        suite.addTest(mod.Test2('test_1'))
-        suite.addTest(mod.Test2('test_2'))
-        suite.addTest(mod.Test3('test_3'))
+        suite.addTest(mod.Test("test_1"))
+        suite.addTest(mod.Test("test_2"))
+        suite.addTest(mod.Test2("test_1"))
+        suite.addTest(mod.Test2("test_2"))
+        suite.addTest(mod.Test3("test_3"))
 
         flat = list(self.plugin._flatten(suite))
-        self.assertEqual(flat, ['test_cf_testcase.Test2.test_1',
-                                'test_cf_testcase.Test2.test_2',
-                                'test_cf_testcase.Test',
-                                'test_cf_testcase.Test3',
-                                ])
+        self.assertEqual(
+            flat,
+            [
+                "test_cf_testcase.Test2.test_1",
+                "test_cf_testcase.Test2.test_2",
+                "test_cf_testcase.Test",
+                "test_cf_testcase.Test3",
+            ],
+        )
 
     def test_conn_prep(self):
         self.plugin.bind_host = None
@@ -94,7 +98,7 @@ class TestMpPlugin(FunctionalTestCase):
         (parent_conn, child_conn) = multiprocessing.Pipe()
         self.assertEqual(self.plugin._acceptConns(parent_conn), parent_conn)
 
-        listener = connection.Listener(('127.0.0.1', 0))
+        listener = connection.Listener(("127.0.0.1", 0))
         with self.assertRaises(RuntimeError):
             self.plugin._acceptConns(listener)
 
@@ -111,47 +115,78 @@ class TestMpPlugin(FunctionalTestCase):
 
 
 class TestProcserver(FunctionalTestCase):
-
     def setUp(self):
         super(TestProcserver, self).setUp()
         self.session = session.Session()
 
     def test_dispatch_tests_receive_events(self):
         ssn = {
-            'config': self.session.config,
-            'verbosity': 1,
-            'startDir': support_file('scenario/tests_in_package'),
-            'topLevelDir': support_file('scenario/tests_in_package'),
-            'logLevel': 100,
-            'pluginClasses': [discovery.DiscoveryLoader,
-                              testcases.TestCaseLoader,
-                              buffer.OutputBufferPlugin]
-
+            "config": self.session.config,
+            "verbosity": 1,
+            "startDir": support_file("scenario/tests_in_package"),
+            "topLevelDir": support_file("scenario/tests_in_package"),
+            "logLevel": 100,
+            "pluginClasses": [
+                discovery.DiscoveryLoader,
+                testcases.TestCaseLoader,
+                buffer.OutputBufferPlugin,
+            ],
         }
-        conn = Conn(['pkg1.test.test_things.SomeTests.test_ok',
-                     'pkg1.test.test_things.SomeTests.test_failed'])
+        conn = Conn(
+            [
+                "pkg1.test.test_things.SomeTests.test_ok",
+                "pkg1.test.test_things.SomeTests.test_failed",
+            ]
+        )
         procserver(ssn, conn)
 
         # check conn calls
-        expect = [('pkg1.test.test_things.SomeTests.test_ok',
-                   [('startTest', {}),
-                    ('setTestOutcome', {'outcome': 'passed'}),
-                    ('testOutcome', {'outcome': 'passed'}),
-                    ('stopTest', {})]
-                   ),
-                  ('pkg1.test.test_things.SomeTests.test_failed',
-                   [('startTest', {}),
-                    ('setTestOutcome', {
-                     'outcome': 'failed',
-                     'expected': False,
-                     'metadata': {'stdout': '-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------'}}),
-                    ('testOutcome', {
-                     'outcome': 'failed',
-                     'expected': False,
-                     'metadata': {'stdout': '-------------------- >> begin captured stdout << ---------------------\nHello stdout\n\n--------------------- >> end captured stdout << ----------------------'}}),
-                    ('stopTest', {})]
-                   ),
-                  ]
+        expect = [
+            (
+                "pkg1.test.test_things.SomeTests.test_ok",
+                [
+                    ("startTest", {}),
+                    ("setTestOutcome", {"outcome": "passed"}),
+                    ("testOutcome", {"outcome": "passed"}),
+                    ("stopTest", {}),
+                ],
+            ),
+            (
+                "pkg1.test.test_things.SomeTests.test_failed",
+                [
+                    ("startTest", {}),
+                    (
+                        "setTestOutcome",
+                        {
+                            "outcome": "failed",
+                            "expected": False,
+                            "metadata": {
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
+                            },
+                        },
+                    ),
+                    (
+                        "testOutcome",
+                        {
+                            "outcome": "failed",
+                            "expected": False,
+                            "metadata": {
+                                "stdout": """\
+-------------------- >> begin captured stdout << ---------------------
+Hello stdout
+
+--------------------- >> end captured stdout << ----------------------"""
+                            },
+                        },
+                    ),
+                    ("stopTest", {}),
+                ],
+            ),
+        ]
         for val in conn.sent:
             if val is None:
                 break
@@ -166,71 +201,66 @@ class TestProcserver(FunctionalTestCase):
 
 
 class MPPluginTestRuns(FunctionalTestCase):
-
     def test_tests_in_package(self):
         proc = self.runIn(
-            'scenario/tests_in_package',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 25 tests')
+            "scenario/tests_in_package", "-v", "--plugin=nose2.plugins.mp", "-N=2"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 25 tests")
         self.assertEqual(proc.poll(), 1)
 
     def test_package_in_lib(self):
         proc = self.runIn(
-            'scenario/package_in_lib',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
+            "scenario/package_in_lib", "-v", "--plugin=nose2.plugins.mp", "-N=2"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 3 tests")
         self.assertEqual(proc.poll(), 1)
 
     def test_module_fixtures(self):
         proc = self.runIn(
-            'scenario/module_fixtures',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+            "scenario/module_fixtures", "-v", "--plugin=nose2.plugins.mp", "-N=2"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
         self.assertEqual(proc.poll(), 0)
 
     def test_class_fixtures(self):
         proc = self.runIn(
-            'scenario/class_fixtures',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 7 tests')
+            "scenario/class_fixtures", "-v", "--plugin=nose2.plugins.mp", "-N=2"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 7 tests")
         self.assertEqual(proc.poll(), 0)
 
     def test_large_number_of_tests_stresstest(self):
         proc = self.runIn(
-            'scenario/many_tests',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '--plugin=nose2.plugins.loader.generators',
-            '-N=1')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
+            "scenario/many_tests",
+            "-v",
+            "--plugin=nose2.plugins.mp",
+            "--plugin=nose2.plugins.loader.generators",
+            "-N=1",
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 600 tests")
         self.assertEqual(proc.poll(), 0)
 
     def test_socket_stresstest(self):
         proc = self.runIn(
-            'scenario/many_tests_socket',
-            '-v',
-            '-c scenario/many_test_socket/nose2.cfg',
-            '--plugin=nose2.plugins.mp',
-            '--plugin=nose2.plugins.loader.generators',
-            '-N=1')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 600 tests')
+            "scenario/many_tests_socket",
+            "-v",
+            "-c scenario/many_test_socket/nose2.cfg",
+            "--plugin=nose2.plugins.mp",
+            "--plugin=nose2.plugins.loader.generators",
+            "-N=1",
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 600 tests")
         self.assertEqual(proc.poll(), 0)
 
     def test_too_many_procs(self):
         # Just need to run the mp plugin with less tests than
         # processes.
-        proc = self.runModuleAsMain('scenario/one_test/tests.py',
-                                    '--log-level=debug',
-                                    '--plugin=nose2.plugins.mp',
-                                    '-N=2')
+        proc = self.runModuleAsMain(
+            "scenario/one_test/tests.py",
+            "--log-level=debug",
+            "--plugin=nose2.plugins.mp",
+            "-N=2",
+        )
         ret_vals = queue.Queue()
 
         def save_return():
@@ -240,12 +270,12 @@ class MPPluginTestRuns(FunctionalTestCase):
             and returns None.
             """
             try:
-                self.assertTestRunOutputMatches(proc,
-                                                stderr='Ran 1 test')
+                self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
                 self.assertEqual(proc.poll(), 0)
                 ret_vals.put(None)
             except Exception as exc:
                 ret_vals.put(exc)
+
         thread = threading.Thread(target=save_return)
         thread.start()
 
@@ -260,26 +290,26 @@ class MPPluginTestRuns(FunctionalTestCase):
 
     def test_with_output_buffer(self):
         proc = self.runIn(
-            'scenario/module_fixtures',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '--plugin=nose2.plugins.buffer',
-            '-N=2',
-            '-B',
-            )
-        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+            "scenario/module_fixtures",
+            "-v",
+            "--plugin=nose2.plugins.mp",
+            "--plugin=nose2.plugins.buffer",
+            "-N=2",
+            "-B",
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
         self.assertEqual(proc.poll(), 0)
 
     def test_unknown_module(self):
         proc = self.runIn(
-            'scenario/module_fixtures',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2',
-            '-B',
-            'does.not.exists.module',
-            'does.not.exists.module2'
-            )
+            "scenario/module_fixtures",
+            "-v",
+            "--plugin=nose2.plugins.mp",
+            "-N=2",
+            "-B",
+            "does.not.exists.module",
+            "does.not.exists.module2",
+        )
         expected_results = (
             r"does\.not\.exists\.module2 (\S+) \.\.\. ERROR\n"
             r"does\.not\.exists\.module (\S+) \.\.\. ERROR"

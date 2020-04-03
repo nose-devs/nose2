@@ -1,4 +1,4 @@
-TRUE_VALS = set(['1', 't', 'true', 'on', 'yes', 'y'])
+TRUE_VALS = set(["1", "t", "true", "on", "yes", "y"])
 __unittest = True
 
 
@@ -64,8 +64,10 @@ class Config(object):
             return default
         for val in vlist:
             lines.extend(
-                line.strip() for line in val.splitlines()
-                if line.strip() and not line.strip().startswith('#'))
+                line.strip()
+                for line in val.splitlines()
+                if line.strip() and not line.strip().startswith("#")
+            )
         return lines
 
     def get(self, key, default=None):

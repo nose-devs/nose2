@@ -1,12 +1,13 @@
 import sys
 import unittest
+
+from nose2 import events, exceptions, loader, session
 from nose2.plugins import layers
-from nose2 import events, loader, session, exceptions
 from nose2.tests._common import TestCase
 
 
 class TestLayers(TestCase):
-    tags = ['unit']
+    tags = ["unit"]
 
     def setUp(self):
         self.session = session.Session()
@@ -33,11 +34,15 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T2('test'), T1('test')])
+        suite = unittest.TestSuite([T2("test"), T1("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)']]]
+        expect = [
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                ["test (nose2.tests.unit.test_layers_plugin.T2)"],
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_multiple_inheritance(self):
@@ -68,12 +73,16 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T2('test'), T1('test'), T3('test')])
+        suite = unittest.TestSuite([T2("test"), T1("test"), T3("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)'],
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)']]]
+        expect = [
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                ["test (nose2.tests.unit.test_layers_plugin.T2)"],
+                ["test (nose2.tests.unit.test_layers_plugin.T3)"],
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_deep_inheritance(self):
@@ -122,15 +131,24 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T2('test'), T1('test'), T3('test'),
-                                    T4('test'), T5('test')])
+        suite = unittest.TestSuite(
+            [T2("test"), T1("test"), T3("test"), T4("test"), T5("test")]
+        )
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T4)',
-                     ['test (nose2.tests.unit.test_layers_plugin.T5)']]],
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)']]]
+        expect = [
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                [
+                    "test (nose2.tests.unit.test_layers_plugin.T2)",
+                    [
+                        "test (nose2.tests.unit.test_layers_plugin.T4)",
+                        ["test (nose2.tests.unit.test_layers_plugin.T5)"],
+                    ],
+                ],
+                ["test (nose2.tests.unit.test_layers_plugin.T3)"],
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixed_layers_no_layers(self):
@@ -153,16 +171,19 @@ class TestLayers(TestCase):
                 pass
 
         class T3(unittest.TestCase):
-
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T2('test'), T1('test'), T3('test')])
+        suite = unittest.TestSuite([T2("test"), T1("test"), T3("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = ['test (nose2.tests.unit.test_layers_plugin.T3)',
-                  ['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)']]]
+        expect = [
+            "test (nose2.tests.unit.test_layers_plugin.T3)",
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                ["test (nose2.tests.unit.test_layers_plugin.T2)"],
+            ],
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_ordered_layers(self):
@@ -210,19 +231,26 @@ class TestLayers(TestCase):
 
             def test(self):
                 pass
-        suite = unittest.TestSuite([T2('test'), T1('test'),
-                                    T3('test'), T4('test'), T5('test')])
+
+        suite = unittest.TestSuite(
+            [T2("test"), T1("test"), T3("test"), T4("test"), T5("test")]
+        )
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   ['test (nose2.tests.unit.test_layers_plugin.T2)',
-                    ['test (nose2.tests.unit.test_layers_plugin.T5)', ]],
-                   ['test (nose2.tests.unit.test_layers_plugin.T3)', ],
-                   ['test (nose2.tests.unit.test_layers_plugin.T4)', ]]]
+        expect = [
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                [
+                    "test (nose2.tests.unit.test_layers_plugin.T2)",
+                    ["test (nose2.tests.unit.test_layers_plugin.T5)"],
+                ],
+                ["test (nose2.tests.unit.test_layers_plugin.T3)"],
+                ["test (nose2.tests.unit.test_layers_plugin.T4)"],
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_in_top_layer(self):
-
         class M1(object):
             pass
 
@@ -235,17 +263,13 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T1('test')])
+        suite = unittest.TestSuite([T1("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
-        expect = [  # M1
-                  [  # L1
-                   [  # T1
-                    'test (nose2.tests.unit.test_layers_plugin.T1)']]]
+        expect = [[["test (nose2.tests.unit.test_layers_plugin.T1)"]]]  # M1  # L1  # T1
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_in_inner_layer(self):
-
         class M1(object):
             pass
 
@@ -267,14 +291,16 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T1('test'), T2('test')])
+        suite = unittest.TestSuite([T1("test"), T2("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
         expect = [  # L1
-                  ['test (nose2.tests.unit.test_layers_plugin.T1)',
-                   # M1
-                   [  # L2
-                    ['test (nose2.tests.unit.test_layers_plugin.T2)']]]]
+            [
+                "test (nose2.tests.unit.test_layers_plugin.T1)",
+                # M1
+                [["test (nose2.tests.unit.test_layers_plugin.T2)"]],  # L2
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_inheritance(self):
@@ -352,21 +378,31 @@ class TestLayers(TestCase):
 
             def test(self):
                 pass
+
         suite = unittest.TestSuite(
-            [T6('test'), T1('test'), T3('test'), T4('test'), T5('test')])
+            [T6("test"), T1("test"), T3("test"), T4("test"), T5("test")]
+        )
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         self.plugin.startTestRun(event)
         expect = [  # L2
-                  [  # L1
-                   ['test (nose2.tests.unit.test_layers_plugin.T1)',  # T1
+            [  # L1
+                [
+                    "test (nose2.tests.unit.test_layers_plugin.T1)",  # T1
                     # L3
-                    ['test (nose2.tests.unit.test_layers_plugin.T3)',  # T3
-                     # L4
-                     ['test (nose2.tests.unit.test_layers_plugin.T4)',  # T4
-                      # L5
-                      ['test (nose2.tests.unit.test_layers_plugin.T5)'],
-                      # L6
-                      ['test (nose2.tests.unit.test_layers_plugin.T6)']]]]]]
+                    [
+                        "test (nose2.tests.unit.test_layers_plugin.T3)",  # T3
+                        # L4
+                        [
+                            "test (nose2.tests.unit.test_layers_plugin.T4)",  # T4
+                            # L5
+                            ["test (nose2.tests.unit.test_layers_plugin.T5)"],
+                            # L6
+                            ["test (nose2.tests.unit.test_layers_plugin.T6)"],
+                        ],
+                    ],
+                ]
+            ]
+        ]
         self.assertEqual(self.names(event.suite), expect)
 
     def test_invalid_top_layer(self):
@@ -376,7 +412,7 @@ class TestLayers(TestCase):
             # this test does not make sense, and will actually fail.
             return
 
-        class L1():
+        class L1:
             pass
 
         class T1(unittest.TestCase):
@@ -385,7 +421,7 @@ class TestLayers(TestCase):
             def test(self):
                 pass
 
-        suite = unittest.TestSuite([T1('test')])
+        suite = unittest.TestSuite([T1("test")])
         event = events.StartTestRunEvent(None, suite, None, 0, None)
         with self.assertRaises(exceptions.LoadTestsFailure):
             self.plugin.startTestRun(event)

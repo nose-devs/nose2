@@ -1,13 +1,11 @@
+import logging
 import time
 import unittest
-
-import logging
 
 log = logging.getLogger(__name__)
 
 
 class TestSlow(unittest.TestCase):
-
     def test_ok(self):
         print("hide this")
         time.sleep(2)
@@ -22,4 +20,4 @@ class TestSlow(unittest.TestCase):
         print("show this too")
         log.debug("ciao")
         time.sleep(2)
-        {}['x']
+        {}["x"]

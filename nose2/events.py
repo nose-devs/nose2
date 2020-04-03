@@ -4,9 +4,9 @@
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import argparse
 import logging
 
-import argparse
 import six
 
 from nose2 import config, util
@@ -23,21 +23,19 @@ __unittest = True
 
 
 class PluginMeta(type):
-
     def __call__(cls, *args, **kwargs):
-        session = kwargs.pop('session', None)
+        session = kwargs.pop("session", None)
         instance = object.__new__(cls, *args, **kwargs)
         instance.session = session
         instance.config = config.Config([])
 
-        config_section = getattr(instance, 'configSection', None)
-        switch = getattr(instance, 'commandLineSwitch', None)
+        config_section = getattr(instance, "configSection", None)
+        switch = getattr(instance, "commandLineSwitch", None)
 
         if session is not None and config_section is not None:
             instance.config = session.get(config_section)
 
-        always_on = instance.config.as_bool(
-            'always-on', default=instance.alwaysOn)
+        always_on = instance.config.as_bool("always-on", default=instance.alwaysOn)
 
         instance.__init__(*args, **kwargs)
 
@@ -48,8 +46,7 @@ class PluginMeta(type):
             short_opt, long_opt, help = switch
             if always_on:  # always-on plugins should hide their options
                 help = argparse.SUPPRESS
-            instance.addOption(
-                instance._register_cb, short_opt, long_opt, help)
+            instance.addOption(instance._register_cb, short_opt, long_opt, help)
 
         return instance
 
@@ -100,6 +97,7 @@ class Plugin(six.with_metaclass(PluginMeta)):
        not be able to detect the config keys that the plugin uses.
 
     """
+
     alwaysOn = False
     registered = False
 
@@ -176,12 +174,15 @@ class Plugin(six.with_metaclass(PluginMeta)):
 
         """
         if self.session is None:
-            log.warning("Unable to add option %s/%s for %s, no session",
-                        short_opt, long_opt, self)
+            log.warning(
+                "Unable to add option %s/%s for %s, no session",
+                short_opt,
+                long_opt,
+                self,
+            )
             return
 
         class CB(argparse.Action):
-
             def __call__(self, parser, namespace, values, option_string=None):
                 if six.callable(callback):
                     callback(values)
@@ -190,17 +191,20 @@ class Plugin(six.with_metaclass(PluginMeta)):
                 else:
                     raise ValueError(
                         "Invalid callback %s for plugin option %s",
-                        callback, option_string)
+                        callback,
+                        option_string,
+                    )
+
         opts = []
         if short_opt:
             if short_opt.lower() == short_opt:
-                raise ValueError(
-                    'Lowercase short options are reserved: %s' % short_opt)
-            opts.append('-' + short_opt)
+                raise ValueError("Lowercase short options are reserved: %s" % short_opt)
+            opts.append("-" + short_opt)
         if long_opt:
-            opts.append('--' + long_opt)
+            opts.append("--" + long_opt)
         self.session.pluginargs.add_argument(
-            *opts, action=CB, help=help_text, const=True, nargs=nargs)
+            *opts, action=CB, help=help_text, const=True, nargs=nargs
+        )
 
 
 class Hook(object):
@@ -264,22 +268,55 @@ class PluginInterface(object):
        Class to instantiate for each hook. Default: :class:`nose2.events.Hook`.
 
     """
-    preRegistrationMethods = ('pluginsLoaded', 'handleArgs')
+
+    preRegistrationMethods = ("pluginsLoaded", "handleArgs")
     methods = (
-        'loadTestsFromModule', 'loadTestsFromNames', 'handleFile',
-        'startLayerSetup', 'startLayerSetupTest', 'stopLayerSetupTest',
-        'stopLayerSetup', 'startTestRun', 'startTest', 'stopTest',
-        'startLayerTeardown', 'startLayerTeardownTest',
-        'stopLayerTeardownTest', 'stopLayerTeardown', 'loadTestsFromName',
-        'loadTestsFromTestCase', 'stopTestRun', 'matchPath', 'matchDirPath',
-        'getTestCaseNames', 'runnerCreated', 'resultCreated', 'testOutcome',
-        'wasSuccessful', 'resultStop', 'setTestOutcome', 'describeTest',
-        'reportStartTest', 'reportError', 'reportFailure', 'reportSkip',
-        'reportSuccess', 'reportExpectedFailure', 'reportUnexpectedSuccess',
-        'reportOtherOutcome', 'outcomeDetail', 'beforeErrorList',
-        'beforeSummaryReport', 'afterSummaryReport', 'beforeInteraction',
-        'afterInteraction', 'createTests', 'createdTestSuite', 'afterTestRun',
-        'moduleLoadedSuite', 'handleDir',
+        "loadTestsFromModule",
+        "loadTestsFromNames",
+        "handleFile",
+        "startLayerSetup",
+        "startLayerSetupTest",
+        "stopLayerSetupTest",
+        "stopLayerSetup",
+        "startTestRun",
+        "startTest",
+        "stopTest",
+        "startLayerTeardown",
+        "startLayerTeardownTest",
+        "stopLayerTeardownTest",
+        "stopLayerTeardown",
+        "loadTestsFromName",
+        "loadTestsFromTestCase",
+        "stopTestRun",
+        "matchPath",
+        "matchDirPath",
+        "getTestCaseNames",
+        "runnerCreated",
+        "resultCreated",
+        "testOutcome",
+        "wasSuccessful",
+        "resultStop",
+        "setTestOutcome",
+        "describeTest",
+        "reportStartTest",
+        "reportError",
+        "reportFailure",
+        "reportSkip",
+        "reportSuccess",
+        "reportExpectedFailure",
+        "reportUnexpectedSuccess",
+        "reportOtherOutcome",
+        "outcomeDetail",
+        "beforeErrorList",
+        "beforeSummaryReport",
+        "afterSummaryReport",
+        "beforeInteraction",
+        "afterInteraction",
+        "createTests",
+        "createdTestSuite",
+        "afterTestRun",
+        "moduleLoadedSuite",
+        "handleDir",
         # ... etc?
     )
     hookClass = Hook
@@ -329,8 +366,9 @@ class Event(object):
        release of nose2 that changes the API.
 
     """
-    _attrs = ('handled',)
-    version = '0.4'
+
+    _attrs = ("handled",)
+    version = "0.4"
 
     def __init__(self, **metadata):
         self.handled = False
@@ -338,27 +376,25 @@ class Event(object):
         self.metadata.update(metadata)
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, self._format())
+        return "%s(%s)" % (self.__class__.__name__, self._format())
 
     def __repr__(self):
         return str(self)
 
     def _format(self):
-        return ', '.join(['%s=%r' % (k, getattr(self, k, None))
-                          for k in self._attrs])
+        return ", ".join(["%s=%r" % (k, getattr(self, k, None)) for k in self._attrs])
 
     def __getstate__(self):
         state = self.__dict__
         # FIXME fails for loadTestsFailure
-        if 'test' in state:
-            state['test'] = util.test_name(state['test'])
-        if 'executeTests' in state:
-            state['executeTests'] = None
-        if 'exc_info' in state and state['exc_info'] is not None:
-            ec, ev, tb = state['exc_info']
-            state['exc_info'] = (
-                ec, ev, util.format_traceback(None, (ec, ev, tb)))
-        clear = ('loader', 'result', 'runner')
+        if "test" in state:
+            state["test"] = util.test_name(state["test"])
+        if "executeTests" in state:
+            state["executeTests"] = None
+        if "exc_info" in state and state["exc_info"] is not None:
+            ec, ev, tb = state["exc_info"]
+            state["exc_info"] = (ec, ev, util.format_traceback(None, (ec, ev, tb)))
+        clear = ("loader", "result", "runner")
         for attr in clear:
             if attr in state:
                 state[attr] = None
@@ -374,7 +410,8 @@ class PluginsLoadedEvent(Event):
        List of all loaded plugin classes
 
     """
-    _attrs = Event._attrs + ('pluginsLoaded',)
+
+    _attrs = Event._attrs + ("pluginsLoaded",)
 
     def __init__(self, pluginsLoaded, **kw):
         self.pluginsLoaded = pluginsLoaded
@@ -391,7 +428,8 @@ class RunnerCreatedEvent(Event):
        setting this attribute to a new test runner instance.
 
     """
-    _attrs = Event._attrs + ('runner',)
+
+    _attrs = Event._attrs + ("runner",)
 
     def __init__(self, runner, **kw):
         self.runner = runner
@@ -408,7 +446,8 @@ class ResultCreatedEvent(Event):
        result by setting this attribute to a new test result instance.
 
     """
-    _attrs = Event._attrs + ('result',)
+
+    _attrs = Event._attrs + ("result",)
 
     def __init__(self, result, **kw):
         self.result = result
@@ -423,7 +462,8 @@ class StartLayerSetupEvent(Event):
 
        The current layer instance, for which setup is about to run.
     """
-    _attrs = Event._attrs + ('layer',)
+
+    _attrs = Event._attrs + ("layer",)
 
     def __init__(self, layer, **kw):
         self.layer = layer
@@ -438,7 +478,8 @@ class StopLayerSetupEvent(Event):
 
        The current layer instance, for which setup just ran.
     """
-    _attrs = Event._attrs + ('layer',)
+
+    _attrs = Event._attrs + ("layer",)
 
     def __init__(self, layer, **kw):
         self.layer = layer
@@ -457,7 +498,8 @@ class StartLayerSetupTestEvent(Event):
 
        The test instance for which the setup is about to run.
     """
-    _attrs = Event._attrs + ('layer', 'test')
+
+    _attrs = Event._attrs + ("layer", "test")
 
     def __init__(self, layer, test, **kw):
         self.layer = layer
@@ -477,7 +519,8 @@ class StopLayerSetupTestEvent(Event):
 
        The test instance for which the setup just finished.
     """
-    _attrs = Event._attrs + ('layer', 'test')
+
+    _attrs = Event._attrs + ("layer", "test")
 
     def __init__(self, layer, test, **kw):
         self.layer = layer
@@ -493,7 +536,8 @@ class StartLayerTeardownEvent(Event):
 
        The current layer instance, for which teardown is about to run.
     """
-    _attrs = Event._attrs + ('layer',)
+
+    _attrs = Event._attrs + ("layer",)
 
     def __init__(self, layer, **kw):
         self.layer = layer
@@ -508,7 +552,8 @@ class StopLayerTeardownEvent(Event):
 
        The current layer instance, for which teardown just ran.
     """
-    _attrs = Event._attrs + ('layer',)
+
+    _attrs = Event._attrs + ("layer",)
 
     def __init__(self, layer, **kw):
         self.layer = layer
@@ -527,7 +572,8 @@ class StartLayerTeardownTestEvent(Event):
 
        The test instance for which teardown is about to run.
     """
-    _attrs = Event._attrs + ('layer', 'test')
+
+    _attrs = Event._attrs + ("layer", "test")
 
     def __init__(self, layer, test, **kw):
         self.layer = layer
@@ -547,7 +593,8 @@ class StopLayerTeardownTestEvent(Event):
 
        The test instance for which teardown just ran.
     """
-    _attrs = Event._attrs + ('layer', 'test')
+
+    _attrs = Event._attrs + ("layer", "test")
 
     def __init__(self, layer, test, **kw):
         self.layer = layer
@@ -594,8 +641,8 @@ class StartTestRunEvent(Event):
     does not run at all.
 
     """
-    _attrs = Event._attrs + ('runner', 'suite', 'result', 'startTime',
-                             'executeTests')
+
+    _attrs = Event._attrs + ("runner", "suite", "result", "startTime", "executeTests")
 
     def __init__(self, runner, suite, result, startTime, executeTests, **kw):
         self.suite = suite
@@ -627,7 +674,8 @@ class StopTestRunEvent(Event):
        Number of seconds test run took to execute
 
     """
-    _attrs = Event._attrs + ('runner', 'result', 'stopTime', 'timeTaken')
+
+    _attrs = Event._attrs + ("runner", "result", "stopTime", "timeTaken")
 
     def __init__(self, runner, result, stopTime, timeTaken, **kw):
         self.runner = runner
@@ -654,7 +702,8 @@ class StartTestEvent(Event):
        Timestamp of test start
 
     """
-    _attrs = Event._attrs + ('test', 'result', 'startTime')
+
+    _attrs = Event._attrs + ("test", "result", "startTime")
 
     def __init__(self, test, result, startTime, **kw):
         self.test = test
@@ -680,7 +729,8 @@ class StopTestEvent(Event):
        Timestamp of test stop
 
     """
-    _attrs = Event._attrs + ('test', 'result', 'stopTime')
+
+    _attrs = Event._attrs + ("test", "result", "stopTime")
 
     def __init__(self, test, result, stopTime, **kw):
         self.test = test
@@ -741,11 +791,30 @@ class TestOutcomeEvent(Event):
     setting ``shortLabel`` or ``longLabel``.
 
     """
-    _attrs = Event._attrs + ('test', 'result', 'outcome', 'exc_info', 'reason',
-                             'expected', 'shortLabel', 'longLabel')
 
-    def __init__(self, test, result, outcome, exc_info=None, reason=None,
-                 expected=False, shortLabel=None, longLabel=None, **kw):
+    _attrs = Event._attrs + (
+        "test",
+        "result",
+        "outcome",
+        "exc_info",
+        "reason",
+        "expected",
+        "shortLabel",
+        "longLabel",
+    )
+
+    def __init__(
+        self,
+        test,
+        result,
+        outcome,
+        exc_info=None,
+        reason=None,
+        expected=False,
+        shortLabel=None,
+        longLabel=None,
+        **kw
+    ):
         self.test = test
         self.result = result
         self.outcome = outcome
@@ -781,7 +850,8 @@ class LoadFromModuleEvent(Event):
     ignored.
 
     """
-    _attrs = Event._attrs + ('loader', 'module', 'extraTests')
+
+    _attrs = Event._attrs + ("loader", "module", "extraTests")
 
     def __init__(self, loader, module, **kw):
         self.loader = loader
@@ -791,7 +861,7 @@ class LoadFromModuleEvent(Event):
 
 
 class ModuleSuiteEvent(Event):
-    _attrs = Event._attrs + ('loader', 'module', 'suite')
+    _attrs = Event._attrs + ("loader", "module", "suite")
 
     def __init__(self, loader, module, suite, **kw):
         self.loader = loader
@@ -824,7 +894,8 @@ class LoadFromTestCaseEvent(Event):
     ignored.
 
     """
-    _attrs = Event._attrs + ('loader', 'testCase', 'extraTests')
+
+    _attrs = Event._attrs + ("loader", "testCase", "extraTests")
 
     def __init__(self, loader, testCase, **kw):
         self.loader = loader
@@ -862,7 +933,8 @@ class LoadFromNamesEvent(Event):
     ignored.
 
     """
-    _attrs = Event._attrs + ('loader', 'names', 'module', 'extraTests')
+
+    _attrs = Event._attrs + ("loader", "names", "module", "extraTests")
 
     def __init__(self, loader, names, module, **kw):
         self.loader = loader
@@ -904,7 +976,8 @@ class LoadFromNameEvent(Event):
     ignored.
 
     """
-    _attrs = Event._attrs + ('loader', 'name', 'module', 'extraTests')
+
+    _attrs = Event._attrs + ("loader", "name", "module", "extraTests")
 
     def __init__(self, loader, name, module, **kw):
         self.loader = loader
@@ -956,8 +1029,8 @@ class HandleFileEvent(Event):
     ignored.
 
     """
-    _attrs = Event._attrs + ('loader', 'name', 'path', 'pattern',
-                             'topLevelDirectory')
+
+    _attrs = Event._attrs + ("loader", "name", "path", "pattern", "topLevelDirectory")
 
     def __init__(self, loader, name, path, pattern, topLevelDirectory, **kw):
         self.extraTests = []
@@ -991,7 +1064,8 @@ class MatchPathEvent(Event):
        Current test file match pattern
 
     """
-    _attrs = Event._attrs + ('name', 'path', 'pattern')
+
+    _attrs = Event._attrs + ("name", "path", "pattern")
 
     def __init__(self, name, path, pattern, **kw):
         self.path = path
@@ -1039,8 +1113,15 @@ class GetTestCaseNamesEvent(Event):
        determine whether nose2 thinks they are test methods.
 
     """
-    _attrs = Event._attrs + ('loader', 'testCase', 'testMethodPrefix',
-                             'extraNames', 'excludedNames', 'isTestMethod')
+
+    _attrs = Event._attrs + (
+        "loader",
+        "testCase",
+        "testMethodPrefix",
+        "extraNames",
+        "excludedNames",
+        "isTestMethod",
+    )
 
     def __init__(self, loader, testCase, isTestMethod, **kw):
         self.loader = loader
@@ -1073,7 +1154,8 @@ class ResultSuccessEvent(Event):
        failure in an earlier hook from no pass/fail status having been set yet.
 
     """
-    _attrs = Event._attrs + ('result', 'success')
+
+    _attrs = Event._attrs + ("result", "success")
 
     def __init__(self, result, success, **kw):
         self.result = result
@@ -1097,7 +1179,8 @@ class ResultStopEvent(Event):
        Set to ``True`` to indicate that the test run should stop.
 
     """
-    _attrs = Event._attrs + ('result', 'shouldStop')
+
+    _attrs = Event._attrs + ("result", "shouldStop")
 
     def __init__(self, result, shouldStop, **kw):
         self.result = result
@@ -1124,7 +1207,8 @@ class DescribeTestEvent(Event):
        Is the event fired as part of error list output?
 
     """
-    _attrs = Event._attrs + ('test', 'description')
+
+    _attrs = Event._attrs + ("test", "description")
 
     def __init__(self, test, description=None, errorList=False, **kw):
         self.test = test
@@ -1149,7 +1233,8 @@ class OutcomeDetailEvent(Event):
        include their extra information in the error list report.
 
     """
-    _attrs = Event._attrs + ('outcomeEvent', 'extraDetail')
+
+    _attrs = Event._attrs + ("outcomeEvent", "extraDetail")
 
     def __init__(self, outcomeEvent, **kw):
         self.outcomeEvent = outcomeEvent
@@ -1178,7 +1263,8 @@ class ReportSummaryEvent(Event):
        may add their own categories.
 
     """
-    _attrs = Event._attrs + ('stopTestEvent', 'stream', 'reportCategories')
+
+    _attrs = Event._attrs + ("stopTestEvent", "stream", "reportCategories")
 
     def __init__(self, stopTestEvent, stream, reportCategories, **kw):
         self.stopTestEvent = stopTestEvent
@@ -1205,7 +1291,8 @@ class ReportTestEvent(Event):
        output.
 
     """
-    _attrs = Event._attrs + ('testEvent', 'stream')
+
+    _attrs = Event._attrs + ("testEvent", "stream")
 
     def __init__(self, testEvent, stream, **kw):
         self.testEvent = testEvent
@@ -1248,7 +1335,8 @@ class CommandLineArgsEvent(Event):
        Args object returned by argparse.
 
     """
-    _attrs = Event._attrs + ('args',)
+
+    _attrs = Event._attrs + ("args",)
 
     def __init__(self, args, **kw):
         self.args = args
@@ -1276,7 +1364,8 @@ class CreateTestsEvent(Event):
        considered relative to this module.
 
     """
-    _attrs = Event._attrs + ('loader', 'testNames', 'module')
+
+    _attrs = Event._attrs + ("loader", "testNames", "module")
 
     def __init__(self, loader, testNames, module, **kw):
         self.loader = loader
@@ -1296,7 +1385,8 @@ class CreatedTestSuiteEvent(Event):
        Test Suite instance
 
     """
-    _attrs = Event._attrs + ('suite', )
+
+    _attrs = Event._attrs + ("suite",)
 
     def __init__(self, suite, **kw):
         self.suite = suite

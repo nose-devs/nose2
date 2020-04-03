@@ -16,7 +16,6 @@ import logging
 import os
 
 from nose2 import events
-
 from nose2.plugins.loader import discovery
 
 __unittest = True
@@ -30,8 +29,9 @@ except ImportError:
 
 class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
     """Loader plugin that can discover tests inside Egg Files"""
+
     alwaysOn = True
-    configSection = 'discovery'
+    configSection = "discovery"
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
@@ -49,7 +49,9 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
             raise OSError("%s does not exist" % os.path.abspath(start_dir))
 
     def _find_tests_in_egg_dir(self, event, rel_path, dist):
-        log.debug("find in egg dir %s %s (%s)", dist.location, rel_path, dist.project_name)
+        log.debug(
+            "find in egg dir %s %s (%s)", dist.location, rel_path, dist.project_name
+        )
         full_path = os.path.join(dist.location, rel_path)
         dir_handler = discovery.DirectoryHandler(self.session)
         for test in dir_handler.handle_dir(event, full_path, dist.location):
@@ -59,7 +61,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
         for path in dist.resource_listdir(rel_path):
             # on setuptools==38.2.5 , resource_listdir() can yield ""
             # if that happens, skip processing it to avoid infinite recursion
-            if path == '':
+            if path == "":
                 continue
 
             entry_path = os.path.join(rel_path, path)
@@ -67,18 +69,22 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
                 for test in self._find_tests_in_egg_dir(event, entry_path, dist):
                     yield test
             else:
-                modname = os.path.splitext(entry_path)[0].replace(os.sep, '.')
+                modname = os.path.splitext(entry_path)[0].replace(os.sep, ".")
                 for test in self._find_tests_in_file(
-                    event, path, os.path.join(dist.location, entry_path), dist.location, modname):
+                    event,
+                    path,
+                    os.path.join(dist.location, entry_path),
+                    dist.location,
+                    modname,
+                ):
                     yield test
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         if os.path.exists(full_path):
             return
-        elif pkg_resources and full_path.find('.egg') != -1:
-            egg_path = full_path.split('.egg')[0] + '.egg'
+        elif pkg_resources and full_path.find(".egg") != -1:
+            egg_path = full_path.split(".egg")[0] + ".egg"
             for dist in pkg_resources.find_distributions(egg_path):
-                for modname in dist._get_metadata('top_level.txt'):
-                    for test in self._find_tests_in_egg_dir(
-                        event, modname, dist):
+                for modname in dist._get_metadata("top_level.txt"):
+                    for test in self._find_tests_in_egg_dir(event, modname, dist):
                         yield test

@@ -13,6 +13,8 @@ help:
 	virtualenv --python python3 .venv
 	.venv/bin/pip install -U tox twine
 
+lint: .venv
+	.venv/bin/tox -e lint
 test: .venv
 	.venv/bin/tox
 docs: .venv

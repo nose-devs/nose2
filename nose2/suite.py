@@ -1,9 +1,8 @@
-import sys
 import logging
+import sys
 import unittest
 
-from nose2 import util
-from nose2 import events
+from nose2 import events, util
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +14,6 @@ __unittest = True
 
 
 class LayerSuite(unittest.BaseTestSuite):
-
     def __init__(self, session, tests=(), layer=None):
         super(LayerSuite, self).__init__(tests)
         self.layer = layer
@@ -40,10 +38,10 @@ class LayerSuite(unittest.BaseTestSuite):
                 self._safeMethodCall(self.tearDown, result)
 
     def handle_previous_test_teardown(self, result):
-        prev = getattr(result, '_previousTestClass', None)
+        prev = getattr(result, "_previousTestClass", None)
         if prev is None:
             return
-        layer_attr = getattr(prev, 'layer', None)
+        layer_attr = getattr(prev, "layer", None)
         if isinstance(layer_attr, LayerSuite):
             return
         try:
@@ -60,7 +58,7 @@ class LayerSuite(unittest.BaseTestSuite):
         event = events.StartLayerSetupEvent(self.layer)
         self.session.hooks.startLayerSetup(event)
 
-        setup = self._getBoundClassmethod(self.layer, 'setUp')
+        setup = self._getBoundClassmethod(self.layer, "setUp")
 
         if setup:
             setup()
@@ -82,13 +80,13 @@ class LayerSuite(unittest.BaseTestSuite):
         else:
             # suite-like enough for skipping
             return
-        if getattr(test, '_layer_wasSetUp', False):
+        if getattr(test, "_layer_wasSetUp", False):
             return
 
         event = events.StartLayerSetupTestEvent(self.layer, test)
         self.session.hooks.startLayerSetupTest(event)
 
-        self._allLayers(test, 'testSetUp')
+        self._allLayers(test, "testSetUp")
         test._layer_wasSetUp = True
 
         event = events.StopLayerSetupTestEvent(self.layer, test)
@@ -97,17 +95,17 @@ class LayerSuite(unittest.BaseTestSuite):
     def tearDownTest(self, test):
         if self.layer is None:
             return
-        if not getattr(test, '_layer_wasSetUp', None):
+        if not getattr(test, "_layer_wasSetUp", None):
             return
 
         event = events.StartLayerTeardownTestEvent(self.layer, test)
         self.session.hooks.startLayerTeardownTest(event)
 
-        self._allLayers(test, 'testTearDown', reverse=True)
+        self._allLayers(test, "testTearDown", reverse=True)
 
         event = events.StopLayerTeardownTestEvent(self.layer, test)
         self.session.hooks.stopLayerTeardownTest(event)
-        delattr(test, '_layer_wasSetUp')
+        delattr(test, "_layer_wasSetUp")
 
     def tearDown(self):
         if self.layer is None:
@@ -115,7 +113,7 @@ class LayerSuite(unittest.BaseTestSuite):
 
         event = events.StartLayerTeardownEvent(self.layer)
         self.session.hooks.startLayerTeardown(event)
-        teardown = self._getBoundClassmethod(self.layer, 'tearDown')
+        teardown = self._getBoundClassmethod(self.layer, "tearDown")
         if teardown:
             teardown()
         event = events.StopLayerTeardownEvent(self.layer)
@@ -127,7 +125,7 @@ class LayerSuite(unittest.BaseTestSuite):
             return True
         except KeyboardInterrupt:
             raise
-        except:
+        except BaseException:
             result.addError(self, sys.exc_info())
             return False
 
@@ -160,7 +158,8 @@ class LayerSuite(unittest.BaseTestSuite):
         if descriptor:
             if not isinstance(descriptor, classmethod):
                 raise TypeError(
-                    'The %s method on a layer must be a classmethod.' % method)
+                    "The %s method on a layer must be a classmethod." % method
+                )
             bound_method = descriptor.__get__(None, cls)
             return bound_method
         else:

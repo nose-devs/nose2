@@ -116,7 +116,7 @@ Otherwise, tests written in the such DSL are collected and run just like any
 other tests, with one exception: their names. The name of a such test
 case is the name of its immediately surrounding group, plus the
 description of the test, prepended with ``test ####:``, where ``####``
-is the test's (``0`` -indexed) position within its group. 
+is the test's (``0`` -indexed) position within its group.
 
 To run a case individually, you must pass in this full name -- usually you'll have to quote it. For example, to run the case ``should do more things``
 defined above (assuming the layers plugin is activated by a config

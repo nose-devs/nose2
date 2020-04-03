@@ -20,10 +20,10 @@ are examined for tests.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
-from fnmatch import fnmatch
 import logging
 import os
 import sys
+from fnmatch import fnmatch
 
 from nose2 import events, util
 
@@ -41,7 +41,8 @@ class DirectoryHandler(object):
         pattern = self.session.testFilePattern
 
         evt = events.HandleFileEvent(
-            event.loader, dirname, full_path, pattern, top_level)
+            event.loader, dirname, full_path, pattern, top_level
+        )
         result = self.session.hooks.handleDir(evt)
         if evt.extraTests:
             for test in evt.extraTests:
@@ -59,7 +60,6 @@ class DirectoryHandler(object):
 
 
 class Discoverer(object):
-
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name
@@ -75,13 +75,13 @@ class Discoverer(object):
             module = sys.modules[name]
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except BaseException:
             # if that fails, try it as a file or directory
-            event.extraTests.extend(
-                self._find_tests(event, name, top_level_dir))
+            event.extraTests.extend(self._find_tests(event, name, top_level_dir))
         else:
             event.extraTests.extend(
-                self._find_tests_in_module(event, module, top_level_dir))
+                self._find_tests_in_module(event, module, top_level_dir)
+            )
 
     def loadTestsFromNames(self, event):
         """Discover tests if no test names specified"""
@@ -99,7 +99,7 @@ class Discoverer(object):
         start_dir = self.session.startDir
         top_level_dir = self.session.topLevelDir
         if start_dir is None:
-            start_dir = '.'
+            start_dir = "."
         if top_level_dir is None:
             top_level_dir = start_dir
 
@@ -110,10 +110,10 @@ class Discoverer(object):
         top_level_dir = os.path.abspath(top_level_dir)
         if start_dir != top_level_dir:
             is_not_importable = not os.path.isfile(
-                os.path.join(start_dir, '__init__.py'))
+                os.path.join(start_dir, "__init__.py")
+            )
         if is_not_importable:
-            raise ImportError(
-                'Start directory is not importable: %r' % start_dir)
+            raise ImportError("Start directory is not importable: %r" % start_dir)
         # this is redundant in some cases, but that's ok
         self.session.prepareSysPath()
         return start_dir, top_level_dir
@@ -124,25 +124,24 @@ class Discoverer(object):
             start_dir, top_level_dir = self._getStartDirs()
         except (OSError, ImportError):
             return loader.suiteClass(
-                loader.failedLoadTests(self.session.startDir, sys.exc_info()))
+                loader.failedLoadTests(self.session.startDir, sys.exc_info())
+            )
         log.debug("_discover in %s (%s)", start_dir, top_level_dir)
         tests = list(self._find_tests(event, start_dir, top_level_dir))
         return loader.suiteClass(tests)
 
     def _find_tests(self, event, start, top_level):
         """Used by discovery. Yields test suites it loads."""
-        log.debug('_find_tests(%r, %r)', start, top_level)
+        log.debug("_find_tests(%r, %r)", start, top_level)
         if start == top_level:
             full_path = start
         else:
             full_path = os.path.join(top_level, start)
         if os.path.isdir(start):
-            for test in self._find_tests_in_dir(
-                event, full_path, top_level):
+            for test in self._find_tests_in_dir(event, full_path, top_level):
                 yield test
         elif os.path.isfile(start):
-            for test in self._find_tests_in_file(
-                event, start, full_path, top_level):
+            for test in self._find_tests_in_file(event, start, full_path, top_level):
                 yield test
 
     def _find_tests_in_dir(self, event, full_path, top_level):
@@ -158,21 +157,25 @@ class Discoverer(object):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):
                 for test in self._find_tests_in_file(
-                    event, path, entry_path, top_level):
+                    event, path, entry_path, top_level
+                ):
                     yield test
             elif os.path.isdir(entry_path):
-                if ('test' in path.lower()
+                if (
+                    "test" in path.lower()
                     or util.ispackage(entry_path)
-                    or path in self.session.libDirs):
+                    or path in self.session.libDirs
+                ):
                     for test in self._find_tests(event, entry_path, top_level):
                         yield test
 
-    def _find_tests_in_file(self, event, filename, full_path, top_level, module_name=None):
+    def _find_tests_in_file(
+        self, event, filename, full_path, top_level, module_name=None
+    ):
         log.debug("find in file %s (%s)", full_path, top_level)
         pattern = self.session.testFilePattern
         loader = event.loader
-        evt = events.HandleFileEvent(
-            loader, filename, full_path, pattern, top_level)
+        evt = events.HandleFileEvent(loader, filename, full_path, pattern, top_level)
         result = self.session.hooks.handleFile(evt)
         if evt.extraTests:
             yield loader.suiteClass(evt.extraTests)
@@ -199,34 +202,32 @@ class Discoverer(object):
             util.ensure_importable(package_path)
         try:
             module = util.module_from_name(module_name)
-        except:
+        except BaseException:
             yield loader.failedImport(module_name)
         else:
-            mod_file = os.path.abspath(
-                getattr(module, '__file__', full_path))
+            mod_file = os.path.abspath(getattr(module, "__file__", full_path))
             realpath = os.path.splitext(mod_file)[0]
             fullpath_noext = os.path.splitext(full_path)[0]
             if realpath.lower() != fullpath_noext.lower():
                 module_dir = os.path.dirname(realpath)
                 mod_name = os.path.splitext(os.path.basename(full_path))[0]
                 expected_dir = os.path.dirname(full_path)
-                msg = ("%r module incorrectly imported from %r. "
-                       "Expected %r. Is this module globally installed?"
-                       )
-                raise ImportError(
-                    msg % (mod_name, module_dir, expected_dir))
+                msg = (
+                    "%r module incorrectly imported from %r. "
+                    "Expected %r. Is this module globally installed?"
+                )
+                raise ImportError(msg % (mod_name, module_dir, expected_dir))
             yield loader.loadTestsFromModule(module)
 
     def _find_tests_in_module(self, event, module, top_level_dir):
         # only called from loadTestsFromName
         yield event.loader.loadTestsFromModule(module)
         # may be a package; recurse into __path__ if so
-        pkgpath = getattr(module, '__path__', None)
+        pkgpath = getattr(module, "__path__", None)
         if pkgpath:
             for entry in pkgpath:
                 full_path = os.path.abspath(os.path.join(top_level_dir, entry))
-                for test in self._find_tests_in_dir(
-                    event, full_path, top_level_dir):
+                for test in self._find_tests_in_dir(event, full_path, top_level_dir):
                     yield test
 
     def _match_path(self, path, full_path, pattern):
@@ -236,8 +237,9 @@ class Discoverer(object):
 
 class DiscoveryLoader(events.Plugin, Discoverer):
     """Loader plugin that can discover tests"""
+
     alwaysOn = True
-    configSection = 'discovery'
+    configSection = "discovery"
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)

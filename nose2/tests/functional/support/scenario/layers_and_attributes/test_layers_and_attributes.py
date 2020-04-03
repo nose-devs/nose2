@@ -4,25 +4,23 @@ STATE = {}
 
 
 class L1(object):
-
     @classmethod
     def setUp(cls):
-        STATE['L1'] = 'setup'
+        STATE["L1"] = "setup"
 
     @classmethod
     def tearDown(cls):
-        del STATE['L1']
+        del STATE["L1"]
 
 
 class L2(object):
-
     @classmethod
     def setUp(cls):
-        STATE['L2'] = 'setup'
+        STATE["L2"] = "setup"
 
     @classmethod
     def tearDown(cls):
-        del STATE['L2']
+        del STATE["L2"]
 
 
 class LayerAndAttributesA(unittest.TestCase):
@@ -30,7 +28,7 @@ class LayerAndAttributesA(unittest.TestCase):
     a = 1
 
     def test(self):
-        self.assertEqual(STATE.get('L1'), 'setup')
+        self.assertEqual(STATE.get("L1"), "setup")
 
 
 class LayerAndAttributesB(unittest.TestCase):
@@ -38,4 +36,4 @@ class LayerAndAttributesB(unittest.TestCase):
     b = 1
 
     def test(self):
-        self.assertEqual(STATE.get('L2'), 'setup')
+        self.assertEqual(STATE.get("L2"), "setup")

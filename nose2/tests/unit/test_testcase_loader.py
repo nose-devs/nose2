@@ -1,10 +1,9 @@
-from nose2.tests._common import TestCase
-from nose2.plugins.loader.testcases import TestCaseLoader
 from nose2 import events, loader, session
+from nose2.plugins.loader.testcases import TestCaseLoader
+from nose2.tests._common import TestCase
 
 
 class TestTestCaseLoader(TestCase):
-
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(session=self.session)
@@ -12,25 +11,22 @@ class TestTestCaseLoader(TestCase):
 
         class Mod(object):
             pass
+
         self.module = Mod()
 
         class A(TestCase):
-
             def test(self):
                 pass
 
         class B(TestCase):
-
             def runTest(self):
                 pass
 
         class C(TestCase):
-
             def foo(self):
                 pass
 
         class Test(object):
-
             def test(self):
                 pass
 
@@ -50,10 +46,10 @@ class TestTestCaseLoader(TestCase):
 
     def test_get_testcase_names_can_override_name_selection(self):
         class FooIsOnlyTest(events.Plugin):
-
             def getTestCaseNames(self, event):
                 event.handled = True
-                return ['foo'] if 'foo' in dir(event.testCase) else []
+                return ["foo"] if "foo" in dir(event.testCase) else []
+
         foo = FooIsOnlyTest(session=self.session)
         foo.register()
         event = events.LoadFromModuleEvent(self.loader, self.module)
@@ -66,9 +62,9 @@ class TestTestCaseLoader(TestCase):
 
     def test_plugins_can_exclude_test_names(self):
         class Excluder(events.Plugin):
-
             def getTestCaseNames(self, event):
-                event.excludedNames.append('test')
+                event.excludedNames.append("test")
+
         excl = Excluder(session=self.session)
         excl.register()
         event = events.LoadFromModuleEvent(self.loader, self.module)

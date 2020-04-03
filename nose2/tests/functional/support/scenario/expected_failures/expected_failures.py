@@ -1,7 +1,7 @@
 import unittest
 
-class TestWithExpectedFailures(unittest.TestCase):
 
+class TestWithExpectedFailures(unittest.TestCase):
     @unittest.expectedFailure
     def test_should_fail(self):
         assert False

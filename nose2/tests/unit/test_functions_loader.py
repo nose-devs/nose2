@@ -1,11 +1,11 @@
 import unittest
+
 from nose2 import events, loader, session
 from nose2.plugins.loader import functions
 from nose2.tests._common import TestCase
 
 
 class TestFunctionLoader(TestCase):
-
     def setUp(self):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
@@ -17,6 +17,7 @@ class TestFunctionLoader(TestCase):
 
         def test():
             pass
+
         m = Mod()
         m.test = test
         event = events.LoadFromModuleEvent(self.loader, m)
@@ -30,6 +31,7 @@ class TestFunctionLoader(TestCase):
 
         def test():
             yield
+
         m = Mod()
         m.test = test
         event = events.LoadFromModuleEvent(self.loader, m)
@@ -42,6 +44,7 @@ class TestFunctionLoader(TestCase):
 
         def test(a):
             pass
+
         m = Mod()
         m.test = test
         event = events.LoadFromModuleEvent(self.loader, m)

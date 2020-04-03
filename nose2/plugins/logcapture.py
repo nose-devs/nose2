@@ -10,12 +10,11 @@ raise exceptions.
 
 """
 import logging
-from logging.handlers import BufferingHandler
 import threading
+from logging.handlers import BufferingHandler
 
 from nose2.events import Plugin
 from nose2.util import ln, parse_log_level
-
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -25,22 +24,22 @@ class LogCapture(Plugin):
 
     """Capture log messages during test execution"""
 
-    configSection = 'log-capture'
-    commandLineSwitch = (None, 'log-capture', 'Enable log capture')
-    logformat = '%(name)s: %(levelname)s: %(message)s'
+    configSection = "log-capture"
+    commandLineSwitch = (None, "log-capture", "Enable log capture")
+    logformat = "%(name)s: %(levelname)s: %(message)s"
     logdatefmt = None
     clear = False
-    filters = ['-nose']
+    filters = ["-nose"]
 
     def __init__(self):
-        self.logformat = self.config.as_str('format', self.logformat)
-        self.logdatefmt = self.config.as_str('date-format', self.logdatefmt)
-        self.filters = self.config.as_list('filter', self.filters)
-        self.clear = self.config.as_bool('clear-handlers', self.clear)
-        self.loglevel = parse_log_level(
-            self.config.as_str('log-level', 'NOTSET'))
-        self.handler = MyMemoryHandler(1000, self.logformat, self.logdatefmt,
-                                       self.filters)
+        self.logformat = self.config.as_str("format", self.logformat)
+        self.logdatefmt = self.config.as_str("date-format", self.logdatefmt)
+        self.filters = self.config.as_list("filter", self.filters)
+        self.clear = self.config.as_bool("clear-handlers", self.clear)
+        self.loglevel = parse_log_level(self.config.as_str("log-level", "NOTSET"))
+        self.handler = MyMemoryHandler(
+            1000, self.logformat, self.logdatefmt, self.filters
+        )
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
@@ -66,11 +65,11 @@ class LogCapture(Plugin):
 
     def outcomeDetail(self, event):
         """Append captured log messages to ``event.extraDetail``"""
-        logs = event.outcomeEvent.metadata.get('logs', None)
+        logs = event.outcomeEvent.metadata.get("logs", None)
         if logs:
-            event.extraDetail.append(ln('>> begin captured logging <<'))
+            event.extraDetail.append(ln(">> begin captured logging <<"))
             event.extraDetail.extend(logs)
-            event.extraDetail.append(ln('>> end captured logging <<'))
+            event.extraDetail.append(ln(">> end captured logging <<"))
 
     def _setupLoghandler(self):
         # setup our handler with root logger
@@ -98,14 +97,13 @@ class LogCapture(Plugin):
     def _addCapturedLogs(self, event):
         format = self.handler.format
         records = [format(r) for r in self.handler.buffer]
-        if 'logs' in event.metadata:
-            event.metadata['logs'].extend(records)
+        if "logs" in event.metadata:
+            event.metadata["logs"].extend(records)
         else:
-            event.metadata['logs'] = records
+            event.metadata["logs"] = records
 
 
 class FilterSet(object):
-
     def __init__(self, filter_components):
         self.inclusive, self.exclusive = self._partition(filter_components)
 
@@ -113,7 +111,7 @@ class FilterSet(object):
     def _partition(components):
         inclusive, exclusive = [], []
         for component in components:
-            if component.startswith('-'):
+            if component.startswith("-"):
                 exclusive.append(component[1:])
             else:
                 inclusive.append(component)
@@ -130,8 +128,10 @@ class FilterSet(object):
     def _any_match(matchers, record):
         """return the bool of whether `record` starts with
         any item in `matchers`"""
+
         def record_matches_key(key):
-            return record == key or record.startswith(key + '.')
+            return record == key or record.startswith(key + ".")
+
         return any(map(record_matches_key, matchers))
 
     def _allow(self, record):
@@ -146,7 +146,6 @@ class FilterSet(object):
 
 
 class MyMemoryHandler(BufferingHandler):
-
     def __init__(self, capacity, logformat, logdatefmt, filters):
         BufferingHandler.__init__(self, capacity)
         fmt = logging.Formatter(logformat, logdatefmt)
@@ -170,7 +169,7 @@ class MyMemoryHandler(BufferingHandler):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state['lock']
+        del state["lock"]
         return state
 
     def __setstate__(self, state):

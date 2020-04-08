@@ -187,7 +187,7 @@ def test_name(test, qualname=True):
         if sys.version_info >= (3, 3):
             tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__qualname__)
         else:
-            tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.im_class)
+            tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
     else:
         if sys.version_info >= (3, 5) and not qualname:
             test_module = test.__class__.__module__

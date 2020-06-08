@@ -2,6 +2,8 @@
 import sys
 import doctest
 
+from textwrap import dedent
+
 from nose2 import events, loader, session
 from nose2.plugins import doctests
 from nose2.tests._common import TestCase
@@ -59,6 +61,22 @@ def func():
             self.assertEqual(event.extraTests, [doctest.DocTestSuite()])
         else:
             self.assertEqual(event.extraTests, [])
+
+    def test_handle_file_python_setup_py(self):
+        # Test calling handleFile on a top-level setup.py file.
+        # The file should be ignored by the plugin as it cannot safely be
+        # imported.
+
+        setup_py = dedent("""\
+            '''
+            >>> never executed
+            '''
+            from setuptools import setup
+            setup(name='foo')
+            """
+        )
+        event = self._handle_file("setup.py", setup_py)
+        self.assertEqual(event.extraTests, [])
 
     def _handle_file(self, fpath, content):
         """Have plugin handle a file with certain content.

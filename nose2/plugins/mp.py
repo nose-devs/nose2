@@ -243,6 +243,9 @@ class MultiProcess(events.Plugin):
                         mods.setdefault(test.__class__.__module__, []).append(
                             testid)
                     elif util.has_class_fixtures(test):
+                        if test.__class__.__name__ == "_MethodTestCase":
+                            # wrapped by MethodTestCase in testclasses.py
+                            test = test.obj
                         classes.setdefault(
                             "%s.%s" % (test.__class__.__module__,
                                        test.__class__.__name__),

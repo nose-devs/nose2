@@ -183,9 +183,12 @@ def test_name(test, qualname=True):
     if hasattr(test, '_funcName'):
         tid = test._funcName
     elif hasattr(test, '_testFunc'):
-        # this is a UnitTest-wrapped function
-        if sys.version_info >= (3, 3):
-            tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__qualname__)
+        if any("__unittest" in attr for attr in dir(test._testFunc)):
+            # this is a UnitTest-wrapped function
+            if sys.version_info >= (3, 3):
+                tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__qualname__)
+            else:
+                tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
         else:
             tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
     else:

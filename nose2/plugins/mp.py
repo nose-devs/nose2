@@ -22,7 +22,7 @@ class MultiProcess(events.Plugin):
     configSection = 'multiprocess'
 
     def __init__(self):
-        self.addArgument(self.setProcs, 'N', 'processes', '# o procs')
+        self.addArgument(self.setProcs, 'N', 'processes', 'Number of processes used to run tests (0 = auto)')
         self.testRunTimeout = self.config.as_float('test-run-timeout', 60.0)
         self._procs = self.config.as_int(
             'processes', 0)
@@ -46,7 +46,7 @@ class MultiProcess(events.Plugin):
     def procs(self, value):
         """Setter for procs property"""
         if value < 0:
-            raise AttributeError("Can't set the procs number to less than 0, (0 = Auto)")
+            raise ValueError("Number of processes cannot be less than 0")
         self._procs = value
 
     def setProcs(self, num):

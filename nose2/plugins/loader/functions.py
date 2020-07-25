@@ -140,6 +140,14 @@ class Functions(Plugin):
             return tests
         else:
             case = util.transplant_class(
-                unittest.FunctionTestCase, obj.__module__)(obj, **args)
+                FunctionTestCase, obj.__module__)(obj, **args)
             tests.append(case)
         return tests
+
+
+class FunctionTestCase(unittest.FunctionTestCase):
+
+    def __repr__(self):
+        return '%s.%s' % (self._testFunc.__module__, self._testFunc.__name__)
+
+    id = __str__ = __repr__

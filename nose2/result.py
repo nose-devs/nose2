@@ -7,6 +7,7 @@ ERROR = 'error'
 FAIL = 'failed'
 SKIP = 'skipped'
 PASS = 'passed'
+SUBTEST = 'subtest'
 __unittest = True
 
 
@@ -29,6 +30,8 @@ class PluggableTestResult(object):
     def __init__(self, session):
         self.session = session
         self.shouldStop = False
+        # XXX TestCase.subTest expects a result.failfast attribute
+        self.failfast = False
 
     def startTest(self, test):
         """Start a test case.
@@ -65,6 +68,16 @@ class PluggableTestResult(object):
 
         """
         event = events.TestOutcomeEvent(test, self, FAIL, err)
+        self.session.hooks.setTestOutcome(event)
+        self.session.hooks.testOutcome(event)
+
+    def addSubTest(self, test, subtest, err):
+        """Called at the end of a subtest.
+
+        Fires :func:`setTestOutcome` and :func:`testOutcome` hooks.
+
+        """
+        event = events.TestOutcomeEvent(subtest, self, SUBTEST, err)
         self.session.hooks.setTestOutcome(event)
         self.session.hooks.testOutcome(event)
 

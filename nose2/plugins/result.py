@@ -90,6 +90,14 @@ class ResultReporter(events.Plugin):
             else:
                 self.reportCategories['unexpectedSuccesses'].append(event)
                 self._reportUnexpectedSuccess(event)
+        elif event.outcome == result.SUBTEST:
+            if event.exc_info is not None:
+                if issubclass(event.exc_info[0], event.test.failureException):
+                    self.reportCategories['failures'].append(event)
+                    self._reportFailure(event)
+                else:
+                    self.reportCategories['errors'].append(event)
+                    self._reportError(event)
         else:
             # generic outcome handling
             self.reportCategories.setdefault(event.outcome, []).append(event)
@@ -115,7 +123,8 @@ class ResultReporter(events.Plugin):
         for name, events in self.reportCategories.items():
             for e in events:
                 if (e.outcome == result.ERROR or
-                    (e.outcome == result.FAIL and not e.expected)):
+                    (e.outcome == result.FAIL and not e.expected) or
+                    e.outcome == result.SUBTEST):
                     event.success = False
                     break
 

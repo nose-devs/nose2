@@ -143,6 +143,10 @@ class JUnitXmlReporter(events.Plugin):
             test_args = ':'.join(testid_lines[1:])
             method = '%s (%s)' % (method, test_args)
 
+        # subtests do not report success
+        if event.outcome == result.SUBTEST and event.exc_info is None:
+            return
+
         testcase = ET.SubElement(self.tree, 'testcase')
         testcase.set('time', "%.6f" % self._time())
         if not classname:
@@ -186,6 +190,17 @@ class JUnitXmlReporter(events.Plugin):
             skipped = ET.SubElement(testcase, 'skipped')
             skipped.set('message', 'expected test failure')
             skipped.text = msg
+        elif event.outcome == result.SUBTEST:
+            if issubclass(event.exc_info[0], event.test.failureException):
+                self.failed += 1
+                failure = ET.SubElement(testcase, 'failure')
+                failure.set('message', 'test failure')
+                failure.text = msg
+            else:
+                self.errors += 1
+                error = ET.SubElement(testcase, 'error')
+                error.set('message', 'test failure')
+                error.text = msg
 
         system_out = ET.SubElement(testcase, 'system-out')
         system_out.text = string_cleanup(

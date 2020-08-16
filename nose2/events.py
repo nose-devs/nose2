@@ -704,7 +704,7 @@ class TestOutcomeEvent(Event):
     .. attribute :: outcome
 
        Description of test outcome. Typically will be one of 'error',
-       'failed', 'skipped', or 'passed'.
+       'failed', 'skipped', 'passed', or 'subtest'.
 
     .. attribute :: exc_info
 

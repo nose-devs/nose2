@@ -91,6 +91,7 @@ class ResultReporter(events.Plugin):
                 self.reportCategories['unexpectedSuccesses'].append(event)
                 self._reportUnexpectedSuccess(event)
         elif event.outcome == result.SUBTEST:
+            # subtests do not report success
             if event.exc_info is not None:
                 if issubclass(event.exc_info[0], event.test.failureException):
                     self.reportCategories['failures'].append(event)

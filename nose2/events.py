@@ -4,7 +4,9 @@
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import sys
 import logging
+import unittest
 
 import argparse
 import six
@@ -348,10 +350,15 @@ class Event(object):
                           for k in self._attrs])
 
     def __getstate__(self):
-        state = self.__dict__
+        state = self.__dict__.copy()
         # FIXME fails for loadTestsFailure
         if 'test' in state:
-            state['test'] = util.test_name(state['test'])
+            test = state['test']
+            state['test'] = util.test_name(test)
+            # subtest support
+            if sys.version_info >= (3, 4):
+                if isinstance(test, unittest.case._SubTest):
+                    state['metadata']['subtest'] = (test._message, test.params)
         if 'executeTests' in state:
             state['executeTests'] = None
         if 'exc_info' in state and state['exc_info'] is not None:

@@ -274,6 +274,12 @@ class MultiProcess(events.Plugin):
                     'test_not_found',
                     RuntimeError("Unable to locate test case for %s in "
                                  "main process" % event.test))._tests[0]
+            # subtest support
+            if 'subtest' in event.metadata:
+                message, params = event.metadata.pop('subtest')
+                if type(message) == type(object()):
+                    message = unittest.case._subtest_msg_sentinel
+                event.test = unittest.case._SubTest(event.test, message, params)
 
     def _exportSession(self):
         """

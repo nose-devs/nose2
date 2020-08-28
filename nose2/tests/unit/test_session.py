@@ -20,3 +20,13 @@ class SessionUnitTests(unittest.TestCase):
         assert s.plugins
         a = s.plugins[0]
         self.assertEqual(a.session, s)
+
+    def test_load_plugins_from_module_does_not_load_plain_Plugins(self):
+        class fakemod:
+            pass
+        f = fakemod()
+
+        f.A = events.Plugin
+        s = session.Session()
+        s.loadPluginsFromModule(f)
+        self.assertEqual(len(s.plugins), 0)

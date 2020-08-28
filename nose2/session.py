@@ -170,7 +170,8 @@ class Session(object):
         for cls in avail:
             log.debug("Plugin is available: %s", cls)
             plugin = cls(session=self)
-            self.plugins.append(plugin)
+            if plugin not in self.plugins:
+                self.plugins.append(plugin)
             for method in self.hooks.preRegistrationMethods:
                 if hasattr(plugin, method):
                     self.hooks.register(method, plugin)

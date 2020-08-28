@@ -30,3 +30,15 @@ class SessionUnitTests(unittest.TestCase):
         s = session.Session()
         s.loadPluginsFromModule(f)
         self.assertEqual(len(s.plugins), 0)
+
+    def test_load_plugins_from_module_does_not_duplicate_always_on_plugins(self):
+        class fakemod:
+            pass
+        f = fakemod()
+
+        class A(events.Plugin):
+            alwaysOn = True
+        f.A = A
+        s = session.Session()
+        s.loadPluginsFromModule(f)
+        self.assertEqual(len(s.plugins), 1)

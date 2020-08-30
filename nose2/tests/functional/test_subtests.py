@@ -352,3 +352,36 @@ class TestSubtestsJunitXml(FunctionalTestCase):
         self.assertEqual(tree.get('errors'), '3')
         self.assertEqual(tree.get('skipped'), '1')
         self.assertEqual(len(tree.findall('testcase')), 11)
+
+
+class TestSubtestsFailFast(FunctionalTestCase):
+
+    def setUp(self):
+        super(TestSubtestsFailFast, self).setUp()
+        if sys.version_info < (3, 4):
+            self.skipTest('Python >= 3.4 required')
+
+    def test_failure(self):
+        proc = self.runIn(
+            'scenario/subtests',
+            '-v',
+            'test_subtests.Case.test_subtest_failure'
+        )
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertTestRunOutputMatches(proc, stderr='test_subtest_failure.*\(i=1\)')
+        self.assertTestRunOutputMatches(proc, stderr='test_subtest_failure.*\(i=3\)')
+        self.assertTestRunOutputMatches(proc, stderr='test_subtest_failure.*\(i=5\)')
+        self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=3\)')
+        self.assertEqual(proc.poll(), 1)
+
+    def test_failfast(self):
+        proc = self.runIn(
+            'scenario/subtests',
+            '--fail-fast',
+            '-v',
+            'test_subtests.Case.test_subtest_failure'
+        )
+        self.assertTestRunOutputMatches(proc, stderr='Ran 1 test')
+        self.assertTestRunOutputMatches(proc, stderr='test_subtest_failure.*\(i=1\)')
+        self.assertTestRunOutputMatches(proc, stderr='FAILED \(failures=1\)')
+        self.assertEqual(proc.poll(), 1)

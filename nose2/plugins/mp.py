@@ -243,6 +243,9 @@ class MultiProcess(events.Plugin):
                         mods.setdefault(test.__class__.__module__, []).append(
                             testid)
                     elif util.has_class_fixtures(test):
+                        # testclasses support
+                        if test.__class__.__name__ == '_MethodTestCase':
+                            test = test.obj
                         classes.setdefault(
                             "%s.%s" % (test.__class__.__module__,
                                        test.__class__.__name__),
@@ -481,7 +484,7 @@ class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
     noLogMethods = set(
         ['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
-         'registerInSubprocess', 'moduleLoadedSuite'])
+         'registerInSubprocess', 'moduleLoadedSuite', 'getTestMethodNames'])
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()

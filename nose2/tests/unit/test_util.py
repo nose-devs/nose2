@@ -33,3 +33,46 @@ class UtilTests(TestCase):
             'nose2.tests.unit.test_util.UtilTests.test_ensure_importable (i=1, j=2)')
         self.assertEqual(util.test_name(test),
             'nose2.tests.unit.test_util.UtilTests.test_ensure_importable')
+
+
+class HasClassFixturesTests(TestCase):
+
+    def test_unittest_testcase(self):
+        C = unittest.TestCase
+        self.assertFalse(util.has_class_fixtures(C))
+        self.assertFalse(util.has_class_fixtures(C()))
+
+    def test_derived_testcase(self):
+        class C(unittest.TestCase):
+            pass
+        self.assertFalse(util.has_class_fixtures(C))
+        self.assertFalse(util.has_class_fixtures(C()))
+
+    def test_testcase_with_setup(self):
+        class C(unittest.TestCase):
+            @classmethod
+            def setUpClass(cls):
+                pass
+        self.assertTrue(util.has_class_fixtures(C))
+        self.assertTrue(util.has_class_fixtures(C()))
+
+    def test_testcase_with_teardown(self):
+        class C(unittest.TestCase):
+            @classmethod
+            def tearDownClass(cls):
+                pass
+        self.assertTrue(util.has_class_fixtures(C))
+        self.assertTrue(util.has_class_fixtures(C()))
+
+    def test_derived_derived_testcase(self):
+        class C(unittest.TestCase):
+            @classmethod
+            def setUpClass(cls):
+                pass
+            @classmethod
+            def tearDownClass(cls):
+                pass
+        class D(C):
+            pass
+        self.assertTrue(util.has_class_fixtures(D))
+        self.assertTrue(util.has_class_fixtures(D()))

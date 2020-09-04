@@ -29,6 +29,8 @@ class TestMPPlugin(TestCase):
         rpi.registerInSubprocess(None)
         rpi.loadTestsFromModule(None)
         rpi.loadTestsFromTestCase(None)
+        rpi.moduleLoadedSuite(None)
+        rpi.getTestMethodNames(None)
         self.assertEqual(rpi.flush(), [('setTestOutcome', None)])
 
     def test_address(self):

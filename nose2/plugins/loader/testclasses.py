@@ -193,15 +193,16 @@ def MethodTestCase(cls):
             self.obj = cls()
             unittest.TestCase.__init__(self, 'runTest')
 
-        @classmethod
-        def setUpClass(klass):
-            if hasattr(cls, 'setUpClass'):
-                cls.setUpClass()
+        if util.has_class_fixtures(cls):
+            @classmethod
+            def setUpClass(klass):
+                if hasattr(cls, 'setUpClass'):
+                    cls.setUpClass()
 
-        @classmethod
-        def tearDownClass(klass):
-            if hasattr(cls, 'tearDownClass'):
-                cls.tearDownClass()
+            @classmethod
+            def tearDownClass(klass):
+                if hasattr(cls, 'tearDownClass'):
+                    cls.tearDownClass()
 
         def setUp(self):
             if hasattr(self.obj, 'setUp'):

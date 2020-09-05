@@ -185,15 +185,6 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 3 tests')
         self.assertEqual(proc.poll(), 1)
 
-    def test_test_classes(self):
-        proc = self.runIn(
-            'scenario/test_classes_mp',
-            '-v',
-            '--plugin=nose2.plugins.mp',
-            '-N=2')
-        self.assertTestRunOutputMatches(proc, stderr='Ran 13 tests')
-        self.assertEqual(proc.poll(), 0)
-
     def test_module_fixtures(self):
         proc = self.runIn(
             'scenario/module_fixtures',
@@ -295,3 +286,55 @@ class MPPluginTestRuns(FunctionalTestCase):
         )
         self.assertTestRunOutputMatches(proc, stderr=expected_results)
         self.assertEqual(proc.poll(), 1)
+
+
+class MPTestClassSupport(FunctionalTestCase):
+
+    def test_testclass_discover(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 13 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_by_module(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_classes_mp')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 8 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_by_class(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_classes_mp.Test')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 8 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_parameters(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_classes_mp.Test.test_params')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_generators(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_classes_mp.Test.test_gen')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+        self.assertEqual(proc.poll(), 0)

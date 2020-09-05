@@ -137,15 +137,16 @@ class Parameters(Plugin):
         if (parent and
             isinstance(parent, type) and
             issubclass(parent, unittest.TestCase)):
-            # generator method
+            # parameterized method in test case
             names = self._generate(event, obj.__name__, obj, parent)
             tests = [parent(n) for n in names]
         elif (parent and
               isinstance(parent, type)):
-            names = self._generate(event, name, obj, parent)
+            # parameterized method in test class
+            names = self._generate(event, obj.__name__, obj, parent)
             tests = [MethodTestCase(parent)(name) for name in names]
         else:
-            # generator func
+            # parameterized func
             tests = list(self._generateFuncTests(obj))
 
         if index is not None:

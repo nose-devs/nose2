@@ -362,7 +362,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
         self.assertEqual(proc.poll(), 0)
 
-    def test_testclass_class_fixtures(self):
+    def test_testclass_class_fixtures_and_parameters(self):
         proc = self.runIn(
             'scenario/test_classes_mp',
             '-v',
@@ -371,13 +371,33 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
         self.assertEqual(proc.poll(), 0)
 
-    def test_testclass_class_fixtures_mp(self):
+    def test_testclass_class_fixtures_and_parameters_mp(self):
         proc = self.runIn(
             'scenario/test_classes_mp',
             '-v',
             '--plugin=nose2.plugins.mp',
             '-N=2',
             'test_fixtures_mp.Test.test_params')
+        # XXX mp plugin runs the entire class if a class fixture is detected
+        self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_class_fixtures_and_generators(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            'test_fixtures_mp.Test.test_gen')
+        # main process runs selected tests
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testclass_class_fixtures_and_generators_mp(self):
+        proc = self.runIn(
+            'scenario/test_classes_mp',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_fixtures_mp.Test.test_gen')
         # XXX mp plugin runs the entire class if a class fixture is detected
         self.assertTestRunOutputMatches(proc, stderr='Ran 5 tests')
         self.assertEqual(proc.poll(), 0)

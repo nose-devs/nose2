@@ -133,7 +133,7 @@ class Generators(Plugin):
             )
         elif (parent and
               isinstance(parent, type)):
-              # generator method in test class
+            # generator method in test class
             method = obj
             instance = parent()
             tests = list(
@@ -254,4 +254,6 @@ def GeneratorMethodCase(cls):
                 if hasattr(cls, 'tearDownClass'):
                     cls.tearDownClass()
 
+    # XXX retain original class name
+    _GeneratorMethodCase.__name__ = cls.__name__
     return _GeneratorMethodCase

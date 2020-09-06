@@ -219,6 +219,10 @@ def MethodTestCase(cls):
         def runTest(self):
             getattr(self.obj, self.method)()
 
+        def shortDescription(self):
+            doc = getattr(self.obj, self.method).__doc__
+            return doc and doc.split("\n")[0].strip() or None
+
     return _MethodTestCase
 
 #

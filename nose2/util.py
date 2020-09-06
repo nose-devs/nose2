@@ -230,7 +230,9 @@ def isgenerator(obj):
 
 def has_module_fixtures(test):
     """Does this test live in a module with module fixtures?"""
-    modname = test.__class__.__module__
+    # test may be class or instance
+    test_class = test if isinstance(test, type) else test.__class__
+    modname = test_class.__module__
     try:
         mod = sys.modules[modname]
     except KeyError:

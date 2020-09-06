@@ -76,3 +76,56 @@ class HasClassFixturesTests(TestCase):
             pass
         self.assertTrue(util.has_class_fixtures(D))
         self.assertTrue(util.has_class_fixtures(D()))
+
+
+class HasModuleFixturesTests(TestCase):
+
+    def test_module_without_fixtures(self):
+        class M(object):
+            pass
+        M.__name__ = 'nose2.foo.bar'
+        class C(unittest.TestCase):
+            pass
+        C.__module__ = M.__name__
+        m = M()
+        m.C = C
+        sys.modules[M.__name__] = m
+        try:
+            self.assertFalse(util.has_module_fixtures(C))
+            self.assertFalse(util.has_module_fixtures(C()))
+        finally:
+            del sys.modules[M.__name__]
+
+    def test_module_with_setup(self):
+        class M(object):
+            pass
+        M.__name__ = 'nose2.foo.bar'
+        class C(unittest.TestCase):
+            pass
+        C.__module__ = M.__name__
+        m = M()
+        m.C = C
+        m.setUpModule = lambda: None
+        sys.modules[M.__name__] = m
+        try:
+            self.assertTrue(util.has_module_fixtures(C))
+            self.assertTrue(util.has_module_fixtures(C()))
+        finally:
+            del sys.modules[M.__name__]
+
+    def test_module_with_teardown(self):
+        class M(object):
+            pass
+        M.__name__ = 'nose2.foo.bar'
+        class C(unittest.TestCase):
+            pass
+        C.__module__ = M.__name__
+        m = M()
+        m.C = C
+        m.tearDownModule = lambda: None
+        sys.modules[M.__name__] = m
+        try:
+            self.assertTrue(util.has_module_fixtures(C))
+            self.assertTrue(util.has_module_fixtures(C()))
+        finally:
+            del sys.modules[M.__name__]

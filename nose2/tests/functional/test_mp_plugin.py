@@ -19,6 +19,7 @@ class TestMpPlugin(FunctionalTestCase):
         super(TestMpPlugin, self).setUp()
         self.session = session.Session()
         self.plugin = MultiProcess(session=self.session)
+        self.plugin.testRunTimeout = 2
 
     def test_flatten_without_fixtures(self):
         sys.path.append(support_file('scenario/slow'))
@@ -100,7 +101,7 @@ class TestMpPlugin(FunctionalTestCase):
 
         def fake_client(address):
             client = connection.Client(address)
-            time.sleep(10)
+            time.sleep(self.plugin.testRunTimeout)
             client.close()
 
         t = threading.Thread(target=fake_client, args=(listener.address,))
@@ -108,6 +109,7 @@ class TestMpPlugin(FunctionalTestCase):
         conn = self.plugin._acceptConns(listener)
         self.assertTrue(hasattr(conn, "send"))
         self.assertTrue(hasattr(conn, "recv"))
+        t.join()
 
 
 class TestProcserver(FunctionalTestCase):

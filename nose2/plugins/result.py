@@ -172,7 +172,8 @@ class ResultReporter(events.Plugin):
         errors = cats.get('errors', [])
         failures = cats.get('failures', [])
         # use evt.stream so plugins can replace/wrap/spy it
-        evt.stream.writeln('')
+        if self.session.verbosity > 0:
+            evt.stream.writeln('')
         self._printErrorList('ERROR', errors, evt.stream)
         self._printErrorList('FAIL', failures, evt.stream)
 

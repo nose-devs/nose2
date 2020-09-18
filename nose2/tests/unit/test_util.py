@@ -37,6 +37,7 @@ class UtilTests(TestCase):
 
 class HasClassFixturesTests(TestCase):
 
+    @unittest.skipIf(sys.version_info < (3,), 'Python 3 required')
     def test_unittest_testcase(self):
         C = unittest.TestCase
         self.assertFalse(util.has_class_fixtures(C))
@@ -44,7 +45,8 @@ class HasClassFixturesTests(TestCase):
 
     def test_derived_testcase(self):
         class C(unittest.TestCase):
-            pass
+            def runTest(self):
+                pass
         self.assertFalse(util.has_class_fixtures(C))
         self.assertFalse(util.has_class_fixtures(C()))
 
@@ -53,6 +55,8 @@ class HasClassFixturesTests(TestCase):
             @classmethod
             def setUpClass(cls):
                 pass
+            def runTest(self):
+                pass
         self.assertTrue(util.has_class_fixtures(C))
         self.assertTrue(util.has_class_fixtures(C()))
 
@@ -60,6 +64,8 @@ class HasClassFixturesTests(TestCase):
         class C(unittest.TestCase):
             @classmethod
             def tearDownClass(cls):
+                pass
+            def runTest(self):
                 pass
         self.assertTrue(util.has_class_fixtures(C))
         self.assertTrue(util.has_class_fixtures(C()))
@@ -73,7 +79,8 @@ class HasClassFixturesTests(TestCase):
             def tearDownClass(cls):
                 pass
         class D(C):
-            pass
+            def runTest(self):
+                pass
         self.assertTrue(util.has_class_fixtures(D))
         self.assertTrue(util.has_class_fixtures(D()))
 
@@ -85,7 +92,8 @@ class HasModuleFixturesTests(TestCase):
             pass
         M.__name__ = 'nose2.foo.bar'
         class C(unittest.TestCase):
-            pass
+            def runTest(self):
+                pass
         C.__module__ = M.__name__
         m = M()
         m.C = C
@@ -101,7 +109,8 @@ class HasModuleFixturesTests(TestCase):
             pass
         M.__name__ = 'nose2.foo.bar'
         class C(unittest.TestCase):
-            pass
+            def runTest(self):
+                pass
         C.__module__ = M.__name__
         m = M()
         m.C = C
@@ -118,7 +127,8 @@ class HasModuleFixturesTests(TestCase):
             pass
         M.__name__ = 'nose2.foo.bar'
         class C(unittest.TestCase):
-            pass
+            def runTest(self):
+                pass
         C.__module__ = M.__name__
         m = M()
         m.C = C

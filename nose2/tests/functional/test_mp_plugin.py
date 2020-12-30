@@ -362,6 +362,19 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
         self.assertEqual(proc.poll(), 0)
 
+    def test_testcase_class_fixtures_report_mp(self):
+        proc = self.runIn(
+            'scenario/class_fixtures',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_cf_testcase.Test.test_1')
+        # report should show correct names for all tests
+        self.assertTestRunOutputMatches(proc, stderr='test_1 \(test_cf_testcase.Test\) ... ok')
+        self.assertTestRunOutputMatches(proc, stderr='test_2 \(test_cf_testcase.Test\) ... ok')
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+        self.assertEqual(proc.poll(), 0)
+
     def test_testclass_class_fixtures_and_parameters(self):
         proc = self.runIn(
             'scenario/test_classes_mp',
@@ -422,5 +435,18 @@ class MPModuleFixturesSupport(FunctionalTestCase):
             '-N=2',
             'test_mf_testcase.Test.test_1')
         # XXX mp plugin runs the entire module if a module fixture is detected
+        self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
+        self.assertEqual(proc.poll(), 0)
+
+    def test_testcase_module_fixtures_report_mp(self):
+        proc = self.runIn(
+            'scenario/module_fixtures',
+            '-v',
+            '--plugin=nose2.plugins.mp',
+            '-N=2',
+            'test_mf_testcase.Test.test_1')
+        # report should show correct names for all tests
+        self.assertTestRunOutputMatches(proc, stderr='test_1 \(test_mf_testcase.Test\) ... ok')
+        self.assertTestRunOutputMatches(proc, stderr='test_2 \(test_mf_testcase.Test\) ... ok')
         self.assertTestRunOutputMatches(proc, stderr='Ran 2 tests')
         self.assertEqual(proc.poll(), 0)

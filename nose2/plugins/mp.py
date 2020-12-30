@@ -273,10 +273,10 @@ class MultiProcess(events.Plugin):
             try:
                 event.test = self.cases[event.test]
             except KeyError:
-                event.test = self.session.testLoader.failedLoadTests(
-                    'test_not_found',
-                    RuntimeError("Unable to locate test case for %s in "
-                                 "main process" % event.test))._tests[0]
+                # this happens when _flatten augments the test suite
+                # due to a class or module fixture being present
+                event.test = self.session.testLoader.loadTestsFromName(
+                    event.test)._tests[0]
             # subtest support
             if 'subtest' in event.metadata:
                 message, params = event.metadata.pop('subtest')

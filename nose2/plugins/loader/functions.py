@@ -87,6 +87,7 @@ class Functions(Plugin):
 
         parent, obj, name, index = result
         if (isinstance(obj, types.FunctionType) and not
+            isinstance(parent, type) and not
             util.isgenerator(obj) and not
             hasattr(obj, 'paramList') and
             util.num_expected_args(obj) == 0):

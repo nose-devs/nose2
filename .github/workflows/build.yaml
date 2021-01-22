@@ -1,0 +1,56 @@
+name: build
+on:
+  push:
+  pull_request:
+  # build weekly at 4:00 AM UTC
+  schedule:
+    - cron: '0 4 * * 1'
+jobs:
+  # this job ensures that tests can run from the packaged version, which means
+  # that nose2 is correctly packaging and distributing its tests
+  test-sdist:
+    name: run tests from packaged source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: test
+        run: |
+          python setup.py sdist
+          version="$(cat nose2/_version.py | grep '^__version__' |  cut -d "'" -f2)"
+          cd dist
+          tar -xzf "nose2-${version}.tar.gz"
+          cd "nose2-${version}"
+          pip install -e '.[dev]'
+          nose2 -v --pretty-assert
+  test:
+    strategy:
+      matrix:
+        # all platforms test py2, min supported py3, and max supported py3
+        # all other builds specified explicitly in `include`
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [2.7, 3.5, 3.7]
+        include:
+          - os: ubuntu-latest
+            python-version: 3.6
+          - os: ubuntu-latest
+            python-version: pypy-2.7
+          - os: ubuntu-latest
+            python-version: pypy-3.7
+    name: "python=${{ matrix.python-version }} os=${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install tox
+        run: python -m pip install -U tox
+      - name: test
+        run: python -m tox -e py
+      - name: ensure docs build
+        # docs are only ever built on a linux py3 box (readthedocs)
+        if: ${{ matrix.python-version == '3.7' && matrix.os == 'ubuntu-latest' }}
+        run: python -m tox -e docs

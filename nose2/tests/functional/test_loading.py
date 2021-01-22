@@ -82,6 +82,15 @@ class TestLoadTestsFromPackage(FunctionalTestCase):
             proc, stderr='OK')
         self.assertEqual(proc.poll(), 0)
 
+    def test_function_string_repr(self):
+        proc = self.runIn(
+            'scenario/tests_in_package',
+            '-v',
+            'pkg1.test.test_things.test_func')
+        self.assertTestRunOutputMatches(
+            proc, stderr='pkg1.test.test_things.test_func \.\.\. ok')
+        self.assertEqual(proc.poll(), 0)
+
     def test_generator_function_name(self):
         proc = self.runIn(
             'scenario/tests_in_package',

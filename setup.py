@@ -36,7 +36,7 @@ setup(
     ],
     extras_require={
         "coverage_plugin": ["coverage>=4.4.1"],
-        "doc": ["Sphinx>=1.6.5", "sphinx_rtd_theme", "mock"],
+        "dev": ["Sphinx>=1.6.5", "sphinx_rtd_theme", "mock", "coverage"],
     },
     entry_points={
         "console_scripts": [

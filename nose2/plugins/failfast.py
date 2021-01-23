@@ -19,6 +19,11 @@ class FailFast(events.Plugin):
     commandLineSwitch = (
         'F', 'fail-fast', 'Stop the test run after the first error or failure')
 
+    def resultCreated(self, event):
+        """Mark new result"""
+        if hasattr(event.result, 'failfast'):
+            event.result.failfast = True
+
     def testOutcome(self, event):
         """Stop on unexpected error or failure"""
         if event.exc_info and not event.expected:

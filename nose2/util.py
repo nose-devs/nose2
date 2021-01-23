@@ -194,6 +194,9 @@ def test_name(test, qualname=True):
             tid = test.id()
     if '\n' in tid:
         tid = tid.split('\n')[0]
+    # subtest support
+    if ' ' in tid:
+        tid = tid.split(' ')[0]
     return tid
 
 

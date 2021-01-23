@@ -277,6 +277,8 @@ class MultiProcess(events.Plugin):
             # subtest support
             if 'subtest' in event.metadata:
                 message, params = event.metadata.pop('subtest')
+                # XXX the sentinel value does not survive the pickle
+                # round-trip and must be reset by hand
                 if type(message) == type(object()):
                     message = unittest.case._subtest_msg_sentinel
                 event.test = unittest.case._SubTest(event.test, message, params)

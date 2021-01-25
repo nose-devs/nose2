@@ -1,13 +1,12 @@
 from nose2.tests._common import FunctionalTestCase
 
-_SUFFIX = (
-    "\n----------------------------------------------------------------------"
-    "\nRan 1 test "
-)
+_SUFFIX = """\
+----------------------------------------------------------------------
+Ran 1 test """
 
 Q_TEST_PATTERN = r"(?<!\.)(?<!ok)" + _SUFFIX
-MID_TEST_PATTERN = r"\." + _SUFFIX
-V_TEST_PATTERN = r"test \(__main__\.Test\) \.\.\. ok" + "\n" + _SUFFIX
+MID_TEST_PATTERN = r"\." + "\n" + _SUFFIX
+V_TEST_PATTERN = r"test \(__main__\.Test\) \.\.\. ok" + "\n\n" + _SUFFIX
 
 
 class TestVerbosity(FunctionalTestCase):

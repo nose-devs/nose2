@@ -28,6 +28,13 @@ jobs:
   test:
     strategy:
       matrix:
+        # for the matrix, macos and linux on
+        #   - py2
+        #   - the lowest supported py3
+        #   - the highest supported py3
+        #
+        # any additional builds for windows and other python versions are
+        # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest, macos-latest]
         python-version: [2.7, 3.5, 3.7]
         ignore-failures: [false]

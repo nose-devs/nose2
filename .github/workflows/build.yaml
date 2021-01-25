@@ -37,28 +37,21 @@ jobs:
         # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest, macos-latest]
         python-version: [2.7, 3.5, 3.7]
-        ignore-failures: [false]
         include:
           - os: ubuntu-latest
             python-version: 3.6
-            ignore-failures: false
           - os: ubuntu-latest
             python-version: pypy-2.7
-            ignore-failures: false
           - os: ubuntu-latest
             python-version: pypy-3.7
-            ignore-failures: false
           # FIXME: windows builds fail and must therefore be included with
           # `ignore-failures: true` which we pass for `continue-on-error` below
           - os: windows-latest
             python-version: 2.7
-            ignore-failures: true
           - os: windows-latest
             python-version: 3.7
-            ignore-failures: true
     name: "python=${{ matrix.python-version }} os=${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.ignore-failures }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -68,6 +61,8 @@ jobs:
         run: python -m pip install -U tox
       - name: test
         run: python -m tox -e py
+        # ignore errors in windows builds (for now)
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}
       - name: ensure docs build
         # docs are only ever built on a linux py3 box (readthedocs)
         if: ${{ matrix.python-version == '3.7' && matrix.os == 'ubuntu-latest' }}

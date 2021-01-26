@@ -1,7 +1,6 @@
 [run]
 branch = True
 omit = nose2/tests/*
-source = nose2
 include = nose2/*
 
 [report]

@@ -36,10 +36,14 @@ jobs:
         # any additional builds for windows and other python versions are
         # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest, macos-latest]
-        python-version: [2.7, 3.5, 3.7]
+        python-version: [2.7, 3.5, 3.9]
         include:
           - os: ubuntu-latest
             python-version: 3.6
+          - os: ubuntu-latest
+            python-version: 3.7
+          - os: ubuntu-latest
+            python-version: 3.8
           - os: ubuntu-latest
             python-version: pypy-2.7
           - os: ubuntu-latest
@@ -49,7 +53,7 @@ jobs:
           - os: windows-latest
             python-version: 2.7
           - os: windows-latest
-            python-version: 3.7
+            python-version: 3.9
     name: "python=${{ matrix.python-version }} os=${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     steps:
@@ -65,5 +69,5 @@ jobs:
         continue-on-error: ${{ matrix.os == 'windows-latest' }}
       - name: ensure docs build
         # docs are only ever built on a linux py3 box (readthedocs)
-        if: ${{ matrix.python-version == '3.7' && matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' }}
         run: python -m tox -e docs

@@ -5,13 +5,10 @@ from setuptools import setup
 
 VERSION = open("nose2/_version.py").readlines()[-1].split()[-1].strip("\"'")
 
-# TODO: potentially change author?
-AUTHOR = "Jason Pellerin"
-AUTHOR_EMAIL = "jpellerin+nose@gmail.com"
+MAINTAINER = "nose2 devs"
+MAINTAINER_EMAIL = "dev@nose2.io"
 
-py_version = sys.version_info
-
-
+PY_VERSION = "%s.%s" % (sys.version_info.major, sys.version_info.minor)
 LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
 setup(
@@ -41,15 +38,15 @@ setup(
     entry_points={
         "console_scripts": [
             "nose2 = nose2:discover",
-            "nose2-%s.%s = nose2:discover" % (py_version.major, py_version.minor),
+            "nose2-%s = nose2:discover" % PY_VERSION,
         ]
     },
     test_suite="unittest.collector",
     # descriptive package info below
     description="unittest2 with plugins, the succesor to nose",
     long_description=LONG_DESCRIPTION,
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
+    maintainer=MAINTAINER,
+    maintainer_email=MAINTAINER_EMAIL,
     url="https://github.com/nose-devs/nose2",
     classifiers=[
         "Development Status :: 4 - Beta",

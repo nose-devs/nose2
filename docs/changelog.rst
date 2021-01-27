@@ -7,6 +7,9 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 Unreleased
 ----------
 
+0.10.0
+------
+
 Added
 ~~~~~
 

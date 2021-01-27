@@ -1,14 +1,14 @@
-.. image:: https://travis-ci.org/nose-devs/nose2.svg?branch=master
-    :target: https://travis-ci.org/nose-devs/nose2
-    :alt: Build Status
-
-.. image:: https://coveralls.io/repos/github/nose-devs/nose2/badge.svg?branch=master
-    :target: https://coveralls.io/github/nose-devs/nose2?branch=master
-    :alt: Coverage Status
+.. image:: https://github.com/nose-devs/nose2/workflows/build/badge.svg?event=push
+    :alt: build status
+    :target: https://github.com/nose-devs/nose2/actions?query=workflow%3Abuild
 
 .. image:: https://img.shields.io/pypi/v/nose2.svg
     :target: https://pypi.org/project/nose2/
     :alt: Latest PyPI version
+
+.. image:: https://img.shields.io/pypi/pyversions/nose2.svg
+    :alt: Supported Python Versions
+    :target: https://pypi.org/project/nose2/
 
 .. image:: https://img.shields.io/badge/Mailing%20list-discuss%40nose2.io-blue.svg
     :target: https://groups.google.com/a/nose2.io/forum/#!forum/discuss

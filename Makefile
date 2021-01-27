@@ -1,6 +1,6 @@
 .PHONY: help docs test clean init build
 
-NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d "'" -f2)
+NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d '"' -f2)
 
 help:
 	@echo 'Easy setup for local nose2 development'

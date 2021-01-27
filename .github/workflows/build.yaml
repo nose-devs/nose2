@@ -19,7 +19,7 @@ jobs:
       - name: test
         run: |
           python setup.py sdist
-          version="$(cat nose2/_version.py | grep '^__version__' |  cut -d "'" -f2)"
+          version="$(cat nose2/_version.py | grep '^__version__' |  cut -d '"' -f2)"
           cd dist
           tar -xzf "nose2-${version}.tar.gz"
           cd "nose2-${version}"

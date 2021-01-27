@@ -1,8 +1,12 @@
 [run]
 branch = True
-source = nose2
+omit = nose2/tests/*
 include = nose2/*
-omit = nose2/*/tests/*
-       nose2/tests/*
-       test_*.*
-       __init__.py
+
+[report]
+show_missing = True
+skip_covered = True
+exclude_lines = pragma: no cover
+                raise NotImplementedError
+include = nose2/*
+omit = nose2/tests/*

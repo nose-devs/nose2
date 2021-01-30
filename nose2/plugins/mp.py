@@ -243,6 +243,9 @@ class MultiProcess(events.Plugin):
                         mods.setdefault(test.__class__.__module__, []).append(
                             testid)
                     elif util.has_class_fixtures(test):
+                        # testclasses support
+                        if test.__class__.__name__ == '_MethodTestCase':
+                            test = test.obj
                         classes.setdefault(
                             "%s.%s" % (test.__class__.__module__,
                                        test.__class__.__name__),
@@ -270,10 +273,10 @@ class MultiProcess(events.Plugin):
             try:
                 event.test = self.cases[event.test]
             except KeyError:
-                event.test = self.session.testLoader.failedLoadTests(
-                    'test_not_found',
-                    RuntimeError("Unable to locate test case for %s in "
-                                 "main process" % event.test))._tests[0]
+                # this happens when _flatten augments the test suite
+                # due to a class or module fixture being present
+                event.test = self.session.testLoader.loadTestsFromName(
+                    event.test)._tests[0]
             # subtest support
             if 'subtest' in event.metadata:
                 message, params = event.metadata.pop('subtest')
@@ -481,7 +484,7 @@ class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
     noLogMethods = set(
         ['getTestCaseNames', 'startSubprocess', 'stopSubprocess',
-         'registerInSubprocess', 'moduleLoadedSuite'])
+         'registerInSubprocess', 'moduleLoadedSuite', 'getTestMethodNames'])
 
     def __init__(self):
         super(RecordingPluginInterface, self).__init__()

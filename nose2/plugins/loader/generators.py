@@ -133,7 +133,7 @@ class Generators(Plugin):
             )
         elif (parent and
               isinstance(parent, type)):
-              # generator method in test class
+            # generator method in test class
             method = obj
             instance = parent()
             tests = list(
@@ -243,13 +243,17 @@ class GeneratorFunctionCase(unittest.FunctionTestCase):
 def GeneratorMethodCase(cls):
     class _GeneratorMethodCase(GeneratorFunctionCase):
 
-        @classmethod
-        def setUpClass(klass):
-            if hasattr(cls, 'setUpClass'):
-                cls.setUpClass()
+        if util.has_class_fixtures(cls):
+            @classmethod
+            def setUpClass(klass):
+                if hasattr(cls, 'setUpClass'):
+                    cls.setUpClass()
 
-        @classmethod
-        def tearDownClass(klass):
-            if hasattr(cls, 'tearDownClass'):
-                cls.tearDownClass()
+            @classmethod
+            def tearDownClass(klass):
+                if hasattr(cls, 'tearDownClass'):
+                    cls.tearDownClass()
+
+    # XXX retain original class name
+    _GeneratorMethodCase.__name__ = cls.__name__
     return _GeneratorMethodCase

@@ -230,7 +230,9 @@ def isgenerator(obj):
 
 def has_module_fixtures(test):
     """Does this test live in a module with module fixtures?"""
-    modname = test.__class__.__module__
+    # test may be class or instance
+    test_class = test if isinstance(test, type) else test.__class__
+    modname = test_class.__module__
     try:
         mod = sys.modules[modname]
     except KeyError:
@@ -239,6 +241,8 @@ def has_module_fixtures(test):
 
 
 def has_class_fixtures(test):
+    # test may be class or instance
+    test_class = test if isinstance(test, type) else test.__class__
     # hasattr would be the obvious thing to use here. Unfortunately, all tests
     # inherit from unittest2.case.TestCase, and that *always* has setUpClass and
     # tearDownClass methods. Thus, exclude the unitest and unittest2 base
@@ -248,9 +252,9 @@ def has_class_fixtures(test):
             "unittest.case" not in c.__module__ and
             "unittest2.case" not in c.__module__)
     has_class_setups = any(
-        'setUpClass' in c.__dict__ for c in test.__class__.__mro__ if is_not_base_class(c))
+        'setUpClass' in c.__dict__ for c in test_class.__mro__ if is_not_base_class(c))
     has_class_teardowns = any(
-        'tearDownClass' in c.__dict__ for c in test.__class__.__mro__ if is_not_base_class(c))
+        'tearDownClass' in c.__dict__ for c in test_class.__mro__ if is_not_base_class(c))
     return has_class_setups or has_class_teardowns
 
 

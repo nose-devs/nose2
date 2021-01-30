@@ -138,7 +138,11 @@ def _get_attr(test, key):
         if val is not undefined:
             return val
     elif hasattr(test, '_testMethodName'):
-        meth = getattr(test, test._testMethodName, undefined)
+        # testclasses support
+        if test.__class__.__name__ == '_MethodTestCase':
+            meth = getattr(test.obj, test.method, undefined)
+        else:
+            meth = getattr(test, test._testMethodName, undefined)
         if meth is not undefined:
             val = getattr(meth, key, undefined)
             if val is not undefined:

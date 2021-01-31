@@ -49,7 +49,7 @@ with such.A("system with setup") as it:
         it.uses(Layer2)
 
         @it.should("do something else")  # noqa: F811
-        def test(case):
+        def test(case):  # noqa: F811
             it.assertTrue(it.unique_resource.used)
 
 

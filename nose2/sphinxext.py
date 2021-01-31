@@ -3,6 +3,7 @@ import types
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import ViewList
+
 from nose2 import events, plugins, session, util
 
 AD = u"<autodoc>"

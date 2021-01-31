@@ -45,7 +45,7 @@ class DocTestLoader(Plugin):
 
         name, package_path = util.name_from_path(path)
         # ignore top-level setup.py which cannot be imported
-        if name == 'setup':
+        if name == "setup":
             return
         util.ensure_importable(package_path)
         try:

@@ -1,7 +1,6 @@
 """Test doctests plugin."""
 import doctest
 import sys
-
 from textwrap import dedent
 
 from nose2 import events, loader, session
@@ -74,7 +73,8 @@ def func():
         # The file should be ignored by the plugin as it cannot safely be
         # imported.
 
-        setup_py = dedent("""\
+        setup_py = dedent(
+            """\
             '''
             >>> never executed
             '''

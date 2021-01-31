@@ -185,8 +185,7 @@ class InnerD(unittest.TestCase):
     layer = LayerD
 
     def test(self):
-        """test with docstring
-        """
+        """test with docstring"""
         self.assertEqual({"base": "setup", "layerD": "setup"}, STATE)
 
 

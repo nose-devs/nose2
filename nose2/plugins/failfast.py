@@ -24,7 +24,7 @@ class FailFast(events.Plugin):
 
     def resultCreated(self, event):
         """Mark new result"""
-        if hasattr(event.result, 'failfast'):
+        if hasattr(event.result, "failfast"):
             event.result.failfast = True
 
     def testOutcome(self, event):

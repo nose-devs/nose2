@@ -164,8 +164,7 @@ class Session(object):
             except AttributeError:
                 pass
             try:
-                if (issubclass(item, events.Plugin) and not
-                    item == events.Plugin):
+                if issubclass(item, events.Plugin) and not item == events.Plugin:
                     avail.append(item)
             except TypeError:
                 pass

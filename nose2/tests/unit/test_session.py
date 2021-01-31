@@ -26,6 +26,7 @@ class SessionUnitTests(unittest.TestCase):
     def test_load_plugins_from_module_does_not_load_plain_Plugins(self):
         class fakemod:
             pass
+
         f = fakemod()
 
         f.A = events.Plugin
@@ -36,10 +37,12 @@ class SessionUnitTests(unittest.TestCase):
     def test_load_plugins_from_module_does_not_duplicate_always_on_plugins(self):
         class fakemod:
             pass
+
         f = fakemod()
 
         class A(events.Plugin):
             alwaysOn = True
+
         f.A = A
         s = session.Session()
         s.loadPluginsFromModule(f)

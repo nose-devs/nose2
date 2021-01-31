@@ -404,10 +404,10 @@ class MPClassFixturesSupport(FunctionalTestCase):
         )
         # report should show correct names for all tests
         self.assertTestRunOutputMatches(
-            proc, stderr="test_1 \(test_cf_testcase.Test\) ... ok"
+            proc, stderr=r"test_1 \(test_cf_testcase.Test\) ... ok"
         )
         self.assertTestRunOutputMatches(
-            proc, stderr="test_2 \(test_cf_testcase.Test\) ... ok"
+            proc, stderr=r"test_2 \(test_cf_testcase.Test\) ... ok"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
@@ -484,10 +484,10 @@ class MPModuleFixturesSupport(FunctionalTestCase):
         )
         # report should show correct names for all tests
         self.assertTestRunOutputMatches(
-            proc, stderr="test_1 \(test_mf_testcase.Test\) ... ok"
+            proc, stderr=r"test_1 \(test_mf_testcase.Test\) ... ok"
         )
         self.assertTestRunOutputMatches(
-            proc, stderr="test_2 \(test_mf_testcase.Test\) ... ok"
+            proc, stderr=r"test_2 \(test_mf_testcase.Test\) ... ok"
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)

@@ -442,9 +442,9 @@ class TestLayers(TestCase):
             else:
                 yield [n for n in self.iternames(t)]
 
-    def _listset(self, l):
+    def _listset(self, lst):
         n = set([])
-        for t in l:
+        for t in lst:
             if isinstance(t, list):
                 n.add(self._listset(t))
             else:

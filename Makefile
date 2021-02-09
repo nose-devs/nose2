@@ -1,4 +1,4 @@
-.PHONY: help docs test clean init build
+.PHONY: help docs test lint clean build
 
 NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d '"' -f2)
 

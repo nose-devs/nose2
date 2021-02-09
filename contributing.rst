@@ -6,98 +6,68 @@ testing community.
 
 If you're unsure how to get started, feel free to ask for help from the nose2
 community via the `mailing list <mailto:discuss@nose2.io>`_.
-We welcome contributors with all levels of experience.
 
 The Basics
 ----------
 
-nose2 is hosted on `github`_. Our home there is
-https://github.com/nose-devs/nose2. We use github's issue tracking and
-collaboration tools *exclusively* for managing nose2's
-development. This means:
+nose2 is hosted on `github`_ and use GitHub for issue tracking.
 
-* Please report issues here: https://github.com/nose-devs/nose2/issues
+Please report issues and make feature requests here:
+https://github.com/nose-devs/nose2/issues
 
-* Please make feature requests in the same place
+Submit changes as GitHub Pull Requests.
 
-* Please submit all patches as github pull requests
+Code Contributions
+------------------
 
-Coding Guidelines
------------------
-
-The main rule is: *any patch that touches code should include tests.*
-And of course all tests should pass under all supported versions of Python.
+The main rule is: *code changes should include tests.*
 
 If you aren't sure how to add tests, or you don't know why existing tests fail
-on your changes, submit your patch and ask for help testing it.
+on your changes, that's okay! Submit your patch and ask for help testing it.
 
-Tests are easy to run. Just install `tox`_ (``pip install tox``), and run
-``tox`` in the nose2 root directory. You can also use ``make test`` to easily
-install and run tox correctly.
+Local Dev Requirements
+++++++++++++++++++++++
 
-Some additional tips for the python and documentation in this project.
+To run the tests you must have `tox`_  installed.
 
-- Code should be `pep8`_ compliant
-- Where possible, write code which passes ``pyflakes`` linting (consider using
-  ``flake8`` to do ``pyflakes`` and ``pep8`` checking)
-- For consistency with ``unittest`` please use CamelCase for class names,
-  methods, attributes and function parameters that map directly to class
-  attributes.
-- Try to use raw strings for docstrings -- ensures that ReST won't be
-  confused by characters like ``\\``
-- For complex functionality, include sample usage in docstrings
+Optional but useful tools include ``make`` and `pre-commit`_.
 
-Workflow, Branching and Pull Requests
--------------------------------------
+Running Tests
++++++++++++++
 
-The basic workflow should be to do the work in a topic branch in your fork
-then post a pull request for that branch.
+To run all tests: ::
 
-For any pull request,
+    $ tox
 
-- *Make sure it meets the standards set in this document*
-- *Make sure it merges cleanly*
-- *List any issues closed by the pull request*
-- *Squash intermediate commits*. Consider using ``git rebase --interactive`` to
-  squash typo fixes, aborted implementations, etc.
+To run linting checks: ::
 
-Reporting Bugs
---------------
+    $ tox -e lint
 
-The best bug reports are ones which:
+You can also use ``make test`` and ``make lint`` for these.
 
-- *Check for duplicates*. Do a quick search to try to make sure you aren't
-  reporting a known bug
-- *Use a clear descriptive title*
-- *Explain what behavior you expected*.
-- *Provide a specific example of how to reproduce*. Example code, the
-  command(s) you ran, and anything else which may be relevant
-- *Include a stacktrace* where applicable
+Linting
++++++++
 
-In many cases, you can help by including the following information:
+nose2 uses `black`_, `isort`_, and `flake8`_ to enforce linting and code
+style rules, and `pre-commit`_ to run these tools.
 
-- *What version of python are you running?*
-- *What OS and OS version are you running?* ``uname -a`` output helps, but
-  additional description like "Ubuntu Linux 17.10" may be useful too
-- *What other python packages do you have installed?* The best thing in this
-  case is to show us the results of ``pip freeze``
+For the best development experience, we recommend setting up integrations with
+your editor and git.
 
-If you are willing and able, *write a failing test*.
+Running ``pre-commit`` as a git hook is optional. To configure it, you must
+have ``pre-commit`` installed and run:
 
-Requesting Enhancements
------------------------
+.. code-block:: bash
 
-When requesting new features,
+    $ pre-commit install
 
-- *Say why you want it*. Focus more on the problem which needs to be solved
-  than the specifics of how to solve it
-- *Suggest what you think is the easiest implementation path*. If you have an
-  idea about how a feature could be implemented, write it down
-- *Volunteer to write it!* ``nose2`` is maintained as a community effort. If
-  you want a new feature, the best way to get it added is to write it
-  yourself!
+.. note::
+    If you need to bypass pre-commit hooks after setting this up, you can commit
+    with ``--no-verify``
 
-
-.. _github: https://github.com/
-.. _pep8: http://www.python.org/dev/peps/pep-0008/
+.. _github: https://github.com/nose-devs/nose2
 .. _tox: http://pypi.python.org/pypi/tox
+.. _black: https://black.readthedocs.io/
+.. _isort: https://pycqa.github.io/isort/
+.. _flake8: https://flake8.pycqa.org/
+.. _pre-commit: https://pre-commit.com/

@@ -1,5 +1,5 @@
 """
-test
+test of some commands
 """
 import logging
 

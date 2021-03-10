@@ -311,6 +311,9 @@ These hooks are called for registered plugins only.
    printing to the console. To prevent other plugins from reporting to
    the user, set ``event.handled`` to ``True``.
 
+   nose2 will never produce this event by itself. It only gets triggered if
+   a plugin creates a test result with an unrecognized outcome.
+
 .. function :: stopTest(self, event)
 
    :param event: A :class:`nose2.events.StopTestEvent` instance

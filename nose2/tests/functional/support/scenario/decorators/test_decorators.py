@@ -16,8 +16,8 @@ def teardown():
 
 @with_setup(setup)
 def test_with_setup():
-    assert setup_performed, 'Setup not performed.'
-    
+    assert setup_performed, "Setup not performed."
+
 
 @with_teardown(teardown)
 def test_with_teardown():
@@ -25,4 +25,4 @@ def test_with_teardown():
 
 
 def test_teardown_ran():
-    assert teardown_performed, 'Teardown not performed.'
+    assert teardown_performed, "Teardown not performed."

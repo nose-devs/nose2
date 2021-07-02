@@ -1,18 +1,22 @@
-from contextlib import contextmanager
 import logging
 import sys
-import six
 import unittest
+from contextlib import contextmanager
+
+import six
 
 from nose2 import util
 from nose2.main import PluggableTestProgram
-
 
 log = logging.getLogger(__name__)
 
 __unittest = True
 
-LAYERS_PLUGIN_NOT_LOADED_MESSAGE = 'Warning: Such will not function properly if the "nose2.plugins.layers" plugin not loaded!\n'
+LAYERS_PLUGIN_NOT_LOADED_MESSAGE = (
+    "Warning: Such will not function properly if "
+    'the "nose2.plugins.layers" plugin not loaded!\n'
+)
+
 
 @contextmanager
 def A(description):
@@ -31,7 +35,6 @@ def A(description):
 
 
 class Helper(unittest.TestCase):
-
     def runTest(self):
         pass
 
@@ -46,10 +49,11 @@ class Scenario(object):
     A test scenario defines a set of fixtures and tests
     that depend on those fixtures.
     """
+
     _helper = helper
 
     def __init__(self, description):
-        self._group = Group('A %s' % description, 0)
+        self._group = Group("A %s" % description, 0)
 
     @contextmanager
     def having(self, description):
@@ -65,8 +69,7 @@ class Scenario(object):
 
         """
         last = self._group
-        self._group = self._group.child(
-            "having %s" % description)
+        self._group = self._group.child("having %s" % description)
         log.debug("starting new group from %s", description)
         yield self
         log.debug("leaving group %s", description)
@@ -188,11 +191,13 @@ class Scenario(object):
                # ....
 
         """
+
         def decorator(f):
             _desc = desc if isinstance(desc, six.string_types) else f.__doc__
             case = Case(self._group, f, "should %s" % _desc)
             self._group.addCase(case)
             return case
+
         if isinstance(desc, type(decorator)):
             return decorator(desc)
         return decorator
@@ -221,69 +226,73 @@ class Scenario(object):
         currentSession = PluggableTestProgram.getCurrentSession()
         if not currentSession:
             return
-        if not currentSession.isPluginLoaded('nose2.plugins.layers'):
+        if not currentSession.isPluginLoaded("nose2.plugins.layers"):
             sys.stderr.write(LAYERS_PLUGIN_NOT_LOADED_MESSAGE)
 
     def _makeGroupTest(self, mod, group, parent_layer=None, position=0):
         layer = self._makeLayer(group, parent_layer, position)
         case = self._makeTestCase(group, layer, parent_layer)
-        log.debug(
-            "Made test case %s with layer %s from %s", case, layer, group)
+        log.debug("Made test case %s with layer %s from %s", case, layer, group)
         mod[layer.__name__] = layer
-        layer.__module__ = mod['__name__']
+        layer.__module__ = mod["__name__"]
         name = case.__name__
-        long_name = ' '.join(
-            [n[0].description for n in util.ancestry(layer)] + [name])
+        long_name = " ".join([n[0].description for n in util.ancestry(layer)] + [name])
         mod[long_name] = case
         if name not in mod:
             mod[name] = case
-        case.__module__ = mod['__name__']
+        case.__module__ = mod["__name__"]
         for index, child in enumerate(group._children):
             self._makeGroupTest(mod, child, layer, index)
 
     def _makeTestCase(self, group, layer, parent_layer):
-        attr = {
-            'layer': layer,
-            'group': group,
-            'description': group.description,
-        }
+        attr = {"layer": layer, "group": group, "description": group.description}
 
         def _make_test_func(case):
-            '''
-            Needs to be outside of the for-loop scope, so that ``case`` is properly registered as a closure.
-            '''
+            """
+            Needs to be outside of the for-loop scope, so that ``case`` is properly
+            registered as a closure.
+            """
+
             def _test(s, *args):
                 case(s, *args)
+
             return _test
 
         for index, case in enumerate(group._cases):
-            name = 'test %04d: %s' % (index, case.description)
+            name = "test %04d: %s" % (index, case.description)
             _test = _make_test_func(case)
             _test.__name__ = name
             _test.description = case.description
             _test.case = case
             _test.index = index
-            if hasattr(case.func, 'paramList'):
+            if hasattr(case.func, "paramList"):
                 _test.paramList = case.func.paramList
             attr[name] = _test  # for collection and sorting
             attr[case.description] = _test  # for random access by name
 
-        setups = getattr(parent_layer, 'testSetups', []) + group._test_setups
+        setups = getattr(parent_layer, "testSetups", []) + group._test_setups
         if setups:
+
             def setUp(self):
                 for func in setups:
                     util.call_with_args_if_expected(func, self)
-            attr['setUp'] = setUp
-        teardowns = getattr(parent_layer, 'testTeardowns', []) + group._test_teardowns[:]
+
+            attr["setUp"] = setUp
+        teardowns = (
+            getattr(parent_layer, "testTeardowns", []) + group._test_teardowns[:]
+        )
         if teardowns:
+
             def tearDown(self):
                 for func in teardowns:
                     util.call_with_args_if_expected(func, self)
-            attr['tearDown'] = tearDown
+
+            attr["tearDown"] = tearDown
 
         def methodDescription(self):
             return getattr(self, self._testMethodName).description
-        attr['methodDescription'] = methodDescription
+
+        attr["methodDescription"] = methodDescription
 
         return type(group.description, (unittest.TestCase,), attr)
 
@@ -300,15 +309,16 @@ class Scenario(object):
                 util.call_with_args_if_expected(func, self)
 
         attr = {
-            'description': group.description,
-            'setUp': classmethod(setUp),
-            'tearDown': classmethod(tearDown),
-            'setups': group._setups[:],
-            'testSetups': getattr(parent_layer, 'testSetups', []) + group._test_setups,
-            'teardowns': group._teardowns[:],
-            'testTeardowns': getattr(parent_layer, 'testTeardowns', []) + group._test_teardowns[:],
-            'position': position,
-            'mixins': ()
+            "description": group.description,
+            "setUp": classmethod(setUp),
+            "tearDown": classmethod(tearDown),
+            "setups": group._setups[:],
+            "testSetups": getattr(parent_layer, "testSetups", []) + group._test_setups,
+            "teardowns": group._teardowns[:],
+            "testTeardowns": getattr(parent_layer, "testTeardowns", [])
+            + group._test_teardowns[:],
+            "position": position,
+            "mixins": (),
         }
 
         if group.base_layer:
@@ -320,9 +330,13 @@ class Scenario(object):
         else:
             layer = type("%s:layer" % group.description, (parent_layer,), attr)
         if group.mixins:
-            layer.mixins = getattr(layer, 'mixins', ()) + tuple(group.mixins)
-        log.debug("made layer %s with bases %s and mixins %s",
-                  layer, layer.__bases__, layer.mixins)
+            layer.mixins = getattr(layer, "mixins", ()) + tuple(group.mixins)
+        log.debug(
+            "made layer %s with bases %s and mixins %s",
+            layer,
+            layer.__bases__,
+            layer.mixins,
+        )
         return layer
 
 
@@ -368,7 +382,7 @@ class Group(object):
             d.insert(0, p.description)
             p = p.parent
         d.append(self.description)
-        return ' '.join(d)
+        return " ".join(d)
 
     def child(self, description, base_layer=None):
         child = Group(description, self.indent + 1, self, base_layer)
@@ -379,6 +393,7 @@ class Group(object):
 class Case(object):
 
     """Information about a test case"""
+
     _helper = helper
 
     def __init__(self, group, func, description):

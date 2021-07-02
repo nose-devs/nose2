@@ -1,7 +1,6 @@
 """Test doctests plugin."""
-import sys
 import doctest
-
+import sys
 from textwrap import dedent
 
 from nose2 import events, loader, session
@@ -12,7 +11,8 @@ from nose2.tests._common import TestCase
 class UnitTestDocTestLoader(TestCase):
 
     """Test class DocTestLoader."""
-    tags = ['unit']
+
+    tags = ["unit"]
 
     _RUN_IN_TEMP = True
 
@@ -24,7 +24,7 @@ class UnitTestDocTestLoader(TestCase):
 
     def test___init__(self):
         """Test the __init__ method."""
-        self.assertEqual(self.plugin.extensions, ['.txt', '.rst'])
+        self.assertEqual(self.plugin.extensions, [".txt", ".rst"])
 
     def test_handle_file(self):
         """Test method handleFile."""
@@ -33,30 +33,36 @@ class UnitTestDocTestLoader(TestCase):
 >>> 2 == 2
 True
 """
-        txt_event = self._handle_file('docs.txt', doc_test)
-        rst_event = self._handle_file('docs.rst', doc_test)
+        txt_event = self._handle_file("docs.txt", doc_test)
+        rst_event = self._handle_file("docs.rst", doc_test)
         # Excercise loading of doctests from Python code
-        py_event = self._handle_file('docs.py', """\
+        py_event = self._handle_file(
+            "docs.py",
+            """\
 \"\"\"
 >>> 2 == 2
 True
 \"\"\"
-""")
-        for event, ext in [(txt_event, 'txt'), (rst_event, 'rst')]:
-            test, = event.extraTests
+""",
+        )
+        for event, ext in [(txt_event, "txt"), (rst_event, "rst")]:
+            (test,) = event.extraTests
             self.assertTrue(isinstance(test, doctest.DocFileCase))
             self.assertEqual(repr(test), "docs.%s" % ext)
 
-        testsuite, = py_event.extraTests
-        test, = list(testsuite)
-        self.assertEqual(repr(test), 'docs ()')
+        (testsuite,) = py_event.extraTests
+        (test,) = list(testsuite)
+        self.assertEqual(repr(test), "docs ()")
 
     def test_handle_file_python_without_doctests(self):
         """Test calling handleFile for a Python module without doctests."""
-        event = self._handle_file("mod.py", """\
+        event = self._handle_file(
+            "mod.py",
+            """\
 def func():
     pass
-""")
+""",
+        )
         if sys.version_info >= (3, 5):
             self.assertEqual(event.extraTests, [doctest.DocTestSuite()])
         else:
@@ -67,7 +73,8 @@ def func():
         # The file should be ignored by the plugin as it cannot safely be
         # imported.
 
-        setup_py = dedent("""\
+        setup_py = dedent(
+            """\
             '''
             >>> never executed
             '''

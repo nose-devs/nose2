@@ -1,6 +1,6 @@
-raise ValueError('booms')
+raise ValueError("booms")
 
-import unittest
+import unittest  # noqa: E402
 
 
 def test():
@@ -8,6 +8,5 @@ def test():
 
 
 class Test(unittest.TestCase):
-
     def test(self):
         pass

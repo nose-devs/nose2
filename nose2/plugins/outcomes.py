@@ -20,7 +20,6 @@ to be treated as failures or skips instead:
 
 from nose2.events import Plugin
 
-
 __unittest = True
 
 
@@ -28,13 +27,16 @@ class Outcomes(Plugin):
 
     """Map exceptions to other test outcomes"""
 
-    configSection = 'outcomes'
-    commandLineSwitch = (None, 'set-outcomes',
-                         'Treat some configured exceptions as failure or skips')
+    configSection = "outcomes"
+    commandLineSwitch = (
+        None,
+        "set-outcomes",
+        "Treat some configured exceptions as failure or skips",
+    )
 
     def __init__(self):
-        self.treatAsFail = set(self.config.as_list('treat-as-fail', []))
-        self.treatAsSkip = set(self.config.as_list('treat-as-skip', []))
+        self.treatAsFail = set(self.config.as_list("treat-as-fail", []))
+        self.treatAsSkip = set(self.config.as_list("treat-as-skip", []))
 
     def setTestOutcome(self, event):
         """Update outcome, exc_info and reason based on configured mappings"""
@@ -43,11 +45,12 @@ class Outcomes(Plugin):
             classname = ec.__name__
             if classname in self.treatAsFail:
                 short, long_ = self.labels(classname)
-                self._setOutcome(event, 'failed', short, long_)
+                self._setOutcome(event, "failed", short, long_)
             elif classname in self.treatAsSkip:
                 short, long_ = self.labels(classname, upper=False)
                 self._setOutcome(
-                    event, 'skipped', short, "%s: '%s'" % (long_, ev), str(ev))
+                    event, "skipped", short, "%s: '%s'" % (long_, ev), str(ev)
+                )
 
     def labels(self, label, upper=True):
         if upper:

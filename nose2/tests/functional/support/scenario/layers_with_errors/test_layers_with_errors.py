@@ -2,7 +2,7 @@ import unittest
 
 
 class Layer(object):
-    description = 'fixture with a value'
+    description = "fixture with a value"
 
     @classmethod
     def setUp(cls):
@@ -19,4 +19,4 @@ class Test(unittest.TestCase):
         self.assertEqual(self.layer.value, 2)
 
     def test_err(self):
-        self.assertEqual(self.layer.mulch, 'pine')
+        self.assertEqual(self.layer.mulch, "pine")

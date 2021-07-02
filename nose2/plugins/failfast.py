@@ -9,19 +9,22 @@ is not expected.
 
 from nose2 import events
 
-
 __unittest = True
 
 
 class FailFast(events.Plugin):
 
     """Stop the test run after error or failure"""
+
     commandLineSwitch = (
-        'F', 'fail-fast', 'Stop the test run after the first error or failure')
+        "F",
+        "fail-fast",
+        "Stop the test run after the first error or failure",
+    )
 
     def resultCreated(self, event):
         """Mark new result"""
-        if hasattr(event.result, 'failfast'):
+        if hasattr(event.result, "failfast"):
             event.result.failfast = True
 
     def testOutcome(self, event):

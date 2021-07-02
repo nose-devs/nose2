@@ -1,10 +1,10 @@
-from nose2.tests._common import FakeStartTestRunEvent, TestCase
-from nose2.plugins import collect
 from nose2 import session
+from nose2.plugins import collect
+from nose2.tests._common import FakeStartTestRunEvent, TestCase
 
 
 class TestCollectOnly(TestCase):
-    tags = ['unit']
+    tags = ["unit"]
 
     def setUp(self):
         self.session = session.Session()

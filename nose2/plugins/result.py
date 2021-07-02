@@ -36,23 +36,34 @@ __unittest = True
 class ResultReporter(events.Plugin):
 
     """Result plugin that implements standard unittest console reporting"""
+
     alwaysOn = True
-    configSection = 'test-result'
-    separator1 = '=' * 70
-    separator2 = '-' * 70
+    configSection = "test-result"
+    separator1 = "=" * 70
+    separator2 = "-" * 70
 
     def __init__(self):
         self.testsRun = 0
-        self.reportCategories = {'failures': [],
-                                 'errors': [],
-                                 'skipped': [],
-                                 'expectedFailures': [],
-                                 'unexpectedSuccesses': []}
-        self.dontReport = set(['errors', 'failures', 'skipped', 'passed',
-                               'expectedFailures', 'unexpectedSuccesses'])
+        self.reportCategories = {
+            "failures": [],
+            "errors": [],
+            "skipped": [],
+            "expectedFailures": [],
+            "unexpectedSuccesses": [],
+        }
+        self.dontReport = set(
+            [
+                "errors",
+                "failures",
+                "skipped",
+                "passed",
+                "expectedFailures",
+                "unexpectedSuccesses",
+            ]
+        )
 
         self.stream = util._WritelnDecorator(sys.stderr)
-        self.descriptions = self.config.as_bool('descriptions', True)
+        self.descriptions = self.config.as_bool("descriptions", True)
 
     def startTest(self, event):
         """Handle startTest hook
@@ -72,32 +83,32 @@ class ResultReporter(events.Plugin):
 
         """
         if event.outcome == result.ERROR:
-            self.reportCategories['errors'].append(event)
+            self.reportCategories["errors"].append(event)
             self._reportError(event)
         elif event.outcome == result.FAIL:
             if not event.expected:
-                self.reportCategories['failures'].append(event)
+                self.reportCategories["failures"].append(event)
                 self._reportFailure(event)
             else:
-                self.reportCategories['expectedFailures'].append(event)
+                self.reportCategories["expectedFailures"].append(event)
                 self._reportExpectedFailure(event)
         elif event.outcome == result.SKIP:
-            self.reportCategories['skipped'].append(event)
+            self.reportCategories["skipped"].append(event)
             self._reportSkip(event)
         elif event.outcome == result.PASS:
             if event.expected:
                 self._reportSuccess(event)
             else:
-                self.reportCategories['unexpectedSuccesses'].append(event)
+                self.reportCategories["unexpectedSuccesses"].append(event)
                 self._reportUnexpectedSuccess(event)
         elif event.outcome == result.SUBTEST:
             # subtests do not report success
             if event.exc_info is not None:
                 if issubclass(event.exc_info[0], event.test.failureException):
-                    self.reportCategories['failures'].append(event)
+                    self.reportCategories["failures"].append(event)
                     self._reportFailure(event)
                 else:
-                    self.reportCategories['errors'].append(event)
+                    self.reportCategories["errors"].append(event)
                     self._reportError(event)
         else:
             # generic outcome handling
@@ -121,11 +132,13 @@ class ResultReporter(events.Plugin):
         if event.success is None:
             event.success = True
 
-        for name, events in self.reportCategories.items():
-            for e in events:
-                if (e.outcome == result.ERROR or
-                    (e.outcome == result.FAIL and not e.expected) or
-                    e.outcome == result.SUBTEST):
+        for _name, report_events in self.reportCategories.items():
+            for e in report_events:
+                if (
+                    e.outcome == result.ERROR
+                    or (e.outcome == result.FAIL and not e.expected)
+                    or e.outcome == result.SUBTEST
+                ):
                     event.success = False
                     break
 
@@ -137,45 +150,43 @@ class ResultReporter(events.Plugin):
         if self.session.verbosity > 1:
             # allow other plugins to override/spy on stream
             evt.stream.write(self._getDescription(event.test, errorList=False))
-            evt.stream.write(' ... ')
+            evt.stream.write(" ... ")
             evt.stream.flush()
 
     def _reportError(self, event):
-        self._report(event, 'reportError', 'E', 'ERROR')
+        self._report(event, "reportError", "E", "ERROR")
 
     def _reportFailure(self, event):
-        self._report(event, 'reportFailure', 'F', 'FAIL')
+        self._report(event, "reportFailure", "F", "FAIL")
 
     def _reportSkip(self, event):
-        self._report(event, 'reportSkip', 's', 'skipped %s' % event.reason)
+        self._report(event, "reportSkip", "s", "skipped %s" % event.reason)
 
     def _reportExpectedFailure(self, event):
-        self._report(event, 'reportExpectedFailure', 'x', 'expected failure')
+        self._report(event, "reportExpectedFailure", "x", "expected failure")
 
     def _reportUnexpectedSuccess(self, event):
-        self._report(
-            event, 'reportUnexpectedSuccess', 'u', 'unexpected success')
+        self._report(event, "reportUnexpectedSuccess", "u", "unexpected success")
 
     def _reportOtherOutcome(self, event):
-        self._report(event, 'reportOtherOutcome', '?', 'unknown outcome')
+        self._report(event, "reportOtherOutcome", "?", "unknown outcome")
 
     def _reportSuccess(self, event):
-        self._report(event, 'reportSuccess', '.', 'ok')
+        self._report(event, "reportSuccess", ".", "ok")
 
     def _reportSummary(self, event):
         # let others print something
-        evt = events.ReportSummaryEvent(
-            event, self.stream, self.reportCategories)
+        evt = events.ReportSummaryEvent(event, self.stream, self.reportCategories)
         self.session.hooks.beforeErrorList(evt)
         # allows other plugins to mess with report categories
         cats = evt.reportCategories
-        errors = cats.get('errors', [])
-        failures = cats.get('failures', [])
+        errors = cats.get("errors", [])
+        failures = cats.get("failures", [])
         # use evt.stream so plugins can replace/wrap/spy it
         if self.session.verbosity > 0:
-            evt.stream.writeln('')
-        self._printErrorList('ERROR', errors, evt.stream)
-        self._printErrorList('FAIL', failures, evt.stream)
+            evt.stream.writeln("")
+        self._printErrorList("ERROR", errors, evt.stream)
+        self._printErrorList("FAIL", failures, evt.stream)
 
         for flavour, events_ in cats.items():
             if flavour in self.dontReport:
@@ -198,9 +209,11 @@ class ResultReporter(events.Plugin):
         stream = reportEvent.stream
         stream.writeln(self.separator2)
         run = self.testsRun
-        msg = (
-            "Ran %d test%s in %.3fs\n" %
-            (run, run != 1 and "s" or "", reportEvent.stopTestEvent.timeTaken))
+        msg = "Ran %d test%s in %.3fs\n" % (
+            run,
+            run != 1 and "s" or "",
+            reportEvent.stopTestEvent.timeTaken,
+        )
         stream.writeln(msg)
 
         infos = []
@@ -210,13 +223,13 @@ class ResultReporter(events.Plugin):
         else:
             stream.write("FAILED")
 
-        failed = len(reportEvent.reportCategories.get('failures', []))
-        errored = len(reportEvent.reportCategories.get('errors', []))
-        skipped = len(reportEvent.reportCategories.get('skipped', []))
-        expectedFails = len(
-            reportEvent.reportCategories.get('expectedFailures', []))
+        failed = len(reportEvent.reportCategories.get("failures", []))
+        errored = len(reportEvent.reportCategories.get("errors", []))
+        skipped = len(reportEvent.reportCategories.get("skipped", []))
+        expectedFails = len(reportEvent.reportCategories.get("expectedFailures", []))
         unexpectedSuccesses = len(
-            reportEvent.reportCategories.get('unexpectedSuccesses', []))
+            reportEvent.reportCategories.get("unexpectedSuccesses", [])
+        )
 
         for flavour, results in reportEvent.reportCategories.items():
             if flavour in self.dontReport:
@@ -239,7 +252,7 @@ class ResultReporter(events.Plugin):
         if infos:
             reportEvent.stream.writeln(" (%s)" % (", ".join(infos),))
         else:
-            reportEvent.stream.writeln('')
+            reportEvent.stream.writeln("")
 
         self.session.hooks.afterSummaryReport(reportEvent)
 
@@ -248,11 +261,10 @@ class ResultReporter(events.Plugin):
             return test.__class__.__name__
         doc_first_line = test.shortDescription()
         if self.descriptions and doc_first_line:
-            desc = '\n'.join((str(test), doc_first_line))
+            desc = "\n".join((str(test), doc_first_line))
         else:
             desc = str(test)
-        event = events.DescribeTestEvent(
-            test, description=desc, errorList=errorList)
+        event = events.DescribeTestEvent(test, description=desc, errorList=errorList)
         self.session.hooks.describeTest(event)
         return event.description
 
@@ -261,8 +273,8 @@ class ResultReporter(events.Plugin):
         result = self.session.hooks.outcomeDetail(evt)
         if evt.handled:
             return result
-        exc_info = getattr(event, 'exc_info', None)
-        test = getattr(event, 'test', None)
+        exc_info = getattr(event, "exc_info", None)
+        test = getattr(event, "test", None)
         if exc_info:
             detail = [util.exc_info_to_string(exc_info, test)]
         else:
@@ -281,7 +293,7 @@ class ResultReporter(events.Plugin):
             return
         if self.session.verbosity > 1:
             # event I fired has stream, event I received has labels
-            evt.stream.writeln(getattr(event, 'longLabel', None) or longLabel)
+            evt.stream.writeln(getattr(event, "longLabel", None) or longLabel)
         elif self.session.verbosity:
-            evt.stream.write(getattr(event, 'shortLabel', None) or shortLabel)
+            evt.stream.write(getattr(event, "shortLabel", None) or shortLabel)
             evt.stream.flush()

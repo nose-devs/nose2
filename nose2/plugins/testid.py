@@ -14,9 +14,8 @@ import os
 import pickle
 import re
 
-from nose2.events import Plugin
 from nose2 import util
-
+from nose2.events import Plugin
 
 __unittest = True
 
@@ -25,12 +24,12 @@ class TestId(Plugin):
 
     """Allow easy test select with ids"""
 
-    configSection = 'testid'
-    commandLineSwitch = ('I', 'with-id', 'Add test ids to output')
-    idpat = re.compile(r'(\d+)')
+    configSection = "testid"
+    commandLineSwitch = ("I", "with-id", "Add test ids to output")
+    idpat = re.compile(r"(\d+)")
 
     def __init__(self):
-        self.idfile = self.config.as_str('id-file', '.noseids')
+        self.idfile = self.config.as_str("id-file", ".noseids")
         self.ids = {}
         self.tests = {}
         if not os.path.isabs(self.idfile):
@@ -53,9 +52,9 @@ class TestId(Plugin):
             self.tests[testid] = id_
         else:
             id_ = self.tests[testid]
-        event.metadata['testid'] = id_
+        event.metadata["testid"] = id_
         if self.session.verbosity > 1:
-            event.stream.write('#%s ' % id_)
+            event.stream.write("#%s " % id_)
 
     def loadTestsFromName(self, event):
         """Load tests from a name that is an id
@@ -78,8 +77,8 @@ class TestId(Plugin):
 
     def stopTestRun(self, event):
         """Write testids file"""
-        with open(self.idfile, 'wb') as fh:
-            pickle.dump({'ids': self.ids, 'tests': self.tests}, fh)
+        with open(self.idfile, "wb") as fh:
+            pickle.dump({"ids": self.ids, "tests": self.tests}, fh)
 
     def loadIds(self):
         """Load previously pickled 'ids' and 'tests' attributes."""
@@ -87,16 +86,16 @@ class TestId(Plugin):
             return
 
         try:
-            with open(self.idfile, 'rb') as fh:
+            with open(self.idfile, "rb") as fh:
                 data = pickle.load(fh)
         except EnvironmentError:
             self._loaded = True
             return
 
-        if 'ids' in data:
-            self.ids = data['ids']
-        if 'tests' in data:
-            self.tests = data['tests']
+        if "ids" in data:
+            self.ids = data["ids"]
+        if "tests" in data:
+            self.tests = data["tests"]
         self.id = max(self.ids.keys())
         self._loaded = True
 

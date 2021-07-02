@@ -4,24 +4,23 @@
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import inspect
 import logging
 import os
-import types
 import re
 import sys
 import traceback
-import platform
-import six
-import inspect
+import types
 from inspect import isgeneratorfunction
 
+import six
 
 __unittest = True
-IDENT_RE = re.compile(r'^[_a-zA-Z]\w*$', re.UNICODE)
-VALID_MODULE_RE = re.compile(r'[_a-zA-Z]\w*\.py$', re.UNICODE)
+IDENT_RE = re.compile(r"^[_a-zA-Z]\w*$", re.UNICODE)
+VALID_MODULE_RE = re.compile(r"[_a-zA-Z]\w*\.py$", re.UNICODE)
 
 
-def ln(label, char='-', width=70):
+def ln(label, char="-", width=70):
     """Draw a divider, with ``label`` in the middle.
 
     >>> ln('hello there')
@@ -33,7 +32,7 @@ def ln(label, char='-', width=70):
     """
     label_len = len(label) + 2
     chunk = (width - label_len) // 2
-    out = '%s %s %s' % (char * chunk, label, char * chunk)
+    out = "%s %s %s" % (char * chunk, label, char * chunk)
     pad = width - len(out)
     if pad > 0:
         out = out + (char * pad)
@@ -69,7 +68,7 @@ def name_from_path(path):
             parts.append(top)
         else:
             break
-    return '.'.join(reversed(parts)), candidate
+    return ".".join(reversed(parts)), candidate
 
 
 def module_from_name(name):
@@ -80,10 +79,10 @@ def module_from_name(name):
 
 def test_from_name(name, module):
     """Import test from ``name``"""
-    pos = name.find(':')
+    pos = name.find(":")
     index = None
     if pos != -1:
-        real_name, digits = name[:pos], name[pos + 1:]
+        real_name, digits = name[:pos], name[pos + 1 :]
         try:
             index = int(digits)
         except ValueError:
@@ -108,7 +107,7 @@ def object_from_name(name, module=None):
     understand the error.
     """
     import_error = None
-    parts = name.split('.')
+    parts = name.split(".")
     if module is None:
         (module, import_error) = try_import_module_from_name(parts[:])
         parts = parts[1:]
@@ -135,12 +134,13 @@ def _raise_custom_attribute_error(obj, attr, attr_error_exc, prev_exc):
 
     # for python 2, do exception chaining manually
     raise AttributeError(
-        "'%s' has not attribute '%s'\n\nMaybe caused by\n\n%s" % (
-            obj, attr, '\n'.join(traceback.format_exception(*prev_exc))))
+        "'%s' has not attribute '%s'\n\nMaybe caused by\n\n%s"
+        % (obj, attr, "\n".join(traceback.format_exception(*prev_exc)))
+    )
 
 
 def is_package_or_module(obj):
-    if hasattr(obj, '__path__') or isinstance(obj, types.ModuleType):
+    if hasattr(obj, "__path__") or isinstance(obj, types.ModuleType):
         return True
     return False
 
@@ -153,7 +153,7 @@ def try_import_module_from_name(splitted_name):
 
     For instance, if ``splitted_name`` is ['a', 'b', 'c'] but only ``a.b`` is
     importable, this function:
-    
+
         1. tries to import ``a.b.c`` and fails
         2. tries to import ``a.b`` and succeeds
         3. return ``a.b`` and the exception that occured at step 1.
@@ -162,27 +162,27 @@ def try_import_module_from_name(splitted_name):
     import_error = None
     while splitted_name:
         try:
-            module = __import__('.'.join(splitted_name))
+            module = __import__(".".join(splitted_name))
             break
-        except:
+        except BaseException:
             import_error = sys.exc_info()
             del splitted_name[-1]
             if not splitted_name:
-                six.reraise(*sys.exc_info())
+                six.reraise(*import_error)
     return (module, import_error)
 
 
 def name_from_args(name, index, args):
     """Create test name from test args"""
-    summary = ', '.join(repr(arg) for arg in args)
-    return '%s:%s\n%s' % (name, index + 1, summary[:79])
+    summary = ", ".join(repr(arg) for arg in args)
+    return "%s:%s\n%s" % (name, index + 1, summary[:79])
 
 
 def test_name(test, qualname=True):
     # XXX does not work for test funcs; test.id() lacks module
-    if hasattr(test, '_funcName'):
+    if hasattr(test, "_funcName"):
         tid = test._funcName
-    elif hasattr(test, '_testFunc'):
+    elif hasattr(test, "_testFunc"):
         tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
     else:
         if sys.version_info >= (3, 5) and not qualname:
@@ -192,11 +192,11 @@ def test_name(test, qualname=True):
             tid = "%s.%s.%s" % (test_module, test_class, test_method)
         else:
             tid = test.id()
-    if '\n' in tid:
-        tid = tid.split('\n')[0]
+    if "\n" in tid:
+        tid = tid.split("\n")[0]
     # subtest support
-    if ' ' in tid:
-        tid = tid.split(' ')[0]
+    if " " in tid:
+        tid = tid.split(" ")[0]
     return tid
 
 
@@ -207,11 +207,12 @@ def ispackage(path):
         # and __init__.py[co] must exist
         end = os.path.basename(path)
         if IDENT_RE.match(end):
-            for init in ('__init__.py', '__init__.pyc', '__init__.pyo'):
+            for init in ("__init__.py", "__init__.pyc", "__init__.pyo"):
                 if os.path.isfile(os.path.join(path, init)):
                     return True
-            if sys.platform.startswith('java') and \
-                    os.path.isfile(os.path.join(path, '__init__$py.class')):
+            if sys.platform.startswith("java") and os.path.isfile(
+                os.path.join(path, "__init__$py.class")
+            ):
                 return True
     return False
 
@@ -224,8 +225,7 @@ def ensure_importable(dirname):
 
 def isgenerator(obj):
     """Is this object a generator?"""
-    return (isgeneratorfunction(obj)
-            or getattr(obj, 'testGenerator', None) is not None)
+    return isgeneratorfunction(obj) or getattr(obj, "testGenerator", None) is not None
 
 
 def has_module_fixtures(test):
@@ -237,24 +237,30 @@ def has_module_fixtures(test):
         mod = sys.modules[modname]
     except KeyError:
         return
-    return hasattr(mod, 'setUpModule') or hasattr(mod, 'tearDownModule')
+    return hasattr(mod, "setUpModule") or hasattr(mod, "tearDownModule")
 
 
 def has_class_fixtures(test):
     # test may be class or instance
     test_class = test if isinstance(test, type) else test.__class__
+
     # hasattr would be the obvious thing to use here. Unfortunately, all tests
     # inherit from unittest2.case.TestCase, and that *always* has setUpClass and
     # tearDownClass methods. Thus, exclude the unitest and unittest2 base
     # classes from the lookup.
     def is_not_base_class(c):
         return (
-            "unittest.case" not in c.__module__ and
-            "unittest2.case" not in c.__module__)
+            "unittest.case" not in c.__module__ and "unittest2.case" not in c.__module__
+        )
+
     has_class_setups = any(
-        'setUpClass' in c.__dict__ for c in test_class.__mro__ if is_not_base_class(c))
+        "setUpClass" in c.__dict__ for c in test_class.__mro__ if is_not_base_class(c)
+    )
     has_class_teardowns = any(
-        'tearDownClass' in c.__dict__ for c in test_class.__mro__ if is_not_base_class(c))
+        "tearDownClass" in c.__dict__
+        for c in test_class.__mro__
+        if is_not_base_class(c)
+    )
     return has_class_setups or has_class_teardowns
 
 
@@ -269,16 +275,16 @@ def safe_decode(string):
     except UnicodeDecodeError:
         pass
     try:
-        return string.decode('utf-8')
+        return string.decode("utf-8")
     except UnicodeDecodeError:
-        return six.u('<unable to decode>')
+        return six.u("<unable to decode>")
 
 
-def safe_encode(string, encoding='utf-8'):
+def safe_encode(string, encoding="utf-8"):
     if string is None:
         return string
     if encoding is None:
-        encoding = 'utf-8'
+        encoding = "utf-8"
     try:
         return string.encode(encoding)
     except AttributeError:
@@ -287,12 +293,12 @@ def safe_encode(string, encoding='utf-8'):
         # already encoded
         return string
     except UnicodeEncodeError:
-        return six.u('<unable to encode>')
+        return six.u("<unable to encode>")
 
 
 def exc_info_to_string(err, test):
     """Format exception info for output"""
-    formatTraceback = getattr(test, 'formatTraceback', None)
+    formatTraceback = getattr(test, "formatTraceback", None)
     if formatTraceback is not None:
         return test.formatTraceback(err)
     else:
@@ -302,13 +308,13 @@ def exc_info_to_string(err, test):
 def format_traceback(test, err):
     """Converts a :func:`sys.exc_info` -style tuple of values into a string."""
     exctype, value, tb = err
-    if not hasattr(tb, 'tb_next'):
+    if not hasattr(tb, "tb_next"):
         msgLines = tb
     else:
         # Skip test runner traceback levels
         while tb and _is_relevant_tb_level(tb):
             tb = tb.tb_next
-        failure = getattr(test, 'failureException', AssertionError)
+        failure = getattr(test, "failureException", AssertionError)
         if exctype is failure:
             # Skip assert*() traceback levels
             length = _count_relevant_tb_levels(tb)
@@ -316,7 +322,7 @@ def format_traceback(test, err):
         else:
             msgLines = traceback.format_exception(exctype, value, tb)
 
-    return ''.join(msgLines)
+    return "".join(msgLines)
 
 
 def transplant_class(cls, module):
@@ -330,8 +336,10 @@ def transplant_class(cls, module):
     ``cls.__name__``, and its ``__module__`` equal to ``module``.
 
     """
+
     class C(cls):
         pass
+
     C.__module__ = module
     C.__name__ = cls.__name__
     return C
@@ -347,7 +355,7 @@ def parse_log_level(lvl):
 
 
 def _is_relevant_tb_level(tb):
-    return '__unittest' in tb.tb_frame.f_globals
+    return "__unittest" in tb.tb_frame.f_globals
 
 
 def _count_relevant_tb_levels(tb):
@@ -366,25 +374,24 @@ class _WritelnDecorator(object):
         self.stream = stream
 
     def __getattr__(self, attr):
-        if attr in ('stream', '__getstate__'):
+        if attr in ("stream", "__getstate__"):
             raise AttributeError(attr)
         return getattr(self.stream, attr)
 
     def write(self, arg):
         if sys.version_info[0] == 2:
-            arg = safe_encode(arg, getattr(self.stream, 'encoding', 'utf-8'))
+            arg = safe_encode(arg, getattr(self.stream, "encoding", "utf-8"))
         self.stream.write(arg)
 
     def writeln(self, arg=None):
         if arg:
             self.write(arg)
-        self.write('\n')  # text-mode streams translate to \r\n if needed
+        self.write("\n")  # text-mode streams translate to \r\n if needed
 
 
 def ancestry(layer):
     layers = [[layer]]
-    bases = [base for base in bases_and_mixins(layer)
-             if base is not object]
+    bases = [base for base in bases_and_mixins(layer) if base is not object]
     while bases:
         layers.append(bases)
         newbases = []
@@ -398,7 +405,7 @@ def ancestry(layer):
 
 
 def bases_and_mixins(layer):
-    return (layer.__bases__ + getattr(layer, 'mixins', ()))
+    return layer.__bases__ + getattr(layer, "mixins", ())
 
 
 def num_expected_args(func):

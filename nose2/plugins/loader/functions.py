@@ -60,15 +60,15 @@ import unittest
 from nose2 import util
 from nose2.events import Plugin
 
-
 __unittest = True
 
 
 class Functions(Plugin):
 
     """Loader plugin that loads test functions"""
+
     alwaysOn = True
-    configSection = 'functions'
+    configSection = "functions"
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
@@ -86,11 +86,13 @@ class Functions(Plugin):
             return
 
         parent, obj, name, index = result
-        if (isinstance(obj, types.FunctionType) and not
-            isinstance(parent, type) and not
-            util.isgenerator(obj) and not
-            hasattr(obj, 'paramList') and
-            util.num_expected_args(obj) == 0):
+        if (
+            isinstance(obj, types.FunctionType)
+            and not isinstance(parent, type)
+            and not util.isgenerator(obj)
+            and not hasattr(obj, "paramList")
+            and util.num_expected_args(obj) == 0
+        ):
             suite = event.loader.suiteClass()
             suite.addTests(self._createTests(obj))
             event.handled = True
@@ -115,40 +117,38 @@ class Functions(Plugin):
         event.extraTests.extend(tests)
 
     def _createTests(self, obj):
-        if not hasattr(obj, 'setUp'):
-            if hasattr(obj, 'setup'):
+        if not hasattr(obj, "setUp"):
+            if hasattr(obj, "setup"):
                 obj.setUp = obj.setup
-            elif hasattr(obj, 'setUpFunc'):
+            elif hasattr(obj, "setUpFunc"):
                 obj.setUp = obj.setUpFunc
-        if not hasattr(obj, 'tearDown'):
-            if hasattr(obj, 'teardown'):
+        if not hasattr(obj, "tearDown"):
+            if hasattr(obj, "teardown"):
                 obj.tearDown = obj.teardown
-            elif hasattr(obj, 'tearDownFunc'):
+            elif hasattr(obj, "tearDownFunc"):
                 obj.tearDown = obj.tearDownFunc
 
         tests = []
         args = {}
-        setUp = getattr(obj, 'setUp', None)
-        tearDown = getattr(obj, 'tearDown', None)
+        setUp = getattr(obj, "setUp", None)
+        tearDown = getattr(obj, "tearDown", None)
         if setUp is not None:
-            args['setUp'] = setUp
+            args["setUp"] = setUp
         if tearDown is not None:
-            args['tearDown'] = tearDown
+            args["tearDown"] = tearDown
 
-        paramList = getattr(obj, 'paramList', None)
+        paramList = getattr(obj, "paramList", None)
         isGenerator = util.isgenerator(obj)
         if paramList is not None or isGenerator:
             return tests
         else:
-            case = util.transplant_class(
-                FunctionTestCase, obj.__module__)(obj, **args)
+            case = util.transplant_class(FunctionTestCase, obj.__module__)(obj, **args)
             tests.append(case)
         return tests
 
 
 class FunctionTestCase(unittest.FunctionTestCase):
-
     def __repr__(self):
-        return '%s.%s' % (self._testFunc.__module__, self._testFunc.__name__)
+        return "%s.%s" % (self._testFunc.__module__, self._testFunc.__name__)
 
     id = __str__ = __repr__

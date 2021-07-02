@@ -12,13 +12,13 @@ See the `load_tests protocol`_ documentation for more information.
    with the :mod:`multiprocess` plugin as of nose2 04. This will be
    fixed in a future release.
 
-.. _load_tests protocol: http://docs.python.org/library/unittest.html#load-tests-protocol
+.. _load_tests protocol:
+    http://docs.python.org/library/unittest.html#load-tests-protocol
 """
-from fnmatch import fnmatch
 import logging
+from fnmatch import fnmatch
 
 from nose2 import events, util
-
 
 log = logging.getLogger(__name__)
 
@@ -26,8 +26,9 @@ log = logging.getLogger(__name__)
 class LoadTestsLoader(events.Plugin):
 
     """Loader plugin that implements load_tests."""
+
     alwaysOn = True
-    configSection = 'load_tests'
+    configSection = "load_tests"
     _loading = False
 
     def registerInSubprocess(self, event):
@@ -40,15 +41,15 @@ class LoadTestsLoader(events.Plugin):
 
         """
         module = event.module
-        load_tests = getattr(module, 'load_tests', None)
+        load_tests = getattr(module, "load_tests", None)
         if not load_tests:
             return
         try:
             event.suite = load_tests(
-                event.loader, event.suite, self.session.testFilePattern)
+                event.loader, event.suite, self.session.testFilePattern
+            )
         except Exception as exc:
-            log.exception(
-                "Failed to load tests from %s via load_tests", module)
+            log.exception("Failed to load tests from %s via load_tests", module)
             suite = event.loader.suiteClass()
             suite.addTest(event.loader.failedLoadTests(module.__name__, exc))
             event.handled = True
@@ -65,12 +66,11 @@ class LoadTestsLoader(events.Plugin):
         if self._loading:
             return
 
-        if (self._match(event.name, event.pattern) and
-            util.ispackage(event.path)):
+        if self._match(event.name, event.pattern) and util.ispackage(event.path):
             name, _package_path = util.name_from_path(event.path)
             module = util.module_from_name(name)
 
-            load_tests = getattr(module, 'load_tests', None)
+            load_tests = getattr(module, "load_tests", None)
             if not load_tests:
                 return
             self._loading = True
@@ -79,10 +79,8 @@ class LoadTestsLoader(events.Plugin):
                 try:
                     suite = load_tests(event.loader, suite, event.pattern)
                 except Exception as exc:
-                    log.exception(
-                        "Failed to load tests from %s via load_tests", module)
-                    suite.addTest(
-                        event.loader.failedLoadTests(module.__name__, exc))
+                    log.exception("Failed to load tests from %s via load_tests", module)
+                    suite.addTest(event.loader.failedLoadTests(module.__name__, exc))
 
                 event.handled = True
                 return suite

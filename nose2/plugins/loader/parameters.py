@@ -40,9 +40,9 @@ of the test function is the "case" argument, followed by the other parameters::
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
-import sys
 import functools
 import logging
+import sys
 import types
 import unittest
 
@@ -50,13 +50,11 @@ from nose2 import exceptions, util
 from nose2.events import Plugin
 from nose2.plugins.loader.testclasses import MethodTestCase
 
-
 log = logging.getLogger(__name__)
 __unittest = True
 
 
 class ParamsFunctionCase(unittest.FunctionTestCase):
-
     def __init__(self, name, func, **args):
         self._funcName = name
         unittest.FunctionTestCase.__init__(self, func, **args)
@@ -70,20 +68,21 @@ class ParamsFunctionCase(unittest.FunctionTestCase):
 class Parameters(Plugin):
 
     """Loader plugin that loads parameterized tests"""
+
     alwaysOn = True
-    configSection = 'parameters'
+    configSection = "parameters"
 
     def registerInSubprocess(self, event):
         event.pluginClasses.append(self.__class__)
 
     def getTestCaseNames(self, event):
         """Generate test case names for all parameterized methods"""
-        log.debug('getTestCaseNames %s', event)
+        log.debug("getTestCaseNames %s", event)
         names = filter(event.isTestMethod, dir(event.testCase))
         testCaseClass = event.testCase
         for name in names:
             method = getattr(testCaseClass, name)
-            paramList = getattr(method, 'paramList', None)
+            paramList = getattr(method, "paramList", None)
             if paramList is None:
                 continue
             # exclude this method from normal collection
@@ -99,15 +98,15 @@ class Parameters(Plugin):
         module = event.module
 
         def is_test(obj):
-            return (obj.__name__.startswith(self.session.testMethodPrefix) and
-                    hasattr(obj, 'paramList'))
+            return obj.__name__.startswith(self.session.testMethodPrefix) and hasattr(
+                obj, "paramList"
+            )
+
         tests = []
         for name in dir(module):
             obj = getattr(module, name)
             if isinstance(obj, types.FunctionType) and is_test(obj):
-                tests.extend(
-                    self._generateFuncTests(obj)
-                )
+                tests.extend(self._generateFuncTests(obj))
         event.extraTests.extend(tests)
 
     def loadTestsFromName(self, event):
@@ -124,24 +123,26 @@ class Parameters(Plugin):
             return
 
         parent, obj, fqname, index = result
-        if not hasattr(obj, 'paramList'):
+        if not hasattr(obj, "paramList"):
             return
 
-        if (index is None and not
-            isinstance(parent, type) and not
-            isinstance(obj, types.FunctionType)):
-            log.debug(
-                "Don't know how to load parameterized tests from %s", obj)
+        if (
+            index is None
+            and not isinstance(parent, type)
+            and not isinstance(obj, types.FunctionType)
+        ):
+            log.debug("Don't know how to load parameterized tests from %s", obj)
             return
 
-        if (parent and
-            isinstance(parent, type) and
-            issubclass(parent, unittest.TestCase)):
+        if (
+            parent
+            and isinstance(parent, type)
+            and issubclass(parent, unittest.TestCase)
+        ):
             # parameterized method in test case
             names = self._generate(event, obj.__name__, obj, parent)
             tests = [parent(n) for n in names]
-        elif (parent and
-              isinstance(parent, type)):
+        elif parent and isinstance(parent, type):
             # parameterized method in test class
             names = self._generate(event, obj.__name__, obj, parent)
             tests = [MethodTestCase(parent)(name) for name in names]
@@ -168,29 +169,33 @@ class Parameters(Plugin):
                 # not already generated
                 def _method(self, method=method, argSet=argSet):
                     return method(self, *argSet)
+
                 _method = functools.update_wrapper(_method, method)
-                delattr(_method, 'paramList')
+                delattr(_method, "paramList")
                 setattr(testCaseClass, method_name, _method)
             names.append(method_name)
         return names
 
     def _generateFuncTests(self, obj):
         args = {}
-        setUp = getattr(obj, 'setUp', None)
-        tearDown = getattr(obj, 'tearDown', None)
+        setUp = getattr(obj, "setUp", None)
+        tearDown = getattr(obj, "tearDown", None)
         if setUp is not None:
-            args['setUp'] = setUp
+            args["setUp"] = setUp
         if tearDown is not None:
-            args['tearDown'] = tearDown
+            args["tearDown"] = tearDown
         for index, argSet in enumerate_params(obj.paramList):
+
             def func(argSet=argSet, obj=obj):
                 return obj(*argSet)
+
             func = functools.update_wrapper(func, obj)
-            delattr(func, 'paramList')
-            name = '%s.%s' % (obj.__module__, obj.__name__)
+            delattr(func, "paramList")
+            name = "%s.%s" % (obj.__module__, obj.__name__)
             func_name = util.name_from_args(name, index, argSet)
-            yield util.transplant_class(
-                ParamsFunctionCase, obj.__module__)(func_name, func, **args)
+            yield util.transplant_class(ParamsFunctionCase, obj.__module__)(
+                func_name, func, **args
+            )
 
 
 def enumerate_params(paramList):

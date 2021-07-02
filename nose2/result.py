@@ -2,12 +2,11 @@ import time
 
 from nose2 import events
 
-
-ERROR = 'error'
-FAIL = 'failed'
-SKIP = 'skipped'
-PASS = 'passed'
-SUBTEST = 'subtest'
+ERROR = "error"
+FAIL = "failed"
+SKIP = "skipped"
+PASS = "passed"
+SUBTEST = "subtest"
 __unittest = True
 
 
@@ -16,7 +15,7 @@ class PluggableTestResult(object):
     """Test result that defers to plugins.
 
     All test outcome recording and reporting is deferred to plugins,
-    which are expected to implement :func:`startTest`, :func:`stopTest`, 
+    which are expected to implement :func:`startTest`, :func:`stopTest`,
     :func:`testOutcome`, and :func:`wasSuccessful`.
 
     :param session: Test run session.
@@ -148,4 +147,4 @@ class PluggableTestResult(object):
         self.shouldStop = event.shouldStop
 
     def __repr__(self):
-        return '<%s>' % self.__class__.__name__
+        return "<%s>" % self.__class__.__name__

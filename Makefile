@@ -1,4 +1,4 @@
-.PHONY: help docs test clean init build
+.PHONY: help docs test lint clean build
 
 NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d '"' -f2)
 
@@ -13,6 +13,8 @@ help:
 	virtualenv --python python3 .venv
 	.venv/bin/pip install -U tox twine
 
+lint: .venv
+	.venv/bin/tox -e lint
 test: .venv
 	.venv/bin/tox
 docs: .venv

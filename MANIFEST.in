@@ -11,4 +11,3 @@ graft bin
 global-exclude __pycache__
 global-exclude *~
 global-exclude *.pyc
-

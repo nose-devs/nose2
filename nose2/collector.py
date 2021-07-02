@@ -2,8 +2,9 @@ import os
 import sys
 import unittest
 
-from nose2 import loader, runner, session, events
+from nose2 import events, loader, runner, session
 from nose2.main import PluggableTestProgram
+
 __unittest = True
 
 
@@ -14,8 +15,8 @@ def collector():
       python setup.py test
 
     """
-    class Test(unittest.TestCase):
 
+    class Test(unittest.TestCase):
         def run(self, result_):
             ok = self._collector(result_)
             sys.exit(not ok)
@@ -30,9 +31,13 @@ def collector():
             ssn, ldr, rnr = self._get_objects()
 
             ssn.testLoader = ldr
-            ssn.loadConfigFiles('unittest.cfg', 'nose2.cfg', 'setup.cfg',
-                                os.path.expanduser('~/.unittest.cfg'),
-                                os.path.expanduser('~/.nose2.cfg'))
+            ssn.loadConfigFiles(
+                "unittest.cfg",
+                "nose2.cfg",
+                "setup.cfg",
+                os.path.expanduser("~/.unittest.cfg"),
+                os.path.expanduser("~/.nose2.cfg"),
+            )
             ssn.setStartDir()
             ssn.prepareSysPath()
             ssn.loadPlugins(PluggableTestProgram.defaultPlugins)
@@ -76,4 +81,4 @@ def collector():
             rslt = rnr.run(test)
             return rslt.wasSuccessful()
 
-    return Test('_collector')
+    return Test("_collector")

@@ -4,28 +4,36 @@ except ImportError:
     # Python versions older than 3.3 don't have mock by default
     import mock
 
-from nose2.tests._common import TestCase, RedirectStdStreams
-from nose2 import collector
-from textwrap import dedent
 import re
+from textwrap import dedent
+
+from nose2 import collector
+from nose2.tests._common import RedirectStdStreams, TestCase
 
 
 class TestCollector(TestCase):
     _RUN_IN_TEMP = True
-    tags = ['unit']
+    tags = ["unit"]
 
     def test_collector_completes_with_no_tests(self):
         with open("unittest.cfg", "w") as ut_file:
-            ut_file.write(dedent("""
+            ut_file.write(
+                dedent(
+                    """
                 [unittest]
                 quiet = true
-            """))
+            """
+                )
+            )
         test = collector.collector()
         with RedirectStdStreams() as redir:
             self.assertRaises(SystemExit, test.run, None)
         self.assertEqual("", redir.stdout.getvalue())
-        self.assertTrue(re.match(r'\n-+\nRan 0 tests in \d.\d\d\ds\n\nOK\n',
-                                 redir.stderr.getvalue()))
+        self.assertTrue(
+            re.match(
+                r"\n-+\nRan 0 tests in \d.\d\d\ds\n\nOK\n", redir.stderr.getvalue()
+            )
+        )
 
     def test_collector_sets_testLoader_in_session(self):
         """
@@ -36,8 +44,8 @@ class TestCollector(TestCase):
         mock_session = mock.MagicMock()
         mock_loader = mock.MagicMock()
         mock_runner = mock.MagicMock()
-        test._get_objects = mock.Mock(return_value=(mock_session,
-                                                    mock_loader,
-                                                    mock_runner))
+        test._get_objects = mock.Mock(
+            return_value=(mock_session, mock_loader, mock_runner)
+        )
         test._collector(None)
         self.assertTrue(mock_session.testLoader is mock_loader)

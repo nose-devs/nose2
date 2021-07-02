@@ -1,12 +1,15 @@
-from nose2.tools import such
 import logging
-from .common import UniqueResource, NormalTest, NormalTestTwo
+
+from nose2.tools import such
+
+from .common import NormalTest, NormalTestTwo, UniqueResource  # noqa: F401
+
 log = logging.getLogger(__name__)
 
 
 class Layer1(object):
 
-    description = 'Layer1'
+    description = "Layer1"
 
     @classmethod
     def setUp(cls):
@@ -22,7 +25,7 @@ class Layer1(object):
 
 class Layer2(object):
 
-    description = 'Layer2'
+    description = "Layer2"
 
     @classmethod
     def setUp(cls):
@@ -32,20 +35,22 @@ class Layer2(object):
     def tearDown(cls):
         log.info("Called teardown in layer 2")
 
-with such.A('system with setup') as it:
+
+with such.A("system with setup") as it:
 
     it.uses(Layer1)
 
-    @it.should('do something')
+    @it.should("do something")
     def test(case):
         it.assertTrue(it.unique_resource.used)
 
-    with it.having('another setup'):
+    with it.having("another setup"):
 
         it.uses(Layer2)
 
-        @it.should('do something else')
-        def test(case):
+        @it.should("do something else")  # noqa: F811
+        def test(case):  # noqa: F811
             it.assertTrue(it.unique_resource.used)
+
 
 it.createTests(globals())

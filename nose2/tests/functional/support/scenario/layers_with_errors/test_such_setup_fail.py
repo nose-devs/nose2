@@ -1,13 +1,14 @@
 from nose2.tools import such
 
-with such.A('test scenario with errors') as it:
+with such.A("test scenario with errors") as it:
 
     @it.has_setup
     def setup_fail():
-        raise RuntimeError('Bad Error in such setUp!')
+        raise RuntimeError("Bad Error in such setUp!")
 
-    @it.should('check that value == 1')
+    @it.should("check that value == 1")
     def test_passes(case):
         pass
+
 
 it.createTests(globals())

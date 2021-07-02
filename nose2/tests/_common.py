@@ -1,26 +1,27 @@
 """Common functionality."""
 import os.path
-import tempfile
 import shutil
 import subprocess
 import sys
-import six
+import tempfile
 import unittest
+
+import six
 
 from nose2 import discover, util
 
-
 HERE = os.path.abspath(os.path.dirname(__file__))
-SUPPORT = os.path.join(HERE, 'functional', 'support')
+SUPPORT = os.path.join(HERE, "functional", "support")
 
 
 class TestCase(unittest.TestCase):
 
     """TestCase extension.
 
-    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will be
-    performed in a temporary directory, which is deleted afterwards.
+    If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will
+    be performed in a temporary directory, which is deleted afterwards.
     """
+
     _RUN_IN_TEMP = False
 
     def setUp(self):
@@ -68,7 +69,7 @@ class TestCase(unittest.TestCase):
 
 
 class FunctionalTestCase(unittest.TestCase):
-    tags = ['functional']
+    tags = ["functional"]
 
     def assertTestRunOutputMatches(self, proc, stdout=None, stderr=None):
         cmd_stdout, cmd_stderr = None, None
@@ -83,8 +84,11 @@ class FunctionalTestCase(unittest.TestCase):
             self._output[proc.pid] = cmd_stdout, cmd_stderr
         # Python 2.7 needs this
         # assertRegexpMatches() was renamed to assertRegex() in 3.2
-        testf = self.assertRegex if hasattr(self, 'assertRegex') \
+        testf = (
+            self.assertRegex
+            if hasattr(self, "assertRegex")
             else self.assertRegexpMatches
+        )
         if stdout:
             testf(util.safe_decode(cmd_stdout), stdout)
         if stderr:
@@ -99,11 +103,11 @@ class FunctionalTestCase(unittest.TestCase):
 
 class _FakeEventBase(object):
 
-    """Baseclass for fake :class:`~nose2.events.Event`\s."""
+    """Baseclass for fake :class:`~nose2.events.Event`s."""
 
     def __init__(self):
         self.handled = False
-        self.version = '0.1'
+        self.version = "0.1"
         self.metadata = {}
 
 
@@ -129,6 +133,7 @@ class FakeStartTestEvent(_FakeEventBase):
         self.test = test
         self.result = test.defaultTestResult()
         import time
+
         self.startTime = time.time()
 
 
@@ -154,8 +159,9 @@ class FakeStartTestRunEvent(_FakeEventBase):
 
     """Fake :class:`~nose2.events.StartTestRunEvent`"""
 
-    def __init__(self, runner=None, suite=None, result=None, startTime=None,
-                 executeTests=None):
+    def __init__(
+        self, runner=None, suite=None, result=None, startTime=None, executeTests=None
+    ):
         super(FakeStartTestRunEvent, self).__init__()
         self.suite = suite
         self.runner = runner
@@ -180,22 +186,24 @@ def support_file(*path_parts):
 
 
 def run_nose2(*nose2_args, **nose2_kwargs):
-    if 'cwd' in nose2_kwargs:
-        cwd = nose2_kwargs.pop('cwd')
+    if "cwd" in nose2_kwargs:
+        cwd = nose2_kwargs.pop("cwd")
         if not os.path.isabs(cwd):
-            nose2_kwargs['cwd'] = support_file(cwd)
+            nose2_kwargs["cwd"] = support_file(cwd)
     return NotReallyAProc(nose2_args, **nose2_kwargs)
 
 
 def run_module_as_main(test_module, *args):
     if not os.path.isabs(test_module):
         test_module = support_file(test_module)
-    return subprocess.Popen([sys.executable, test_module] + list(args),
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return subprocess.Popen(
+        [sys.executable, test_module] + list(args),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
 
 class NotReallyAProc(object):
-
     def __init__(self, args, cwd=None, **kwargs):
         self.args = args
         self.chdir = cwd
@@ -224,8 +232,8 @@ class NotReallyAProc(object):
         with self:
             try:
                 self.result = discover(
-                    argv=('nose2',) + self.args, exit=False,
-                    **self.kwargs)
+                    argv=("nose2",) + self.args, exit=False, **self.kwargs
+                )
             except SystemExit as e:
                 self._exit_code = e.code
             return self.stdout.getvalue(), self.stderr.getvalue()
@@ -240,6 +248,7 @@ class NotReallyAProc(object):
 
         # subprocess.poll should return None or the Integer exitcode
         return int(not self.result.result.wasSuccessful())
+
 
 class RedirectStdStreams(object):
 
@@ -268,7 +277,6 @@ class RedirectStdStreams(object):
 
 # mock multprocessing Connection
 class Conn(object):
-
     def __init__(self, items):
         self.items = items
         self.sent = []
@@ -279,7 +287,7 @@ class Conn(object):
             raise EOFError("closed")
         try:
             return self.items.pop(0)
-        except:
+        except Exception:
             raise EOFError("EOF")
 
     def send(self, item):

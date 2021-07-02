@@ -1,11 +1,12 @@
-import nose2
 import unittest
+
+import nose2
 
 
 class Test(unittest.TestCase):
-
     def test(self):
         pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     nose2.main()

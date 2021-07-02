@@ -4,7 +4,6 @@ from nose2.tools import such
 
 
 class SomeLayer(object):
-
     @classmethod
     def setUp(cls):
         it.somelayer = True
@@ -13,12 +12,13 @@ class SomeLayer(object):
     def tearDown(cls):
         del it.somelayer
 
+
 #
 # Such tests start with a declaration about the system under test
 # and will typically bind the test declaration to a variable with
 # a name that makes nice sentences, like 'this' or 'it'.
 #
-with such.A('system with complex setup') as it:
+with such.A("system with complex setup") as it:
 
     #
     # Each layer of tests can define setup and teardown methods.
@@ -36,7 +36,7 @@ with such.A('system with complex setup') as it:
     #
     # The 'should' decorator is used to mark tests.
     #
-    @it.should('do something')
+    @it.should("do something")
     def test():
         assert it.things
         #
@@ -50,9 +50,10 @@ with such.A('system with complex setup') as it:
     # one that depends on the layer(s) above it. Tests in this
     # new layer inherit all of the fixtures of the layer above.
     #
-    with it.having('an expensive fixture'):
-        @it.has_setup
-        def setup():
+    with it.having("an expensive fixture"):
+
+        @it.has_setup  # noqa: F811
+        def setup():  # noqa: F811
             it.things.append(2)
 
         #
@@ -61,24 +62,25 @@ with such.A('system with complex setup') as it:
         # them. Tests can call any and all TestCase methods on this
         # instance.
         #
-        @it.should('do more things')
-        def test(case):
+        @it.should("do more things")  # noqa: F811
+        def test(case):  # noqa: F811
             case.assertEqual(it.things[-1], 2)
 
         #
         # Layers can be nested to any depth.
         #
-        with it.having('another precondtion'):
-            @it.has_setup
-            def setup():
+        with it.having("another precondtion"):
+
+            @it.has_setup  # noqa: F811
+            def setup():  # noqa: F811
                 it.things.append(3)
 
-            @it.has_teardown
-            def teardown():
+            @it.has_teardown  # noqa: F811
+            def teardown():  # noqa: F811
                 it.things.pop()
 
-            @it.should('do that not this')
-            def test(case):
+            @it.should("do that not this")  # noqa: F811
+            def test(case):  # noqa: F811
                 it.things.append(4)
                 #
                 # Tests can add their own cleanup functions.
@@ -86,14 +88,14 @@ with such.A('system with complex setup') as it:
                 case.addCleanup(it.things.pop)
                 case.assertEqual(it.things[-1], 4, it.things)
 
-            @it.should('do this not that')
-            def test(case):
+            @it.should("do this not that")  # noqa: F811
+            def test(case):  # noqa: F811
                 case.assertEqual(it.things[-1], 3, it.things[:])
 
         #
         # A layer may have any number of sub-layers.
         #
-        with it.having('a different precondition'):
+        with it.having("a different precondition"):
 
             #
             # A layer defined with ``having`` can make use of
@@ -104,12 +106,12 @@ with such.A('system with complex setup') as it:
             #
             it.uses(SomeLayer)
 
-            @it.has_setup
-            def setup():
+            @it.has_setup  # noqa: F811
+            def setup():  # noqa: F811
                 it.things.append(99)
 
-            @it.has_teardown
-            def teardown():
+            @it.has_teardown  # noqa: F811
+            def teardown():  # noqa: F811
                 it.things.pop()
 
             #
@@ -124,28 +126,30 @@ with such.A('system with complex setup') as it:
 
             @it.has_test_teardown
             def test_teardown(case):
-                delattr(it, 'is_funny')
-                delattr(case, 'is_funny')
+                delattr(it, "is_funny")
+                delattr(case, "is_funny")
 
-            @it.should('do something else')
-            def test(case):
+            @it.should("do something else")  # noqa: F811
+            def test(case):  # noqa: F811
                 assert it.things[-1] == 99
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should('have another test')
-            def test(case):
+            @it.should("have another test")  # noqa: F811
+            def test(case):  # noqa: F811
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should('have access to an external fixture')
-            def test(case):
+            @it.should("have access to an external fixture")  # noqa: F811
+            def test(case):  # noqa: F811
                 assert it.somelayer
 
-            with it.having('a case inside the external fixture'):
-                @it.should('still have access to that fixture')
-                def test(case):
+            with it.having("a case inside the external fixture"):
+
+                @it.should("still have access to that fixture")  # noqa: F811
+                def test(case):  # noqa: F811
                     assert it.somelayer
+
 
 #
 # To convert the layer definitions into test cases, you have to call
@@ -159,6 +163,5 @@ it.createTests(globals())
 # Such tests and normal tests can coexist in the same modules.
 #
 class NormalTest(unittest.TestCase):
-
     def test(self):
         pass

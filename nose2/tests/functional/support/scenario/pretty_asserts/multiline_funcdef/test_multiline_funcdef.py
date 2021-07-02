@@ -1,5 +1,7 @@
 from nose2.tools.params import params
 
+# fmt: off
+
 
 # multiline function definition
 def test_demo(
@@ -13,3 +15,4 @@ def test_demo(
         ('bar',))
 def test_multiline_deco(value):
     assert not value
+# fmt: on

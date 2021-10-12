@@ -16,8 +16,8 @@ with such.A("foo") as it:
 
     @it.should("run upper setups")
     def test_run_upper_setups(case):
-        case.assertEquals(it.upper_run, 1)
-        case.assertEquals(it.lower_run, 0)
+        case.assertEqual(it.upper_run, 1)
+        case.assertEqual(it.lower_run, 0)
 
     with it.having("some bar"):
 
@@ -28,13 +28,13 @@ with such.A("foo") as it:
 
         @it.should("run all setups")
         def test_run_all_setups(case):
-            case.assertEquals(it.upper_run, 2)
-            case.assertEquals(it.lower_run, 1)
+            case.assertEqual(it.upper_run, 2)
+            case.assertEqual(it.lower_run, 1)
 
         @it.should("run all setups again")
         def test_run_all_setups_again(case):
-            case.assertEquals(it.upper_run, 3)
-            case.assertEquals(it.lower_run, 2)
+            case.assertEqual(it.upper_run, 3)
+            case.assertEqual(it.lower_run, 2)
 
 
 it.createTests(globals())

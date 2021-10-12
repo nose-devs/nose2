@@ -11,7 +11,7 @@ class Test(unittest.TestCase):
         d = {}
         log.debug("foo: %s", d)
         d["bar"] = "baz"
-        self.assert_(False)
+        self.assertTrue(False)
 
 
 if __name__ == "__main__":

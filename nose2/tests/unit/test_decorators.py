@@ -17,7 +17,7 @@ class WithSetupDecoratorTests(TestCase):
         sut = self.fake_test()
         expected = with_setup(self.fake_setup)(sut).setup
 
-        self.assertEquals(expected, self.fake_setup)
+        self.assertEqual(expected, self.fake_setup)
 
 
 class WithTeardownDecoratorTests(TestCase):
@@ -31,4 +31,4 @@ class WithTeardownDecoratorTests(TestCase):
         sut = self.fake_test()
         expected = with_teardown(self.fake_teardown)(sut).tearDownFunc
 
-        self.assertEquals(expected, self.fake_teardown)
+        self.assertEqual(expected, self.fake_teardown)

@@ -3,6 +3,7 @@ import os
 import sys
 import unittest
 from xml.etree import ElementTree as ET
+import datetime
 
 import six
 
@@ -193,6 +194,22 @@ class TestJunitXmlPlugin(TestCase):
         self.assertIsNone(skip.get("message"))
         self.assertIsNone(skip.text)
 
+    def test_generator_timestamp_increases(self):
+        gen = generators.Generators(session=self.session)
+        gen.register()
+        event = events.LoadFromTestCaseEvent(self.loader, self.case)
+        self.session.hooks.loadTestsFromTestCase(event)
+        cases = event.extraTests
+        for case in cases:
+            case(self.result)
+        xml = self.plugin.tree.findall("testcase")
+        self.assertEqual(len(xml), 2)
+        test1_timestamp_str = xml[0].get("timestamp")
+        test1_timestamp = datetime.datetime.fromisoformat(test1_timestamp_str)
+        test2_timestamp_str = xml[1].get("timestamp")
+        test2_timestamp = datetime.datetime.fromisoformat(test2_timestamp_str)
+        self.assertGreater(test2_timestamp, test1_timestamp)
+
     def test_generator_test_name_correct(self):
         gen = generators.Generators(session=self.session)
         gen.register()
@@ -296,6 +313,7 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(len(tree.findall("testcase")), 1)
         case = tree.find("testcase")
         assert "time" in case.attrib
+        assert "timestamp" in case.attrib
         assert "classname" in case.attrib
         self.assertEqual(case.get("name"), "test")
         self.assertEqual(tree.get("errors"), "0")

@@ -128,12 +128,34 @@ Full Docs
 
 Full documentation for ``nose2`` is available at `docs.nose2.io`_
 
+Versions and Support
+--------------------
+
+Changelog and Version Scheme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+nose2 versions are numbered `0.MAJOR.MINOR`. Minor releases contain bugfixes or
+smaller features. Major features or backwards incompatible changes are done in
+major releases.
+
+For a full description of all past versions and changes, see the `changelog`_.
+
+Python Versions
+~~~~~~~~~~~~~~~
+
+nose2 supports all currently supported python versions.
+
+It also will continue to support python2 for as long as it remains feasible and
+a significant percentage of nose2 users are using python2.
+
 Contributing
 ------------
 
 If you want to make contributions, please read the `contributing`_ guide.
 
-.. _differences: https://nose2.readthedocs.io/en/latest/differences.html
+.. _differences: https://docs.nose2.io/en/latest/differences.html
+
+.. _changelog: https://docs.nose2.io/en/latest/changelog.html
 
 .. _pytest: http://pytest.readthedocs.io/en/latest/
 

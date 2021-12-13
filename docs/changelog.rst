@@ -4,6 +4,12 @@ Changelog
 nose2 uses semantic versioning (currently in 0.x) and the popular
 "keep a changelog" format (v1.0.0).
 
+nose2 tries not to break backwards compatibility in any release. Until v1.0,
+versions are numbered `0.MAJOR.MINOR`. Major releases introduce new
+functionality or contain necessary breaking changes. Minor releases are
+primarily used for bugfix or small features which are unlikely to break users'
+testsuites.
+
 0.10.0 (2020-01-27)
 -------------------
 
@@ -45,8 +51,6 @@ Fixed
 
 * Class methods decorated (e.g. with ``mock.patch``) are no longer incorrectly
   picked up by the function loader
-
-    Merge pull request #485 from stefanholek/484-session-plugin-registry
 
 0.9.2 (2020-02-02)
 ------------------

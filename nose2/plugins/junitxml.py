@@ -289,7 +289,10 @@ class JUnitXmlReporter(events.Plugin):
         return 0
 
     def _timestamp_to_iso8601(self, timestamp):
-        return datetime.datetime.utcfromtimestamp(timestamp).isoformat()
+        try:
+            return datetime.datetime.utcfromtimestamp(timestamp).isoformat()
+        except Exception:
+            return datetime.datetime.utcfromtimestamp(0).isoformat()
 
 #
 # xml utility functions

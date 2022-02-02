@@ -82,12 +82,12 @@ produced:
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
 
+import datetime
 import json
 import os.path
 import re
 import sys
 import time
-import datetime
 from xml.etree import ElementTree as ET
 
 import six
@@ -161,8 +161,7 @@ class JUnitXmlReporter(events.Plugin):
             return
 
         testcase = ET.SubElement(self.tree, "testcase")
-        testcase.set('timestamp',
-                     str(self._timestamp_to_iso8601(self._start)))
+        testcase.set("timestamp", str(self._timestamp_to_iso8601(self._start)))
         testcase.set("time", "%.6f" % self._time())
         if not classname:
             classname = test.__module__
@@ -301,6 +300,7 @@ class JUnitXmlReporter(events.Plugin):
             return datetime.datetime.utcfromtimestamp(timestamp).isoformat()
         except Exception:
             return datetime.datetime.utcfromtimestamp(0).isoformat()
+
 
 #
 # xml utility functions

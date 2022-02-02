@@ -39,16 +39,20 @@ Produces this XML by default:
 
 .. code-block:: xml
 
-    <testcase classname="a" name="test_gen:1" time="0.000171">
+    <testcase classname="a" name="test_gen:1" time="0.000171"
+     timestamp="2021-12-09T21:28:09.686611">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_gen:2" time="0.000202">
+    <testcase classname="a" name="test_gen:2" time="0.000202"
+     timestamp="2021-12-09T21:28:09.686813">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_params:1" time="0.000159">
+    <testcase classname="a" name="test_params:1" time="0.000159"
+     timestamp="2021-12-09T21:28:09.686972">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_params:2" time="0.000163">
+    <testcase classname="a" name="test_params:2" time="0.000163"
+     timestamp="2021-12-09T21:28:09.687135">
         <system-out />
     </testcase>
 
@@ -57,16 +61,20 @@ produced:
 
 .. code-block:: xml
 
-    <testcase classname="a" name="test_gen:1 (99, 99)" time="0.000213">
+    <testcase classname="a" name="test_gen:1 (99, 99)" time="0.000213"
+     timestamp="2021-12-09T21:28:09.686611">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_gen:2 (-1, -1)" time="0.000194">
+    <testcase classname="a" name="test_gen:2 (-1, -1)" time="0.000194"
+     timestamp="2021-12-09T21:28:09.687105">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_params:1 ('foo')" time="0.000178">
+    <testcase classname="a" name="test_params:1 ('foo')" time="0.000178"
+     timestamp="2021-12-09T21:28:09.687283">
         <system-out />
     </testcase>
-    <testcase classname="a" name="test_params:2 ('bar')" time="0.000187">
+    <testcase classname="a" name="test_params:2 ('bar')" time="0.000187"
+     timestamp="2021-12-09T21:28:09.687470">
         <system-out />
     </testcase>
 
@@ -74,6 +82,7 @@ produced:
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
 
+import datetime
 import json
 import os.path
 import re
@@ -152,6 +161,7 @@ class JUnitXmlReporter(events.Plugin):
             return
 
         testcase = ET.SubElement(self.tree, "testcase")
+        testcase.set("timestamp", self._iso_timestamp())
         testcase.set("time", "%.6f" % self._time())
         if not classname:
             classname = test.__module__
@@ -284,6 +294,12 @@ class JUnitXmlReporter(events.Plugin):
         finally:
             self._start = None
         return 0
+
+    def _iso_timestamp(self):
+        # in some cases, `self._start` is still None when this runs, convert to 0
+        # see: https://github.com/nose-devs/nose2/pull/505
+        timestamp = self._start or 0
+        return str(datetime.datetime.utcfromtimestamp(timestamp).isoformat())
 
 
 #

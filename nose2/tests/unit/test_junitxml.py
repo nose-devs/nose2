@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import sys
@@ -10,6 +11,14 @@ from nose2 import events, loader, result, session, tools
 from nose2.plugins import junitxml, logcapture
 from nose2.plugins.loader import functions, generators, parameters, testcases
 from nose2.tests._common import TestCase
+
+
+def _fromisoformat(date_str):
+    # use fromisoformat when it is available, but failover to strptime for python2 and
+    # older python3 versions
+    if hasattr(datetime.datetime, "fromisoformat"):
+        return datetime.datetime.fromisoformat(date_str)
+    return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
 
 
 class TestJunitXmlPlugin(TestCase):
@@ -193,6 +202,22 @@ class TestJunitXmlPlugin(TestCase):
         self.assertIsNone(skip.get("message"))
         self.assertIsNone(skip.text)
 
+    def test_generator_timestamp_increases(self):
+        gen = generators.Generators(session=self.session)
+        gen.register()
+        event = events.LoadFromTestCaseEvent(self.loader, self.case)
+        self.session.hooks.loadTestsFromTestCase(event)
+        cases = event.extraTests
+        for case in cases:
+            case(self.result)
+        xml = self.plugin.tree.findall("testcase")
+        self.assertEqual(len(xml), 2)
+        test1_timestamp_str = xml[0].get("timestamp")
+        test1_timestamp = _fromisoformat(test1_timestamp_str)
+        test2_timestamp_str = xml[1].get("timestamp")
+        test2_timestamp = _fromisoformat(test2_timestamp_str)
+        self.assertGreater(test2_timestamp, test1_timestamp)
+
     def test_generator_test_name_correct(self):
         gen = generators.Generators(session=self.session)
         gen.register()
@@ -296,6 +321,7 @@ class TestJunitXmlPlugin(TestCase):
         self.assertEqual(len(tree.findall("testcase")), 1)
         case = tree.find("testcase")
         assert "time" in case.attrib
+        assert "timestamp" in case.attrib
         assert "classname" in case.attrib
         self.assertEqual(case.get("name"), "test")
         self.assertEqual(tree.get("errors"), "0")

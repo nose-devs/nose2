@@ -13,6 +13,14 @@ from nose2.plugins.loader import functions, generators, parameters, testcases
 from nose2.tests._common import TestCase
 
 
+def _fromisoformat(date_str):
+    # use fromisoformat when it is available, but failover to strptime for python2 and
+    # older python3 versions
+    if hasattr(datetime.datetime, "fromisoformat"):
+        return datetime.datetime.fromisoformat(date_str)
+    return datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+
+
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
 
@@ -205,9 +213,9 @@ class TestJunitXmlPlugin(TestCase):
         xml = self.plugin.tree.findall("testcase")
         self.assertEqual(len(xml), 2)
         test1_timestamp_str = xml[0].get("timestamp")
-        test1_timestamp = datetime.datetime.fromisoformat(test1_timestamp_str)
+        test1_timestamp = _fromisoformat(test1_timestamp_str)
         test2_timestamp_str = xml[1].get("timestamp")
-        test2_timestamp = datetime.datetime.fromisoformat(test2_timestamp_str)
+        test2_timestamp = _fromisoformat(test2_timestamp_str)
         self.assertGreater(test2_timestamp, test1_timestamp)
 
     def test_generator_test_name_correct(self):

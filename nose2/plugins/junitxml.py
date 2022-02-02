@@ -161,7 +161,7 @@ class JUnitXmlReporter(events.Plugin):
             return
 
         testcase = ET.SubElement(self.tree, "testcase")
-        testcase.set("timestamp", str(self._timestamp_to_iso8601(self._start)))
+        testcase.set("timestamp", self._iso_timestamp())
         testcase.set("time", "%.6f" % self._time())
         if not classname:
             classname = test.__module__
@@ -295,11 +295,11 @@ class JUnitXmlReporter(events.Plugin):
             self._start = None
         return 0
 
-    def _timestamp_to_iso8601(self, timestamp):
-        try:
-            return datetime.datetime.utcfromtimestamp(timestamp).isoformat()
-        except Exception:
-            return datetime.datetime.utcfromtimestamp(0).isoformat()
+    def _iso_timestamp(self):
+        # in some cases, `self._start` is still None when this runs, convert to 0
+        # see: https://github.com/nose-devs/nose2/pull/505
+        timestamp = self._start or 0
+        return str(datetime.datetime.utcfromtimestamp(timestamp).isoformat())
 
 
 #

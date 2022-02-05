@@ -1,6 +1,14 @@
+.. image:: https://results.pre-commit.ci/badge/github/nose-devs/nose2/main.svg
+   :target: https://results.pre-commit.ci/latest/github/nose-devs/nose2/main
+   :alt: pre-commit.ci status
+
 .. image:: https://github.com/nose-devs/nose2/workflows/build/badge.svg?event=push
     :alt: build status
     :target: https://github.com/nose-devs/nose2/actions?query=workflow%3Abuild
+
+.. image:: https://readthedocs.org/projects/nose2/badge/
+    :target: https://nose2.io/
+    :alt: Documentation
 
 .. image:: https://img.shields.io/pypi/v/nose2.svg
     :target: https://pypi.org/project/nose2/
@@ -159,6 +167,6 @@ If you want to make contributions, please read the `contributing`_ guide.
 
 .. _pytest: http://pytest.readthedocs.io/en/latest/
 
-.. _contributing: https://github.com/nose-devs/nose2/blob/master/contributing.rst
+.. _contributing: https://github.com/nose-devs/nose2/blob/main/contributing.rst
 
 .. _docs.nose2.io: https://docs.nose2.io/en/latest/

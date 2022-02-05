@@ -1,4 +1,18 @@
+import sys
+
 from nose2.tests._common import FunctionalTestCase
+
+# detect if DEBUG_RANGES are enabled in the interpreter
+#
+# for now, assume it's on for py3.11+
+#
+# in 3.11 this is be part of the env var flag loading logic:
+# https://github.com/python/cpython/blob/99fcf1505218464c489d419d4500f126b6d6dc28/Python/initconfig.c#L1722-L1725
+#
+# if anyone runs into failures because they're setting PYTHONNODEBUGRANGES when running
+# tests, we may want to look into how to pull this value from `sys` or a similar module
+# note that this can be set via env var or a CLI flag
+DEBUG_RANGES = sys.version_info >= (3, 11)
 
 
 class TestPrettyAsserts(FunctionalTestCase):
@@ -166,7 +180,14 @@ class TestPrettyAsserts(FunctionalTestCase):
             "scenario/pretty_asserts/unittest_assertion", "-v", "--pretty-assert"
         )
         # look for typical unittest output
-        expected = "self.assertTrue\\(x\\)\nAssertionError: False is not true"
+        expect_lines = [
+            r"self.assertTrue\(x\)",
+            r"\s+\^+",
+            "AssertionError: False is not true",
+        ]
+        if not DEBUG_RANGES:
+            del expect_lines[1]
+        expected = "\n".join(expect_lines)
         stderr = self.assertProcOutputPattern(proc, expected)
         # the assertion line wasn't reprinted by prettyassert
         self.assertNotIn(">>> self.assertTrue", stderr)

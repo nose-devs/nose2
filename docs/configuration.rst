@@ -4,9 +4,11 @@ Configuring nose2
 Configuration Files
 -------------------
 
-Most configuration of nose2 is done via config files. These are
-standard, .ini-style config files, with sections marked off by
-brackets ("``[unittest]``") and ``key = value`` pairs within those sections.
+nose2 can be configured via standard, ini-style config files.
+The default files are ``unittest.cfg`` and ``nose2.cfg`` in the start directory.
+
+The ini format has sections marked off by brackets ("``[unittest]``") and
+``key = value`` pairs within those sections.
 When the value is a list, put each value into its own line with proper
 indentation ::
 

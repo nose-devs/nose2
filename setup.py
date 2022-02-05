@@ -26,10 +26,6 @@ setup(
     install_requires=[
         "six>=1.7",
         "coverage>=4.4.1",
-        # mock on py2, py3.4 and py3.5
-        # not just py2: py3 versions of mock don't all have the same
-        # interface and this can cause issues
-        'mock==2.0.0;python_version<"3.6"',
     ],
     extras_require={
         "coverage_plugin": ["coverage>=4.4.1"],
@@ -55,7 +51,6 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

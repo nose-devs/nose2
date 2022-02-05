@@ -56,5 +56,3 @@ jobs:
         run: python -m pip install -U tox
       - name: test
         run: python -m tox -e py
-        # FIXME: ignore errors in windows builds (for now)
-        continue-on-error: ${{ matrix.os == 'windows-latest' }}

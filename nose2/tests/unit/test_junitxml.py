@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import sys
+import time
 import unittest
 from xml.etree import ElementTree as ET
 
@@ -114,6 +115,13 @@ class TestJunitXmlPlugin(TestCase):
 
             def test_gen(self):
                 def check(a, b):
+                    # workaround:
+                    # for the test which ensures that the timestamp increases between
+                    # generator test runs, insert a very small sleep
+                    #
+                    # on py3.10 on Windows, we have observed both of these tests getting
+                    # the same timestamp
+                    time.sleep(0.001)
                     self.assertEqual(a, b)
 
                 yield check, 1, 1
@@ -331,12 +339,11 @@ class TestJunitXmlPlugin(TestCase):
         assert "time" in tree.attrib
 
     def test_xml_file_path_is_not_affected_by_chdir_in_test(self):
-        inital_dir = os.getcwd()
+        initial_dir = os.path.realpath(os.getcwd())
         test = self.case("test_chdir")
         test(self.result)
-        self.assertEqual(
-            inital_dir, os.path.dirname(os.path.realpath(self.plugin.path))
-        )
+        plugin_dir = os.path.realpath(os.path.dirname(self.plugin.path))
+        assert initial_dir == plugin_dir, self.plugin.path
 
     def test_xml_contains_empty_system_out_without_logcapture(self):
         test = self.case("test_with_log")

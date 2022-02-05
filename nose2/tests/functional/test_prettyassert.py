@@ -1,6 +1,6 @@
 import sys
 
-from nose2.tests._common import FunctionalTestCase
+from nose2.tests._common import FunctionalTestCase, windows_ci_skip
 
 # detect if DEBUG_RANGES are enabled in the interpreter
 #
@@ -141,6 +141,7 @@ class TestPrettyAsserts(FunctionalTestCase):
         )
         self.assertProcOutputPattern(proc, expected)
 
+    @windows_ci_skip
     def test_assert_attribute_resolution2(self):
         proc = self.runIn(
             "scenario/pretty_asserts/attribute_resolution2", "-v", "--pretty-assert"

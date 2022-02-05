@@ -1,5 +1,6 @@
 """Common functionality."""
 import os.path
+import platform
 import shutil
 import subprocess
 import sys
@@ -295,3 +296,16 @@ class Conn(object):
 
     def close(self):
         self.closed = True
+
+
+# true on GitHub Actions, false otherwise
+def environment_is_ci():
+    return os.getenv("CI") == "true"
+
+
+# special skip decorator for tests which are broken in Windows in CI
+def windows_ci_skip(f):
+    return unittest.skipIf(
+        platform.system() == "Windows" and environment_is_ci(),
+        "This test is skipped on Windows in CI",
+    )(f)

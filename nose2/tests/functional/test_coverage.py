@@ -4,7 +4,7 @@ import platform
 import sys
 import unittest
 
-from nose2.tests._common import FunctionalTestCase, support_file
+from nose2.tests._common import FunctionalTestCase, support_file, windows_ci_skip
 
 
 class TestCoverage(FunctionalTestCase):
@@ -68,6 +68,7 @@ class TestCoverage(FunctionalTestCase):
         platform.system() == "Darwin" and sys.version_info >= (3, 8),
         "FIXME: this test fails on modern pythons on macos",
     )
+    @windows_ci_skip
     def test_run_with_mp(self):
         # this test needs to be done with nose2 config because (as of 2019-12)
         # multiprocessing does not allow each test process to pick up on

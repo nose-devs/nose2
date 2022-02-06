@@ -166,6 +166,6 @@ to get help for nose2 itself and all loaded plugins.
 
     -B, --output-buffer   Enable output buffer
     -D, --debugger        Enter pdb on test fail or error
-    --collect-only        Collect and output test names, do not run any tests
+    --collect-only        Collect but do not run tests. With '-v', this will output test names
     --log-capture         Enable log capture
     -P, --print-hooks     Print names of hooks in order of execution

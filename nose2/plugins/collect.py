@@ -19,7 +19,7 @@ class CollectOnly(Plugin):
     commandLineSwitch = (
         None,
         "collect-only",
-        "Collect and output test names; do not run any tests",
+        "Collect but do not run tests. With '-v', this will output test names",
     )
     _mpmode = False
 

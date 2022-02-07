@@ -16,8 +16,8 @@ extensions = [
 ]
 source_suffix = ".rst"
 master_doc = "index"
-project = u"nose2"
-copyright = u"2010, Jason Pellerin"
+project = "nose2"
+copyright = "2010, Jason Pellerin"
 version = "0.6"
 release = "0.6.0"
 exclude_patterns = ["_build"]
@@ -25,5 +25,5 @@ templates_path = ["_templates"]
 pygments_style = "sphinx"
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-man_pages = [("index", "nose2", u"nose2 Documentation", [u"Jason Pellerin"], 1)]
+man_pages = [("index", "nose2", "nose2 Documentation", ["Jason Pellerin"], 1)]
 intersphinx_mapping = {"python": ("http://docs.python.org/", None)}

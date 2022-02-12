@@ -1,9 +1,9 @@
 import os
 import sys
 
-import sphinx_rtd_theme
-
 sys.path.insert(0, os.path.abspath(".."))
+import nose2  # noqa:E402
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
@@ -12,18 +12,26 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
+    "sphinx_issues",
     "nose2.sphinxext",
 ]
+
 source_suffix = ".rst"
 master_doc = "index"
-project = u"nose2"
-copyright = u"2010, Jason Pellerin"
-version = "0.6"
-release = "0.6.0"
+project = "nose2"
+copyright = "2010-2022, Jason Pellerin, Stephen Rosen"
+version = release = nose2._version.__version__
 exclude_patterns = ["_build"]
 templates_path = ["_templates"]
-pygments_style = "sphinx"
+
+# theme
 html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-man_pages = [("index", "nose2", u"nose2 Documentation", [u"Jason Pellerin"], 1)]
-intersphinx_mapping = {"python": ("http://docs.python.org/", None)}
+
+# sphinx-issues
+github_user = "nose-devs"
+github_repo = "nose2"
+issues_github_path = f"{github_user}/{github_repo}"
+# intersphinx
+intersphinx_mapping = {
+    "python": ("http://docs.python.org/", None),
+}

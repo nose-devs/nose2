@@ -10,7 +10,47 @@ functionality or contain necessary breaking changes. Minor releases are
 primarily used for bugfix or small features which are unlikely to break users'
 testsuites.
 
-0.10.0 (2020-01-27)
+0.11.0 (2022-02-12)
+-------------------
+
+This is the first version of `nose2` using `sphinx-issues` to credit
+contributors in the changelog.
+
+Added
+~~~~~
+
+* Test classes now have their short description (first line of docstring)
+  printed in verbose output
+
+* The junitxml plugin now sets ``timestamp`` on each ``testcase`` node as an
+  ISO-8601 timestamp. Thanks to :user:`deeplow` for the contribution!
+
+Changed
+~~~~~~~
+
+* Drop support for Python 3.5
+
+* Python 3.10 is now officially supported. Python 3.11-dev will be supported on
+  a best-effort basis. Thanks to :user:`hugovk` and :user:`tirkarthi` for their
+  contributions!
+
+* ``nose2`` source code is now autoformatted with ``black`` and ``isort``
+
+* ``nose2`` has switched its main development branch from ``master`` to ``main``
+
+* Releases are now published using `build <https://github.com/pypa/build>`_
+
+Fixed
+~~~~~
+
+* Add support for test classes when running with the multiprocessing plugin.
+  Thanks to :user:`ltfish` for the initial contribution and
+  :user:`stefanholek` for the refinement to this change!
+
+* Various documentation fixes
+
+
+0.10.0 (2021-01-27)
 -------------------
 
 Added

@@ -1,0 +1,54 @@
+name: test latest on downstream projects
+on:
+  push:
+    branches:
+      - main
+      # a dedicated branch for working on this workflow
+      - downstream-test
+  # build weekly at 4:00 AM UTC
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: python -m pip install tox
+      - name: build
+        run: make build
+      - name: upload latest builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: latest-build
+          path: dist/*
+
+  test-mailman:
+    strategy:
+      matrix:
+        pkg-extension: ["whl", "tar.gz"]
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: git clone "https://gitlab.com/mailman/mailman/" .
+      - name: download sdist build
+        uses: actions/download-artifact@v2
+        with:
+          name: latest-build
+          path: nose2-build
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - run: python -m pip install tox
+      - name: setup testenv
+        run: tox -e py-nocov --devenv testenv
+      - name: install nose2 latest build
+        run: |
+          source testenv/bin/activate
+          pip install --force-reinstall -v ./nose2-build/*.${{ matrix.pkg-extension }}
+      - name: run tests
+        run: |
+          source testenv/bin/activate
+          python -m nose2 -v

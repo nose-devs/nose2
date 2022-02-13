@@ -14,7 +14,7 @@ build:
 
 release:
 	git tag -s "$(NOSE2_VERSION)" -m "v$(NOSE2_VERSION)"
-	tox -e build,release
+	tox -e build,publish
 
 
 clean:

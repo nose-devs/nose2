@@ -1,6 +1,4 @@
 include AUTHORS
-include requirements.txt
-include requirements-*.txt
 include tox.ini
 include unittest.cfg
 include README.rst

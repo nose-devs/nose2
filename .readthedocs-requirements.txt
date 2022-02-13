@@ -1,3 +1,0 @@
-# use a requirements file to specify to readthedocs that doc builds need the
-# "dev" extra
--e .[dev]

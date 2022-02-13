@@ -5,7 +5,7 @@ from setuptools import setup
 
 VERSION = open("nose2/_version.py").readlines()[-1].split()[-1].strip("\"'")
 
-MAINTAINER = "nose2 devs"
+MAINTAINER = "Stephen Rosen"
 MAINTAINER_EMAIL = "dev@nose2.io"
 
 PY_VERSION = "%s.%s" % (sys.version_info.major, sys.version_info.minor)
@@ -29,7 +29,13 @@ setup(
     ],
     extras_require={
         "coverage_plugin": ["coverage>=4.4.1"],
-        "dev": ["Sphinx>=1.6.5", "sphinx_rtd_theme", "mock", "coverage"],
+        "dev": [
+            "Sphinx>=1.6.5",
+            "sphinx_rtd_theme",
+            "mock",
+            "coverage",
+            "sphinx-issues",
+        ],
     },
     entry_points={
         "console_scripts": [

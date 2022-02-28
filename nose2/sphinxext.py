@@ -6,7 +6,7 @@ from docutils.statemachine import ViewList
 
 from nose2 import events, plugins, session, util
 
-AD = u"<autodoc>"
+AD = "<autodoc>"
 __unittest = True
 
 
@@ -35,8 +35,8 @@ class AutoPlugin(Directive):
 
         rst = ViewList()
         if mod_name:
-            rst.append(u".. automodule :: %s\n" % mod_name, AD)
-            rst.append(u"", AD)
+            rst.append(".. automodule :: %s\n" % mod_name, AD)
+            rst.append("", AD)
 
         for plug in plugins:
             self.document(rst, plug)
@@ -73,87 +73,87 @@ class AutoPlugin(Directive):
 
         # command-line options
         if opts.opts:
-            self.headline(rst, u"Command-line options")
+            self.headline(rst, "Command-line options")
             for opt in opts:
                 for line in opt.options():
                     rst.append(line, AD)
                 rst.append("", AD)
 
         # class __doc__
-        self.headline(rst, u"Plugin class reference: %s" % plugin_name)
-        rst.append(u".. autoclass :: %s" % plugin_name, AD)
-        rst.append(u"   :members:", AD)
-        rst.append(u"", AD)
+        self.headline(rst, "Plugin class reference: %s" % plugin_name)
+        rst.append(".. autoclass :: %s" % plugin_name, AD)
+        rst.append("   :members:", AD)
+        rst.append("", AD)
 
     def add_config(self, rst, config, plugin):
         # add docs on enabling non-default plugins
         plugin_modname = plugin.__module__
         if plugin_modname not in plugins.DEFAULT_PLUGINS:
-            self.headline(rst, u"Enable this Plugin")
-            rst.append(u"This plugin is built-in, but not loaded by default.", AD)
-            rst.append(u"", AD)
+            self.headline(rst, "Enable this Plugin")
+            rst.append("This plugin is built-in, but not loaded by default.", AD)
+            rst.append("", AD)
             rst.append(
-                u"Even if you specify ``always-on = True`` in the "
-                u"configuration, it will not run unless you also enable it. "
-                u"You can do so by putting the following in a "
-                u":file:`unittest.cfg` or :file:`nose2.cfg` file",
+                "Even if you specify ``always-on = True`` in the "
+                "configuration, it will not run unless you also enable it. "
+                "You can do so by putting the following in a "
+                ":file:`unittest.cfg` or :file:`nose2.cfg` file",
                 AD,
             )
-            rst.append(u"", AD)
-            rst.append(u".. code-block:: ini", AD)
-            rst.append(u"", AD)
-            rst.append(u"  [unittest]", AD)
-            rst.append(u"  plugins = %s" % plugin_modname, AD)
-            rst.append(u"", AD)
+            rst.append("", AD)
+            rst.append(".. code-block:: ini", AD)
+            rst.append("", AD)
+            rst.append("  [unittest]", AD)
+            rst.append("  plugins = %s" % plugin_modname, AD)
+            rst.append("", AD)
             rst.append(
-                u"The ``plugins`` parameter may contain a list of plugin "
-                u"names, including ``%s``" % plugin_modname,
+                "The ``plugins`` parameter may contain a list of plugin "
+                "names, including ``%s``" % plugin_modname,
                 AD,
             )
-            rst.append(u"", AD)
+            rst.append("", AD)
 
-        headline = u"Configuration [%s]" % config.section
+        headline = "Configuration [%s]" % config.section
         self.headline(rst, headline)
 
         for var in sorted(config.vars.keys()):
             info = config.vars[var]
-            rst.append(u".. rst:configvar :: %s" % var, AD)
-            rst.append(u"  ", AD)
-            rst.append(u"  :Default: %(default)s" % info, AD)
-            rst.append(u"  :Type: %(type)s" % info, AD)
-            rst.append(u"", AD)
+            rst.append(".. rst:configvar :: %s" % var, AD)
+            rst.append("  ", AD)
+            rst.append("  :Default: %(default)s" % info, AD)
+            rst.append("  :Type: %(type)s" % info, AD)
+            rst.append("", AD)
 
-        self.headline(rst, u"Sample configuration", "-")
+        self.headline(rst, "Sample configuration", "-")
         rst.append(
-            u"The default configuration is equivalent to including "
-            u"the following in a :file:`unittest.cfg` file.",
+            "The default configuration is equivalent to including "
+            "the following in a :file:`unittest.cfg` file.",
             AD,
         )
-        rst.append(u"", AD)
-        rst.append(u".. code-block:: ini", AD)
-        rst.append(u"  ", AD)
-        rst.append(u"  [%s]" % config.section, AD)
+        rst.append("", AD)
+        rst.append(".. code-block:: ini", AD)
+        rst.append("  ", AD)
+        rst.append("  [%s]" % config.section, AD)
         for var in sorted(config.vars.keys()):
             info = config.vars[var]
             entry = "  %s = " % (var)
             if info["type"] == "list":
                 if info["default"]:
                     pad = " " * len(entry)
-                    entry = u"%s%s" % (entry, info["default"][0])
+                    entry = "%s%s" % (entry, info["default"][0])
                     rst.append(entry, AD)
                     for val in info["default"][1:]:
-                        rst.append(u"%s%s" % (pad, val), AD)
+                        rst.append("%s%s" % (pad, val), AD)
                 else:
                     rst.append(entry, AD)
             elif info["default"] is not None:
-                entry = u"%s%s" % (entry, info["default"])
+                entry = "%s%s" % (entry, info["default"])
                 rst.append(entry, AD)
-        rst.append(u"", AD)
+        rst.append("", AD)
 
-    def headline(self, rst, headline, level=u"="):
+    def headline(self, rst, headline, level="="):
         rst.append(headline, AD)
         rst.append(level * len(headline), AD)
-        rst.append(u"", AD)
+        rst.append("", AD)
 
     def plugins(self, module):
         for entry in dir(module):
@@ -170,7 +170,7 @@ class AutoPlugin(Directive):
 
 def setup(app):
     app.add_directive("autoplugin", AutoPlugin)
-    app.add_object_type("configvar", "config", u"pair: %s; configvar")
+    app.add_object_type("configvar", "config", "pair: %s; configvar")
 
 
 DEFAULT = object()

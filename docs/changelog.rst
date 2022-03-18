@@ -16,6 +16,11 @@ testsuites.
 Changed
 ~~~~~~~
 
+* Remove the dependency on ``coverage``. Use of the coverage plugin now
+  requires that you either install ``coverage`` independently, or use the
+  extra, ``nose2[coverage_plugin]``. As a result, ``nose2`` no longer has any
+  strict dependencies
+
 * Remove the dependency on ``six``, instead using a vendored copy. This
   ensures that the dependency for ``nose2`` doesn't conflict with application
   dependencies

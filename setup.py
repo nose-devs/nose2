@@ -23,16 +23,12 @@ setup(
         "nose2.tests.unit",
         "nose2.tools",
     ],
-    install_requires=[
-        "coverage>=4.4.1",
-    ],
     extras_require={
-        "coverage_plugin": ["coverage>=4.4.1"],
+        "coverage_plugin": ["coverage"],
         "dev": [
-            "Sphinx>=1.6.5",
+            "Sphinx",
             "sphinx_rtd_theme",
             "mock",
-            "coverage",
             "sphinx-issues",
         ],
     },

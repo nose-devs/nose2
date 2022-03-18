@@ -5,9 +5,8 @@ import time
 import unittest
 from multiprocessing import connection
 
-from six.moves import queue
-
 from nose2 import session
+from nose2._vendor import six
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.plugins.mp import MultiProcess, procserver
@@ -263,7 +262,7 @@ class MPPluginTestRuns(FunctionalTestCase):
             "--plugin=nose2.plugins.mp",
             "-N=2",
         )
-        ret_vals = queue.Queue()
+        ret_vals = six.moves.queue.Queue()
 
         def save_return():
             """
@@ -285,7 +284,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         # little test case.
         try:
             exc = ret_vals.get(True, 60)
-        except queue.Empty:
+        except six.moves.queue.Empty:
             exc = "MP Test timed out"
             proc.kill()
         self.assertIsNone(exc, str(exc))

@@ -8,9 +8,8 @@ import logging
 import traceback
 import unittest
 
-import six
-
 from nose2 import events
+from nose2._vendor import six
 
 log = logging.getLogger(__name__)
 __unittest = True

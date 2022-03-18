@@ -3,9 +3,8 @@ import sys
 import unittest
 from contextlib import contextmanager
 
-import six
-
 from nose2 import util
+from nose2._vendor import six
 from nose2.main import PluggableTestProgram
 
 log = logging.getLogger(__name__)

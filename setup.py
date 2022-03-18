@@ -24,7 +24,6 @@ setup(
         "nose2.tools",
     ],
     install_requires=[
-        "six>=1.7",
         "coverage>=4.4.1",
     ],
     extras_require={

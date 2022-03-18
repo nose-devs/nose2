@@ -90,9 +90,8 @@ import sys
 import time
 from xml.etree import ElementTree as ET
 
-import six
-
 from nose2 import events, result, util
+from nose2._vendor import six
 
 __unittest = True
 

@@ -9,9 +9,8 @@ import logging
 import sys
 import unittest
 
-import six
-
 from nose2 import config, util
+from nose2._vendor import six
 
 log = logging.getLogger(__name__)
 __unittest = True

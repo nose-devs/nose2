@@ -1,6 +1,5 @@
-import six
-
 from nose2 import events
+from nose2._vendor import six
 
 
 class PrintFixture(events.Plugin):

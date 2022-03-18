@@ -7,9 +7,8 @@ import sys
 import tempfile
 import unittest
 
-import six
-
 from nose2 import discover, util
+from nose2._vendor import six
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 SUPPORT = os.path.join(HERE, "functional", "support")

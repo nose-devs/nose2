@@ -6,9 +6,8 @@ import time
 import unittest
 from xml.etree import ElementTree as ET
 
-import six
-
 from nose2 import events, loader, result, session, tools
+from nose2._vendor import six
 from nose2.plugins import junitxml, logcapture
 from nose2.plugins.loader import functions, generators, parameters, testcases
 from nose2.tests._common import TestCase

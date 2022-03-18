@@ -1,8 +1,7 @@
 import sys
 
-import six
-
 from nose2 import events, session
+from nose2._vendor import six
 from nose2.plugins import printhooks
 from nose2.tests._common import TestCase
 

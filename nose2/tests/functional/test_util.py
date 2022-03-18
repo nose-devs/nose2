@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import six
-
 from nose2 import util
+from nose2._vendor import six
 from nose2.tests._common import TestCase, support_file
 
 

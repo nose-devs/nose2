@@ -2,9 +2,8 @@ import logging
 import re
 from collections import OrderedDict
 
-import six
-
 from nose2 import events, exceptions, util
+from nose2._vendor import six
 from nose2.suite import LayerSuite
 
 BRIGHT = r"\033[1m"

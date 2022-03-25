@@ -8,6 +8,13 @@ from nose2.tests._common import FunctionalTestCase, support_file, windows_ci_ski
 
 
 class TestCoverage(FunctionalTestCase):
+    def setUp(self):
+        super(TestCoverage, self).setUp()
+        try:
+            import coverage  # noqa: F401
+        except ImportError:
+            self.skipTest("coverage required")
+
     def assertProcOutputPattern(
         self, proc, libname, stats, total_stats=None, assert_exit_status=0
     ):

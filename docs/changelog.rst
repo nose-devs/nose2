@@ -10,6 +10,21 @@ functionality or contain necessary breaking changes. Minor releases are
 primarily used for bugfix or small features which are unlikely to break users'
 testsuites.
 
+0.12.0 (Unreleased)
+-------------------
+
+Changed
+~~~~~~~
+
+* Remove the dependency on ``coverage``. Use of the coverage plugin now
+  requires that you either install ``coverage`` independently, or use the
+  extra, ``nose2[coverage_plugin]``. As a result, ``nose2`` no longer has any
+  strict dependencies
+
+* Remove the dependency on ``six``, instead using a vendored copy. This
+  ensures that the dependency for ``nose2`` doesn't conflict with application
+  dependencies
+
 0.11.0 (2022-02-12)
 -------------------
 

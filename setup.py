@@ -1,7 +1,7 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 VERSION = open("nose2/_version.py").readlines()[-1].split()[-1].strip("\"'")
 
@@ -14,26 +14,13 @@ LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), "README.rst")).r
 setup(
     name="nose2",
     version=VERSION,
-    packages=[
-        "nose2",
-        "nose2.plugins",
-        "nose2.plugins.loader",
-        "nose2.tests",
-        "nose2.tests.functional",
-        "nose2.tests.unit",
-        "nose2.tools",
-    ],
-    install_requires=[
-        "six>=1.7",
-        "coverage>=4.4.1",
-    ],
+    packages=find_packages(),
     extras_require={
-        "coverage_plugin": ["coverage>=4.4.1"],
+        "coverage_plugin": ["coverage"],
         "dev": [
-            "Sphinx>=1.6.5",
+            "Sphinx",
             "sphinx_rtd_theme",
             "mock",
-            "coverage",
             "sphinx-issues",
         ],
     },

@@ -2,9 +2,8 @@
 import os.path
 import pickle
 
-from six import StringIO
-
 from nose2 import session
+from nose2._vendor import six
 from nose2.events import ReportTestEvent
 from nose2.plugins import testid
 from nose2.tests._common import (
@@ -28,7 +27,7 @@ class UnitTestTestId(TestCase):
 
     def setUp(self):
         super(UnitTestTestId, self).setUp()
-        self.stream = StringIO()
+        self.stream = six.StringIO()
         self.session = session.Session()
         self.plugin = testid.TestId(session=self.session)
 

@@ -17,9 +17,8 @@ talk to the user.
 import sys
 import traceback
 
-from six import StringIO
-
 from nose2 import events
+from nose2._vendor import six
 from nose2.util import ln
 
 __unittest = True
@@ -28,7 +27,7 @@ __unittest = True
 class _Buffer(object):
     def __init__(self, stream):
         self._stream = stream
-        self._buffer = StringIO()
+        self._buffer = six.StringIO()
 
     def fileno(self):
         return self._stream.fileno()

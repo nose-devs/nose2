@@ -6,9 +6,8 @@ import select
 import sys
 import unittest
 
-import six
-
 from nose2 import events, loader, result, runner, session, util
+from nose2._vendor import six
 
 try:
     from collections.abc import Sequence

@@ -18,9 +18,8 @@ import re
 import textwrap
 import tokenize
 
-import six
-
 from nose2 import events
+from nose2._vendor import six
 
 __unittest = True
 

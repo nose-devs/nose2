@@ -5,7 +5,7 @@ repos:
     - id: check-merge-conflict
     - id: trailing-whitespace
 - repo: https://github.com/sirosen/check-jsonschema
-  rev: 0.10.2
+  rev: 0.14.1
   hooks:
     - id: check-github-workflows
 - repo: https://github.com/psf/black
@@ -16,6 +16,7 @@ repos:
   - id: black
     language_version: python3
     exclude: ^nose2/_vendor/.*
+    additional_dependencies: ["click==8.0.4"]
 - repo: https://github.com/PyCQA/flake8
   rev: 4.0.1
   hooks:

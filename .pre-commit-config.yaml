@@ -4,14 +4,14 @@ repos:
   hooks:
     - id: check-merge-conflict
     - id: trailing-whitespace
-- repo: https://github.com/sirosen/check-jsonschema
-  rev: 0.14.1
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.14.3
   hooks:
     - id: check-github-workflows
 - repo: https://github.com/psf/black
-  # this is the SHA of the 21.12b0 release, the last with python2 support
+  # the 21.12b0 release is the last with python2 support
   # it is also the last beta release of black
-  rev: f1d4e742c91dd5179d742b0db9293c4472b765f8  # frozen: 21.12b0
+  rev: 21.12b0
   hooks:
   - id: black
     language_version: python3
@@ -31,3 +31,7 @@ repos:
     language_version: python3
     types: [python]
     exclude: ^nose2/_vendor/.*
+
+
+ci:
+  autoupdate_schedule: quarterly

@@ -1,7 +1,7 @@
 import os
 from xml.etree import ElementTree as ET
 
-from nose2.tests._common import FunctionalTestCase, TestCase, support_file
+from nose2.tests._common import FunctionalTestCase, TestCase, _method_name, support_file
 
 
 class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
@@ -34,7 +34,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_happyday.Test\) ... ok"
+            proc,
+            stderr=r"test \(test_junitxml_happyday.Test"
+            + _method_name()
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
@@ -51,7 +54,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_happyday.Test\) ... ok"
+            proc,
+            stderr=r"test \(test_junitxml_happyday.Test"
+            + _method_name()
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
@@ -68,7 +74,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_happyday.Test\) ... ok"
+            proc,
+            stderr=r"test \(test_junitxml_happyday.Test"
+            + _method_name()
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
@@ -85,7 +94,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test_chdir \(test_junitxml_chdir.Test\) \.* ok"
+            proc,
+            stderr=r"test_chdir \(test_junitxml_chdir.Test"
+            + _method_name("test_chdir")
+            + r"\) \.* ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
@@ -104,7 +116,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
             ("scenario", "junitxml", "with_properties"), "--junit-xml"
         )
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_with_properties.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_with_properties.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
         self.assertEqual(proc.poll(), 0)
 
@@ -123,7 +138,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_skip_reason.Test\) \.* skip"
+            proc,
+            stderr=r"test \(test_junitxml_skip_reason.Test"
+            + _method_name()
+            + r"\) \.* skip",
         )
 
         exit_status = proc.poll()
@@ -150,7 +168,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_non_default_path.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_non_default_path.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
 
         exit_status = proc.poll()
@@ -167,7 +188,10 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_non_default_path.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_non_default_path.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
 
         exit_status = proc.poll()
@@ -187,7 +211,10 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertEqual(proc.poll(), 1)
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_fail_to_write.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_fail_to_write.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
 
         filename_for_regex = os.path.abspath("/does/not/exist.xml")
@@ -209,7 +236,10 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertEqual(proc.poll(), 1)
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_missing_properties.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_missing_properties.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
 
         filename_for_regex = os.path.join("missing_properties", "properties.json")
@@ -231,7 +261,10 @@ class JunitXmlPluginFunctionalFailureTest(FunctionalTestCase, TestCase):
         self.assertEqual(proc.poll(), 1)
 
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test \(test_junitxml_empty_properties.Test\) \.* ok"
+            proc,
+            stderr=r"test \(test_junitxml_empty_properties.Test"
+            + _method_name()
+            + r"\) \.* ok",
         )
 
         filename_for_regex = os.path.join("empty_properties", "properties.json")

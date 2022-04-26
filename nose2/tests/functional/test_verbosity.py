@@ -1,4 +1,4 @@
-from nose2.tests._common import FunctionalTestCase, windows_ci_skip
+from nose2.tests._common import FunctionalTestCase, _method_name, windows_ci_skip
 
 _SUFFIX = """\
 ----------------------------------------------------------------------
@@ -6,7 +6,9 @@ Ran 1 test """
 
 Q_TEST_PATTERN = r"(?<!\.)(?<!ok)" + _SUFFIX
 MID_TEST_PATTERN = r"\." + "\n" + _SUFFIX
-V_TEST_PATTERN = r"test \(__main__\.Test\) \.\.\. ok" + "\n\n" + _SUFFIX
+V_TEST_PATTERN = (
+    r"test \(__main__\.Test" + _method_name() + r"\) \.\.\. ok" + "\n\n" + _SUFFIX
+)
 
 
 class TestVerbosity(FunctionalTestCase):

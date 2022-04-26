@@ -1,4 +1,4 @@
-from nose2.tests._common import FunctionalTestCase
+from nose2.tests._common import FunctionalTestCase, _method_name
 
 
 class TestLayers(FunctionalTestCase):
@@ -42,23 +42,39 @@ class TestLayers(FunctionalTestCase):
         proc = self.runIn(
             "scenario/layers", "-v", "--plugin=nose2.plugins.layers", "--layer-reporter"
         )
-        expect = r"""test \(test_layers.NoLayer\) ... ok
+        expect = (
+            r"""test \(test_layers.NoLayer"""
+            + _method_name()
+            + r"""\) ... ok
 Base
-  test \(test_layers.Outer\) ... ok
+  test \(test_layers.Outer"""
+            + _method_name()
+            + r"""\) ... ok
   LayerD
-    test \(test_layers.InnerD\) test with docstring ... ok
+    test \(test_layers.InnerD"""
+            + _method_name()
+            + r"""\) test with docstring ... ok
   LayerA
-    test \(test_layers.InnerA\) ... ok
+    test \(test_layers.InnerA"""
+            + _method_name()
+            + r"""\) ... ok
   LayerB
     LayerB_1
-      test \(test_layers.InnerB_1\) ... ok
+      test \(test_layers.InnerB_1"""
+            + _method_name()
+            + r"""\) ... ok
     LayerC
-      test \(test_layers.InnerC\) ... ok
-      test2 \(test_layers.InnerC\) ... ok
+      test \(test_layers.InnerC"""
+            + _method_name()
+            + r"""\) ... ok
+      test2 \(test_layers.InnerC"""
+            + _method_name("test2")
+            + r"""\) ... ok
     LayerA_1
-      test \(test_layers.InnerA_1\) ... ok""".split(
-            "\n"
-        )
+      test \(test_layers.InnerA_1"""
+            + _method_name()
+            + r"""\) ... ok"""
+        ).split("\n")
         self.assertTestRunOutputMatches(proc, stderr="Ran 8 tests")
         for line in expect:
             self.assertTestRunOutputMatches(proc, stderr=line)
@@ -71,10 +87,14 @@ Base
             "--layer-reporter",
         )
         expect = [
-            r"ERROR: fixture with a value test_err \(test_layers_with_errors.Test\)",
+            r"ERROR: fixture with a value test_err \(test_layers_with_errors.Test"
+            + _method_name("test_err")
+            + r"\)",
             "ERROR: A test scenario with errors should check for an attribute "
             "that does not exist and raise an error",
-            r"FAIL: fixture with a value test_fail \(test_layers_with_errors.Test\)",
+            r"FAIL: fixture with a value test_fail \(test_layers_with_errors.Test"
+            + _method_name("test_fail")
+            + r"\)",
             "FAIL: A test scenario with errors should check that value == 2 "
             "and fail",
         ]

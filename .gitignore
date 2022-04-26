@@ -10,6 +10,7 @@
 *.orig
 example.cfg
 .coverage
+.idea
 nosetests.xml
 xunit.xml
 nose2-junit.xml

@@ -24,13 +24,7 @@ setup(
             "sphinx-issues",
         ],
     },
-    entry_points={
-        "console_scripts": [
-            "nose2 = nose2:discover",
-            "nose2-%s = nose2:discover" % PY_VERSION,
-        ]
-    },
-    test_suite="unittest.collector",
+    entry_points={"console_scripts": ["nose2 = nose2:discover"]},
     # descriptive package info below
     description="unittest2 with plugins, the succesor to nose",
     long_description=LONG_DESCRIPTION,

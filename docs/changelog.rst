@@ -25,6 +25,17 @@ Changed
   ensures that the dependency for ``nose2`` doesn't conflict with application
   dependencies
 
+Removed
+~~~~~~~
+
+* ``nose2`` no longer provides an entry-point named based on the current python
+  version, e.g. ``nose2-3.8`` on python3.8 . Only the ``nose2`` command is
+  provided.
+
+* Remove support for ``setup.py test`` on ``nose2`` itself. This usage is
+  deprecated by setuptools. Developers contributing to ``nose2`` are encouraged
+  to use ``tox`` to run ``nose2``'s testsuite, per the contributing guide.
+
 0.11.0 (2022-02-12)
 -------------------
 

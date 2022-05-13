@@ -275,7 +275,7 @@ class RedirectStdStreams(object):
         sys.stderr = self.old_stderr
 
 
-# mock multprocessing Connection
+# mock multiprocessing Connection
 class Conn(object):
     def __init__(self, items):
         self.items = items
@@ -308,3 +308,9 @@ def windows_ci_skip(f):
         platform.system() == "Windows" and environment_is_ci(),
         "This test is skipped on Windows in CI",
     )(f)
+
+
+def _method_name(name="test"):
+    """Get an extra method name for Python 3.11"""
+    # https://github.com/python/cpython/issues/58473
+    return r"\." + name if sys.version_info >= (3, 11) else ""

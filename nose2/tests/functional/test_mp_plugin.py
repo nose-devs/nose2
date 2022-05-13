@@ -10,7 +10,7 @@ from nose2._vendor import six
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.plugins.mp import MultiProcess, procserver
-from nose2.tests._common import Conn, FunctionalTestCase, support_file
+from nose2.tests._common import Conn, FunctionalTestCase, _method_name, support_file
 
 
 class TestMpPlugin(FunctionalTestCase):
@@ -403,10 +403,16 @@ class MPClassFixturesSupport(FunctionalTestCase):
         )
         # report should show correct names for all tests
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test_1 \(test_cf_testcase.Test\) ... ok"
+            proc,
+            stderr=r"test_1 \(test_cf_testcase.Test"
+            + _method_name("test_1")
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test_2 \(test_cf_testcase.Test\) ... ok"
+            proc,
+            stderr=r"test_2 \(test_cf_testcase.Test"
+            + _method_name("test_2")
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
@@ -483,10 +489,16 @@ class MPModuleFixturesSupport(FunctionalTestCase):
         )
         # report should show correct names for all tests
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test_1 \(test_mf_testcase.Test\) ... ok"
+            proc,
+            stderr=r"test_1 \(test_mf_testcase.Test"
+            + _method_name("test_1")
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(
-            proc, stderr=r"test_2 \(test_mf_testcase.Test\) ... ok"
+            proc,
+            stderr=r"test_2 \(test_mf_testcase.Test"
+            + _method_name("test_2")
+            + r"\) ... ok",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)

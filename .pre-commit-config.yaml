@@ -1,17 +1,17 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks.git
-  rev: v4.1.0
+  rev: v4.3.0
   hooks:
     - id: check-merge-conflict
     - id: trailing-whitespace
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.14.3
+  rev: 0.16.2
   hooks:
     - id: check-github-workflows
 - repo: https://github.com/psf/black
   # the 21.12b0 release is the last with python2 support
   # it is also the last beta release of black
-  rev: 21.12b0
+  rev: 22.6.0
   hooks:
   - id: black
     language_version: python3

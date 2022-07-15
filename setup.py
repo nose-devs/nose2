@@ -32,7 +32,7 @@ setup(
     },
     test_suite="unittest.collector",
     # descriptive package info below
-    description="unittest2 with plugins, the succesor to nose",
+    description="unittest2 with plugins, the successor to nose",
     long_description=LONG_DESCRIPTION,
     maintainer=MAINTAINER,
     maintainer_email=MAINTAINER_EMAIL,

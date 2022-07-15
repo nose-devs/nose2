@@ -1,4 +1,4 @@
-# flake8 noqa
+# flake8: noqa
 
 
 def test_demo():

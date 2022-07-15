@@ -32,7 +32,7 @@ class Debugger(events.Plugin):
 
     configSection = "debugger"
     commandLineSwitch = ("D", "debugger", "Enter pdb on test fail or error")
-    # allow easy mocking and replacment of pdb
+    # allow easy mocking and replacement of pdb
     pdb = pdb
 
     def __init__(self):

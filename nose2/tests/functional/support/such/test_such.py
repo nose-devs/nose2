@@ -69,7 +69,7 @@ with such.A("system with complex setup") as it:
         #
         # Layers can be nested to any depth.
         #
-        with it.having("another precondtion"):
+        with it.having("another precondition"):
 
             @it.has_setup  # noqa: F811
             def setup():  # noqa: F811

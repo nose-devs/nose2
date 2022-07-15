@@ -280,7 +280,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         thread = threading.Thread(target=save_return)
         thread.start()
 
-        # 1 minute should be more than sufficent for this
+        # 1 minute should be more than sufficient for this
         # little test case.
         try:
             exc = ret_vals.get(True, 60)

@@ -17,7 +17,7 @@ class UniqueResource(object):
         if not self.used:
             self.used = True
         else:
-            raise Exception("Resource allready used")
+            raise Exception("Resource already used")
 
     def unlock(self):
         if self.used:

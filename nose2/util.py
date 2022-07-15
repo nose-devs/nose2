@@ -156,7 +156,7 @@ def try_import_module_from_name(splitted_name):
 
         1. tries to import ``a.b.c`` and fails
         2. tries to import ``a.b`` and succeeds
-        3. return ``a.b`` and the exception that occured at step 1.
+        3. return ``a.b`` and the exception that occurred at step 1.
     """
     module = None
     import_error = None

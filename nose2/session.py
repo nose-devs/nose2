@@ -100,7 +100,7 @@ class Session(object):
     def get(self, section):
         """Get a config section.
 
-        :param section: The section name to retreive.
+        :param section: The section name to retrieve.
         :returns: instance of self.configClass.
 
         """

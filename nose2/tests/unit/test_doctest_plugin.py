@@ -35,7 +35,7 @@ True
 """
         txt_event = self._handle_file("docs.txt", doc_test)
         rst_event = self._handle_file("docs.rst", doc_test)
-        # Excercise loading of doctests from Python code
+        # Exercise loading of doctests from Python code
         py_event = self._handle_file(
             "docs.py",
             """\

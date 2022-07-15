@@ -3,7 +3,7 @@ A system with complex setup
   should do something ... ok
   having an expensive fixture
     should do more things ... ok
-    having another precondtion
+    having another precondition
       should do that not this ... ok
       should do this not that ... ok
     having a different precondition

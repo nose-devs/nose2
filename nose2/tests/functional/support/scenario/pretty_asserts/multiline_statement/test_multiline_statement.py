@@ -1,6 +1,3 @@
-# flake8: noqa
-
-
 def test_demo():
     x = 1
     y = 2

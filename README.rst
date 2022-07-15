@@ -40,7 +40,7 @@ nose2 vs pytest
 
 ``nose2`` may or may not be a good fit for your project.
 
-If you are new to python testing, we encourage you to also consider `pytest`_,
+If you are new to Python testing, we encourage you to also consider `pytest`_,
 a popular testing framework.
 
 Quickstart
@@ -50,7 +50,7 @@ Because ``nose2`` is based on unittest, you can start from the Python Standard
 Library's `documentation for unittest <https://docs.python.org/library/unittest.html>`_
 and then use nose2 to add value on top of that.
 
-``nose2`` looks for tests in python files whose names start with ``test`` and
+``nose2`` looks for tests in Python files whose names start with ``test`` and
 runs every test function it discovers.
 
 Here's an example of a simple test, written in typical unittest style:
@@ -151,10 +151,10 @@ For a full description of all past versions and changes, see the `changelog`_.
 Python Versions
 ~~~~~~~~~~~~~~~
 
-nose2 supports all currently supported python versions.
+nose2 supports all currently supported Python versions.
 
-It also will continue to support python2 for as long as it remains feasible and
-a significant percentage of nose2 users are using python2.
+It also will continue to support Python 2 for as long as it remains feasible and
+a significant percentage of nose2 users are using `python2`_.
 
 Contributing
 ------------
@@ -170,3 +170,5 @@ If you want to make contributions, please read the `contributing`_ guide.
 .. _contributing: https://github.com/nose-devs/nose2/blob/main/contributing.rst
 
 .. _docs.nose2.io: https://docs.nose2.io/en/latest/
+
+.. _python2: https://pypistats.org/packages/nose2

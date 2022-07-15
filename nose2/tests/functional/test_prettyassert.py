@@ -183,7 +183,6 @@ class TestPrettyAsserts(FunctionalTestCase):
         # look for typical unittest output
         expect_lines = [
             r"self.assertTrue\(x\)",
-            r"\s+\^+",
             "AssertionError: False is not true",
         ]
         if not DEBUG_RANGES:

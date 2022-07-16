@@ -1,8 +1,19 @@
 import os
+import re
 
 from setuptools import find_packages, setup
 
-VERSION = open("nose2/_version.py").readlines()[-1].split()[-1].strip("\"'")
+
+def read_version(filename):
+    # use of " over ' will be enforced by "black"
+    version_pattern = re.compile(r'__version__ = "([^"]*)"')
+    with open(filename) as fp:
+        for line in fp:
+            m = version_pattern.match(line)
+            if m:
+                return m.group(1)
+    raise Exception("could not parse version from {}".format(filename))
+
 
 MAINTAINER = "Stephen Rosen"
 MAINTAINER_EMAIL = "dev@nose2.io"
@@ -11,7 +22,7 @@ LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), "README.rst")).r
 
 setup(
     name="nose2",
-    version=VERSION,
+    version=read_version("nose2/__init__.py"),
     packages=find_packages(),
     extras_require={
         "coverage_plugin": ["coverage"],

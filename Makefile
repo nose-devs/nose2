@@ -1,6 +1,6 @@
 .PHONY: lint test docs build release clean
 
-NOSE2_VERSION=$(shell grep '^__version__' nose2/_version.py | cut -d '"' -f2)
+NOSE2_VERSION=$(shell grep '^__version__' nose2/__init__.py | cut -d '"' -f2)
 
 lint:
 	tox -e lint

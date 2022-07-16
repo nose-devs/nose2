@@ -40,9 +40,12 @@ jobs:
         with:
           name: latest-build
           path: nose2-build
+      # NOTE: be sure to use a python version supported by mailman tests
+      # at time of writing, this can be seen in the mailman test matrix:
+      # https://gitlab.com/mailman/mailman/-/blob/master/tox.ini
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.x
+          python-version: 3.9
       - run: python -m pip install tox
       - name: setup testenv
         run: tox -e py-nocov --devenv testenv

@@ -135,6 +135,10 @@ class JUnitXmlReporter(events.Plugin):
         """Read option from command line and override the value in config file
         when necessary"""
         if event.args.path:
+            # register if `--junit-xml-path` is given
+            # this avoids a situation in which a plugin-related option is given
+            # but the plugin isn't activated, which can be confusing (see #521)
+            self.register()
             self.path = os.path.realpath(event.args.path)
 
     def startTest(self, event):

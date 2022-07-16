@@ -16,6 +16,10 @@ testsuites.
 Changed
 ~~~~~~~
 
+* Passing ``--junit-xml-path`` now implies ``--junit-xml`` when using the
+  junitxml plugin. This means that the ``--junit-xml`` flag can be omitted
+  when ``--junit-xml-path`` is specified. (:issue:`521`)
+
 * Remove the dependency on ``coverage``. Use of the coverage plugin now
   requires that you either install ``coverage`` independently, or use the
   extra, ``nose2[coverage_plugin]``. As a result, ``nose2`` no longer has any

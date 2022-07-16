@@ -68,6 +68,28 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
             "Searched for " + junit_report,
         )
 
+    def test_implicit_registration_by_path_option(self):
+        junit_report, proc = self.run_with_junitxml_loaded(
+            ("scenario", "junitxml", "happyday"),
+            "--junit-xml-path=b.xml",
+            junit_report="b.xml",
+        )
+
+        self.assertTestRunOutputMatches(
+            proc,
+            stderr=r"test \(test_junitxml_happyday.Test"
+            + _method_name()
+            + r"\) ... ok",
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
+        self.assertEqual(proc.poll(), 0)
+
+        self.assertTrue(
+            os.path.isfile(junit_report),
+            "junitxml report wasn't found in working directory. "
+            "Searched for " + junit_report,
+        )
+
     def test_no_report_written_if_loaded_but_not_invoked(self):
         junit_report, proc = self.run_with_junitxml_loaded(
             ("scenario", "junitxml", "happyday")

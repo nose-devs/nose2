@@ -1,5 +1,4 @@
 import os
-import sys
 
 from setuptools import find_packages, setup
 
@@ -8,7 +7,6 @@ VERSION = open("nose2/_version.py").readlines()[-1].split()[-1].strip("\"'")
 MAINTAINER = "Stephen Rosen"
 MAINTAINER_EMAIL = "dev@nose2.io"
 
-PY_VERSION = "%s.%s" % (sys.version_info.major, sys.version_info.minor)
 LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
 
 setup(

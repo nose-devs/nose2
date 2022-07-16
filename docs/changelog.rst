@@ -13,6 +13,11 @@ testsuites.
 0.12.0 (Unreleased)
 -------------------
 
+.. note::
+
+   The 0.12.x series will be the final releases of ``nose2`` which support
+   Python 2.
+
 Changed
 ~~~~~~~
 

@@ -25,23 +25,24 @@
 Welcome to nose2
 ================
 
-``nose2`` is the successor to ``nose``.
+nose2's purpose is to extend ``unittest`` to make testing nicer and easier to
+understand.
 
-It's ``unittest`` with plugins.
+nose2 vs nose
+-------------
+
+``nose2`` originated as the successor to ``nose``.
 
 ``nose2`` is a new project and does not support all of the features of
 ``nose``. See `differences`_ for a thorough rundown.
 
-nose2's purpose is to extend ``unittest`` to make testing nicer and easier to
-understand.
-
 nose2 vs pytest
 ---------------
 
-``nose2`` may or may not be a good fit for your project.
+`pytest`_ is an excellent test framework and we encourage users to consider
+it for new projects.
 
-If you are new to Python testing, we encourage you to also consider `pytest`_,
-a popular testing framework.
+It has a bigger team of maintainers and a larger community of users.
 
 Quickstart
 ----------
@@ -142,7 +143,7 @@ Versions and Support
 Changelog and Version Scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-nose2 versions are numbered `0.MAJOR.MINOR`. Minor releases contain bugfixes or
+nose2 versions are numbered ``0.MAJOR.MINOR``. Minor releases contain bugfixes or
 smaller features. Major features or backwards incompatible changes are done in
 major releases.
 
@@ -151,15 +152,31 @@ For a full description of all past versions and changes, see the `changelog`_.
 Python Versions
 ~~~~~~~~~~~~~~~
 
-nose2 supports all currently supported Python versions.
+nose2 requires Python 3.
 
-It also will continue to support Python 2 for as long as it remains feasible and
-a significant percentage of nose2 users are using Python 2.
+It supports all versions currently supported by the CPython team, and also aims
+to support PyPy and cpython betas.
+
+Python 2
+********
+
+Python 2 is no longer supported. The `0.12.x line of releases <py2line>`_
+contains the last versions which supported Python 2.
+
+Users of Python 2 should understand that Python 2 is EOL and the Python 2
+support line for ``nose2`` is similarly considered EOL.
+
+.. note::
+
+    Fixes to 0.12.x may still be accepted on an as-needed basis for a short
+    while as the python3-only line of releases gets started.
 
 Contributing
 ------------
 
 If you want to make contributions, please read the `contributing`_ guide.
+
+.. _py2line: https://github.com/nose-devs/nose2/tree/0.12.x-line
 
 .. _differences: https://docs.nose2.io/en/latest/differences.html
 

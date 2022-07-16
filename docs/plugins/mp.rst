@@ -259,12 +259,7 @@ Possible Issues On Windows
 
 On windows, there are a few known bugs with respect to multiprocessing.
 
-First, on python 2.X or old versions of 3.X, if the __main__ module
-accessing nose2 is a __main__.py, an assertion in python code module
-``multiprocessing.forking`` may fail.  The bug for 3.2 is
-http://bugs.python.org/issue10845.
-
-Secondly, python on windows does not use fork().  It bootstraps from a
+Python on windows does not use fork().  It bootstraps from a
 separate interpreter invocation.  In certain contexts, the "value" for
 a parameter will be taken as a "count" and subprocess use this to build
 the flag for the command-line.  E.g., If this value is 2 billion

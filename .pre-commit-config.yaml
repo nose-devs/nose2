@@ -33,6 +33,10 @@ repos:
     language_version: python3
     types: [python]
     exclude: ^nose2/_vendor/.*
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.1.0
+  hooks:
+    - id: codespell
 
 
 ci:

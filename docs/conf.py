@@ -20,7 +20,7 @@ source_suffix = ".rst"
 master_doc = "index"
 project = "nose2"
 copyright = "2010-2022, Jason Pellerin, Stephen Rosen"
-version = release = nose2._version.__version__
+version = release = nose2.__version__
 exclude_patterns = ["_build"]
 templates_path = ["_templates"]
 

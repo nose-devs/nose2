@@ -19,7 +19,7 @@ __unittest = True
 
 # XXX I'd rather move this stuff to Plugin.__init__ and
 # have __init__ call self.configure() or something after the
-# initial setup, but that would further break compatibilty
+# initial setup, but that would further break compatibility
 # with the unittest2 plugins branch Plugin class.
 
 

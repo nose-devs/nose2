@@ -27,7 +27,7 @@ class SessionFunctionalTests(FunctionalTestCase):
         self.assertEqual(plug.a, 1)
 
     def test_session_config_cacheing(self):
-        """Test cacheing of config sections works"""
+        """Test caching of config sections works"""
 
         # Create new session (generic one likely already cached
         # depending on test order)

@@ -3,7 +3,7 @@ Load tests from classes that are *not* :class:`unittest.TestCase` subclasses.
 
 This plugin responds to :func:`loadTestsFromModule` by adding test
 cases for test methods found in classes in the module that are *not*
-sublcasses of :class:`unittest.TestCase`, but whose names (lowercased)
+subclasses of :class:`unittest.TestCase`, but whose names (lowercased)
 match the configured test method prefix.
 
 Test class methods that are generators or have param lists are not
@@ -25,7 +25,7 @@ test loaders to use:
    :class:`unittest.TestCase` subclass. To prevent other plugins from
    loading tests from the test class, set ``event.handled`` to ``True`` and
    return a test suite. Plugins can also append tests to
-   ``event.extraTests``. Ususally, that's what you want, since
+   ``event.extraTests``. Usually, that's what you want, since
    it allows other plugins to load their tests from the test
    case as well.
 

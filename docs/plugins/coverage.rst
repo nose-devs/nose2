@@ -22,7 +22,7 @@ Otherwise, please be aware of the following known differences:
 Compatibility with mp plugin
 ----------------------------
 
-The ``coverage`` and ``mp`` plugins may be used in conjuction to enable
+The ``coverage`` and ``mp`` plugins may be used in conjunction to enable
 multiprocess testing with coverage reporting.
 
 Special instructions:

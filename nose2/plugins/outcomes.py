@@ -48,9 +48,7 @@ class Outcomes(Plugin):
                 self._setOutcome(event, "failed", short, long_)
             elif classname in self.treatAsSkip:
                 short, long_ = self.labels(classname, upper=False)
-                self._setOutcome(
-                    event, "skipped", short, "%s: '%s'" % (long_, ev), str(ev)
-                )
+                self._setOutcome(event, "skipped", short, f"{long_}: '{ev}'", str(ev))
 
     def labels(self, label, upper=True):
         if upper:

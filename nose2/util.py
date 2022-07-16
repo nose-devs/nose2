@@ -32,7 +32,7 @@ def ln(label, char="-", width=70):
     """
     label_len = len(label) + 2
     chunk = (width - label_len) // 2
-    out = "%s %s %s" % (char * chunk, label, char * chunk)
+    out = f"{char * chunk} {label} {char * chunk}"
     pad = width - len(out)
     if pad > 0:
         out = out + (char * pad)
@@ -129,8 +129,7 @@ def object_from_name(name, module=None):
 
 def _raise_custom_attribute_error(obj, attr, attr_error_exc, prev_exc):
 
-    if sys.version_info >= (3, 0):
-        six.raise_from(attr_error_exc, prev_exc[1])
+    raise attr_error_exc from prev_exc[1]
 
     # for python 2, do exception chaining manually
     raise AttributeError(
@@ -175,7 +174,7 @@ def try_import_module_from_name(splitted_name):
 def name_from_args(name, index, args):
     """Create test name from test args"""
     summary = ", ".join(repr(arg) for arg in args)
-    return "%s:%s\n%s" % (name, index + 1, summary[:79])
+    return f"{name}:{index + 1}\n{summary[:79]}"
 
 
 def test_name(test, qualname=True):
@@ -183,13 +182,13 @@ def test_name(test, qualname=True):
     if hasattr(test, "_funcName"):
         tid = test._funcName
     elif hasattr(test, "_testFunc"):
-        tid = "%s.%s" % (test._testFunc.__module__, test._testFunc.__name__)
+        tid = f"{test._testFunc.__module__}.{test._testFunc.__name__}"
     else:
         if sys.version_info >= (3, 5) and not qualname:
             test_module = test.__class__.__module__
             test_class = test.__class__.__name__
             test_method = test._testMethodName
-            tid = "%s.%s.%s" % (test_module, test_class, test_method)
+            tid = f"{test_module}.{test_class}.{test_method}"
         else:
             tid = test.id()
     if "\n" in tid:
@@ -277,7 +276,7 @@ def safe_decode(string):
     try:
         return string.decode("utf-8")
     except UnicodeDecodeError:
-        return six.u("<unable to decode>")
+        return "<unable to decode>"
 
 
 def safe_encode(string, encoding="utf-8"):
@@ -293,7 +292,7 @@ def safe_encode(string, encoding="utf-8"):
         # already encoded
         return string
     except UnicodeEncodeError:
-        return six.u("<unable to encode>")
+        return "<unable to encode>"
 
 
 def exc_info_to_string(err, test):
@@ -366,7 +365,7 @@ def _count_relevant_tb_levels(tb):
     return length
 
 
-class _WritelnDecorator(object):
+class _WritelnDecorator:
 
     """Used to decorate file-like objects with a handy :func:`writeln` method"""
 
@@ -410,10 +409,7 @@ def bases_and_mixins(layer):
 
 def num_expected_args(func):
     """Return the number of arguments that :func: expects"""
-    if six.PY2:
-        return len(inspect.getargspec(func)[0])
-    else:
-        return len(inspect.getfullargspec(func)[0])
+    return len(inspect.getfullargspec(func)[0])
 
 
 def call_with_args_if_expected(func, *args):

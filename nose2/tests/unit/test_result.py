@@ -18,6 +18,6 @@ class TestPluggableTestResult(TestCase):
         self.assertEqual(plugin.reason, "because")
 
 
-class FakePlugin(object):
+class FakePlugin:
     def testOutcome(self, event):
         self.reason = event.reason

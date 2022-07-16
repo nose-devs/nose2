@@ -51,16 +51,14 @@ class ResultReporter(events.Plugin):
             "expectedFailures": [],
             "unexpectedSuccesses": [],
         }
-        self.dontReport = set(
-            [
-                "errors",
-                "failures",
-                "skipped",
-                "passed",
-                "expectedFailures",
-                "unexpectedSuccesses",
-            ]
-        )
+        self.dontReport = {
+            "errors",
+            "failures",
+            "skipped",
+            "passed",
+            "expectedFailures",
+            "unexpectedSuccesses",
+        }
 
         self.stream = util._WritelnDecorator(sys.stderr)
         self.descriptions = self.config.as_bool("descriptions", True)
@@ -199,7 +197,7 @@ class ResultReporter(events.Plugin):
             desc = self._getDescription(event.test, errorList=True)
             err = self._getOutcomeDetail(event)
             stream.writeln(self.separator1)
-            stream.writeln("%s: %s" % (flavour, desc))
+            stream.writeln(f"{flavour}: {desc}")
             stream.writeln(self.separator2)
             stream.writeln(err)
 
@@ -250,7 +248,7 @@ class ResultReporter(events.Plugin):
             infos.append("unexpected successes=%d" % unexpectedSuccesses)
         infos.extend(extraInfos)
         if infos:
-            reportEvent.stream.writeln(" (%s)" % (", ".join(infos),))
+            reportEvent.stream.writeln(" ({})".format(", ".join(infos)))
         else:
             reportEvent.stream.writeln("")
 

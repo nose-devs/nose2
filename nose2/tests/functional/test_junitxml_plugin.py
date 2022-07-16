@@ -145,7 +145,7 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         )
         self.assertEqual(proc.poll(), 0)
 
-        with open(junit_report, "r") as fh:
+        with open(junit_report) as fh:
             tree = ET.parse(fh).getroot()
         self.assertEqual(len(tree.findall("properties")), 1)
         prop = tree.find("properties").find("property")
@@ -169,7 +169,7 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
         exit_status = proc.poll()
         assert exit_status == 0
 
-        with open(junit_report, "r") as fh:
+        with open(junit_report) as fh:
             tree = ET.parse(fh).getroot()
 
         num_test_cases = len(tree.findall("testcase"))

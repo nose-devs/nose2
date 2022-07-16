@@ -9,7 +9,7 @@ from nose2.tests._common import FunctionalTestCase, support_file, windows_ci_ski
 
 class TestCoverage(FunctionalTestCase):
     def setUp(self):
-        super(TestCoverage, self).setUp()
+        super().setUp()
         try:
             import coverage  # noqa: F401
         except ImportError:

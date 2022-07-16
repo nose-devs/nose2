@@ -7,12 +7,11 @@ import sys
 import unittest
 
 from nose2 import events, loader, result, runner, session, util
-from nose2._vendor import six
 
 try:
     from collections.abc import Sequence
 except ImportError:
-    from collections import Sequence
+    from collections.abc import Sequence
 
 
 log = logging.getLogger(__name__)
@@ -256,10 +255,8 @@ class MultiProcess(events.Plugin):
                     else:
                         yield testid
 
-        for cls in sorted(classes.keys()):
-            yield cls
-        for mod in sorted(mods.keys()):
-            yield mod
+        yield from sorted(classes.keys())
+        yield from sorted(mods.keys())
 
     def _localize(self, event):
         # XXX set loader, case, result etc to local ones, if present in event
@@ -271,7 +268,7 @@ class MultiProcess(events.Plugin):
             event.loader = self.session.testLoader
         if hasattr(event, "runner"):
             event.runner = self.session.testRunner
-        if hasattr(event, "test") and isinstance(event.test, six.string_types):
+        if hasattr(event, "test") and isinstance(event.test, str):
             # remote event.case is the test id
             try:
                 event.test = self.cases[event.test]
@@ -356,7 +353,7 @@ def procserver(session_export, conn):
             conn.send((testid, events))
             rlog.debug("Log for %s returned", testid)
         except Exception:
-            rlog.exception("Fail sending event %s: %s" % (testid, events))
+            rlog.exception(f"Fail sending event {testid}: {events}")
             # Send empty event list to unblock the conn.recv on main process.
             conn.send((testid, []))
     conn.send(None)
@@ -449,7 +446,7 @@ class SubprocessEvent(events.Event):
         self.plugins = plugins
         self.connection = connection
         self.executeTests = lambda test, result: test(result)
-        super(SubprocessEvent, self).__init__(**metadata)
+        super().__init__(**metadata)
 
 
 class RegisterInSubprocessEvent(events.Event):
@@ -469,36 +466,34 @@ class RegisterInSubprocessEvent(events.Event):
 
     def __init__(self, **metadata):
         self.pluginClasses = []
-        super(RegisterInSubprocessEvent, self).__init__(**metadata)
+        super().__init__(**metadata)
 
 
 # custom hook system that records calls and events
 class RecordingHook(events.Hook):
     def __init__(self, method, interface):
-        super(RecordingHook, self).__init__(method)
+        super().__init__(method)
         self.interface = interface
 
     def __call__(self, event):
-        res = super(RecordingHook, self).__call__(event)
+        res = super().__call__(event)
         self.interface.log(self.method, event)
         return res
 
 
 class RecordingPluginInterface(events.PluginInterface):
     hookClass = RecordingHook
-    noLogMethods = set(
-        [
-            "getTestCaseNames",
-            "startSubprocess",
-            "stopSubprocess",
-            "registerInSubprocess",
-            "moduleLoadedSuite",
-            "getTestMethodNames",
-        ]
-    )
+    noLogMethods = {
+        "getTestCaseNames",
+        "startSubprocess",
+        "stopSubprocess",
+        "registerInSubprocess",
+        "moduleLoadedSuite",
+        "getTestMethodNames",
+    }
 
     def __init__(self):
-        super(RecordingPluginInterface, self).__init__()
+        super().__init__()
         self.events = []
 
     def log(self, method, event):
@@ -520,7 +515,7 @@ class RecordingPluginInterface(events.PluginInterface):
 
     def __getattr__(self, attr):
         if attr.startswith("__"):
-            raise AttributeError("No %s in %s" % (attr, self))
+            raise AttributeError(f"No {attr} in {self}")
         return self._hookForMethod(attr)
 
     def _hookForMethod(self, method):

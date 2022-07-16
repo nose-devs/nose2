@@ -10,7 +10,7 @@ class WithSetupDecoratorTests(TestCase):
     def fake_setup(self):
         pass
 
-    class fake_test(object):
+    class fake_test:
         setup = None
 
     def test_setup_injection(self):
@@ -24,7 +24,7 @@ class WithTeardownDecoratorTests(TestCase):
     def fake_teardown(self):
         pass
 
-    class fake_test(object):
+    class fake_test:
         teardown = None
 
     def test_teardown_injection(self):

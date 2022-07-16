@@ -4,7 +4,6 @@ import unittest
 from contextlib import contextmanager
 
 from nose2 import util
-from nose2._vendor import six
 from nose2.main import PluggableTestProgram
 
 log = logging.getLogger(__name__)
@@ -41,7 +40,7 @@ class Helper(unittest.TestCase):
 helper = Helper()
 
 
-class Scenario(object):
+class Scenario:
 
     """A test scenario.
 
@@ -192,7 +191,7 @@ class Scenario(object):
         """
 
         def decorator(f):
-            _desc = desc if isinstance(desc, six.string_types) else f.__doc__
+            _desc = desc if isinstance(desc, str) else f.__doc__
             case = Case(self._group, f, "should %s" % _desc)
             self._group.addCase(case)
             return case
@@ -339,7 +338,7 @@ class Scenario(object):
         return layer
 
 
-class Group(object):
+class Group:
 
     """A group of tests, with common fixtures and description"""
 
@@ -389,7 +388,7 @@ class Group(object):
         return child
 
 
-class Case(object):
+class Case:
 
     """Information about a test case"""
 

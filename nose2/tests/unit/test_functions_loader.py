@@ -4,7 +4,7 @@ try:
     from unittest import mock
 except ImportError:
     # Python versions older than 3.3 don't have mock by default
-    import mock
+    from unittest import mock
 
 from nose2 import events, loader, session
 from nose2.plugins.loader import functions
@@ -18,7 +18,7 @@ class TestFunctionLoader(TestCase):
         self.plugin = functions.Functions(session=self.session)
 
     def test_can_load_test_functions_from_module(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def test():
@@ -32,7 +32,7 @@ class TestFunctionLoader(TestCase):
         assert isinstance(event.extraTests[0], unittest.FunctionTestCase)
 
     def test_ignores_generator_functions(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def test():
@@ -45,7 +45,7 @@ class TestFunctionLoader(TestCase):
         self.assertEqual(len(event.extraTests), 0)
 
     def test_ignores_functions_that_take_args(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def test(a):

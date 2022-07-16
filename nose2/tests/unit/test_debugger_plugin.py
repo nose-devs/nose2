@@ -10,7 +10,7 @@ class NullHandler(logging.Handler):
         pass
 
 
-class StubPdb(object):
+class StubPdb:
     def __init__(self):
         self.called = False
         self.tb = None

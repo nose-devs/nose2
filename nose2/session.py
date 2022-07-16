@@ -1,22 +1,17 @@
 import argparse
 import logging
 import os
-import sys
-
-from nose2 import config, events, util
 
 # py2/py3 compatible load of SafeConfigParser/ConfigParser
-if sys.version_info < (3, 2):
-    from ConfigParser import SafeConfigParser as ConfigParser
-else:
-    from configparser import ConfigParser
+from configparser import ConfigParser
 
+from nose2 import config, events, util
 
 log = logging.getLogger(__name__)
 __unittest = True
 
 
-class Session(object):
+class Session:
 
     """Configuration session.
 

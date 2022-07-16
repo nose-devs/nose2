@@ -35,7 +35,7 @@ class TestGeneratorUnpack(TestCase):
         self.assertEqual(out, self.expect)
 
     def test_ignores_ordinary_functions(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def test():
@@ -48,7 +48,7 @@ class TestGeneratorUnpack(TestCase):
         self.assertEqual(len(event.extraTests), 0)
 
     def test_can_load_tests_from_generator_functions(self):
-        class Mod(object):
+        class Mod:
             __name__ = "themod"
 
         def check(x):
@@ -69,7 +69,7 @@ class TestGeneratorUnpack(TestCase):
         self.assertEqual(util.test_name(event.extraTests[1]), "themod.test:2")
 
     def test_can_load_tests_from_generator_methods(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def check(x):

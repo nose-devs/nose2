@@ -103,7 +103,7 @@ class LogCapture(Plugin):
             event.metadata["logs"] = records
 
 
-class FilterSet(object):
+class FilterSet:
     def __init__(self, filter_components):
         self.inclusive, self.exclusive = self._partition(filter_components)
 

@@ -24,7 +24,7 @@ def _fromisoformat(date_str):
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
 
-    BAD_FOR_XML_U = six.u("A\x07 B\x0B C\x10 D\uD900 " "E\uFFFE F\x80 G\x90 H\uFDDD")
+    BAD_FOR_XML_U = "A\x07 B\x0B C\x10 D\uD900 " "E\uFFFE F\x80 G\x90 H\uFDDD"
     # UTF-8 string with double null (invalid)
     BAD_FOR_XML_B = six.b(
         "A\x07 B\x0b C\x10 D\xed\xa4\x80 "
@@ -50,15 +50,13 @@ class TestJunitXmlPlugin(TestCase):
     # G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
 
     if sys.maxunicode <= 0xFFFF:
-        EXPECTED_RE = six.u("^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$")
-        EXPECTED_RE_SAFE = six.u(
+        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$"
+        EXPECTED_RE_SAFE = (
             "^[\x09\x0A\x0D\x20\x21-\x7E\x85" "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$"
         )
     else:
-        EXPECTED_RE = six.u(
-            "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD" "\u10000-\u10FFFF]*$"
-        )
-        EXPECTED_RE_SAFE = six.u(
+        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD" "\u10000-\u10FFFF]*$"
+        EXPECTED_RE_SAFE = (
             "^[\x09\x0A\x0D\x20\x21-\x7E\x85"
             "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"
             "\u10000-\u1FFFD\u20000-\u2FFFD"
@@ -72,7 +70,7 @@ class TestJunitXmlPlugin(TestCase):
         )
 
     def setUp(self):
-        super(TestJunitXmlPlugin, self).setUp()
+        super().setUp()
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
         self.result = result.PluggableTestResult(self.session)
@@ -276,7 +274,7 @@ class TestJunitXmlPlugin(TestCase):
         plug2.register()
         # need module to fire top-level event
 
-        class Mod(object):
+        class Mod:
             pass
 
         m = Mod()
@@ -300,7 +298,7 @@ class TestJunitXmlPlugin(TestCase):
         plug2.register()
         # need module to fire top-level event
 
-        class Mod(object):
+        class Mod:
             pass
 
         m = Mod()
@@ -323,7 +321,7 @@ class TestJunitXmlPlugin(TestCase):
         test(self.result)
         event = events.StopTestRunEvent(None, self.result, 1, 1)
         self.plugin.stopTestRun(event)
-        with open(self.plugin.path, "r") as fh:
+        with open(self.plugin.path) as fh:
             tree = ET.parse(fh).getroot()
         self.assertEqual(len(tree.findall("testcase")), 1)
         case = tree.find("testcase")

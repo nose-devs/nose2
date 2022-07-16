@@ -17,8 +17,6 @@ pkg1.test.test_things.SomeTests.test_ok
 # param method index
 
 """
-import sys
-
 from nose2.tests._common import FunctionalTestCase, support_file
 
 
@@ -286,10 +284,7 @@ class TestLoadingErrors(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="AttributeError: ")
 
         # py3.6 introduced ModuleNotFoundError, a subclass of ImportError
-        if sys.version_info < (3, 6):
-            importerr = "ImportError: No module named"
-        else:
-            importerr = "ModuleNotFoundError: No module named"
+        importerr = "ModuleNotFoundError: No module named"
         self.assertTestRunOutputMatches(proc, stderr=importerr)
 
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")

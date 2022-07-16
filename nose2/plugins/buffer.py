@@ -24,7 +24,7 @@ from nose2.util import ln
 __unittest = True
 
 
-class _Buffer(object):
+class _Buffer:
     def __init__(self, stream):
         self._stream = stream
         self._buffer = six.StringIO()

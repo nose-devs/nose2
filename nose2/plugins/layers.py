@@ -3,7 +3,6 @@ import re
 from collections import OrderedDict
 
 from nose2 import events, exceptions, util
-from nose2._vendor import six
 from nose2.suite import LayerSuite
 
 BRIGHT = r"\033[1m"
@@ -111,7 +110,7 @@ class Layers(events.Plugin):
         elif outer in tree:
             outer = cls.insert_mixins(tree, layer, outer)
         else:
-            err = "{0} not found in {1}".format(outer, tree)
+            err = f"{outer} not found in {tree}"
             raise exceptions.LoadTestsFailure(err)
         if outer is None:
             tree.setdefault(None, []).append(layer)
@@ -156,7 +155,7 @@ class Layers(events.Plugin):
             if not cls.get_parents_from_tree(parent, tree):
                 cls.insert_layer(tree, layer, parent)
                 return
-        raise exceptions.LoadTestsFailure("Failed to add {0}".format(layer))
+        raise exceptions.LoadTestsFailure(f"Failed to add {layer}")
 
     @classmethod
     def tree_to_suite(cls, tree, key, suite, layers):
@@ -185,7 +184,7 @@ class Layers(events.Plugin):
         pos = getattr(layer, "position", None)
         # ... lame
         if pos is not None:
-            key = six.u("%04d") % pos
+            key = "%04d" % pos
         else:
             key = layer.__name__
         return key
@@ -219,7 +218,7 @@ class LayerReporter(events.Plugin):
             for layer in lys:
                 if layer not in self.layersReported:
                     desc = self.describeLayer(layer)
-                    event.stream.writeln("%s%s" % (self.indent * ix, desc))
+                    event.stream.writeln(f"{self.indent * ix}{desc}")
                     self.layersReported.add(layer)
         event.stream.write(self.indent * (ix + 1))
 
@@ -228,7 +227,7 @@ class LayerReporter(events.Plugin):
 
     def format(self, st):
         if self.colors:
-            return self.highlight_re.sub(r"%s\1%s" % (BRIGHT, RESET), st)
+            return self.highlight_re.sub(fr"{BRIGHT}\1{RESET}", st)
         return st
 
     def describeTest(self, event):

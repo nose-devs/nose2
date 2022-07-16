@@ -15,7 +15,7 @@ from nose2.tests._common import Conn, FunctionalTestCase, _method_name, support_
 
 class TestMpPlugin(FunctionalTestCase):
     def setUp(self):
-        super(TestMpPlugin, self).setUp()
+        super().setUp()
         self.session = session.Session()
         self.plugin = MultiProcess(session=self.session)
         self.plugin.testRunTimeout = 2
@@ -117,7 +117,7 @@ class TestMpPlugin(FunctionalTestCase):
 
 class TestProcserver(FunctionalTestCase):
     def setUp(self):
-        super(TestProcserver, self).setUp()
+        super().setUp()
         self.session = session.Session()
 
     def test_dispatch_tests_receive_events(self):

@@ -28,7 +28,6 @@ specified by `Coverage Config
 However, when doing so you should also be aware of
 `Differences From coverage`_.
 """
-from __future__ import absolute_import, print_function
 
 import logging
 

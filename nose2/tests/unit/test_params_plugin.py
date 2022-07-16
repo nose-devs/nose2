@@ -15,7 +15,7 @@ class TestParams(TestCase):
         self.tcl = testcases.TestCaseLoader(session=self.session)
 
     def test_ignores_ordinary_functions(self):
-        class Mod(object):
+        class Mod:
             pass
 
         def test():
@@ -28,7 +28,7 @@ class TestParams(TestCase):
         self.assertEqual(len(event.extraTests), 0)
 
     def test_can_load_tests_from_parameterized_by_params_functions(self):
-        class Mod(object):
+        class Mod:
             __name__ = "themod"
 
         def check(x):
@@ -49,7 +49,7 @@ class TestParams(TestCase):
         self.assertEqual(util.test_name(event.extraTests[1]), "themod.test:2")
 
     def test_can_load_tests_from_parameterized_by_cartesian_params_functions(self):
-        class Mod(object):
+        class Mod:
             __name__ = "themod"
 
         def check(x, y):
@@ -72,7 +72,7 @@ class TestParams(TestCase):
         self.assertEqual(util.test_name(event.extraTests[3]), "themod.test:4")
 
     def test_can_load_tests_from_parameterized_by_params_methods(self):
-        class Mod(object):
+        class Mod:
             __name__ = "themod"
 
         class Test(TestCase):
@@ -94,7 +94,7 @@ class TestParams(TestCase):
         self.assertEqual(t2, "themod.Test.test:2")
 
     def test_can_load_tests_from_parameterized_by_cartesian_params_methods(self):
-        class Mod(object):
+        class Mod:
             __name__ = "themod"
 
         class Test(TestCase):

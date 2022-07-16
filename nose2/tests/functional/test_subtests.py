@@ -7,13 +7,13 @@ from nose2.tests._common import FunctionalTestCase
 
 
 def read_report(path):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return ET.parse(f).getroot()
 
 
 class TestSubtests(FunctionalTestCase):
     def setUp(self):
-        super(TestSubtests, self).setUp()
+        super().setUp()
         if sys.version_info < (3, 4):
             self.skipTest("Python >= 3.4 required")
 
@@ -107,7 +107,7 @@ class TestSubtests(FunctionalTestCase):
 
 class TestSubtestsMultiprocess(FunctionalTestCase):
     def setUp(self):
-        super(TestSubtestsMultiprocess, self).setUp()
+        super().setUp()
         if sys.version_info < (3, 4):
             self.skipTest("Python >= 3.4 required")
 
@@ -225,7 +225,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
 
 class TestSubtestsJunitXml(FunctionalTestCase):
     def setUp(self):
-        super(TestSubtestsJunitXml, self).setUp()
+        super().setUp()
         if sys.version_info < (3, 4):
             self.skipTest("Python >= 3.4 required")
         tmp = tempfile.NamedTemporaryFile(delete=False)
@@ -240,7 +240,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests.Case.test_subtest_success",
         )
@@ -263,7 +263,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests.Case.test_subtest_failure",
         )
@@ -281,7 +281,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
         for index, test_case in enumerate(tree.findall("testcase")):
             self.assertEqual(
                 test_case.get("name"),
-                "test_subtest_failure (i={})".format(index * 2 + 1),
+                f"test_subtest_failure (i={index * 2 + 1})",
             )
 
     def test_error(self):
@@ -289,7 +289,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests.Case.test_subtest_error",
         )
@@ -305,16 +305,14 @@ class TestSubtestsJunitXml(FunctionalTestCase):
         self.assertEqual(len(tree.findall("testcase")), 3)
 
         for index, test_case in enumerate(tree.findall("testcase")):
-            self.assertEqual(
-                test_case.get("name"), "test_subtest_error (i={})".format(index)
-            )
+            self.assertEqual(test_case.get("name"), f"test_subtest_error (i={index})")
 
     def test_expected_failure(self):
         proc = self.runIn(
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests.Case.test_subtest_expected_failure",
         )
@@ -337,7 +335,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests.Case.test_subtest_message",
         )
@@ -355,7 +353,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
         for index, test_case in enumerate(tree.findall("testcase")):
             self.assertEqual(
                 test_case.get("name"),
-                "test_subtest_message [msg] (i={})".format(index * 2 + 1),
+                f"test_subtest_message [msg] (i={index * 2 + 1})",
             )
 
     def test_all(self):
@@ -363,7 +361,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
             "scenario/subtests",
             "--plugin=nose2.plugins.junitxml",
             "--junit-xml",
-            "--junit-xml-path={}".format(self.junit_report),
+            f"--junit-xml-path={self.junit_report}",
             "-v",
             "test_subtests",
         )
@@ -381,7 +379,7 @@ class TestSubtestsJunitXml(FunctionalTestCase):
 
 class TestSubtestsFailFast(FunctionalTestCase):
     def setUp(self):
-        super(TestSubtestsFailFast, self).setUp()
+        super().setUp()
         if sys.version_info < (3, 4):
             self.skipTest("Python >= 3.4 required")
 

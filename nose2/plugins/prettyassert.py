@@ -10,7 +10,6 @@ add additional detail to the error report.
 
 """
 
-from __future__ import print_function
 
 import collections
 import inspect
@@ -84,12 +83,12 @@ class PrettyAssert(events.Plugin):
 
         if message:
             extraDetail.append("\nmessage:")
-            extraDetail.append("    {}".format(message))
+            extraDetail.append(f"    {message}")
 
         if token_descriptions:
             extraDetail.append("\nvalues:")
             for k, v in token_descriptions.items():
-                extraDetail.append("    {} = {}".format(k, v))
+                extraDetail.append(f"    {k} = {v}")
 
 
 def _collect_assert_data(trace):
@@ -246,7 +245,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
     return assert_startline, token_descriptions
 
 
-class TokenProcessor(object):
+class TokenProcessor:
     def __init__(self, frame_locals, frame_globals):
         # local and global variables from the frame which we're inspecting
         self.frame_locals, self.frame_globals = frame_locals, frame_globals

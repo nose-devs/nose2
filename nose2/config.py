@@ -1,8 +1,8 @@
-TRUE_VALS = set(["1", "t", "true", "on", "yes", "y"])
+TRUE_VALS = {"1", "t", "true", "on", "yes", "y"}
 __unittest = True
 
 
-class Config(object):
+class Config:
 
     """Configuration for a plugin or other entities.
 

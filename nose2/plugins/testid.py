@@ -88,7 +88,7 @@ class TestId(Plugin):
         try:
             with open(self.idfile, "rb") as fh:
                 data = pickle.load(fh)
-        except EnvironmentError:
+        except OSError:
             self._loaded = True
             return
 

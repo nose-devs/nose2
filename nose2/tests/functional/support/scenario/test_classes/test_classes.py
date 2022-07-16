@@ -1,4 +1,4 @@
-class Test(object):
+class Test:
     def test(self):
         pass
 

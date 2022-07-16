@@ -7,7 +7,7 @@ from nose2.tests._common import TestCase
 log = logging.getLogger(__name__)
 
 
-class StubLogging(object):
+class StubLogging:
     def __init__(self, name=None):
         self.name = name
         self.handlers = []
@@ -28,7 +28,7 @@ class StubLogging(object):
             handler.emit(StubRecord(message % arg))
 
 
-class StubRecord(object):
+class StubRecord:
     def __init__(self, message):
         self.message = message
         self.name = "stub"

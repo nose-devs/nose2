@@ -12,16 +12,16 @@ class CustomEvent(events.Event):
 
     def __init__(self, args, **kw):
         self.args = args
-        super(CustomEvent, self).__init__(**kw)
+        super().__init__(**kw)
 
 
 class TestPluginA(events.Plugin):
     def register(self):
-        super(TestPluginA, self).register()
+        super().register()
         self.addMethods("pluginHookA")
 
     def register_with_nested_hook(self):
-        super(TestPluginA, self).register()
+        super().register()
         self.addMethods("pluginHookB")
 
 
@@ -33,7 +33,7 @@ class TestPluginB(events.Plugin):
 
 class TestPluginC(events.Plugin):
     def register(self):
-        super(TestPluginC, self).register()
+        super().register()
         self.addMethods("pluginHookB1")
 
     def pluginHookB(self, event):

@@ -10,7 +10,7 @@ SUBTEST = "subtest"
 __unittest = True
 
 
-class PluggableTestResult(object):
+class PluggableTestResult:
 
     """Test result that defers to plugins.
 

@@ -31,7 +31,7 @@ __unittest = True
 log = logging.getLogger(__name__)
 
 
-class DirectoryHandler(object):
+class DirectoryHandler:
     def __init__(self, session):
         self.session = session
         self.event_handled = False
@@ -45,8 +45,7 @@ class DirectoryHandler(object):
         )
         result = self.session.hooks.handleDir(evt)
         if evt.extraTests:
-            for test in evt.extraTests:
-                yield test
+            yield from evt.extraTests
         if evt.handled:
             if result:
                 yield result
@@ -59,7 +58,7 @@ class DirectoryHandler(object):
             self.event_handled = True
 
 
-class Discoverer(object):
+class Discoverer:
     def loadTestsFromName(self, event):
         """Load tests from module named by event.name"""
         # turn name into path or module name
@@ -138,36 +137,29 @@ class Discoverer(object):
         else:
             full_path = os.path.join(top_level, start)
         if os.path.isdir(start):
-            for test in self._find_tests_in_dir(event, full_path, top_level):
-                yield test
+            yield from self._find_tests_in_dir(event, full_path, top_level)
         elif os.path.isfile(start):
-            for test in self._find_tests_in_file(event, start, full_path, top_level):
-                yield test
+            yield from self._find_tests_in_file(event, start, full_path, top_level)
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         if not os.path.isdir(full_path):
             return
         log.debug("find in dir %s (%s)", full_path, top_level)
         dir_handler = DirectoryHandler(self.session)
-        for test in dir_handler.handle_dir(event, full_path, top_level):
-            yield test
+        yield from dir_handler.handle_dir(event, full_path, top_level)
         if dir_handler.event_handled:
             return
         for path in os.listdir(full_path):
             entry_path = os.path.join(full_path, path)
             if os.path.isfile(entry_path):
-                for test in self._find_tests_in_file(
-                    event, path, entry_path, top_level
-                ):
-                    yield test
+                yield from self._find_tests_in_file(event, path, entry_path, top_level)
             elif os.path.isdir(entry_path):
                 if (
                     "test" in path.lower()
                     or util.ispackage(entry_path)
                     or path in self.session.libDirs
                 ):
-                    for test in self._find_tests(event, entry_path, top_level):
-                        yield test
+                    yield from self._find_tests(event, entry_path, top_level)
 
     def _find_tests_in_file(
         self, event, filename, full_path, top_level, module_name=None
@@ -227,8 +219,7 @@ class Discoverer(object):
         if pkgpath:
             for entry in pkgpath:
                 full_path = os.path.abspath(os.path.join(top_level_dir, entry))
-                for test in self._find_tests_in_dir(event, full_path, top_level_dir):
-                    yield test
+                yield from self._find_tests_in_dir(event, full_path, top_level_dir)
 
     def _match_path(self, path, full_path, pattern):
         # override this method to use alternative matching strategy

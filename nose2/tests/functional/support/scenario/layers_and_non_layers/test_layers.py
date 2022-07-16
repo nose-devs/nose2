@@ -6,7 +6,7 @@ from .common import NormalTest, NormalTestTwo, UniqueResource  # noqa: F401
 log = logging.getLogger(__name__)
 
 
-class Layer1(object):
+class Layer1:
     @classmethod
     def setUp(cls):
         log.info("Called setup in layer 1")
@@ -19,7 +19,7 @@ class Layer1(object):
         cls.unique_resource.unlock()
 
 
-class Layer2(object):
+class Layer2:
     @classmethod
     def setUp(cls):
         log.info("Called setup in layer 2")

@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 from nose2 import events, exceptions, loader, session
@@ -16,7 +15,7 @@ class TestLayers(TestCase):
         self.plugin = layers.Layers(session=self.session)
 
     def test_simple_layer_inheritance(self):
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -46,7 +45,7 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_multiple_inheritance(self):
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -86,7 +85,7 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_deep_inheritance(self):
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -152,7 +151,7 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixed_layers_no_layers(self):
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -187,7 +186,7 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_ordered_layers(self):
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -251,10 +250,10 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_in_top_layer(self):
-        class M1(object):
+        class M1:
             pass
 
-        class L1(object):
+        class L1:
             mixins = (M1,)
 
         class T1(unittest.TestCase):
@@ -270,10 +269,10 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_mixin_in_inner_layer(self):
-        class M1(object):
+        class M1:
             pass
 
-        class L1(object):
+        class L1:
             pass
 
         class L2(L1):
@@ -331,10 +330,10 @@ class TestLayers(TestCase):
         #    -> L2
         #     -> L6
         #    -> L5
-        class L1(object):
+        class L1:
             pass
 
-        class L2(object):  # a mixin, doesn't share a base w/L1
+        class L2:  # a mixin, doesn't share a base w/L1
             pass
 
         class L3(L1):
@@ -407,10 +406,9 @@ class TestLayers(TestCase):
 
     def test_invalid_top_layer(self):
 
-        if sys.version_info >= (3, 0):
-            # in python 3, L1 will automatically have `object` has base, so
-            # this test does not make sense, and will actually fail.
-            return
+        # in python 3, L1 will automatically have `object` has base, so
+        # this test does not make sense, and will actually fail.
+        return
 
         class L1:
             pass
@@ -432,18 +430,15 @@ class TestLayers(TestCase):
     def iternames(self, suite):
         for t in suite:
             if isinstance(t, unittest.TestCase):
-                if sys.version_info >= (3, 5):
-                    test_module = t.__class__.__module__
-                    test_class = t.__class__.__name__
-                    test_method = t._testMethodName
-                    yield "%s (%s.%s)" % (test_method, test_module, test_class)
-                else:
-                    yield str(t)
+                test_module = t.__class__.__module__
+                test_class = t.__class__.__name__
+                test_method = t._testMethodName
+                yield f"{test_method} ({test_module}.{test_class})"
             else:
                 yield [n for n in self.iternames(t)]
 
     def _listset(self, lst):
-        n = set([])
+        n = set()
         for t in lst:
             if isinstance(t, list):
                 n.add(self._listset(t))

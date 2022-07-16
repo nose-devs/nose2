@@ -1,6 +1,5 @@
 """Test doctests plugin."""
 import doctest
-import sys
 from textwrap import dedent
 
 from nose2 import events, loader, session
@@ -20,7 +19,7 @@ class UnitTestDocTestLoader(TestCase):
         self.session = session.Session()
         self.loader = loader.PluggableTestLoader(self.session)
         self.plugin = doctests.DocTestLoader(session=self.session)
-        super(UnitTestDocTestLoader, self).setUp()
+        super().setUp()
 
     def test___init__(self):
         """Test the __init__ method."""
@@ -63,10 +62,7 @@ def func():
     pass
 """,
         )
-        if sys.version_info >= (3, 5):
-            self.assertEqual(event.extraTests, [doctest.DocTestSuite()])
-        else:
-            self.assertEqual(event.extraTests, [])
+        self.assertEqual(event.extraTests, [doctest.DocTestSuite()])
 
     def test_handle_file_python_setup_py(self):
         # Test calling handleFile on a top-level setup.py file.

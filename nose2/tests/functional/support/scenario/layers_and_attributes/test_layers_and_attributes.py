@@ -3,7 +3,7 @@ import unittest
 STATE = {}
 
 
-class L1(object):
+class L1:
     @classmethod
     def setUp(cls):
         STATE["L1"] = "setup"
@@ -13,7 +13,7 @@ class L1(object):
         del STATE["L1"]
 
 
-class L2(object):
+class L2:
     @classmethod
     def setUp(cls):
         STATE["L2"] = "setup"

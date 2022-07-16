@@ -8,7 +8,7 @@ class TestPluggableTestProgram(FunctionalTestCase):
         self.assertEqual(proc.poll(), 0, stderr)
 
     def test_extra_hooks(self):
-        class Check(object):
+        class Check:
             ran = False
 
             def startTestRun(self, event):

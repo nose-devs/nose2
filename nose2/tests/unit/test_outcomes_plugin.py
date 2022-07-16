@@ -20,7 +20,7 @@ class TestOutComesPlugin(TestCase):
                 raise TypeError("x")
 
             def test_e3(self):
-                raise IOError("o")
+                raise OSError("o")
 
         self.case = Test
 

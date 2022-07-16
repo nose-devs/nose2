@@ -75,7 +75,7 @@ class TestPluggableTestLoader(TestCase):
         )
 
 
-class FakePlugin(object):
+class FakePlugin:
     def __init__(self):
         self.fakeLoadFromModule = False
         self.fakeLoadFromName = False

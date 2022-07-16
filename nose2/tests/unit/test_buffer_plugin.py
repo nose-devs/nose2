@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import sys
 
 from nose2 import events, result, session, util
@@ -20,20 +18,20 @@ class TestBufferPlugin(TestCase):
         class Test(TestCase):
 
             printed_nonascii_str = util.safe_decode("test 日本").encode("utf-8")
-            printed_unicode = six.u("hello")
+            printed_unicode = "hello"
 
             def test_out(self):
-                six.print_("hello")
+                print("hello")
                 raise {}["oops"]
 
             def test_err(self):
-                six.print_("goodbye", file=sys.stderr)
+                print("goodbye", file=sys.stderr)
 
             def test_mixed_unicode_and_nonascii_str(self):
-                six.print_(self.printed_nonascii_str)
-                six.print_(self.printed_unicode)
-                six.print_(self.printed_nonascii_str, file=sys.stderr)
-                six.print_(self.printed_unicode, file=sys.stderr)
+                print(self.printed_nonascii_str)
+                print(self.printed_unicode)
+                print(self.printed_nonascii_str, file=sys.stderr)
+                print(self.printed_unicode, file=sys.stderr)
                 raise {}["oops"]
 
         self.case = Test
@@ -80,22 +78,11 @@ class TestBufferPlugin(TestCase):
         evt = events.OutcomeDetailEvent(self.watcher.events[0])
         self.session.hooks.outcomeDetail(evt)
         extraDetail = "".join(evt.extraDetail)
-        if six.PY2:
-            for string in [
-                util.safe_decode(self.case.printed_nonascii_str),
-                self.case.printed_unicode,
-            ]:
-                assert (
-                    string not in extraDetail
-                ), "Output unexpectedly found in error message"
-            assert "OUTPUT ERROR" in extraDetail
-            assert "UnicodeDecodeError" in extraDetail
-        else:
-            for string in [
-                repr(self.case.printed_nonascii_str),
-                self.case.printed_unicode,
-            ]:
-                assert string in extraDetail, "Output not found in error message"
+        for string in [
+            repr(self.case.printed_nonascii_str),
+            self.case.printed_unicode,
+        ]:
+            assert string in extraDetail, "Output not found in error message"
 
     def test_decorates_outcome_detail(self):
         test = self.case("test_out")

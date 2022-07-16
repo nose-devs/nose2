@@ -15,7 +15,7 @@ __unittest = True
 
 class LayerSuite(unittest.BaseTestSuite):
     def __init__(self, session, tests=(), layer=None):
-        super(LayerSuite, self).__init__(tests)
+        super().__init__(tests)
         self.layer = layer
         self.wasSetup = False
         self.session = session

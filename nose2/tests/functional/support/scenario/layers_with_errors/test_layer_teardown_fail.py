@@ -1,7 +1,7 @@
 import unittest
 
 
-class Layer(object):
+class Layer:
     @classmethod
     def setUp(cls):
         pass

@@ -9,20 +9,20 @@ class TestTestClassLoader(TestCase):
         self.loader = loader.PluggableTestLoader(session=self.session)
         self.plugin = TestClassLoader(session=self.session)
 
-        class Mod(object):
+        class Mod:
             pass
 
         self.module = Mod()
 
-        class TestA(object):
+        class TestA:
             def test(self):
                 pass
 
-        class TestB(object):
+        class TestB:
             def runTest(self):
                 pass
 
-        class TestC(object):
+        class TestC:
             def foo(self):
                 pass
 
@@ -82,12 +82,12 @@ class TestFailingTestClassLoader(TestCase):
         self.loader = loader.PluggableTestLoader(session=self.session)
         self.plugin = TestClassLoader(session=self.session)
 
-        class Mod(object):
+        class Mod:
             pass
 
         self.module = Mod()
 
-        class TestA(object):
+        class TestA:
             def __init__(self):
                 raise RuntimeError("Something bad happened!")
 

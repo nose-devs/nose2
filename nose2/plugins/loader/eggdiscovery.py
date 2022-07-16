@@ -54,8 +54,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
         )
         full_path = os.path.join(dist.location, rel_path)
         dir_handler = discovery.DirectoryHandler(self.session)
-        for test in dir_handler.handle_dir(event, full_path, dist.location):
-            yield test
+        yield from dir_handler.handle_dir(event, full_path, dist.location)
         if dir_handler.event_handled:
             return
         for path in dist.resource_listdir(rel_path):
@@ -66,18 +65,16 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
 
             entry_path = os.path.join(rel_path, path)
             if dist.resource_isdir(entry_path):
-                for test in self._find_tests_in_egg_dir(event, entry_path, dist):
-                    yield test
+                yield from self._find_tests_in_egg_dir(event, entry_path, dist)
             else:
                 modname = os.path.splitext(entry_path)[0].replace(os.sep, ".")
-                for test in self._find_tests_in_file(
+                yield from self._find_tests_in_file(
                     event,
                     path,
                     os.path.join(dist.location, entry_path),
                     dist.location,
                     modname,
-                ):
-                    yield test
+                )
 
     def _find_tests_in_dir(self, event, full_path, top_level):
         if os.path.exists(full_path):
@@ -86,5 +83,4 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
             egg_path = full_path.split(".egg")[0] + ".egg"
             for dist in pkg_resources.find_distributions(egg_path):
                 for modname in dist._get_metadata("top_level.txt"):
-                    for test in self._find_tests_in_egg_dir(event, modname, dist):
-                        yield test
+                    yield from self._find_tests_in_egg_dir(event, modname, dist)

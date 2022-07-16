@@ -84,7 +84,7 @@ class PluggableTestProgram(unittest.TestProgram):
         self.extraHooks = hooks
         self.defaultPlugins.extend(plugins)
         self.excludePlugins.extend(exclude)
-        super(PluggableTestProgram, self).__init__(**kw)
+        super().__init__(**kw)
 
     def parseArgs(self, argv):
         """Parse command line args

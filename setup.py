@@ -12,7 +12,7 @@ def read_version(filename):
             m = version_pattern.match(line)
             if m:
                 return m.group(1)
-    raise Exception("could not parse version from {}".format(filename))
+    raise Exception(f"could not parse version from {filename}")
 
 
 MAINTAINER = "Stephen Rosen"

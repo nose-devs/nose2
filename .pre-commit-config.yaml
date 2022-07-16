@@ -10,6 +10,11 @@ repos:
     - id: check-github-workflows
     - id: check-dependabot
     - id: check-readthedocs
+- repo: https://github.com/asottile/pyupgrade
+  rev: v2.37.1
+  hooks:
+    - id: pyupgrade
+      args: ["--py36-plus"]
 - repo: https://github.com/psf/black
   # the 21.12b0 release is the last with python2 support
   # it is also the last beta release of black

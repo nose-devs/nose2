@@ -1,7 +1,7 @@
 import unittest
 
 
-class Layer(object):
+class Layer:
     description = "fixture with a value"
 
     @classmethod

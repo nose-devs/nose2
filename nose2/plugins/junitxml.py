@@ -91,7 +91,6 @@ import time
 from xml.etree import ElementTree as ET
 
 from nose2 import events, result, util
-from nose2._vendor import six
 
 __unittest = True
 
@@ -157,7 +156,7 @@ class JUnitXmlReporter(events.Plugin):
         # for generated test cases
         if len(testid_lines) > 1 and self.test_fullname:
             test_args = ":".join(testid_lines[1:])
-            method = "%s (%s)" % (method, test_args)
+            method = f"{method} ({test_args})"
 
         # subtests do not report success
         if event.outcome == result.SUBTEST and event.exc_info is None:
@@ -199,7 +198,7 @@ class JUnitXmlReporter(events.Plugin):
             if msg:
                 skipmsg = "test skipped"
                 if event.reason:
-                    skipmsg = "test skipped: {}".format(event.reason)
+                    skipmsg = f"test skipped: {event.reason}"
                 skipped.set("message", skipmsg)
                 skipped.text = msg
         elif event.outcome == result.FAIL and event.expected:
@@ -226,12 +225,12 @@ class JUnitXmlReporter(events.Plugin):
 
     def _check(self):
         if not os.path.exists(os.path.dirname(self.path)):
-            raise IOError(
+            raise OSError(
                 2, "JUnitXML: Parent folder does not exist for file", self.path
             )
         if self.test_properties is not None:
             if not os.path.exists(self.test_properties_path):
-                raise IOError(
+                raise OSError(
                     2,
                     "JUnitXML: Properties file does not exist",
                     self.test_properties_path,
@@ -347,18 +346,10 @@ if sys.maxunicode > 0xFFFF:
     ]
 
 ILLEGAL_REGEX_STR = (
-    six.u("[")
-    + six.u("").join(
-        ["%s-%s" % (six.unichr(l), six.unichr(h)) for (l, h) in ILLEGAL_RANGES]
-    )
-    + six.u("]")
+    "[" + "".join([f"{chr(l)}-{chr(h)}" for (l, h) in ILLEGAL_RANGES]) + "]"
 )
 RESTRICTED_REGEX_STR = (
-    six.u("[")
-    + six.u("").join(
-        ["%s-%s" % (six.unichr(l), six.unichr(h)) for (l, h) in RESTRICTED_RANGES]
-    )
-    + six.u("]")
+    "[" + "".join([f"{chr(l)}-{chr(h)}" for (l, h) in RESTRICTED_RANGES]) + "]"
 )
 
 _ILLEGAL_REGEX = re.compile(ILLEGAL_REGEX_STR, re.U)
@@ -366,11 +357,11 @@ _RESTRICTED_REGEX = re.compile(RESTRICTED_REGEX_STR, re.U)
 
 
 def string_cleanup(string, keep_restricted=False):
-    if not issubclass(type(string), six.text_type):
-        string = six.text_type(string, encoding="utf-8", errors="replace")
+    if not issubclass(type(string), str):
+        string = str(string, encoding="utf-8", errors="replace")
 
-    string = _ILLEGAL_REGEX.sub(six.u("\uFFFD"), string)
+    string = _ILLEGAL_REGEX.sub("\uFFFD", string)
     if not keep_restricted:
-        string = _RESTRICTED_REGEX.sub(six.u("\uFFFD"), string)
+        string = _RESTRICTED_REGEX.sub("\uFFFD", string)
 
     return string

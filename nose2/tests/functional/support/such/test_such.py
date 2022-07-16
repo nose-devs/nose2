@@ -3,7 +3,7 @@ import unittest
 from nose2.tools import such
 
 
-class SomeLayer(object):
+class SomeLayer:
     @classmethod
     def setUp(cls):
         it.somelayer = True

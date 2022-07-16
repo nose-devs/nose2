@@ -2,7 +2,7 @@ try:
     from unittest import mock
 except ImportError:
     # Python versions older than 3.3 don't have mock by default
-    import mock
+    from unittest import mock
 
 import re
 from textwrap import dedent

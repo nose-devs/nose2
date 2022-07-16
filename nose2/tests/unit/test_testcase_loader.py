@@ -9,7 +9,7 @@ class TestTestCaseLoader(TestCase):
         self.loader = loader.PluggableTestLoader(session=self.session)
         self.plugin = TestCaseLoader(session=self.session)
 
-        class Mod(object):
+        class Mod:
             pass
 
         self.module = Mod()
@@ -26,7 +26,7 @@ class TestTestCaseLoader(TestCase):
             def foo(self):
                 pass
 
-        class Test(object):
+        class Test:
             def test(self):
                 pass
 

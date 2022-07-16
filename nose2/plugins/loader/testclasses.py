@@ -96,7 +96,7 @@ class TestClassLoader(events.Plugin):
         - getTestMethodNames
 
         """
-        super(TestClassLoader, self).register()
+        super().register()
         self.addMethods("loadTestsFromTestClass", "getTestMethodNames")
 
     def loadTestsFromModule(self, event):
@@ -197,7 +197,7 @@ def MethodTestCase(cls):
     class _MethodTestCase(unittest.TestCase):
         def __init__(self, method):
             self.method = method
-            self._name = "%s.%s.%s" % (cls.__module__, cls.__name__, method)
+            self._name = f"{cls.__module__}.{cls.__name__}.{method}"
             self.obj = cls()
             unittest.TestCase.__init__(self, "runTest")
 

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from nose2 import util
-from nose2._vendor import six
 from nose2.tests._common import TestCase, support_file
 
 
@@ -23,6 +21,6 @@ class UtilTests(TestCase):
 
         stream = D()
         decorated = util._WritelnDecorator(stream)
-        string = six.u("\u00dcnic\u00f6de")
+        string = "\u00dcnic\u00f6de"
         decorated.write(string)
         str("".join(stream.out))

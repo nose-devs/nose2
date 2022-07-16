@@ -102,7 +102,7 @@ class HasClassFixturesTests(TestCase):
 
 class HasModuleFixturesTests(TestCase):
     def test_module_without_fixtures(self):
-        class M(object):
+        class M:
             pass
 
         M.__name__ = "nose2.foo.bar"
@@ -122,7 +122,7 @@ class HasModuleFixturesTests(TestCase):
             del sys.modules[M.__name__]
 
     def test_module_with_setup(self):
-        class M(object):
+        class M:
             pass
 
         M.__name__ = "nose2.foo.bar"
@@ -143,7 +143,7 @@ class HasModuleFixturesTests(TestCase):
             del sys.modules[M.__name__]
 
     def test_module_with_teardown(self):
-        class M(object):
+        class M:
             pass
 
         M.__name__ = "nose2.foo.bar"

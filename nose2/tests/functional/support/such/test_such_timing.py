@@ -12,7 +12,7 @@ def slow_blocking_init():
     return True
 
 
-class Layer1(object):
+class Layer1:
 
     description = "Layer1 description"
 
@@ -22,7 +22,7 @@ class Layer1(object):
         it.obj = False
 
 
-class Layer2(object):
+class Layer2:
 
     description = "Layer2 description"
 

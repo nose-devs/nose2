@@ -1,4 +1,4 @@
-class Test(object):
+class Test:
     @classmethod
     def setUpClass(cls):
         cls.setup = 1

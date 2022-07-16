@@ -37,7 +37,7 @@ class PrintHooks(events.Plugin):
         with noisier objects.
 
         """
-        super(PrintHooks, self).register()
+        super().register()
         # now we can be sure that all other plugins have loaded
         # and this plugin is active, patch in our hook class
         self.session.hooks.hookClass = NoisyHook
@@ -52,13 +52,13 @@ class NoisyHook(events.Hook):
         _report(self.method, event)
         _indent()
         try:
-            return super(NoisyHook, self).__call__(event)
+            return super().__call__(event)
         finally:
             _dedent()
 
 
 def _report(method, event):
-    sys.stderr.write("\n%s%s: %s" % ("".join(INDENT), method, event))
+    sys.stderr.write("\n{}{}: {}".format("".join(INDENT), method, event))
 
 
 def _indent():

@@ -1,7 +1,7 @@
 import unittest
 
 
-class Layer1(object):
+class Layer1:
 
     layer_setup = 0
     test_setup = 0

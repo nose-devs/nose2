@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 __unittest = True
 
 
-class PluggableTestLoader(object):
+class PluggableTestLoader:
 
     """Test loader that defers all loading to plugins
 

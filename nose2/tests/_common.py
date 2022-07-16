@@ -25,7 +25,7 @@ class TestCase(unittest.TestCase):
     _RUN_IN_TEMP = False
 
     def setUp(self):
-        super(TestCase, self).setUp()
+        super().setUp()
 
         if self._RUN_IN_TEMP:
             self._orig_dir = os.getcwd()
@@ -35,7 +35,7 @@ class TestCase(unittest.TestCase):
             sys.path.insert(0, work_dir)
 
     def tearDown(self):
-        super(TestCase, self).tearDown()
+        super().tearDown()
 
         if self._RUN_IN_TEMP:
             os.chdir(self._orig_dir)
@@ -46,26 +46,20 @@ class TestCase(unittest.TestCase):
         In python 3.5, the unittest.TestCase.__str__() output changed.
         This makes it conform to previous version.
         """
-        if sys.version_info >= (3, 5):
-            test_module = self.__class__.__module__
-            test_class = self.__class__.__name__
-            test_method = self._testMethodName
-            return "%s (%s.%s)" % (test_method, test_module, test_class)
-        else:
-            return super(TestCase, self).__str__()
+        test_module = self.__class__.__module__
+        test_class = self.__class__.__name__
+        test_method = self._testMethodName
+        return f"{test_method} ({test_module}.{test_class})"
 
     def id(self):
         """
         In python 3.5, the unittest.TestCase.__id__() output changed.
         This makes it conform to previous version.
         """
-        if sys.version_info >= (3, 5):
-            test_module = self.__class__.__module__
-            test_class = self.__class__.__name__
-            test_method = self._testMethodName
-            return "%s.%s.%s" % (test_module, test_class, test_method)
-        else:
-            return super(TestCase, self).id()
+        test_module = self.__class__.__module__
+        test_class = self.__class__.__name__
+        test_method = self._testMethodName
+        return f"{test_module}.{test_class}.{test_method}"
 
 
 class FunctionalTestCase(unittest.TestCase):
@@ -101,7 +95,7 @@ class FunctionalTestCase(unittest.TestCase):
         return run_module_as_main(testmodule, *args)
 
 
-class _FakeEventBase(object):
+class _FakeEventBase:
 
     """Baseclass for fake :class:`~nose2.events.Event`s."""
 
@@ -116,7 +110,7 @@ class FakeHandleFileEvent(_FakeEventBase):
     """Fake HandleFileEvent."""
 
     def __init__(self, name):
-        super(FakeHandleFileEvent, self).__init__()
+        super().__init__()
 
         self.loader = Stub()  # FIXME
         self.name = name
@@ -129,7 +123,7 @@ class FakeStartTestEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.StartTestEvent`."""
 
     def __init__(self, test):
-        super(FakeStartTestEvent, self).__init__()
+        super().__init__()
         self.test = test
         self.result = test.defaultTestResult()
         import time
@@ -142,7 +136,7 @@ class FakeLoadFromNameEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.LoadFromNameEvent`."""
 
     def __init__(self, name):
-        super(FakeLoadFromNameEvent, self).__init__()
+        super().__init__()
         self.name = name
 
 
@@ -151,7 +145,7 @@ class FakeLoadFromNamesEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.LoadFromNamesEvent`."""
 
     def __init__(self, names):
-        super(FakeLoadFromNamesEvent, self).__init__()
+        super().__init__()
         self.names = names
 
 
@@ -162,7 +156,7 @@ class FakeStartTestRunEvent(_FakeEventBase):
     def __init__(
         self, runner=None, suite=None, result=None, startTime=None, executeTests=None
     ):
-        super(FakeStartTestRunEvent, self).__init__()
+        super().__init__()
         self.suite = suite
         self.runner = runner
         self.result = result
@@ -170,7 +164,7 @@ class FakeStartTestRunEvent(_FakeEventBase):
         self.executeTests = executeTests
 
 
-class Stub(object):
+class Stub:
 
     """Stub object for use in tests"""
 
@@ -203,7 +197,7 @@ def run_module_as_main(test_module, *args):
     )
 
 
-class NotReallyAProc(object):
+class NotReallyAProc:
     def __init__(self, args, cwd=None, **kwargs):
         self.args = args
         self.chdir = cwd
@@ -250,7 +244,7 @@ class NotReallyAProc(object):
         return int(not self.result.result.wasSuccessful())
 
 
-class RedirectStdStreams(object):
+class RedirectStdStreams:
 
     """
     Context manager that replaces the stdin/stdout streams with :class:`StringIO`
@@ -276,7 +270,7 @@ class RedirectStdStreams(object):
 
 
 # mock multiprocessing Connection
-class Conn(object):
+class Conn:
     def __init__(self, items):
         self.items = items
         self.sent = []

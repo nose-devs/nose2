@@ -26,7 +26,7 @@ class UnitTestTestId(TestCase):
     _RUN_IN_TEMP = True
 
     def setUp(self):
-        super(UnitTestTestId, self).setUp()
+        super().setUp()
         self.stream = six.StringIO()
         self.session = session.Session()
         self.plugin = testid.TestId(session=self.session)
@@ -46,7 +46,7 @@ class UnitTestTestId(TestCase):
             try:
                 val = getattr(plug, name)
             except AttributeError:
-                self.fail("TestId instance doesn't have attribute %s" % (name,))
+                self.fail(f"TestId instance doesn't have attribute {name}")
             self.assertEqual(
                 val,
                 exp_val,

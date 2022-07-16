@@ -189,7 +189,7 @@ class Generators(Plugin):
                 setattr(instance, method_name, method)
                 yield instance
         except Exception as e:
-            test_name = "%s.%s.%s" % (
+            test_name = "{}.{}.{}".format(
                 testCaseClass.__module__,
                 testCaseClass.__name__,
                 name,
@@ -198,7 +198,7 @@ class Generators(Plugin):
 
     def _testsFromGeneratorFunc(self, event, obj):
         extras = list(obj())
-        name = "%s.%s" % (obj.__module__, obj.__name__)
+        name = f"{obj.__module__}.{obj.__name__}"
         args = {}
         setUp = getattr(obj, "setUp", None)
         tearDown = getattr(obj, "tearDown", None)
@@ -212,12 +212,11 @@ class Generators(Plugin):
                 name, **args
             )
 
-        for test in self._testsFromGenerator(event, name, extras, createTest):
-            yield test
+        yield from self._testsFromGenerator(event, name, extras, createTest)
 
     def _testsFromGeneratorMethod(self, event, name, method, instance):
         extras = list(method(instance))
-        name = "%s.%s.%s" % (
+        name = "{}.{}.{}".format(
             instance.__class__.__module__,
             instance.__class__.__name__,
             method.__name__,
@@ -235,8 +234,7 @@ class Generators(Plugin):
                 GeneratorMethodCase(instance.__class__), instance.__class__.__module__
             )(name, **args)
 
-        for test in self._testsFromGenerator(event, name, extras, createTest):
-            yield test
+        yield from self._testsFromGenerator(event, name, extras, createTest)
 
 
 class GeneratorFunctionCase(unittest.FunctionTestCase):

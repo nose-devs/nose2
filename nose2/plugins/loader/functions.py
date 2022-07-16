@@ -149,6 +149,6 @@ class Functions(Plugin):
 
 class FunctionTestCase(unittest.FunctionTestCase):
     def __repr__(self):
-        return "%s.%s" % (self._testFunc.__module__, self._testFunc.__name__)
+        return f"{self._testFunc.__module__}.{self._testFunc.__name__}"
 
     id = __str__ = __repr__

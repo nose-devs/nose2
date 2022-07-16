@@ -4,13 +4,13 @@ import unittest
 log = logging.getLogger(__name__)
 
 
-class UniqueResource(object):
+class UniqueResource:
     _instance = None
     used = False
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super(UniqueResource, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
     def lock(self):

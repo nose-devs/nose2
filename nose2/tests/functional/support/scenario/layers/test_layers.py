@@ -3,7 +3,7 @@ import unittest
 STATE = {}
 
 
-class Base(object):
+class Base:
     @classmethod
     def setUp(cls):
         STATE["base"] = "setup"

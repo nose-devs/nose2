@@ -29,9 +29,9 @@ However, when doing so you should also be aware of
 `Differences From coverage`_.
 """
 
+import io
 import logging
 
-from nose2._vendor import six
 from nose2.events import Plugin
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class Coverage(Plugin):
         # tracking var for any decision which marks the entire run as failed
         self.decided_failure = False
         # buffer for error output data
-        self.error_output_buffer = six.StringIO()
+        self.error_output_buffer = io.StringIO()
 
         self.covSource = self.config.as_list("coverage", []) or ["."]
         self.covReport = self.config.as_list("coverage-report", []) or ["term"]

@@ -1,4 +1,5 @@
 """Common functionality."""
+import io
 import os.path
 import platform
 import shutil
@@ -8,7 +9,6 @@ import tempfile
 import unittest
 
 from nose2 import discover, util
-from nose2._vendor import six
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 SUPPORT = os.path.join(HERE, "functional", "support")
@@ -211,8 +211,8 @@ class NotReallyAProc:
         self.cwd = os.getcwd()
         if self.chdir:
             os.chdir(self.chdir)
-        self.stdout = sys.stdout = sys.__stdout__ = six.StringIO()
-        self.stderr = sys.stderr = sys.__stderr__ = six.StringIO()
+        self.stdout = sys.stdout = sys.__stdout__ = io.StringIO()
+        self.stderr = sys.stderr = sys.__stderr__ = io.StringIO()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -252,8 +252,8 @@ class RedirectStdStreams:
     """
 
     def __init__(self):
-        self.stdout = six.StringIO()
-        self.stderr = six.StringIO()
+        self.stdout = io.StringIO()
+        self.stderr = io.StringIO()
 
     def __enter__(self):
         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr

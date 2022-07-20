@@ -13,12 +13,12 @@ add additional detail to the error report.
 
 import collections
 import inspect
+import io
 import re
 import textwrap
 import tokenize
 
 from nose2 import events
-from nose2._vendor import six
 
 __unittest = True
 
@@ -168,7 +168,7 @@ def _can_tokenize(source_lines):
     """
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
-    filelike = six.StringIO(textwrap.dedent("".join(source_lines)))
+    filelike = io.StringIO(textwrap.dedent("".join(source_lines)))
 
     try:
         for _tokty, _tok, _start, _end, _tok_lineno in tokenize.generate_tokens(
@@ -197,7 +197,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
     """
     # tokenize.generate_tokens requires a file-like object, so we need to
     # convert source_lines to a StringIO to give it that interface
-    filelike_context = six.StringIO(textwrap.dedent("".join(source_lines)))
+    filelike_context = io.StringIO(textwrap.dedent("".join(source_lines)))
 
     # track the first line of the assert statement
     # when the assert is on oneline, we'll have it easily, but a multiline

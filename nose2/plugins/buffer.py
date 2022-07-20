@@ -14,11 +14,11 @@ talk to the user.
 
 """
 
+import io
 import sys
 import traceback
 
 from nose2 import events
-from nose2._vendor import six
 from nose2.util import ln
 
 __unittest = True
@@ -27,7 +27,7 @@ __unittest = True
 class _Buffer:
     def __init__(self, stream):
         self._stream = stream
-        self._buffer = six.StringIO()
+        self._buffer = io.StringIO()
 
     def fileno(self):
         return self._stream.fileno()

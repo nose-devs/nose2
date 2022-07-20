@@ -116,24 +116,10 @@ def object_from_name(name, module=None):
             parent, obj = obj, getattr(obj, part)
         except AttributeError as e:
             if is_package_or_module(obj) and import_error:
-                # Re-raise the import error which got us here, since
-                # it probably better describes the issue.
-                _raise_custom_attribute_error(obj, part, e, import_error)
-            else:
-                raise
+                raise e from import_error[1]
+            raise
 
     return parent, obj
-
-
-def _raise_custom_attribute_error(obj, attr, attr_error_exc, prev_exc):
-
-    raise attr_error_exc from prev_exc[1]
-
-    # for python 2, do exception chaining manually
-    raise AttributeError(
-        "'%s' has not attribute '%s'\n\nMaybe caused by\n\n%s"
-        % (obj, attr, "\n".join(traceback.format_exception(*prev_exc)))
-    )
 
 
 def is_package_or_module(obj):

@@ -76,11 +76,6 @@ class TestJunitXmlPlugin(TestCase):
         self.plugin = junitxml.JUnitXmlReporter(session=self.session)
         self.plugin.register()
 
-        # Python 2.7 needs this
-        # assertRegexpMatches() was renamed to assertRegex() in 3.2
-        if not hasattr(self, "assertRegex"):
-            self.assertRegex = self.assertRegexpMatches
-
         class Test(unittest.TestCase):
             def test(self):
                 pass

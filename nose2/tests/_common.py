@@ -76,17 +76,10 @@ class FunctionalTestCase(unittest.TestCase):
         if cmd_stdout is None:
             cmd_stdout, cmd_stderr = proc.communicate()
             self._output[proc.pid] = cmd_stdout, cmd_stderr
-        # Python 2.7 needs this
-        # assertRegexpMatches() was renamed to assertRegex() in 3.2
-        testf = (
-            self.assertRegex
-            if hasattr(self, "assertRegex")
-            else self.assertRegexpMatches
-        )
         if stdout:
-            testf(util.safe_decode(cmd_stdout), stdout)
+            self.assertRegex(util.safe_decode(cmd_stdout), stdout)
         if stderr:
-            testf(util.safe_decode(cmd_stderr), stderr)
+            self.assertRegex(util.safe_decode(cmd_stderr), stderr)
 
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)

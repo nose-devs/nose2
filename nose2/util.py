@@ -13,8 +13,6 @@ import traceback
 import types
 from inspect import isgeneratorfunction
 
-from nose2._vendor import six
-
 __unittest = True
 IDENT_RE = re.compile(r"^[_a-zA-Z]\w*$", re.UNICODE)
 VALID_MODULE_RE = re.compile(r"[_a-zA-Z]\w*\.py$", re.UNICODE)
@@ -167,7 +165,7 @@ def try_import_module_from_name(splitted_name):
             import_error = sys.exc_info()
             del splitted_name[-1]
             if not splitted_name:
-                six.reraise(*import_error)
+                raise
     return (module, import_error)
 
 

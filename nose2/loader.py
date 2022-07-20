@@ -9,7 +9,6 @@ import traceback
 import unittest
 
 from nose2 import events
-from nose2._vendor import six
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -86,11 +85,7 @@ class PluggableTestLoader:
 
     def failedImport(self, name):
         """Make test case representing a failed import."""
-        message = "Failed to import test module: %s" % name
-        if hasattr(traceback, "format_exc"):
-            # Python 2.3 compatibility
-            # format_exc returns two frames of discover.py as well XXX ?
-            message += "\n%s" % traceback.format_exc()
+        message = f"Failed to import test module: {name}\n{traceback.format_exc()}"
         return self._makeFailedTest("ModuleImportFailure", name, ImportError(message))
 
     def failedLoadTests(self, name, exception):
@@ -111,12 +106,19 @@ class PluggableTestLoader:
             self.session.startDir = oldsd
 
     def _makeFailedTest(self, classname, methodname, exception):
-        def testFailure(self):
-            if isinstance(exception, Exception):
+        if isinstance(exception, Exception):
+
+            def testFailure(self):
                 raise exception
-            else:
-                # exception tuple (type, value, traceback)
-                six.reraise(*exception)
+
+        elif isinstance(exception, tuple) and len(exception) == 3:
+            _, value, tb = exception
+
+            def testFailure(self):
+                raise value.with_traceback(tb)
+
+        else:  # unreachable
+            raise NotImplementedError
 
         attrs = {methodname: testFailure}
         TestClass = type(classname, (unittest.TestCase,), attrs)

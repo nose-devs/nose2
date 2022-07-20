@@ -55,10 +55,5 @@ class DocTestLoader(Plugin):
             return
         if hasattr(module, "__test__") and not module.__test__:
             return
-        try:
-            suite = doctest.DocTestSuite(module)
-        except ValueError:
-            # with python <= 3.5, doctest, very annoyingly, raises ValueError
-            # when a module has no tests.
-            return
+        suite = doctest.DocTestSuite(module)
         event.extraTests.append(suite)

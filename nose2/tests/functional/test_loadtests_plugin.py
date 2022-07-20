@@ -26,10 +26,8 @@ class TestLoadTestsPlugin(FunctionalTestCase):
         self.assertTestRunOutputMatches(
             proc, stderr="test..ltpkg.tests.test_find_these.Test"
         )
-        # with python >= 3.5, the test name contains the fully qualified class
-        # name, so the regexp has an optional matching part.
         self.assertTestRunOutputMatches(
-            proc, stderr="test..ltpkg2.tests(.load_tests.<locals>)?.Test"
+            proc, stderr="test..ltpkg2.tests.load_tests.<locals>.Test"
         )
 
     def test_project_directory_inside_package(self):

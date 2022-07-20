@@ -5,14 +5,9 @@ import os
 import select
 import sys
 import unittest
+from collections.abc import Sequence
 
 from nose2 import events, loader, result, runner, session, util
-
-try:
-    from collections.abc import Sequence
-except ImportError:
-    from collections.abc import Sequence
-
 
 log = logging.getLogger(__name__)
 

@@ -1,11 +1,6 @@
-try:
-    from unittest import mock
-except ImportError:
-    # Python versions older than 3.3 don't have mock by default
-    from unittest import mock
-
 import re
 from textwrap import dedent
+from unittest import mock
 
 from nose2 import collector
 from nose2.tests._common import RedirectStdStreams, TestCase

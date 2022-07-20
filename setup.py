@@ -29,7 +29,6 @@ setup(
         "dev": [
             "Sphinx",
             "sphinx_rtd_theme",
-            "mock",
             "sphinx-issues",
         ],
     },

@@ -1,10 +1,5 @@
 import unittest
-
-try:
-    from unittest import mock
-except ImportError:
-    # Python versions older than 3.3 don't have mock by default
-    from unittest import mock
+from unittest import mock
 
 from nose2 import events, loader, session
 from nose2.plugins.loader import functions

@@ -227,7 +227,7 @@ class LayerReporter(events.Plugin):
 
     def format(self, st):
         if self.colors:
-            return self.highlight_re.sub(fr"{BRIGHT}\1{RESET}", st)
+            return self.highlight_re.sub(rf"{BRIGHT}\1{RESET}", st)
         return st
 
     def describeTest(self, event):

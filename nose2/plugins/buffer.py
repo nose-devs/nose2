@@ -16,7 +16,6 @@ talk to the user.
 
 import io
 import sys
-import traceback
 
 from nose2 import events
 from nose2.util import ln

@@ -26,7 +26,6 @@ class UtilTests(TestCase):
             "nose2.tests.unit.test_util.UtilTests.test_ensure_importable",
         )
 
-    @unittest.skipIf(sys.version_info < (3, 4), "Python >= 3.4 required")
     def test_subtest_test_name(self):
         from unittest.case import _SubTest
 
@@ -44,7 +43,6 @@ class UtilTests(TestCase):
 
 
 class HasClassFixturesTests(TestCase):
-    @unittest.skipIf(sys.version_info < (3,), "Python 3 required")
     def test_unittest_testcase(self):
         C = unittest.TestCase
         self.assertFalse(util.has_class_fixtures(C))

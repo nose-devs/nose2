@@ -1,5 +1,4 @@
 import os
-import sys
 import tempfile
 from xml.etree import ElementTree as ET
 
@@ -12,11 +11,6 @@ def read_report(path):
 
 
 class TestSubtests(FunctionalTestCase):
-    def setUp(self):
-        super().setUp()
-        if sys.version_info < (3, 4):
-            self.skipTest("Python >= 3.4 required")
-
     def test_success(self):
         proc = self.runIn(
             "scenario/subtests", "-v", "test_subtests.Case.test_subtest_success"
@@ -106,11 +100,6 @@ class TestSubtests(FunctionalTestCase):
 
 
 class TestSubtestsMultiprocess(FunctionalTestCase):
-    def setUp(self):
-        super().setUp()
-        if sys.version_info < (3, 4):
-            self.skipTest("Python >= 3.4 required")
-
     def test_success(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -226,8 +215,6 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
 class TestSubtestsJunitXml(FunctionalTestCase):
     def setUp(self):
         super().setUp()
-        if sys.version_info < (3, 4):
-            self.skipTest("Python >= 3.4 required")
         tmp = tempfile.NamedTemporaryFile(delete=False)
         tmp.close()
         self.junit_report = tmp.name
@@ -378,11 +365,6 @@ class TestSubtestsJunitXml(FunctionalTestCase):
 
 
 class TestSubtestsFailFast(FunctionalTestCase):
-    def setUp(self):
-        super().setUp()
-        if sys.version_info < (3, 4):
-            self.skipTest("Python >= 3.4 required")
-
     def test_failure(self):
         proc = self.runIn(
             "scenario/subtests", "-v", "test_subtests.Case.test_subtest_failure"

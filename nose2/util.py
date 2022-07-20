@@ -182,7 +182,7 @@ def test_name(test, qualname=True):
     elif hasattr(test, "_testFunc"):
         tid = f"{test._testFunc.__module__}.{test._testFunc.__name__}"
     else:
-        if sys.version_info >= (3, 5) and not qualname:
+        if not qualname:
             test_module = test.__class__.__module__
             test_class = test.__class__.__name__
             test_method = test._testMethodName

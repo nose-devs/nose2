@@ -279,22 +279,6 @@ def safe_decode(string):
         return "<unable to decode>"
 
 
-def safe_encode(string, encoding="utf-8"):
-    if string is None:
-        return string
-    if encoding is None:
-        encoding = "utf-8"
-    try:
-        return string.encode(encoding)
-    except AttributeError:
-        return string
-    except UnicodeDecodeError:
-        # already encoded
-        return string
-    except UnicodeEncodeError:
-        return "<unable to encode>"
-
-
 def exc_info_to_string(err, test):
     """Format exception info for output"""
     formatTraceback = getattr(test, "formatTraceback", None)
@@ -378,8 +362,6 @@ class _WritelnDecorator:
         return getattr(self.stream, attr)
 
     def write(self, arg):
-        if sys.version_info[0] == 2:
-            arg = safe_encode(arg, getattr(self.stream, "encoding", "utf-8"))
         self.stream.write(arg)
 
     def writeln(self, arg=None):

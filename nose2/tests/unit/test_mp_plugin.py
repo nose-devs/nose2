@@ -1,7 +1,7 @@
+import configparser
 import sys
 
 from nose2 import session
-from nose2._vendor import six
 from nose2.plugins import mp
 from nose2.tests._common import Conn, TestCase
 
@@ -62,7 +62,7 @@ class TestMPPlugin(TestCase):
             sys.platform = platform
 
     def test_session_import(self):
-        config = six.moves.configparser.ConfigParser()
+        config = configparser.ConfigParser()
         config.add_section(mp.MultiProcess.configSection)
         export_session = {
             "config": config,

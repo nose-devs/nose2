@@ -7,7 +7,6 @@ import unittest
 from xml.etree import ElementTree as ET
 
 from nose2 import events, loader, result, session, tools
-from nose2._vendor import six
 from nose2.plugins import junitxml, logcapture
 from nose2.plugins.loader import functions, generators, parameters, testcases
 from nose2.tests._common import TestCase
@@ -26,10 +25,10 @@ class TestJunitXmlPlugin(TestCase):
 
     BAD_FOR_XML_U = "A\x07 B\x0B C\x10 D\uD900 " "E\uFFFE F\x80 G\x90 H\uFDDD"
     # UTF-8 string with double null (invalid)
-    BAD_FOR_XML_B = six.b(
-        "A\x07 B\x0b C\x10 D\xed\xa4\x80 "
-        "E\xef\xbf\xbe F\xc2\x80 G\xc2\x90 H\xef\xb7\x9d "
-        "\x00\x00"
+    BAD_FOR_XML_B = (
+        b"A\x07 B\x0b C\x10 D\xed\xa4\x80 "
+        b"E\xef\xbf\xbe F\xc2\x80 G\xc2\x90 H\xef\xb7\x9d "
+        b"\x00\x00"
     )
 
     # "byte" strings in PY2 and unicode in py3 works as expected will

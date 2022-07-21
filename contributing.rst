@@ -1,21 +1,15 @@
 Contributing to nose2
 =====================
 
-Please do! nose2 cannot move forward without contributions from the
-testing community.
-
-If you're unsure how to get started, feel free to ask for help from the nose2
-community via the `mailing list <mailto:discuss@nose2.io>`_.
+Please do!
 
 The Basics
 ----------
 
-nose2 is hosted on `github`_ and use GitHub for issue tracking.
+nose2 is hosted on `github`_ and uses GitHub for issue tracking.
 
 Please report issues and make feature requests here:
 https://github.com/nose-devs/nose2/issues
-
-Submit changes as GitHub Pull Requests.
 
 Code Contributions
 ------------------

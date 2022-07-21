@@ -25,16 +25,15 @@
 Welcome to nose2
 ================
 
-nose2's purpose is to extend ``unittest`` to make testing nicer and easier to
-understand.
+nose2's extends ``unittest`` to make testing nicer.
 
 nose2 vs nose
 -------------
 
 ``nose2`` originated as the successor to ``nose``.
 
-``nose2`` is a new project and does not support all of the features of
-``nose``. See `differences`_ for a thorough rundown.
+``nose2`` is a distinct project and does not support all of the behaviors of ``nose``.
+See `differences`_ for a thorough rundown.
 
 nose2 vs pytest
 ---------------

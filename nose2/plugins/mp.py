@@ -294,7 +294,7 @@ class MultiProcess(events.Plugin):
         """
         Generate the session information passed to work process.
 
-        CAVEAT: The entire contents of which *MUST* be pickeable
+        CAVEAT: The entire contents of which *MUST* be pickleable
         and safe to use in the subprocess.
 
         This probably includes:

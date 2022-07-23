@@ -266,7 +266,7 @@ class MPPluginTestRuns(FunctionalTestCase):
 
         def save_return():
             """
-            Popen.communciate() blocks.  Use a thread-safe queue
+            Popen.communicate() blocks.  Use a thread-safe queue
             to return any exceptions.  Ideally, this completes
             and returns None.
             """

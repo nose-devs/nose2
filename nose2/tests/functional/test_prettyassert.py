@@ -1,4 +1,4 @@
-from nose2.tests._common import FunctionalTestCase, windows_ci_skip
+from nose2.tests._common import FunctionalTestCase
 
 
 class TestPrettyAsserts(FunctionalTestCase):
@@ -127,7 +127,6 @@ class TestPrettyAsserts(FunctionalTestCase):
         )
         self.assertProcOutputPattern(proc, expected)
 
-    @windows_ci_skip
     def test_assert_attribute_resolution2(self):
         proc = self.runIn(
             "scenario/pretty_asserts/attribute_resolution2", "-v", "--pretty-assert"
@@ -139,7 +138,7 @@ class TestPrettyAsserts(FunctionalTestCase):
                 "values:",
                 (
                     "    foo = <function (TestFoo.test_ohnoez.<locals>.|)foo at "
-                    "0x[a-z0-9]+>"
+                    "0x[a-zA-Z0-9]+>"
                 ),
                 (
                     "    self = <test_prettyassert_attribute_resolution2.TestFoo"

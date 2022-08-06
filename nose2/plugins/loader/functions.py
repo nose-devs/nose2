@@ -53,6 +53,7 @@ to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
 # Rights Reserved. See: http://docs.python.org/license.html
 
 
+import inspect
 import sys
 import types
 import unittest
@@ -89,7 +90,7 @@ class Functions(Plugin):
         if (
             isinstance(obj, types.FunctionType)
             and not isinstance(parent, type)
-            and not util.isgenerator(obj)
+            and not inspect.isgeneratorfunction(obj)
             and not hasattr(obj, "paramList")
             and util.num_expected_args(obj) == 0
         ):
@@ -110,8 +111,7 @@ class Functions(Plugin):
             return True
 
         tests = []
-        for name in dir(module):
-            obj = getattr(module, name)
+        for _, obj in util.iter_attrs(module):
             if isinstance(obj, types.FunctionType) and is_test(obj):
                 tests.extend(self._createTests(obj))
         event.extraTests.extend(tests)
@@ -138,8 +138,7 @@ class Functions(Plugin):
             args["tearDown"] = tearDown
 
         paramList = getattr(obj, "paramList", None)
-        isGenerator = util.isgenerator(obj)
-        if paramList is not None or isGenerator:
+        if paramList is not None or inspect.isgeneratorfunction(obj):
             return tests
         else:
             case = util.transplant_class(FunctionTestCase, obj.__module__)(obj, **args)

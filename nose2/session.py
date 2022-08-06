@@ -153,16 +153,13 @@ class Session:
 
         """
         avail = []
-        for entry in dir(module):
-            try:
-                item = getattr(module, entry)
-            except AttributeError:
-                pass
-            try:
-                if issubclass(item, events.Plugin) and not item == events.Plugin:
-                    avail.append(item)
-            except TypeError:
-                pass
+        for _, item in util.iter_attrs(module):
+            if not isinstance(item, type):
+                continue
+            if item == events.Plugin:
+                continue
+            if issubclass(item, events.Plugin):
+                avail.append(item)
         for cls in avail:
             log.debug("Plugin is available: %s", cls)
             plugin = cls(session=self)

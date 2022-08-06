@@ -11,7 +11,6 @@ import re
 import sys
 import traceback
 import types
-from inspect import isgeneratorfunction
 
 __unittest = True
 IDENT_RE = re.compile(r"^[_a-zA-Z]\w*$", re.UNICODE)
@@ -206,11 +205,6 @@ def ensure_importable(dirname):
         sys.path.insert(0, dirname)
 
 
-def isgenerator(obj):
-    """Is this object a generator?"""
-    return isgeneratorfunction(obj) or getattr(obj, "testGenerator", None) is not None
-
-
 def has_module_fixtures(test):
     """Does this test live in a module with module fixtures?"""
     # test may be class or instance
@@ -386,3 +380,10 @@ def call_with_args_if_expected(func, *args):
         func(*args)
     else:
         func()
+
+
+def iter_attrs(obj):
+    # note: vars() can be surprising __slots__ is defined
+    # using dir(x) is the most general way of doing this
+    for attrname in dir(obj):
+        yield (attrname, getattr(obj, attrname))

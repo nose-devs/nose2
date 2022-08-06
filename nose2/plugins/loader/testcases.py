@@ -14,6 +14,7 @@ command line.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+import inspect
 import logging
 import sys
 import unittest
@@ -40,8 +41,7 @@ class TestCaseLoader(events.Plugin):
         """Load tests in :class:`unittest.TestCase` subclasses"""
         seen = set()
         module = event.module
-        for name in dir(module):
-            obj = getattr(module, name)
+        for _, obj in util.iter_attrs(module):
             if id(obj) in seen:
                 continue
             seen.add(id(obj))
@@ -67,7 +67,7 @@ class TestCaseLoader(events.Plugin):
         elif (
             isinstance(parent, type)
             and issubclass(parent, unittest.TestCase)
-            and not util.isgenerator(obj)
+            and not inspect.isgeneratorfunction(obj)
             and not hasattr(obj, "paramList")
         ):
             # name is a single test method

@@ -69,6 +69,7 @@ Here's an example of a test class::
 
 """
 
+import inspect
 import sys
 import unittest
 
@@ -102,8 +103,7 @@ class TestClassLoader(events.Plugin):
     def loadTestsFromModule(self, event):
         """Load test classes from event.module"""
         module = event.module
-        for name in dir(module):
-            obj = getattr(module, name)
+        for name, obj in util.iter_attrs(module):
             if (
                 isinstance(obj, type)
                 and not issubclass(obj, unittest.TestCase)
@@ -130,7 +130,7 @@ class TestClassLoader(events.Plugin):
         elif (
             isinstance(parent, type)
             and not issubclass(parent, unittest.TestCase)
-            and not util.isgenerator(obj)
+            and not inspect.isgeneratorfunction(obj)
             and not hasattr(obj, "paramList")
         ):
             # name is a single test method

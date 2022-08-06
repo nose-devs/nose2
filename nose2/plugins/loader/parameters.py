@@ -78,17 +78,16 @@ class Parameters(Plugin):
     def getTestCaseNames(self, event):
         """Generate test case names for all parameterized methods"""
         log.debug("getTestCaseNames %s", event)
-        names = filter(event.isTestMethod, dir(event.testCase))
-        testCaseClass = event.testCase
-        for name in names:
-            method = getattr(testCaseClass, name)
+        for name, method in util.iter_attrs(event.testCase):
+            if not event.isTestMethod(name):
+                continue
             paramList = getattr(method, "paramList", None)
             if paramList is None:
                 continue
             # exclude this method from normal collection
             event.excludedNames.append(name)
             # generate the methods to be loaded by the testcase loader
-            self._generate(event, name, method, testCaseClass)
+            self._generate(event, name, method, event.testCase)
 
     def getTestMethodNames(self, event):
         return self.getTestCaseNames(event)
@@ -103,8 +102,7 @@ class Parameters(Plugin):
             )
 
         tests = []
-        for name in dir(module):
-            obj = getattr(module, name)
+        for _, obj in util.iter_attrs(module):
             if isinstance(obj, types.FunctionType) and is_test(obj):
                 tests.extend(self._generateFuncTests(obj))
         event.extraTests.extend(tests)

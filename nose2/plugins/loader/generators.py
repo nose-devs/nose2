@@ -25,6 +25,7 @@ generated case you want to execute.
 # Rights Reserved. See: http://docs.python.org/license.html
 
 import functools
+import inspect
 import logging
 import sys
 import types
@@ -62,43 +63,37 @@ class Generators(Plugin):
         """Load generator tests from test case"""
         log.debug("loadTestsFromTestCase %s", event.testCase)
         testCaseClass = event.testCase
-        for name in dir(testCaseClass):
-            method = getattr(testCaseClass, name)
-            if (
-                name.startswith(self.session.testMethodPrefix)
-                and hasattr(getattr(testCaseClass, name), "__call__")
-                and util.isgenerator(method)
-            ):
-                instance = testCaseClass(name)
-                event.extraTests.extend(
-                    self._testsFromGenerator(
-                        event, name, method(instance), testCaseClass
-                    )
-                )
+        for name, method in util.iter_attrs(testCaseClass):
+            if not inspect.isgeneratorfunction(method):
+                continue
+            if not name.startswith(self.session.testMethodPrefix):
+                continue
+            instance = testCaseClass(name)
+            event.extraTests.extend(
+                self._testsFromGenerator(event, name, method(instance), testCaseClass)
+            )
 
     def loadTestsFromTestClass(self, event):
         testCaseClass = event.testCase
-        for name in dir(testCaseClass):
-            method = getattr(testCaseClass, name)
-            if (
-                name.startswith(self.session.testMethodPrefix)
-                and hasattr(getattr(testCaseClass, name), "__call__")
-                and util.isgenerator(method)
-            ):
-                instance = testCaseClass()
-                event.extraTests.extend(
-                    self._testsFromGeneratorMethod(event, name, method, instance)
-                )
+        for name, method in util.iter_attrs(testCaseClass):
+            if not inspect.isgeneratorfunction(method):
+                continue
+            if not name.startswith(self.session.testMethodPrefix):
+                continue
+            instance = testCaseClass()
+            event.extraTests.extend(
+                self._testsFromGeneratorMethod(event, name, method, instance)
+            )
 
     def getTestCaseNames(self, event):
         """Get generator test case names from test case class"""
         log.debug("getTestCaseNames %s", event.testCase)
-        names = filter(event.isTestMethod, dir(event.testCase))
-        klass = event.testCase
-        for name in names:
-            method = getattr(klass, name)
-            if util.isgenerator(method):
-                event.excludedNames.append(name)
+        for name, method in util.iter_attrs(event.testCase):
+            if not inspect.isgeneratorfunction(method):
+                continue
+            if not event.isTestMethod(name):
+                continue
+            event.excludedNames.append(name)
 
     def getTestMethodNames(self, event):
         return self.getTestCaseNames(event)
@@ -117,7 +112,7 @@ class Generators(Plugin):
             return
 
         parent, obj, name, index = result
-        if not util.isgenerator(obj):
+        if not inspect.isgeneratorfunction(obj):
             return
 
         if (
@@ -165,11 +160,10 @@ class Generators(Plugin):
         def is_test(obj):
             return obj.__name__.startswith(
                 self.session.testMethodPrefix
-            ) and util.isgenerator(obj)
+            ) and inspect.isgeneratorfunction(obj)
 
         tests = []
-        for name in dir(module):
-            obj = getattr(module, name)
+        for _, obj in util.iter_attrs(module):
             if isinstance(obj, types.FunctionType) and is_test(obj):
                 tests.extend(self._testsFromGeneratorFunc(event, obj))
         event.extraTests.extend(tests)

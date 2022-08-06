@@ -156,16 +156,11 @@ class AutoPlugin(Directive):
         rst.append("", AD)
 
     def plugins(self, module):
-        for entry in dir(module):
-            try:
-                item = getattr(module, entry)
-            except AttributeError:
-                pass
-            try:
-                if issubclass(item, events.Plugin):
-                    yield item
-            except TypeError:
-                pass
+        for _, item in util.iter_attrs(module):
+            if not isinstance(item, type):
+                continue
+            if issubclass(item, events.Plugin):
+                yield item
 
 
 def setup(app):

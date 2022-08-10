@@ -280,8 +280,8 @@ class JUnitXmlReporter(events.Plugin):
                 elem.text = i + "  "
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
-            for elem in elem:
-                self._indent_tree(elem, level + 1)
+            for e in elem:
+                self._indent_tree(e, level + 1)
             if not elem.tail or not elem.tail.strip():
                 elem.tail = i
         else:

@@ -5,7 +5,7 @@ repos:
     - id: check-merge-conflict
     - id: trailing-whitespace
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.18.1
+  rev: 0.18.2
   hooks:
     - id: check-github-workflows
     - id: check-dependabot
@@ -16,7 +16,7 @@ repos:
     - id: pyupgrade
       args: ["--py36-plus"]
 - repo: https://github.com/psf/black
-  rev: 22.6.0
+  rev: 22.8.0
   hooks:
   - id: black
     language_version: python3

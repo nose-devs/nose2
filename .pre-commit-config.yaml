@@ -11,7 +11,7 @@ repos:
     - id: check-dependabot
     - id: check-readthedocs
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.0.0
+  rev: v3.1.0
   hooks:
     - id: pyupgrade
       args: ["--py36-plus"]
@@ -33,6 +33,6 @@ repos:
     language_version: python3
     types: [python]
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.2.1
+  rev: v2.2.2
   hooks:
     - id: codespell

@@ -10,7 +10,7 @@ jobs:
   # that nose2 is correctly packaging and distributing its tests
   test-sdist:
     name: run tests from packaged source
-    runs-on: linux-20.04  # Python 3.6 is not supported on ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4

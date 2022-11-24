@@ -35,12 +35,12 @@ jobs:
         # any additional builds for windows and macos
         # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11-dev", "pypy-3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev", "pypy-3.9"]
         include:
           - os: windows-latest
-            python-version: "3.10"
+            python-version: "3.x"
           - os: macos-latest
-            python-version: "3.10"
+            python-version: "3.x"
     name: "python=${{ matrix.python-version }} os=${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     steps:

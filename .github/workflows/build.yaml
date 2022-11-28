@@ -35,8 +35,11 @@ jobs:
         # any additional builds for windows and macos
         # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest]
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev", "pypy-3.9"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev", "pypy-3.9"]
         include:
+          # split off py3.6 from 'ubuntu-latest' because 3.6 isn't compatible with openssl v3
+          - os: ubuntu-20.04
+            python-version: "3.6"
           - os: windows-latest
             python-version: "3.x"
           - os: macos-latest

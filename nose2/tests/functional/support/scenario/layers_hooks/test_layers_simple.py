@@ -2,7 +2,6 @@ import unittest
 
 
 class Layer1:
-
     layer_setup = 0
     test_setup = 0
     test_teardown = 0
@@ -35,7 +34,6 @@ class Layer1:
 
 
 class TestSimple(unittest.TestCase):
-
     layer = Layer1
 
     def test_1(self):

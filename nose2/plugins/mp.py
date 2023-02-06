@@ -137,7 +137,7 @@ class MultiProcess(events.Plugin):
                 # replay events
                 testid, events = remote_events
                 log.debug("Received results for %s", testid)
-                for (hook, event) in events:
+                for hook, event in events:
                     log.debug("Received %s(%s)", hook, event)
                     self._localize(event)
                     getattr(self.session.hooks, hook)(event)

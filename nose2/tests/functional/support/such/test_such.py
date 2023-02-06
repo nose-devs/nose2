@@ -19,7 +19,6 @@ class SomeLayer:
 # a name that makes nice sentences, like 'this' or 'it'.
 #
 with such.A("system with complex setup") as it:
-
     #
     # Each layer of tests can define setup and teardown methods.
     # setup and teardown methods defined here run around the entire
@@ -96,7 +95,6 @@ with such.A("system with complex setup") as it:
         # A layer may have any number of sub-layers.
         #
         with it.having("a different precondition"):
-
             #
             # A layer defined with ``having`` can make use of
             # layers defined elsewhere. An external layer

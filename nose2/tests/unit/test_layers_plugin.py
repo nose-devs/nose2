@@ -405,7 +405,6 @@ class TestLayers(TestCase):
         self.assertEqual(self.names(event.suite), expect)
 
     def test_invalid_top_layer(self):
-
         # in python 3, L1 will automatically have `object` has base, so
         # this test does not make sense, and will actually fail.
         return

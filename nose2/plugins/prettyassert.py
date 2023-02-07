@@ -236,7 +236,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
         assert_startline -= 1
 
     token_descriptions = collections.OrderedDict()
-    for (name, obj) in token_processor.get_token_collection().items():
+    for name, obj in token_processor.get_token_collection().items():
         # okay, get repr() for a good string representation
         strvalue = repr(obj)
         # add in the form we want to print

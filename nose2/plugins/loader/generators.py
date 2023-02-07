@@ -248,7 +248,6 @@ class GeneratorFunctionCase(unittest.FunctionTestCase):
 
 def GeneratorMethodCase(cls):
     class _GeneratorMethodCase(GeneratorFunctionCase):
-
         if util.has_class_fixtures(cls):
 
             @classmethod

@@ -16,7 +16,6 @@ class TestBufferPlugin(TestCase):
         self.plugin.register()
 
         class Test(TestCase):
-
             printed_nonascii_str = util.safe_decode("test 日本").encode("utf-8")
             printed_unicode = "hello"
 

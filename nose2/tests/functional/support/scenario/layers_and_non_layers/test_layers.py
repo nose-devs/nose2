@@ -43,7 +43,6 @@ class Layer3(Layer2):
 
 
 class LayerTest1(unittest.TestCase):
-
     layer = Layer1
 
     def test(self):
@@ -51,7 +50,6 @@ class LayerTest1(unittest.TestCase):
 
 
 class LayerTest2(unittest.TestCase):
-
     layer = Layer2
 
     def test(self):
@@ -59,7 +57,6 @@ class LayerTest2(unittest.TestCase):
 
 
 class LayerTest3(unittest.TestCase):
-
     layer = Layer2
 
     def test(self):

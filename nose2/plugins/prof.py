@@ -45,6 +45,7 @@ class Profiler(events.Plugin):
 
     def beforeSummaryReport(self, event):
         """Output profiling results"""
+
         # write prof output to stream
         class Stream:
             def write(self, *msg):

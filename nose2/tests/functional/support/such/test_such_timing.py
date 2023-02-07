@@ -13,7 +13,6 @@ def slow_blocking_init():
 
 
 class Layer1:
-
     description = "Layer1 description"
 
     @classmethod
@@ -23,7 +22,6 @@ class Layer1:
 
 
 class Layer2:
-
     description = "Layer2 description"
 
     @classmethod
@@ -32,7 +30,6 @@ class Layer2:
 
 
 with such.A("system with a fast initial setup layer") as it:
-
     it.uses(Layer1)
 
     @it.should("not have obj initialized")
@@ -40,7 +37,6 @@ with such.A("system with a fast initial setup layer") as it:
         assert not it.obj
 
     with it.having("a second slow setup layer"):
-
         it.uses(Layer2)
 
         @it.should("have obj initialized")

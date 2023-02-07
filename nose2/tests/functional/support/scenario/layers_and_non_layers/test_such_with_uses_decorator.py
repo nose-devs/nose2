@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 
 
 class Layer1:
-
     description = "Layer1"
 
     @classmethod
@@ -24,7 +23,6 @@ class Layer1:
 
 
 class Layer2:
-
     description = "Layer2"
 
     @classmethod
@@ -37,7 +35,6 @@ class Layer2:
 
 
 with such.A("system with setup") as it:
-
     it.uses(Layer1)
 
     @it.should("do something")
@@ -45,7 +42,6 @@ with such.A("system with setup") as it:
         it.assertTrue(it.unique_resource.used)
 
     with it.having("another setup"):
-
         it.uses(Layer2)
 
         @it.should("do something else")  # noqa: F811

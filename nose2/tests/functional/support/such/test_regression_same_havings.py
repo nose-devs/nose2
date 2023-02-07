@@ -3,7 +3,6 @@
 from nose2.tools import such
 
 with such.A("system") as it:
-
     with it.having("something"):
 
         @it.should("do stuff")
@@ -13,7 +12,6 @@ with such.A("system") as it:
     it.createTests(globals())
 
 with such.A("another system") as it:
-
     with it.having("something"):
 
         @it.should("do stuff")  # noqa: F811

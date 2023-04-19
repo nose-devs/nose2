@@ -119,8 +119,8 @@ class AutoPlugin(Directive):
             info = config.vars[var]
             rst.append(".. rst:configvar :: %s" % var, AD)
             rst.append("  ", AD)
-            rst.append("  :Default: %(default)s" % info, AD)
-            rst.append("  :Type: %(type)s" % info, AD)
+            rst.append("  :Default: {default}".format(**info), AD)
+            rst.append("  :Type: {type}".format(**info), AD)
             rst.append("", AD)
 
         self.headline(rst, "Sample configuration", "-")

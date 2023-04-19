@@ -88,4 +88,3 @@ The XML test report for nose2's sample scenario with tests in a package looks li
   </failure>
     </testcase>
   </testsuite>
-

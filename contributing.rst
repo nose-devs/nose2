@@ -42,8 +42,8 @@ You can also use ``make test`` and ``make lint`` for these.
 Linting
 +++++++
 
-nose2 uses `black`_, `isort`_, and `flake8`_ to enforce linting and code
-style rules, and `pre-commit`_ to run these tools.
+nose2 uses `black`_ and `ruff`_ to enforce code formatting and linting and
+`pre-commit`_ to run these tools.
 
 For the best development experience, we recommend setting up integrations with
 your editor and git.
@@ -59,9 +59,8 @@ have ``pre-commit`` installed and run:
     If you need to bypass pre-commit hooks after setting this up, you can commit
     with ``--no-verify``
 
-.. _github: https://github.com/nose-devs/nose2
-.. _tox: http://pypi.python.org/pypi/tox
 .. _black: https://black.readthedocs.io/
-.. _isort: https://pycqa.github.io/isort/
-.. _flake8: https://flake8.pycqa.org/
+.. _github: https://github.com/nose-devs/nose2
 .. _pre-commit: https://pre-commit.com/
+.. _ruff: https://beta.ruff.rs/docs/
+.. _tox: http://pypi.python.org/pypi/tox

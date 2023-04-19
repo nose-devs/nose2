@@ -90,7 +90,7 @@ class TestJunitXmlPlugin(TestCase):
                 assert False
 
             def test_err(self):
-                1 / 0
+                1 / 0  # noqa: B018 useless expression
 
             def test_skip(self):
                 self.skipTest("skip")

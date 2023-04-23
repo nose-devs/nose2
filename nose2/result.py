@@ -50,6 +50,9 @@ class PluggableTestResult:
         event = events.StopTestEvent(test, self, time.time())
         self.session.hooks.stopTest(event)
 
+    def addDuration(self, test, elapsed):  # For Python >= 3.12
+        pass
+
     def addError(self, test, err):
         """Test case resulted in error.
 

@@ -10,6 +10,14 @@ functionality or contain necessary breaking changes. Minor releases are
 primarily used for bugfix or small features which are unlikely to break users'
 testsuites.
 
+0.13.0 (Unreleased)
+-------------------
+
+* Remove support for python2 and older python3 versions
+
+* Fix support for python3.12 to avoid warnings about `addDuration`.
+  Thanks to :user:`cclauss` for the fix!
+
 0.12.0 (2022-07-16)
 -------------------
 

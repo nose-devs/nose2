@@ -6,7 +6,7 @@ class TestFailAssert(unittest.TestCase):
         x = True
         y = False
         # fmt: off
-        # flake8: noqa
+        # ruff: noqa
         assert x; assert y
         # fmt: on
 

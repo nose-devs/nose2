@@ -343,7 +343,7 @@ def procserver(session_export, conn):
         # XXX If there a need to protect the loop? try/except?
         rlog.debug("Execute test %s (%s)", testid, test)
         executor(test, event.result)
-        events = [e for e in ssn.hooks.flush()]
+        events = list(ssn.hooks.flush())
         try:
             conn.send((testid, events))
             rlog.debug("Log for %s returned", testid)

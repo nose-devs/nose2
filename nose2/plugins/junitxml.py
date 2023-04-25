@@ -346,10 +346,10 @@ if sys.maxunicode > 0xFFFF:
     ]
 
 ILLEGAL_REGEX_STR = (
-    "[" + "".join([f"{chr(l)}-{chr(h)}" for (l, h) in ILLEGAL_RANGES]) + "]"
+    "[" + "".join([f"{chr(lo)}-{chr(hi)}" for (lo, hi) in ILLEGAL_RANGES]) + "]"
 )
 RESTRICTED_REGEX_STR = (
-    "[" + "".join([f"{chr(l)}-{chr(h)}" for (l, h) in RESTRICTED_RANGES]) + "]"
+    "[" + "".join([f"{chr(lo)}-{chr(hi)}" for (lo, hi) in RESTRICTED_RANGES]) + "]"
 )
 
 _ILLEGAL_REGEX = re.compile(ILLEGAL_REGEX_STR, re.U)

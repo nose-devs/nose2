@@ -147,7 +147,7 @@ class Layers(events.Plugin):
             raise exceptions.LoadTestsFailure(err.format(layer))
         for parent in parents:
             if parent not in tree and parent is not object:
-                raise MissingParentLayer()
+                raise MissingParentLayer
         # if we reached that point, then all the parents are in the tree
         # if there are multiple parents, we first try to get the closest
         # to the current layer.

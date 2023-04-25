@@ -424,7 +424,7 @@ class TestLayers(TestCase):
             self.plugin.startTestRun(event)
 
     def names(self, suite):
-        return [n for n in self.iternames(suite)]
+        return list(self.iternames(suite))
 
     def iternames(self, suite):
         for t in suite:
@@ -434,7 +434,7 @@ class TestLayers(TestCase):
                 test_method = t._testMethodName
                 yield f"{test_method} ({test_module}.{test_class})"
             else:
-                yield [n for n in self.iternames(t)]
+                yield list(self.iternames(t))
 
     def _listset(self, lst):
         n = set()

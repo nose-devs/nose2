@@ -6,6 +6,13 @@ on:
   schedule:
     - cron: '0 4 * * 1'
 jobs:
+  ruff:  # https://beta.ruff.rs
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: pip install --user ruff
+    - run: ruff --format=github .
+
   # this job ensures that tests can run from the packaged version, which means
   # that nose2 is correctly packaging and distributing its tests
   test-sdist:
@@ -27,6 +34,7 @@ jobs:
           nose2 -v --pretty-assert
 
   test:
+    needs: ruff
     strategy:
       fail-fast: false
       matrix:

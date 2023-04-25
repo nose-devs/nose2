@@ -90,7 +90,7 @@ class Session:
         self.testResult = None
         self.testLoader = None
         self.logLevel = logging.WARN
-        self.configCache = dict()
+        self.configCache = {}
 
     def get(self, section):
         """Get a config section.

@@ -15,8 +15,13 @@ testsuites.
 
 * Remove support for python2 and older python3 versions
 
-* Fix support for python3.12 to avoid warnings about `addDuration`.
+* Fix support for python3.12 to avoid warnings about ``addDuration``.
   Thanks to :user:`cclauss` for the fix!
+
+* ``nose2`` package metadata is converted to pyproject.toml format, using
+  ``setuptools``. Building ``nose2`` packages from source now requires
+  ``setuptools>=61.0.0`` or a PEP 517 compatible build frontend
+  (e.g. ``build``).
 
 0.12.0 (2022-07-16)
 -------------------

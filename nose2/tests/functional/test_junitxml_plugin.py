@@ -24,7 +24,7 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
             "-s%s" % test_dir,
             "--plugin=nose2.plugins.junitxml",
             "-v",
-            *(config_args + args)
+            *(config_args + args),
         )
         return junit_report, proc
 

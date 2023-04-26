@@ -23,6 +23,10 @@ testsuites.
   ``setuptools>=61.0.0`` or a PEP 517 compatible build frontend
   (e.g. ``build``).
 
+* ``nose2`` license metadata has been corrected in format and content to be
+  distributed in the sdist and wheel distributions correctly. Thanks
+  :user:`musicinmybrain` for helping research this issue!
+
 0.12.0 (2022-07-16)
 -------------------
 

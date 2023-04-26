@@ -13,6 +13,7 @@ keywords= [
   "tests",
   "unittest",
 ]
+license = {text = "BSD-2-Clause"}
 authors = [
   { name = "Stephen Rosen", email = "dev@nose2.io" },
 ]

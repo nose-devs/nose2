@@ -5,12 +5,12 @@ nose2 uses semantic versioning (currently in 0.x) and the popular
 "keep a changelog" format (v1.0.0).
 
 nose2 tries not to break backwards compatibility in any release. Until v1.0,
-versions are numbered `0.MAJOR.MINOR`. Major releases introduce new
+versions are numbered ``0.MAJOR.MINOR``. Major releases introduce new
 functionality or contain necessary breaking changes. Minor releases are
 primarily used for bugfix or small features which are unlikely to break users'
 testsuites.
 
-0.13.0 (Unreleased)
+0.13.0 (2023-04-29)
 -------------------
 
 * Remove support for python2 and older python3 versions

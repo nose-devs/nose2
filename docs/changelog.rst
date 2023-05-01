@@ -10,6 +10,11 @@ functionality or contain necessary breaking changes. Minor releases are
 primarily used for bugfix or small features which are unlikely to break users'
 testsuites.
 
+0.13.1 (Unreleased)
+-------------------
+
+* Remove support for `python3.6`
+
 0.13.0 (2023-04-29)
 -------------------
 

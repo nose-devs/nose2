@@ -25,7 +25,7 @@ repos:
       additional_dependencies:
         - tomli
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: v0.0.265
+  rev: v0.0.267
   hooks:
     - id: ruff
 - repo: https://github.com/abravalheri/validate-pyproject
@@ -33,6 +33,6 @@ repos:
   hooks:
     - id: validate-pyproject
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: 0.11.1
+  rev: 0.11.2
   hooks:
     - id: pyproject-fmt

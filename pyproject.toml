@@ -114,6 +114,7 @@ select = [
 ignore = [
   "B904",
   "RUF005",
+  "RUF012",
   "RUF100"
 ]
 target-version = "py37"

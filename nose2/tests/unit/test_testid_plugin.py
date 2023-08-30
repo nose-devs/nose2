@@ -50,8 +50,8 @@ class UnitTestTestId(TestCase):
             self.assertEqual(
                 val,
                 exp_val,
-                "Attribute {} should have value "
-                "'{}', but has value {}".format(name, exp_val, val),
+                f"Attribute {name} should have value "
+                f"'{exp_val}', but has value {val}",
             )
 
     def test_start_test(self):

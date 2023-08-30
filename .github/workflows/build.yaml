@@ -6,13 +6,6 @@ on:
   schedule:
     - cron: '0 4 * * 1'
 jobs:
-  ruff:  # https://beta.ruff.rs
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: pip install --user ruff
-    - run: ruff --format=github .
-
   # this job ensures that tests can run from the packaged version, which means
   # that nose2 is correctly packaging and distributing its tests
   test-sdist:
@@ -43,7 +36,7 @@ jobs:
         # any additional builds for windows and macos
         # handled via `include` to avoid an over-large test matrix
         os: [ubuntu-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev", "pypy-3.9"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "pypy-3.9"]
         include:
           - os: windows-latest
             python-version: "3.x"
@@ -56,6 +49,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - name: install tox
         run: python -m pip install -U tox
       - name: test

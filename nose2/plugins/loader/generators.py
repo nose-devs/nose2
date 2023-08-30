@@ -183,11 +183,7 @@ class Generators(Plugin):
                 setattr(instance, method_name, method)
                 yield instance
         except Exception as e:
-            test_name = "{}.{}.{}".format(
-                testCaseClass.__module__,
-                testCaseClass.__name__,
-                name,
-            )
+            test_name = f"{testCaseClass.__module__}.{testCaseClass.__name__}.{name}"
             yield event.loader.failedLoadTests(test_name, e)
 
     def _testsFromGeneratorFunc(self, event, obj):

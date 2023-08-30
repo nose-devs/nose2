@@ -115,7 +115,7 @@ ignore = [
   "RUF005",
   "RUF100"
 ]
-target-version = "py37"
+target-version = "py38"
 
 [tool.ruff.isort]
 known-third-party = [

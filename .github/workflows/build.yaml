@@ -27,7 +27,6 @@ jobs:
           nose2 -v --pretty-assert
 
   test:
-    needs: ruff
     strategy:
       fail-fast: false
       matrix:

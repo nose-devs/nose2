@@ -255,10 +255,10 @@ class LayerReporter(events.Plugin):
 # for debugging
 # def printtree(suite, indent=''):
 #     import unittest
-#     six.print_('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
+#     print('%s%s ->' % (indent, getattr(suite, 'layer', 'no layer')))
 #     for test in suite:
 #         if isinstance(test, unittest.BaseTestSuite):
 #             printtree(test, indent + '  ')
 #         else:
-#             six.print_('%s %s' % (indent, test))
-#     six.print_('%s<- %s' % (indent, getattr(suite, 'layer', 'no layer')))
+#             print('%s %s' % (indent, test))
+#     print('%s<- %s' % (indent, getattr(suite, 'layer', 'no layer')))

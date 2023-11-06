@@ -122,7 +122,6 @@ target-version = "py37"
 known-third-party = [
   "coverage",
   "mock",
-  "six",
 ]
 
 [tool.ruff.mccabe]

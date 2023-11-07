@@ -36,4 +36,3 @@ see :doc:`usage` and :doc:`configuration`.
 
 .. _pip : http://pypi.python.org/pypi/pip/1.0.2
 .. _pypi : http://pypi.python.org/pypi
-.. _six : http://pypi.python.org/pypi/six/1.1.0

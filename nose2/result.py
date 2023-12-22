@@ -31,6 +31,9 @@ class PluggableTestResult:
         self.shouldStop = False
         # XXX TestCase.subTest expects a result.failfast attribute
         self.failfast = False
+        # track whether or not the test actually started
+        # (in py3.12.1+ a skipped test is not started)
+        self.test_started = False
 
     def startTest(self, test):
         """Start a test case.
@@ -40,6 +43,7 @@ class PluggableTestResult:
         """
         event = events.StartTestEvent(test, self, time.time())
         self.session.hooks.startTest(event)
+        self.test_started = True
 
     def stopTest(self, test):
         """Stop a test case.

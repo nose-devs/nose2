@@ -80,6 +80,9 @@ class ResultReporter(events.Plugin):
           etc)
 
         """
+        if not event.result.test_started:
+            self._show_test_description(self.stream, event.test)
+
         if event.outcome == result.ERROR:
             self.reportCategories["errors"].append(event)
             self._reportError(event)
@@ -145,11 +148,14 @@ class ResultReporter(events.Plugin):
         self.session.hooks.reportStartTest(evt)
         if evt.handled:
             return
+        self._show_test_description(evt.stream, event.test)
+
+    def _show_test_description(self, stream, test):
         if self.session.verbosity > 1:
             # allow other plugins to override/spy on stream
-            evt.stream.write(self._getDescription(event.test, errorList=False))
-            evt.stream.write(" ... ")
-            evt.stream.flush()
+            stream.write(self._getDescription(test, errorList=False))
+            stream.write(" ... ")
+            stream.flush()
 
     def _reportError(self, event):
         self._report(event, "reportError", "E", "ERROR")

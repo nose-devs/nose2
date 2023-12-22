@@ -23,7 +23,7 @@ def _fromisoformat(date_str):
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
 
-    BAD_FOR_XML_U = "A\x07 B\x0B C\x10 D\uD900 " "E\uFFFE F\x80 G\x90 H\uFDDD"
+    BAD_FOR_XML_U = "A\x07 B\x0B C\x10 D\uD900 E\uFFFE F\x80 G\x90 H\uFDDD"
     # UTF-8 string with double null (invalid)
     BAD_FOR_XML_B = (
         b"A\x07 B\x0b C\x10 D\xed\xa4\x80 "
@@ -51,10 +51,10 @@ class TestJunitXmlPlugin(TestCase):
     if sys.maxunicode <= 0xFFFF:
         EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$"
         EXPECTED_RE_SAFE = (
-            "^[\x09\x0A\x0D\x20\x21-\x7E\x85" "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$"
+            "^[\x09\x0A\x0D\x20\x21-\x7E\x85\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$"
         )
     else:
-        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD" "\u10000-\u10FFFF]*$"
+        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]*$"
         EXPECTED_RE_SAFE = (
             "^[\x09\x0A\x0D\x20\x21-\x7E\x85"
             "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"

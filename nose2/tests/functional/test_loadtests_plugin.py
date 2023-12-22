@@ -19,7 +19,7 @@ class TestLoadTestsPlugin(FunctionalTestCase):
         proc = self.runIn(
             "scenario/load_tests_pkg",
             "-v",
-            "-c=" "nose2/tests/functional/support/scenario/load_tests_pkg/unittest.cfg",
+            "-c=nose2/tests/functional/support/scenario/load_tests_pkg/unittest.cfg",
             "--plugin=nose2.plugins.loader.loadtests",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
@@ -34,7 +34,7 @@ class TestLoadTestsPlugin(FunctionalTestCase):
         proc = self.runIn(
             "scenario/load_tests_pkg/ltpkg/tests",
             "-v",
-            "-c=" "nose2/tests/functional/support/scenario/load_tests_pkg/unittest.cfg",
+            "-c=nose2/tests/functional/support/scenario/load_tests_pkg/unittest.cfg",
             "--plugin=nose2.plugins.loader.loadtests",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")

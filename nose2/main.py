@@ -145,8 +145,10 @@ class PluggableTestProgram(unittest.TestProgram):
             nargs="?",
             action="append",
             default=["unittest.cfg", "nose2.cfg"],
-            help="Config files to load, if they exist. ('unittest.cfg' "
-            "and 'nose2.cfg' in start directory default)",
+            help=(
+                "Config files to load, if they exist. ('unittest.cfg' "
+                "and 'nose2.cfg' in start directory default)"
+            ),
         )
         self.argparse.add_argument(
             "--no-user-config",
@@ -162,8 +164,10 @@ class PluggableTestProgram(unittest.TestProgram):
             dest="load_plugins",
             const=False,
             default=True,
-            help="Do not load any plugins. Warning: nose2 does not "
-            "do anything if no plugins are loaded",
+            help=(
+                "Do not load any plugins. Warning: nose2 does not "
+                "do anything if no plugins are loaded"
+            ),
         )
         self.argparse.add_argument(
             "--plugin",
@@ -182,7 +186,7 @@ class PluggableTestProgram(unittest.TestProgram):
         self.argparse.add_argument(
             "--verbosity",
             type=int,
-            help=("Set starting verbosity level (int). " "Applies before -v and -q"),
+            help=("Set starting verbosity level (int). Applies before -v and -q"),
         )
         self.argparse.add_argument(
             "--verbose",
@@ -200,7 +204,7 @@ class PluggableTestProgram(unittest.TestProgram):
             action="count",
             default=0,
             dest="quiet",
-            help=("Reduce verbosity. Multiple '-q's result in " "lower verbosity."),
+            help=("Reduce verbosity. Multiple '-q's result in lower verbosity."),
         )
         self.argparse.add_argument(
             "--log-level",

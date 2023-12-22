@@ -95,8 +95,8 @@ class TestCaseLoader(events.Plugin):
             prefix = evt.testMethodPrefix or self.session.testMethodPrefix
             return (
                 attrname.startswith(prefix)
-                and hasattr(getattr(testCaseClass, attrname), "__call__")
                 and attrname not in excluded
+                and callable(getattr(testCaseClass, attrname))
             )
 
         evt = events.GetTestCaseNamesEvent(event.loader, testCaseClass, isTestMethod)

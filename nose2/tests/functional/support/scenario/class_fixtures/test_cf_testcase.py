@@ -25,7 +25,7 @@ class Test2(unittest.TestCase):
 
 
 class Test3(Test):
-    # this has class setup by virtue of inheritting from Test
+    # this has class setup by virtue of inheriting from Test
 
     def test_3(self):
         assert self.x

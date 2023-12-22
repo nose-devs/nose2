@@ -90,13 +90,17 @@ Base
             r"ERROR: fixture with a value test_err \(test_layers_with_errors.Test"
             + _method_name("test_err")
             + r"\)",
-            "ERROR: A test scenario with errors should check for an attribute "
-            "that does not exist and raise an error",
+            (
+                "ERROR: A test scenario with errors should check for an attribute "
+                "that does not exist and raise an error"
+            ),
             r"FAIL: fixture with a value test_fail \(test_layers_with_errors.Test"
             + _method_name("test_fail")
             + r"\)",
-            "FAIL: A test scenario with errors should check that value == 2 "
-            "and fail",
+            (
+                "FAIL: A test scenario with errors should check that value == 2 "
+                "and fail"
+            ),
         ]
         for line in expect:
             self.assertTestRunOutputMatches(proc, stderr=line)

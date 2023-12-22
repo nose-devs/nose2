@@ -74,7 +74,7 @@ class TestPrintHooksPlugin(TestCase):
         result = self.session.hooks.pluginHookA(event)
         self.assertEqual(result, "TestPluginB.pluginHookA")
         self.assertEqual(
-            "\n" "pluginHookA: " "CustomEvent(handled=False, args='args')",
+            "\npluginHookA: CustomEvent(handled=False, args='args')",
             self.buf.getvalue(),
         )
 
@@ -87,7 +87,7 @@ class TestPrintHooksPlugin(TestCase):
         result = self.session.hooks.pluginHookA(event)
         self.assertEqual(result, "TestPluginB.pluginHookA")
         self.assertEqual(
-            "\n" "pluginHookA: " "CustomEvent(handled=False, args='args')",
+            "\npluginHookA: CustomEvent(handled=False, args='args')",
             self.buf.getvalue(),
         )
 
@@ -99,7 +99,7 @@ class TestPrintHooksPlugin(TestCase):
         result = self.session.hooks.pluginHookA(event)
         self.assertEqual(result, None)
         self.assertEqual(
-            "\n" "pluginHookA: " "CustomEvent(handled=False, args='args')",
+            "\npluginHookA: CustomEvent(handled=False, args='args')",
             self.buf.getvalue(),
         )
 

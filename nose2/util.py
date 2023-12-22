@@ -244,7 +244,7 @@ def has_class_fixtures(test):
 def safe_decode(string):
     """Safely decode a byte string into unicode"""
     if string is None:
-        return string
+        return None
     try:
         return string.decode()
     except AttributeError:

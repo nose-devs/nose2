@@ -1,3 +1,4 @@
+# flake8: noqa
 import unittest
 
 
@@ -6,7 +7,6 @@ class TestFailAssert(unittest.TestCase):
         x = True
         y = False
         # fmt: off
-        # ruff: noqa
         assert x; assert y
         # fmt: on
 

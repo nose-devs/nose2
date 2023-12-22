@@ -173,8 +173,8 @@ class TestClassLoader(events.Plugin):
             prefix = self.session.testMethodPrefix
             return (
                 attrname.startswith(prefix)
-                and hasattr(getattr(cls, attrname), "__call__")
                 and attrname not in excluded
+                and callable(getattr(cls, attrname))
             )
 
         evt = GetTestMethodNamesEvent(event.loader, cls, isTestMethod)

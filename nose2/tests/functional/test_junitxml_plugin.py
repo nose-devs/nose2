@@ -161,7 +161,7 @@ class JunitXmlPluginFunctionalTest(FunctionalTestCase, TestCase):
 
         self.assertTestRunOutputMatches(
             proc,
-            stderr=r"test \(test_junitxml_skip_reason.Test"
+            stderr=r"test \(test_junitxml_skip_reason\.Test"
             + _method_name()
             + r"\) \.* skip",
         )

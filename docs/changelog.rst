@@ -13,6 +13,12 @@ testsuites.
 Unreleased
 ----------
 
+* Fix the reporting of skipped tests in verbose mode on newer pythons (3.12.1+),
+  in which a skipped test is no longer treated as "started".
+
+  ``nose2`` will not introduce a ``StartTestEvent`` in such cases --
+  the fix is narrowly and adjustment to the test reporter.
+
 0.14.0 (2023-10-04)
 -------------------
 

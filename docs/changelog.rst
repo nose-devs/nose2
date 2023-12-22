@@ -256,7 +256,7 @@ Changed
 Fixed
 ~~~~~
 
-* Respect ``fail_under`` in converage config
+* Respect ``fail_under`` in coverage config
 * Avoid infinite recursion when loading setuptools from zipped egg
 * Manpage now renders reproducibly
 * MP doc build now reproducible

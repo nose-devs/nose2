@@ -72,8 +72,10 @@ class Coverage(Plugin):
             metavar="TYPE",
             choices=["term", "term-missing", "annotate", "html", "xml"],
             dest="coverage_report",
-            help="Generate selected reports, available types:"
-            " term, term-missing, annotate, html, xml (multi-allowed)",
+            help=(
+                "Generate selected reports, available types:"
+                " term, term-missing, annotate, html, xml (multi-allowed)"
+            ),
         )
         group.add_argument(
             "--coverage-config",

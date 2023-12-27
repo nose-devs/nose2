@@ -40,6 +40,9 @@ classifiers = [
 dynamic = [
   "version",
 ]
+dependencies = [
+  "toml>=0.10.2", # Add other dependencies here
+]
 optional-dependencies.coverage_plugin = [
   "coverage",
 ]

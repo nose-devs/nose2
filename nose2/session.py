@@ -5,6 +5,8 @@ import os
 # py2/py3 compatible load of SafeConfigParser/ConfigParser
 from configparser import ConfigParser
 
+import toml
+
 from nose2 import config, events, util
 
 log = logging.getLogger(__name__)
@@ -119,7 +121,14 @@ class Session:
         Loads all names files that exist into ``self.config``.
 
         """
-        self.config.read(filenames)
+        for filename in filenames:
+            if filename.endswith(".cfg"):
+                self.config.read(filename)
+            elif filename.endswith(".toml"):
+                with open(filename) as f:
+                    toml_config = toml.load(f)
+                    if "tool" in toml_config and "nose2" in toml_config["tool"]:
+                        self.config.read_dict(toml_config["tool"]["nose2"])
 
     def loadPlugins(self, modules=None, exclude=None):
         """Load plugins.

@@ -8,7 +8,7 @@ requires = [
 name = "nose2"
 description = "unittest with plugins"
 readme = "README.rst"
-keywords= [
+keywords = [
   "testing",
   "tests",
   "unittest",
@@ -39,6 +39,9 @@ classifiers=[
 ]
 dynamic = [
   "version",
+]
+dependencies = [
+  "toml>=0.10.2", # Add other dependencies here
 ]
 [project.optional-dependencies]
 coverage_plugin = [

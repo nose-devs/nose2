@@ -13,6 +13,9 @@ testsuites.
 Unreleased
 ----------
 
+0.14.1 (2024-01-28)
+-------------------
+
 * Fix the reporting of skipped tests in verbose mode on newer pythons (3.12.1+),
   in which a skipped test is no longer treated as "started".
 

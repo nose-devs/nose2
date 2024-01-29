@@ -20,6 +20,7 @@ Don't disable this plugin, unless you (a) have another one doing the
 same job, or (b) really don't want any test results (and want all test
 runs to ``exit(1)``).
 """
+
 # This module contains some code copied from unittest2/runner.py and other
 # code developed in reference to that module and others within unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
@@ -34,7 +35,6 @@ __unittest = True
 
 
 class ResultReporter(events.Plugin):
-
     """Result plugin that implements standard unittest console reporting"""
 
     alwaysOn = True

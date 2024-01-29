@@ -6,6 +6,7 @@ unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 Rights Reserved. See: http://docs.python.org/license.html
 
 """
+
 import itertools
 
 __unittest = True

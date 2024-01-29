@@ -1,4 +1,5 @@
 """Common functionality."""
+
 import io
 import os.path
 import platform
@@ -15,7 +16,6 @@ SUPPORT = os.path.join(HERE, "functional", "support")
 
 
 class TestCase(unittest.TestCase):
-
     """TestCase extension.
 
     If the class variable ``_RUN_IN_TEMP`` is ``True`` (default: ``False``), tests will
@@ -89,7 +89,6 @@ class FunctionalTestCase(unittest.TestCase):
 
 
 class _FakeEventBase:
-
     """Baseclass for fake :class:`~nose2.events.Event`s."""
 
     def __init__(self):
@@ -99,7 +98,6 @@ class _FakeEventBase:
 
 
 class FakeHandleFileEvent(_FakeEventBase):
-
     """Fake HandleFileEvent."""
 
     def __init__(self, name):
@@ -112,7 +110,6 @@ class FakeHandleFileEvent(_FakeEventBase):
 
 
 class FakeStartTestEvent(_FakeEventBase):
-
     """Fake :class:`~nose2.events.StartTestEvent`."""
 
     def __init__(self, test):
@@ -125,7 +122,6 @@ class FakeStartTestEvent(_FakeEventBase):
 
 
 class FakeLoadFromNameEvent(_FakeEventBase):
-
     """Fake :class:`~nose2.events.LoadFromNameEvent`."""
 
     def __init__(self, name):
@@ -134,7 +130,6 @@ class FakeLoadFromNameEvent(_FakeEventBase):
 
 
 class FakeLoadFromNamesEvent(_FakeEventBase):
-
     """Fake :class:`~nose2.events.LoadFromNamesEvent`."""
 
     def __init__(self, names):
@@ -143,7 +138,6 @@ class FakeLoadFromNamesEvent(_FakeEventBase):
 
 
 class FakeStartTestRunEvent(_FakeEventBase):
-
     """Fake :class:`~nose2.events.StartTestRunEvent`"""
 
     def __init__(
@@ -158,7 +152,6 @@ class FakeStartTestRunEvent(_FakeEventBase):
 
 
 class Stub:
-
     """Stub object for use in tests"""
 
     def __getattr__(self, attr):
@@ -238,7 +231,6 @@ class NotReallyAProc:
 
 
 class RedirectStdStreams:
-
     """
     Context manager that replaces the stdin/stdout streams with :class:`StringIO`
     buffers.

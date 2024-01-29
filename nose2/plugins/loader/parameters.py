@@ -35,6 +35,7 @@ of the test function is the "case" argument, followed by the other parameters::
     it.createTests(globals())
 
 """
+
 # This module contains some code copied from unittest2 and other code
 # developed in reference to unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
@@ -66,7 +67,6 @@ class ParamsFunctionCase(unittest.FunctionTestCase):
 
 
 class Parameters(Plugin):
-
     """Loader plugin that loads parameterized tests"""
 
     alwaysOn = True

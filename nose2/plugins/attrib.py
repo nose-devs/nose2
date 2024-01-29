@@ -8,7 +8,6 @@ undefined = object()
 
 
 class AttributeSelector(Plugin):
-
     """Filter tests by attribute"""
 
     def __init__(self):

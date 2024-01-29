@@ -79,7 +79,6 @@ __unittest = True
 
 
 class TestClassLoader(events.Plugin):
-
     """Loader plugin that loads test functions"""
 
     alwaysOn = True
@@ -242,10 +241,8 @@ def MethodTestCase(cls):
 
 
 class LoadFromTestClassEvent(events.LoadFromTestCaseEvent):
-
     """Bare subclass of :class:`nose2.events.LoadFromTestCaseEvent`"""
 
 
 class GetTestMethodNamesEvent(events.GetTestCaseNamesEvent):
-
     """Bare subclass of :class:`nose2.events.GetTestCaseNamesEvent`"""

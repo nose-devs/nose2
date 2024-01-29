@@ -15,6 +15,7 @@ See the `load_tests protocol`_ documentation for more information.
 .. _load_tests protocol:
     http://docs.python.org/library/unittest.html#load-tests-protocol
 """
+
 import logging
 from fnmatch import fnmatch
 
@@ -24,7 +25,6 @@ log = logging.getLogger(__name__)
 
 
 class LoadTestsLoader(events.Plugin):
-
     """Loader plugin that implements load_tests."""
 
     alwaysOn = True

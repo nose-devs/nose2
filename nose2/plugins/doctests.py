@@ -12,6 +12,7 @@ To disable loading doctests from text files, configure an empty extensions list:
   extensions =
 
 """
+
 import doctest
 import os
 

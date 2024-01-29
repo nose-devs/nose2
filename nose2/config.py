@@ -3,7 +3,6 @@ __unittest = True
 
 
 class Config:
-
     """Configuration for a plugin or other entities.
 
     Encapsulates configuration for a single plugin or other element.

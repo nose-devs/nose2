@@ -13,7 +13,6 @@ are examined for tests.
 
 """
 
-
 # Adapted from unittest2/loader.py from the unittest2 plugins branch.
 # This module contains some code copied from unittest2/loader.py and other
 # code developed in reference to that module and others within unittest2.

@@ -79,6 +79,7 @@ produced:
     </testcase>
 
 """
+
 # Based on unittest2/plugins/junitxml.py,
 # which is itself based on the junitxml plugin from py.test
 

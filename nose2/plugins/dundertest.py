@@ -2,6 +2,7 @@
 This plugin implements :func:`startTestRun`, which excludes all test objects
 that define a ``__test__`` attribute that evaluates to ``False``.
 """
+
 from unittest import TestSuite
 
 from nose2 import events

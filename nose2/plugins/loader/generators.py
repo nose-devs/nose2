@@ -19,6 +19,7 @@ append a colon (':') followed by the index (*starting from 1*) of the
 generated case you want to execute.
 
 """
+
 # This module contains some code copied from unittest2 and other code
 # developed in reference to unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
@@ -39,7 +40,6 @@ __unittest = True
 
 
 class Generators(Plugin):
-
     """Loader plugin that loads generator tests"""
 
     alwaysOn = True

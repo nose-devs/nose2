@@ -1,4 +1,5 @@
 """Test testid plugin."""
+
 import io
 import os.path
 import pickle
@@ -15,7 +16,6 @@ from nose2.tests._common import (
 
 
 class UnitTestTestId(TestCase):
-
     """Test class TestId.
 
     Tests are carried out in a temporary directory, since TestId stores state

@@ -403,7 +403,6 @@ def gentests(conn):
 
 # custom event classes
 class SubprocessEvent(events.Event):
-
     """Event fired at start and end of subprocess execution.
 
     .. attribute :: loader
@@ -445,7 +444,6 @@ class SubprocessEvent(events.Event):
 
 
 class RegisterInSubprocessEvent(events.Event):
-
     """Event fired to notify plugins that multiprocess testing will occur
 
     .. attribute :: pluginClasses

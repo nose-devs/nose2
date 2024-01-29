@@ -47,6 +47,7 @@ by the :doc:`parameterized test loader <parameters>`. The easiest way
 to set ``paramList`` is with the :func:`nose2.tools.params` decorator.
 
 """
+
 # This module contains some code copied from unittest2/ and other code
 # developed in reference to unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
@@ -65,7 +66,6 @@ __unittest = True
 
 
 class Functions(Plugin):
-
     """Loader plugin that loads test functions"""
 
     alwaysOn = True

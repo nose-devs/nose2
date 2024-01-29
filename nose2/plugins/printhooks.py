@@ -11,6 +11,7 @@ and, after registration, replaces all existing
 instances of a :class:`~nose2.events.Hook` subclass that prints information about
 each call.
 """
+
 import sys
 
 from nose2 import events
@@ -20,7 +21,6 @@ __unittest = True
 
 
 class PrintHooks(events.Plugin):
-
     """Print hooks as they are called"""
 
     configSection = "print-hooks"

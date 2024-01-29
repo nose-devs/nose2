@@ -10,6 +10,7 @@ It fires :func:`beforeInteraction` before launching pdb and
 prevent this plugin from launching pdb.
 
 """
+
 import logging
 import pdb
 
@@ -20,7 +21,6 @@ log = logging.getLogger(__name__)
 
 
 class Debugger(events.Plugin):
-
     """Enter pdb on test error or failure
 
     .. attribute :: pdb

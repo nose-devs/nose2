@@ -10,7 +10,6 @@ __unittest = True
 
 
 class PluggableTestProgram(unittest.TestProgram):
-
     """TestProgram that enables plugins.
 
     Accepts the same parameters as :class:`unittest.TestProgram`,

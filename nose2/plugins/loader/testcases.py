@@ -8,6 +8,7 @@ command line.
 
 
 """
+
 # Adapted from unittest2/loader.py from the unittest2 plugins branch.
 # This module contains some code copied from unittest2/loader.py and other
 # code developed in reference to that module and others within unittest2.
@@ -28,7 +29,6 @@ log = logging.getLogger(__name__)
 
 
 class TestCaseLoader(events.Plugin):
-
     """Loader plugin that loads from test cases"""
 
     alwaysOn = True

@@ -12,7 +12,6 @@ __unittest = True
 
 
 class Session:
-
     """Configuration session.
 
     Encapsulates all configuration for a given test run.

@@ -11,7 +11,6 @@ __unittest = True
 
 
 class PluggableTestResult:
-
     """Test result that defers to plugins.
 
     All test outcome recording and reporting is deferred to plugins,

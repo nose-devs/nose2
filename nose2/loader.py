@@ -15,7 +15,6 @@ __unittest = True
 
 
 class PluggableTestLoader:
-
     """Test loader that defers all loading to plugins
 
     :param session: Test run session.

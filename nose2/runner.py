@@ -11,7 +11,6 @@ __unittest = True
 
 
 class PluggableTestRunner:
-
     """Test runner that defers most work to plugins.
 
     :param session: Test run session

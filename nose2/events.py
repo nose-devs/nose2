@@ -51,7 +51,6 @@ class PluginMeta(type):
 
 
 class Plugin(metaclass=PluginMeta):
-
     """Base class for nose2 plugins
 
     All nose2 plugins must subclass this class.
@@ -207,7 +206,6 @@ class Plugin(metaclass=PluginMeta):
 
 
 class Hook:
-
     """A plugin hook
 
     Each plugin method in the :class:`nose2.events.PluginInterface` is
@@ -240,7 +238,6 @@ class Hook:
 
 
 class PluginInterface:
-
     """Definition of plugin interface.
 
     Instances of this class contain the methods that may be called,
@@ -347,7 +344,6 @@ class PluginInterface:
 
 
 class Event:
-
     """Base class for all events.
 
     .. attribute :: metadata
@@ -405,7 +401,6 @@ class Event:
 
 
 class PluginsLoadedEvent(Event):
-
     """Event fired after all plugin classes are loaded.
 
     .. attribute :: pluginsLoaded
@@ -422,7 +417,6 @@ class PluginsLoadedEvent(Event):
 
 
 class RunnerCreatedEvent(Event):
-
     """Event fired when test runner is created.
 
     .. attribute :: runner
@@ -440,7 +434,6 @@ class RunnerCreatedEvent(Event):
 
 
 class ResultCreatedEvent(Event):
-
     """Event fired when test result handler is created.
 
     .. attribute :: result
@@ -458,7 +451,6 @@ class ResultCreatedEvent(Event):
 
 
 class StartLayerSetupEvent(Event):
-
     """Event fired before running a layer setup.
 
     .. attribute :: layer
@@ -474,7 +466,6 @@ class StartLayerSetupEvent(Event):
 
 
 class StopLayerSetupEvent(Event):
-
     """Event fired after running a layer setup.
 
     .. attribute :: layer
@@ -490,7 +481,6 @@ class StopLayerSetupEvent(Event):
 
 
 class StartLayerSetupTestEvent(Event):
-
     """Event fired before test cases setups in layers.
 
     .. attribute :: layer
@@ -511,7 +501,6 @@ class StartLayerSetupTestEvent(Event):
 
 
 class StopLayerSetupTestEvent(Event):
-
     """Event fired after test cases setups in layers.
 
     .. attribute :: layer
@@ -532,7 +521,6 @@ class StopLayerSetupTestEvent(Event):
 
 
 class StartLayerTeardownEvent(Event):
-
     """Event fired before running a layer teardown.
 
     .. attribute :: layer
@@ -548,7 +536,6 @@ class StartLayerTeardownEvent(Event):
 
 
 class StopLayerTeardownEvent(Event):
-
     """Event fired after running a layer teardown.
 
     .. attribute :: layer
@@ -564,7 +551,6 @@ class StopLayerTeardownEvent(Event):
 
 
 class StartLayerTeardownTestEvent(Event):
-
     """Event fired before test cases teardowns in layers.
 
     .. attribute :: layer
@@ -585,7 +571,6 @@ class StartLayerTeardownTestEvent(Event):
 
 
 class StopLayerTeardownTestEvent(Event):
-
     """Event fired after test cases teardowns in layers.
 
     .. attribute :: layer
@@ -606,7 +591,6 @@ class StopLayerTeardownTestEvent(Event):
 
 
 class StartTestRunEvent(Event):
-
     """Event fired when test run is about to start.
 
     Test collection is complete before this event fires, but
@@ -657,7 +641,6 @@ class StartTestRunEvent(Event):
 
 
 class StopTestRunEvent(Event):
-
     """Event fired when test run has stopped.
 
     .. attribute :: runner
@@ -689,7 +672,6 @@ class StopTestRunEvent(Event):
 
 
 class StartTestEvent(Event):
-
     """Event fired before a test is executed.
 
     .. attribute :: test
@@ -716,7 +698,6 @@ class StartTestEvent(Event):
 
 
 class StopTestEvent(Event):
-
     """Event fired after a test is executed.
 
     .. attribute :: test
@@ -743,7 +724,6 @@ class StopTestEvent(Event):
 
 
 class TestOutcomeEvent(Event):
-
     """Event fired when a test completes.
 
     .. attribute :: test
@@ -830,7 +810,6 @@ class TestOutcomeEvent(Event):
 
 
 class LoadFromModuleEvent(Event):
-
     """Event fired when a test module is loaded.
 
     .. attribute :: loader
@@ -874,7 +853,6 @@ class ModuleSuiteEvent(Event):
 
 
 class LoadFromTestCaseEvent(Event):
-
     """Event fired when tests are loaded from a test case.
 
     .. attribute :: loader
@@ -908,7 +886,6 @@ class LoadFromTestCaseEvent(Event):
 
 
 class LoadFromNamesEvent(Event):
-
     """Event fired to load tests from test names.
 
     .. attribute :: loader
@@ -951,7 +928,6 @@ class LoadFromNamesEvent(Event):
 
 
 class LoadFromNameEvent(Event):
-
     """Event fired to load tests from test names.
 
     .. attribute :: loader
@@ -991,7 +967,6 @@ class LoadFromNameEvent(Event):
 
 
 class HandleFileEvent(Event):
-
     """Event fired when a non-test file is examined.
 
     .. note ::
@@ -1047,7 +1022,6 @@ class HandleFileEvent(Event):
 
 
 class MatchPathEvent(Event):
-
     """Event fired during file matching.
 
     Plugins may return ``False`` and set ``handled`` on this event to prevent
@@ -1078,7 +1052,6 @@ class MatchPathEvent(Event):
 
 
 class GetTestCaseNamesEvent(Event):
-
     """Event fired to find test case names in a test case.
 
     Plugins may return a list of names and set ``handled`` on this
@@ -1137,7 +1110,6 @@ class GetTestCaseNamesEvent(Event):
 
 
 class ResultSuccessEvent(Event):
-
     """Event fired at end of test run to determine success.
 
     This event fires at the end of the test run and allows
@@ -1167,7 +1139,6 @@ class ResultSuccessEvent(Event):
 
 
 class ResultStopEvent(Event):
-
     """Event fired when a test run is told to stop.
 
     Plugins can use this event to prevent other plugins from stopping
@@ -1192,7 +1163,6 @@ class ResultStopEvent(Event):
 
 
 class DescribeTestEvent(Event):
-
     """Event fired to get test description.
 
 
@@ -1221,7 +1191,6 @@ class DescribeTestEvent(Event):
 
 
 class OutcomeDetailEvent(Event):
-
     """Event fired to acquire additional details about test outcome.
 
     .. attribute :: outcomeEvent
@@ -1246,7 +1215,6 @@ class OutcomeDetailEvent(Event):
 
 
 class ReportSummaryEvent(Event):
-
     """Event fired before and after summary report.
 
     .. attribute :: stopTestEvent
@@ -1277,7 +1245,6 @@ class ReportSummaryEvent(Event):
 
 
 class ReportTestEvent(Event):
-
     """Event fired to report a test event.
 
     Plugins can respond to this event by producing output for the user.
@@ -1304,7 +1271,6 @@ class ReportTestEvent(Event):
 
 
 class UserInteractionEvent(Event):
-
     """Event fired before and after user interaction.
 
     Plugins that capture stdout or otherwise prevent user interaction
@@ -1321,7 +1287,6 @@ class UserInteractionEvent(Event):
 
 
 class CommandLineArgsEvent(Event):
-
     """Event fired after parsing of command line arguments.
 
     Plugins can respond to this event by configuring themselves or other plugins
@@ -1347,7 +1312,6 @@ class CommandLineArgsEvent(Event):
 
 
 class CreateTestsEvent(Event):
-
     """Event fired before test loading.
 
     Plugins can take over test loading by returning a test suite and setting

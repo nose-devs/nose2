@@ -17,6 +17,7 @@ pkg1.test.test_things.SomeTests.test_ok
 # param method index
 
 """
+
 from nose2.tests._common import FunctionalTestCase, support_file
 
 

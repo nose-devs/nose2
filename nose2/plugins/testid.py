@@ -10,6 +10,7 @@ This plugin implements :func:`reportStartTest`,
 :func:`stopTest`.
 
 """
+
 import os
 import pickle
 import re
@@ -21,7 +22,6 @@ __unittest = True
 
 
 class TestId(Plugin):
-
     """Allow easy test select with ids"""
 
     configSection = "testid"

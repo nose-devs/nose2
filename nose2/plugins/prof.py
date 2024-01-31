@@ -15,6 +15,7 @@ entries (`plugin` and `always_on`) in the respective
 sections of the configuration file.
 
 """
+
 import cProfile
 import logging
 import pstats
@@ -26,7 +27,6 @@ __unittest = True
 
 
 class Profiler(events.Plugin):
-
     """Profile the test run"""
 
     configSection = "profiler"

@@ -9,6 +9,7 @@ execution, and appends them to error reports for tests that fail or
 raise exceptions.
 
 """
+
 import logging
 import threading
 from logging.handlers import BufferingHandler
@@ -21,7 +22,6 @@ __unittest = True
 
 
 class LogCapture(Plugin):
-
     """Capture log messages during test execution"""
 
     configSection = "log-capture"

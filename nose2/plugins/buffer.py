@@ -51,7 +51,6 @@ class _Buffer:
 
 
 class OutputBufferPlugin(events.Plugin):
-
     """Buffer output during test execution"""
 
     commandLineSwitch = ("B", "output-buffer", "Enable output buffer")

@@ -41,7 +41,6 @@ helper = Helper()
 
 
 class Scenario:
-
     """A test scenario.
 
     A test scenario defines a set of fixtures and tests
@@ -339,7 +338,6 @@ class Scenario:
 
 
 class Group:
-
     """A group of tests, with common fixtures and description"""
 
     def __init__(self, description, indent=0, parent=None, base_layer=None):
@@ -389,7 +387,6 @@ class Group:
 
 
 class Case:
-
     """Information about a test case"""
 
     _helper = helper

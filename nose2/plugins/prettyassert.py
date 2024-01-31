@@ -10,7 +10,6 @@ add additional detail to the error report.
 
 """
 
-
 import collections
 import inspect
 import io

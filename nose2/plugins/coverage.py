@@ -125,8 +125,7 @@ class Coverage(Plugin):
             # requesting a better fix in nedbat/coveragepy#34
             self.covController.save()
 
-            if self._mpmode:
-                self.covController.combine(strict=True)
+            self.covController.combine()
 
             percent_coverage = None
 

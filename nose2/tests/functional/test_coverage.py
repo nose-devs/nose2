@@ -136,3 +136,13 @@ class TestCoverage(FunctionalTestCase):
             total_stats=TOTAL_STATS,
             assert_exit_status=1,
         )
+
+    def test_run_coverage_with_combine(self):
+        """Check coverage with combine"""
+        proc = self.runIn("scenario/coverage_multiprocessing_with_combine", "-v")
+        self.assertProcOutputPattern(proc, "lib", r"\s+12\s+0\s+100%")
+
+    def test_run_coverage_without_combine(self):
+        """Check coverage without combine"""
+        proc = self.runIn("scenario/coverage_multiprocessing_without_combine", "-v")
+        self.assertProcOutputPattern(proc, "lib", r"\s+8\s+3\s+62%")

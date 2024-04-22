@@ -9,7 +9,7 @@
 *$py.class
 *.orig
 example.cfg
-.coverage
+.coverage*
 .idea
 nosetests.xml
 xunit.xml

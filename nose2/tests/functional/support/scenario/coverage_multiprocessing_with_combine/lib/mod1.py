@@ -6,7 +6,7 @@ def method2():
 
 
 def method():
-    p = Process(method2())
+    p = Process(target=method2)
     p.start()
     p.join()
     return True

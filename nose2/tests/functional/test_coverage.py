@@ -98,10 +98,8 @@ class TestCoverage(FunctionalTestCase):
             total_stats=r"\s+8\s+5\s+38%",
         )
 
-    # FIXME: figure out why this fails and remove @skip
-    @unittest.skip("fails in testsuite but passes in real-world conditions")
     def test_measures_imports(self):
-        proc = self.runIn(
+        proc = self.runInProc(
             "scenario/coverage_of_imports",
             "-v",
             "--with-coverage",
@@ -139,10 +137,10 @@ class TestCoverage(FunctionalTestCase):
 
     def test_run_coverage_with_combine(self):
         """Check coverage with combine"""
-        proc = self.runIn("scenario/coverage_multiprocessing_with_combine", "-v")
-        self.assertProcOutputPattern(proc, "lib", r"\s+12\s+0\s+100%")
+        proc = self.runInProc("scenario/coverage_multiprocessing_with_combine", "-v")
+        self.assertProcOutputPattern(proc, "lib", r"\s+8\s+0\s+100%")
 
     def test_run_coverage_without_combine(self):
         """Check coverage without combine"""
-        proc = self.runIn("scenario/coverage_multiprocessing_without_combine", "-v")
-        self.assertProcOutputPattern(proc, "lib", r"\s+8\s+3\s+62%")
+        proc = self.runInProc("scenario/coverage_multiprocessing_without_combine", "-v")
+        self.assertProcOutputPattern(proc, "lib", r"\s+8\s+1\s+88%")

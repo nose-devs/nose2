@@ -81,6 +81,19 @@ class FunctionalTestCase(unittest.TestCase):
         if stderr:
             self.assertRegex(util.safe_decode(cmd_stderr), stderr)
 
+    def runInProc(self, working_dir, *args, timeout=10):
+        if not os.path.isabs(working_dir):
+            working_dir = support_file(working_dir)
+
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "nose2"] + list(args),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=working_dir,
+        )
+        proc.wait(timeout=timeout)
+        return proc
+
     def runIn(self, testdir, *args, **kw):
         return run_nose2(*args, cwd=testdir, **kw)
 

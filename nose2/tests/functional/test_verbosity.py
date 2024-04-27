@@ -5,7 +5,7 @@ _SUFFIX = """\
 Ran 1 test """
 
 Q_TEST_PATTERN = r"(?<!\.)(?<!ok)" + _SUFFIX
-MID_TEST_PATTERN = r"\." + "\n" + _SUFFIX
+MID_TEST_PATTERN = "\\.\n" + _SUFFIX
 V_TEST_PATTERN = (
     r"test \(__main__\.Test" + _method_name() + r"\) \.\.\. ok" + "\n\n" + _SUFFIX
 )

@@ -154,7 +154,7 @@ class TestClassLoader(events.Plugin):
                         for name in names
                     ]
                 )
-            except BaseException:
+            except BaseException:  # noqa: B036
                 return event.loader.suiteClass(
                     event.loader.failedLoadTests(cls.__name__, sys.exc_info())
                 )

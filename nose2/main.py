@@ -111,7 +111,7 @@ class PluggableTestProgram(unittest.TestProgram):
         self.argparse.add_argument("testNames", nargs="*")
         # add help arg now so -h will also print plugin opts
         self.argparse.add_argument(
-            "-h", "--help", action="help", help=("Show this help message and exit")
+            "-h", "--help", action="help", help="Show this help message and exit"
         )
         args, argv = self.argparse.parse_known_args(argv)
         if argv:
@@ -185,7 +185,7 @@ class PluggableTestProgram(unittest.TestProgram):
         self.argparse.add_argument(
             "--verbosity",
             type=int,
-            help=("Set starting verbosity level (int). Applies before -v and -q"),
+            help="Set starting verbosity level (int). Applies before -v and -q",
         )
         self.argparse.add_argument(
             "--verbose",
@@ -203,7 +203,7 @@ class PluggableTestProgram(unittest.TestProgram):
             action="count",
             default=0,
             dest="quiet",
-            help=("Reduce verbosity. Multiple '-q's result in lower verbosity."),
+            help="Reduce verbosity. Multiple '-q's result in lower verbosity.",
         )
         self.argparse.add_argument(
             "--log-level",
@@ -305,7 +305,7 @@ class PluggableTestProgram(unittest.TestProgram):
             self.result = runner.run(self.test)
         except Exception as e:
             log.exception("Internal Error")
-            sys.stderr.write("Internal Error: runTests aborted: %s\n" % (e))
+            sys.stderr.write("Internal Error: runTests aborted: %s\n" % e)
             if self.exit:
                 sys.exit(1)
         if self.exit:

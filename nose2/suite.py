@@ -125,7 +125,7 @@ class LayerSuite(unittest.BaseTestSuite):
             return True
         except KeyboardInterrupt:
             raise
-        except BaseException:
+        except BaseException:  # noqa: B036
             result.addError(self, sys.exc_info())
             return False
 

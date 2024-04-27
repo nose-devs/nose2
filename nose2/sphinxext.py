@@ -135,7 +135,7 @@ class AutoPlugin(Directive):
         rst.append("  [%s]" % config.section, AD)
         for var in sorted(config.vars.keys()):
             info = config.vars[var]
-            entry = "  %s = " % (var)
+            entry = "  %s = " % var
             if info["type"] == "list":
                 if info["default"]:
                     pad = " " * len(entry)

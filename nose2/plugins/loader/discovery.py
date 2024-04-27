@@ -73,7 +73,7 @@ class Discoverer:
             module = sys.modules[name]
         except (KeyboardInterrupt, SystemExit):
             raise
-        except BaseException:
+        except BaseException:  # noqa: B036
             # if that fails, try it as a file or directory
             event.extraTests.extend(self._find_tests(event, name, top_level_dir))
         else:
@@ -193,7 +193,7 @@ class Discoverer:
             util.ensure_importable(package_path)
         try:
             module = util.module_from_name(module_name)
-        except BaseException:
+        except BaseException:  # noqa: B036
             yield loader.failedImport(module_name)
         else:
             mod_file = os.path.abspath(getattr(module, "__file__", full_path))

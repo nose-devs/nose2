@@ -55,6 +55,7 @@ class Coverage(Plugin):
         self.covConfig = (
             self.config.as_str("coverage-config", "").strip() or ".coveragerc"
         )
+        self.covCombine = self.config.as_bool("coverage-combine", False)
 
         group = self.session.pluginargs
         group.add_argument(
@@ -125,8 +126,8 @@ class Coverage(Plugin):
             # requesting a better fix in nedbat/coveragepy#34
             self.covController.save()
 
-            if self._mpmode:
-                self.covController.combine(strict=True)
+            if self.covCombine or self._mpmode:
+                self.covController.combine(strict=self._mpmode)
 
             percent_coverage = None
 

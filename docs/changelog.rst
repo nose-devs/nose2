@@ -13,6 +13,16 @@ testsuites.
 Unreleased
 ----------
 
+0.14.2 (2024-05-07)
+-------------------
+
+* For the coverage plugin, add a config option, ``coverage-combine``, which
+  defaults to ``False``. When set, this config invokes a ``coverage combine``
+  step before reporting results, regardless of whether or not multiprocessing
+  was used to run tests. This allows reporting of coverage results via the
+  plugin on testsuites which invoke subprocesses. Thanks to :user:`JCHacking`
+  for the PR! (:pr:`601`)
+
 0.14.1 (2024-01-28)
 -------------------
 

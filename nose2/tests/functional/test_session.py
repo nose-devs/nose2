@@ -1,6 +1,8 @@
 import sys
+import unittest
 
 from nose2 import session
+from nose2._toml import TOML_ENABLED
 from nose2.tests._common import FunctionalTestCase, support_file
 
 
@@ -57,11 +59,13 @@ class SessionFunctionalTests(FunctionalTestCase):
 
 class SessionTomlFunctionalTests(FunctionalTestCase):
     def setUp(self):
+        if not TOML_ENABLED:
+            raise unittest.SkipTest("toml module not available")
         self.s = session.Session()
         self.s.loadConfigFiles(
-            support_file("toml", "a.toml"), support_file("toml", "b.toml")
+            support_file("toml", "a", "pyproject.toml"),
+            support_file("toml", "b", "pyproject.toml"),
         )
-        sys.path.insert(0, support_file("lib"))
 
     def test_session_can_load_config_files(self):
         assert self.s.config.has_section("a")
@@ -83,12 +87,11 @@ class SessionTomlFunctionalTests(FunctionalTestCase):
         # Create new session (generic one likely already cached
         # depending on test order)
         cache_sess = session.Session()
-        cache_sess.loadConfigFiles(support_file("toml", "a.toml"))
+        cache_sess.loadConfigFiles(support_file("toml", "a", "pyproject.toml"))
 
         # First access to given section, should read from config file
         firstaccess = cache_sess.get("a")
         assert firstaccess.as_int("a") == 1
-
         # Hack cached Config object internals to make the stored value
         # something different
         cache_sess.configCache["a"]._mvd["a"] = "0"

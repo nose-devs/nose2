@@ -167,7 +167,7 @@ class TestPrettyAsserts(FunctionalTestCase):
             "scenario/pretty_asserts/unittest_assertion", "-v", "--pretty-assert"
         )
         # look for typical unittest output
-        expected = "self.assertTrue\\(x\\)\nAssertionError: False is not true"
+        expected = "self.assertTrue\\(x\\)\n(\\W+\n)?AssertionError: False is not true"
         stderr = self.assertProcOutputPattern(proc, expected)
         # the assertion line wasn't reprinted by prettyassert
         self.assertNotIn(">>> self.assertTrue", stderr)

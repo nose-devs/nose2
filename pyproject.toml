@@ -8,17 +8,17 @@ requires = [
 name = "nose2"
 description = "unittest with plugins"
 readme = "README.rst"
-keywords= [
+keywords = [
   "testing",
   "tests",
   "unittest",
 ]
-license = {text = "BSD-2-Clause"}
+license = { text = "BSD-2-Clause" }
 authors = [
   { name = "Stephen Rosen", email = "dev@nose2.io" },
 ]
 requires-python = ">=3.8"
-classifiers=[
+classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: Developers",
@@ -40,25 +40,25 @@ classifiers=[
 dynamic = [
   "version",
 ]
-[project.optional-dependencies]
-coverage_plugin = [
+optional-dependencies.coverage_plugin = [
   "coverage",
 ]
-dev = [
-  "Sphinx",
+optional-dependencies.dev = [
+  "sphinx",
   "sphinx-issues",
-  "sphinx_rtd_theme",
+  "sphinx-rtd-theme",
 ]
-[project.urls]
-changelog = "https://docs.nose2.io/en/latest/changelog.html"
-documentation = "https://docs.nose2.io/"
-repository = "https://github.com/nose-devs/nose2"
-[project.scripts]
-nose2 = "nose2:discover"
+urls.changelog = "https://docs.nose2.io/en/latest/changelog.html"
+urls.documentation = "https://docs.nose2.io/"
+urls.repository = "https://github.com/nose-devs/nose2"
+scripts.nose2 = "nose2:discover"
 
 [tool.setuptools.dynamic]
-version = {attr = "nose2.__version__"}
+version = { attr = "nose2.__version__" }
 
 [tool.isort]
 profile = "black"
-known_third_party = ["coverage", "mock"]
+known_third_party = [
+  "coverage",
+  "mock",
+]

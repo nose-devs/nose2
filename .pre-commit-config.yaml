@@ -8,7 +8,7 @@ repos:
     - id: end-of-file-fixer
     - id: trailing-whitespace
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.28.2
+  rev: 0.28.3
   hooks:
     - id: check-github-workflows
     - id: check-dependabot
@@ -46,7 +46,7 @@ repos:
       additional_dependencies:
         - tomli
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: 1.8.0
+  rev: 2.1.1
   hooks:
     - id: pyproject-fmt
       additional_dependencies: ["tox>=4.9"]

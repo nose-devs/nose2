@@ -13,6 +13,9 @@ testsuites.
 Unreleased
 ----------
 
+* Official support for ``python3.13`` betas. ``nose2`` now tests itself against
+  Python 3.13.
+
 0.14.2 (2024-05-07)
 -------------------
 

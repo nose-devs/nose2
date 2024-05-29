@@ -4,6 +4,7 @@ import sys
 import unittest
 
 from nose2 import events, loader, plugins, runner, session, util
+from nose2._toml import TOML_ENABLED
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -242,6 +243,8 @@ class PluggableTestProgram(unittest.TestProgram):
         """Find available config files"""
         filenames = cfg_args.config[:]
         proj_opts = ("unittest.cfg", "nose2.cfg")
+        if TOML_ENABLED:
+            proj_opts += ("pyproject.toml",)
         for fn in proj_opts:
             if cfg_args.top_level_directory:
                 fn = os.path.abspath(os.path.join(cfg_args.top_level_directory, fn))

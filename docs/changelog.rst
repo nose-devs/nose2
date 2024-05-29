@@ -16,6 +16,13 @@ Unreleased
 * Official support for ``python3.13`` betas. ``nose2`` now tests itself against
   Python 3.13.
 
+* ``nose2`` now supports loading configuration data from the ``tool.nose2``
+  table in ``pyproject.toml``. Thanks to :user:`qequ` for the PR! (:pr:`596`)
+
+  On python 3.11+, ``tomllib`` is used to parse TOML data. On python 3.10 and
+  lower, ``tomli`` must be installed to enable TOML support. Simply
+  ``pip install tomli`` as necessary.
+
 0.14.2 (2024-05-07)
 -------------------
 

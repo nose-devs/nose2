@@ -6,6 +6,7 @@ import os
 from configparser import ConfigParser
 
 from nose2 import config, events, util
+from nose2._toml import load_toml
 
 log = logging.getLogger(__name__)
 __unittest = True
@@ -118,7 +119,19 @@ class Session:
         Loads all names files that exist into ``self.config``.
 
         """
-        self.config.read(filenames)
+        for filename in filenames:
+            if filename.endswith(".cfg"):
+                self.config.read(filename)
+            elif filename.endswith("pyproject.toml"):
+                if not os.path.exists(filename):
+                    continue
+                toml_config = load_toml(filename)
+                if not isinstance(toml_config.get("tool"), dict):
+                    continue
+                tool_table = toml_config["tool"]
+                if not isinstance(tool_table.get("nose2"), dict):
+                    continue
+                self.config.read_dict(tool_table["nose2"])
 
     def loadPlugins(self, modules=None, exclude=None):
         """Load plugins.

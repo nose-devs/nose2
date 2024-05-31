@@ -29,4 +29,4 @@ class Test:
         assert self.test_setup
         assert self.setup
 
-    test_params.paramList = (1, 2)
+    test_params.paramList = (1, 2)  # type: ignore[attr-defined]

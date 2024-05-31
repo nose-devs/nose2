@@ -12,4 +12,4 @@ class Test:
     def test_params(self, a):
         pass
 
-    test_params.paramList = (1, 2)
+    test_params.paramList = (1, 2)  # type: ignore[attr-defined]

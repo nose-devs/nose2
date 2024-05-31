@@ -210,13 +210,13 @@ class NotReallyAProc:
         self.cwd = os.getcwd()
         if self.chdir:
             os.chdir(self.chdir)
-        self.stdout = sys.stdout = sys.__stdout__ = io.StringIO()
-        self.stderr = sys.stderr = sys.__stderr__ = io.StringIO()
+        self.stdout = sys.stdout = sys.__stdout__ = io.StringIO()  # type: ignore[misc]
+        self.stderr = sys.stderr = sys.__stderr__ = io.StringIO()  # type: ignore[misc]
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout = sys.__stdout__ = self._stdout
-        sys.stderr = sys.__stderr__ = self._stderr
+        sys.stdout = sys.__stdout__ = self._stdout  # type: ignore[misc]
+        sys.stderr = sys.__stderr__ = self._stderr  # type: ignore[misc]
         if self.chdir:
             os.chdir(self.cwd)
         return False

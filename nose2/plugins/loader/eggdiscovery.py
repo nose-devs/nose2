@@ -13,8 +13,11 @@ are examined for tests.
 
 """
 
+from __future__ import annotations
+
 import logging
 import os
+import types
 
 from nose2 import events
 from nose2.plugins.loader import discovery
@@ -23,7 +26,9 @@ __unittest = True
 log = logging.getLogger(__name__)
 
 try:
-    import pkg_resources
+    import pkg_resources as _pkg_resources_mod
+
+    pkg_resources: types.ModuleType | None = _pkg_resources_mod
 except ImportError:
     pkg_resources = None
 

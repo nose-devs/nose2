@@ -3,6 +3,7 @@
 # code developed in reference to that module and others within unittest2.
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
+from __future__ import annotations
 
 import argparse
 import logging
@@ -315,7 +316,7 @@ class PluginInterface:
         "handleDir",
         # ... etc?
     )
-    hookClass = Hook
+    hookClass: type[Hook] = Hook
 
     def __init__(self):
         self.hooks = {}

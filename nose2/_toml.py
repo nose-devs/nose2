@@ -8,7 +8,7 @@ except ImportError:
     try:
         import tomli as toml
 
-        TOML_ENABLED = False
+        TOML_ENABLED = True
     except ImportError:
         toml = None
         TOML_ENABLED = False

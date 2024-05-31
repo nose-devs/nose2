@@ -13,6 +13,8 @@ are examined for tests.
 
 """
 
+from __future__ import annotations
+
 import logging
 import os
 
@@ -24,8 +26,10 @@ log = logging.getLogger(__name__)
 
 try:
     import pkg_resources
+
+    _has_pkg_resources = True
 except ImportError:
-    pkg_resources = None
+    _has_pkg_resources = False
 
 
 class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
@@ -80,7 +84,7 @@ class EggDiscoveryLoader(events.Plugin, discovery.Discoverer):
     def _find_tests_in_dir(self, event, full_path, top_level):
         if os.path.exists(full_path):
             return
-        elif pkg_resources and full_path.find(".egg") != -1:
+        elif _has_pkg_resources and full_path.find(".egg") != -1:
             egg_path = full_path.split(".egg")[0] + ".egg"
             for dist in pkg_resources.find_distributions(egg_path):
                 for modname in dist._get_metadata("top_level.txt"):

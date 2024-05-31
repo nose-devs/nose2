@@ -51,7 +51,7 @@ with such.A("system with complex setup") as it:
     #
     with it.having("an expensive fixture"):
 
-        @it.has_setup  # noqa: F811
+        @it.has_setup
         def setup():  # noqa: F811
             it.things.append(2)
 
@@ -61,7 +61,7 @@ with such.A("system with complex setup") as it:
         # them. Tests can call any and all TestCase methods on this
         # instance.
         #
-        @it.should("do more things")  # noqa: F811
+        @it.should("do more things")
         def test(case):  # noqa: F811
             case.assertEqual(it.things[-1], 2)
 
@@ -70,15 +70,15 @@ with such.A("system with complex setup") as it:
         #
         with it.having("another precondition"):
 
-            @it.has_setup  # noqa: F811
+            @it.has_setup
             def setup():  # noqa: F811
                 it.things.append(3)
 
-            @it.has_teardown  # noqa: F811
+            @it.has_teardown
             def teardown():  # noqa: F811
                 it.things.pop()
 
-            @it.should("do that not this")  # noqa: F811
+            @it.should("do that not this")  # type: ignore[no-redef]
             def test(case):  # noqa: F811
                 it.things.append(4)
                 #
@@ -87,7 +87,7 @@ with such.A("system with complex setup") as it:
                 case.addCleanup(it.things.pop)
                 case.assertEqual(it.things[-1], 4, it.things)
 
-            @it.should("do this not that")  # noqa: F811
+            @it.should("do this not that")  # type: ignore[no-redef]
             def test(case):  # noqa: F811
                 case.assertEqual(it.things[-1], 3, it.things[:])
 
@@ -104,11 +104,11 @@ with such.A("system with complex setup") as it:
             #
             it.uses(SomeLayer)
 
-            @it.has_setup  # noqa: F811
+            @it.has_setup
             def setup():  # noqa: F811
                 it.things.append(99)
 
-            @it.has_teardown  # noqa: F811
+            @it.has_teardown
             def teardown():  # noqa: F811
                 it.things.pop()
 
@@ -127,24 +127,24 @@ with such.A("system with complex setup") as it:
                 delattr(it, "is_funny")
                 delattr(case, "is_funny")
 
-            @it.should("do something else")  # noqa: F811
+            @it.should("do something else")  # type: ignore[no-redef]
             def test(case):  # noqa: F811
                 assert it.things[-1] == 99
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should("have another test")  # noqa: F811
+            @it.should("have another test")  # type: ignore[no-redef]
             def test(case):  # noqa: F811
                 assert it.is_funny
                 assert case.is_funny
 
-            @it.should("have access to an external fixture")  # noqa: F811
+            @it.should("have access to an external fixture")  # type: ignore[no-redef]
             def test(case):  # noqa: F811
                 assert it.somelayer
 
             with it.having("a case inside the external fixture"):
 
-                @it.should("still have access to that fixture")  # noqa: F811
+                @it.should("still have access to that fixture")  # type: ignore[no-redef]  # noqa: E501
                 def test(case):  # noqa: F811
                     assert it.somelayer
 

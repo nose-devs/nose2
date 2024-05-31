@@ -12,11 +12,13 @@ instances of a :class:`~nose2.events.Hook` subclass that prints information abou
 each call.
 """
 
+from __future__ import annotations
+
 import sys
 
 from nose2 import events
 
-INDENT = []
+INDENT: list[str] = []
 __unittest = True
 
 

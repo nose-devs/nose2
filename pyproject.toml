@@ -62,3 +62,12 @@ known_third_party = [
   "coverage",
   "mock",
 ]
+
+[tool.mypy]
+# strict = true
+sqlite_cache = true
+ignore_missing_imports = true
+disallow_subclassing_any = false
+files = [
+  "nose2",
+]

@@ -13,11 +13,18 @@ testsuites.
 Unreleased
 ----------
 
+0.15.0 (2024-05-30)
+-------------------
+
+Added
+~~~~~
+
 * Official support for ``python3.13`` betas. ``nose2`` now tests itself against
   Python 3.13.
 
 * ``nose2`` now supports loading configuration data from the ``tool.nose2``
-  table in ``pyproject.toml``. Thanks to :user:`qequ` for the PR! (:pr:`596`)
+  table in ``pyproject.toml``. Thanks to :user:`qequ` for the PR! (:pr:`596`,
+  :pr:`606`)
 
   On python 3.11+, ``tomllib`` is used to parse TOML data. On python 3.10 and
   lower, ``tomli`` must be installed to enable TOML support. Simply
@@ -25,6 +32,9 @@ Unreleased
 
 0.14.2 (2024-05-07)
 -------------------
+
+Added
+~~~~~
 
 * For the coverage plugin, add a config option, ``coverage-combine``, which
   defaults to ``False``. When set, this config invokes a ``coverage combine``
@@ -36,6 +46,9 @@ Unreleased
 0.14.1 (2024-01-28)
 -------------------
 
+Fixed
+~~~~~
+
 * Fix the reporting of skipped tests in verbose mode on newer pythons (3.12.1+),
   in which a skipped test is no longer treated as "started".
 
@@ -45,25 +58,41 @@ Unreleased
 0.14.0 (2023-10-04)
 -------------------
 
+Added
+~~~~~
+
 * Add official support for ``python3.12``
+
+Removed
+~~~~~~~
+
 * Remove support for ``python3.6`` and ``python3.7``
 
 0.13.0 (2023-04-29)
 -------------------
 
-* Remove support for python2 and older python3 versions
-
-* Fix support for python3.12 to avoid warnings about ``addDuration``.
-  Thanks to :user:`cclauss` for the fix!
+Changed
+~~~~~~~
 
 * ``nose2`` package metadata is converted to pyproject.toml format, using
   ``setuptools``. Building ``nose2`` packages from source now requires
   ``setuptools>=61.0.0`` or a PEP 517 compatible build frontend
   (e.g. ``build``).
 
+Fixed
+~~~~~
+
+* Fix support for python3.12 to avoid warnings about ``addDuration``.
+  Thanks to :user:`cclauss` for the fix!
+
 * ``nose2`` license metadata has been corrected in format and content to be
   distributed in the sdist and wheel distributions correctly. Thanks
   :user:`musicinmybrain` for helping research this issue!
+
+Removed
+~~~~~~~
+
+* Remove support for python2 and older python3 versions
 
 0.12.0 (2022-07-16)
 -------------------

@@ -6,11 +6,9 @@ import nose2.plugins.loader.eggdiscovery  # noqa: F401
 from nose2.tests._common import FunctionalTestCase, support_file
 
 try:
-    import pkg_resources
-
+    import pkg_resources  # noqa: F401
 except ImportError:
-    pkg_resources = None
-
+    pass
 else:
 
     class EggDiscoveryFunctionalTest(FunctionalTestCase):

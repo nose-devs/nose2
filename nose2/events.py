@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import typing as t
 import unittest
 
 from nose2 import config, util
@@ -363,7 +364,7 @@ class Event:
 
     """
 
-    _attrs = ("handled",)
+    _attrs: t.ClassVar[tuple[str, ...]] = ("handled",)
     version = "0.4"
 
     def __init__(self, **metadata):

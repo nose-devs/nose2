@@ -22,7 +22,11 @@ class TestProfPlugin(TestCase):
     def test_startTestRun_sets_executeTests(self):
         _prof = Stub()
         _prof.runcall = object()
-        prof.cProfile.Profile = lambda: _prof
+
+        def _profile_call() -> Stub:
+            return _prof
+
+        prof.cProfile.Profile = _profile_call
         event = StartTestRunEvent(
             runner=None, suite=None, result=None, startTime=None, executeTests=None
         )

@@ -13,6 +13,13 @@ testsuites.
 Unreleased
 ----------
 
+Fixed
+~~~~~
+
+* Fix a bug with config loading which caused custom ini configs not to load if
+  they were not named with a ``.cfg`` extension. Thanks :user:`grhwalls` for
+  the bug report!
+
 0.15.0 (2024-05-30)
 -------------------
 

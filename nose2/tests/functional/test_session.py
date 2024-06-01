@@ -1,9 +1,30 @@
+import pathlib
 import sys
+import tempfile
 import unittest
 
 from nose2 import session
 from nose2._toml import TOML_ENABLED
 from nose2.tests._common import FunctionalTestCase, support_file
+
+
+def test_loading_config_from_ini_file_without_cfg_suffix():
+    """
+    Regression test for https://github.com/nose-devs/nose2/issues/614
+
+    It is possible to have nose2 config embedded in any ini config file, and it might
+    not have a recognizable name.
+    It is not guaranteed that filenames used for config will end in `.cfg`.
+    """
+    sess = session.Session()
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        tmpdir = pathlib.Path(tmpdirname)
+
+        foo_ini = tmpdir / "foo.ini"
+        foo_ini.write_text("""[alpha]\na = 1""")
+
+        sess.loadConfigFiles(str(foo_ini))
+        assert sess.config.has_section("alpha")
 
 
 class SessionFunctionalTests(FunctionalTestCase):

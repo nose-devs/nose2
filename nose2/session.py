@@ -1,8 +1,7 @@
 import argparse
 import logging
 import os
-
-# py2/py3 compatible load of SafeConfigParser/ConfigParser
+import pathlib
 from configparser import ConfigParser
 
 from nose2 import config, events, util
@@ -120,11 +119,12 @@ class Session:
 
         """
         for filename in filenames:
-            if filename.endswith(".cfg"):
-                self.config.read(filename)
-            elif filename.endswith("pyproject.toml"):
-                if not os.path.exists(filename):
-                    continue
+            path = pathlib.Path(filename)
+            if not path.exists():
+                continue
+
+            # handle pyproject.toml case
+            if path.name == "pyproject.toml":
                 toml_config = load_toml(filename)
                 if not isinstance(toml_config.get("tool"), dict):
                     continue
@@ -132,6 +132,10 @@ class Session:
                 if not isinstance(tool_table.get("nose2"), dict):
                     continue
                 self.config.read_dict(tool_table["nose2"])
+
+            # else, use the config parser to read config data
+            else:
+                self.config.read(path)
 
     def loadPlugins(self, modules=None, exclude=None):
         """Load plugins.

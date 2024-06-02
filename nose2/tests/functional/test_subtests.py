@@ -379,11 +379,11 @@ class TestSubtestsFailFast(FunctionalTestCase):
     def test_failfast(self):
         proc = self.runIn(
             "scenario/subtests",
-            "--fail-fast",
+            "--fail-fast=1",
             "-v",
             "test_subtests.Case.test_subtest_failure",
         )
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertTestRunOutputMatches(proc, stderr=r"test_subtest_failure.*\(i=1\)")
-        self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(failures=1\)")
+        self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(failures=3\)")
         self.assertEqual(proc.poll(), 1)

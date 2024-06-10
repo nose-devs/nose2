@@ -45,6 +45,9 @@ repos:
     - id: codespell
       additional_dependencies:
         - tomli
+      args:
+        - "-L"
+        - "assertIn"
 - repo: https://github.com/tox-dev/pyproject-fmt
   rev: 2.1.3
   hooks:

@@ -27,7 +27,7 @@ class PluggableTestLoader:
 
     suiteClass = unittest.TestSuite
 
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
 
     def loadTestsFromModule(self, module):

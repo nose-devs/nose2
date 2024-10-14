@@ -30,7 +30,7 @@ class DocTestLoader(Plugin):
         "Load doctests from text files and modules",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.extensions = self.config.as_list("extensions", [".txt", ".rst"])
 
     def handleFile(self, event):

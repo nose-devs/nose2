@@ -25,7 +25,7 @@ class TestOutComesPlugin(TestCase):
         self.case = Test
 
         class Watcher(events.Plugin):
-            def __init__(self):
+            def __init__(self) -> None:
                 self.outcomes = {}
 
             def testOutcome(self, event):

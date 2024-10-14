@@ -4,7 +4,7 @@ from nose2.tests._common import FunctionalTestCase, TestCase, support_file
 
 
 class Watcher(events.Plugin):
-    def __init__(self):
+    def __init__(self) -> None:
         self.called = []
 
     def loadTestsFromModule(self, event):

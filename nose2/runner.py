@@ -24,7 +24,7 @@ class PluggableTestRunner:
 
     resultClass = result.PluggableTestResult
 
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
 
     def run(self, test):

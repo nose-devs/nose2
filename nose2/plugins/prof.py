@@ -32,7 +32,7 @@ class Profiler(events.Plugin):
     configSection = "profiler"
     commandLineSwitch = ("P", "profile", "Run tests under profiler")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.pfile = self.config.as_str("filename", "")
         self.sort = self.config.as_str("sort", "cumulative")
         self.restrict = self.config.as_list("restrict", [])

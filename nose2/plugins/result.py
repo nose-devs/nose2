@@ -42,7 +42,7 @@ class ResultReporter(events.Plugin):
     separator1 = "=" * 70
     separator2 = "-" * 70
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.testsRun = 0
         self.reportCategories = {
             "failures": [],

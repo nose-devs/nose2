@@ -1,5 +1,5 @@
 class Test:
-    def __init__(self):
+    def __init__(self) -> None:
         raise RuntimeError(
             "Something bad happened but other tests should still be run!"
         )

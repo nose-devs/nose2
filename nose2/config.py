@@ -11,7 +11,7 @@ class Config:
 
     """
 
-    def __init__(self, items):
+    def __init__(self, items) -> None:
         self._items = items
         self._mvd = {}
         for k, v in items:

@@ -75,7 +75,7 @@ class PluggableTestProgram(unittest.TestProgram):
     excludePlugins = ()
 
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
-    def __init__(self, **kw):
+    def __init__(self, **kw) -> None:
         plugins = kw.pop("plugins", [])
         exclude = kw.pop("excludePlugins", [])
         hooks = kw.pop("extraHooks", [])

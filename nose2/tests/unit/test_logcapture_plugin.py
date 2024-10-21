@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class StubLogging:
-    def __init__(self, name=None):
+    def __init__(self, name=None) -> None:
         self.name = name
         self.handlers = []
         self.level = None
@@ -29,7 +29,7 @@ class StubLogging:
 
 
 class StubRecord:
-    def __init__(self, message):
+    def __init__(self, message) -> None:
         self.message = message
         self.name = "stub"
         self.levelname = "stub"

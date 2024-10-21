@@ -49,7 +49,7 @@ class Scenario:
 
     _helper = helper
 
-    def __init__(self, description):
+    def __init__(self, description) -> None:
         self._group = Group("A %s" % description, 0)
 
     @contextmanager
@@ -340,7 +340,7 @@ class Scenario:
 class Group:
     """A group of tests, with common fixtures and description"""
 
-    def __init__(self, description, indent=0, parent=None, base_layer=None):
+    def __init__(self, description, indent=0, parent=None, base_layer=None) -> None:
         self.description = description
         self.indent = indent
         self.parent = parent
@@ -391,7 +391,7 @@ class Case:
 
     _helper = helper
 
-    def __init__(self, group, func, description):
+    def __init__(self, group, func, description) -> None:
         self.group = group
         self.func = func
         self.description = description

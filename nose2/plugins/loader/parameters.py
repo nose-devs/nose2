@@ -56,7 +56,7 @@ __unittest = True
 
 
 class ParamsFunctionCase(unittest.FunctionTestCase):
-    def __init__(self, name, func, **args):
+    def __init__(self, name, func, **args) -> None:
         self._funcName = name
         unittest.FunctionTestCase.__init__(self, func, **args)
 

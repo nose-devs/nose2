@@ -73,7 +73,7 @@ class Session:
 
     configClass = config.Config
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.argparse = argparse.ArgumentParser(prog="nose2", add_help=False)
         self.pluginargs = self.argparse.add_argument_group(
             "plugin arguments", "Command-line arguments added by plugins:"

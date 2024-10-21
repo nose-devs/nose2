@@ -172,7 +172,7 @@ DEFAULT = object()
 
 
 class ConfigBucket:
-    def __init__(self):
+    def __init__(self) -> None:
         self.section = None
         self.vars = {}
 
@@ -218,7 +218,7 @@ class ConfigBucket:
 
 
 class OptBucket:
-    def __init__(self, doc=None, prog="nosetests"):
+    def __init__(self, doc=None, prog="nosetests") -> None:
         self.seen = set()
         self.opts = []
         self.doc = doc
@@ -245,7 +245,7 @@ class OptBucket:
 
 
 class Opt:
-    def __init__(self, *arg, **kw):
+    def __init__(self, *arg, **kw) -> None:
         self.opts = arg
         self.action = kw.pop("action", None)
         self.default = kw.pop("default", None)

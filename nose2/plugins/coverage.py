@@ -43,7 +43,7 @@ class Coverage(Plugin):
     _mpmode = False
     _subprocess = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Get our config and add our command line arguments."""
         # tracking var for any decision which marks the entire run as failed
         self.decided_failure = False

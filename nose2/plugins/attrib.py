@@ -10,7 +10,7 @@ undefined = object()
 class AttributeSelector(Plugin):
     """Filter tests by attribute"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.attribs = []
         self.eval_attribs = []
         self.addArgument(
@@ -154,7 +154,7 @@ def _get_attr(test, key):
 
 
 class ContextHelper:
-    def __init__(self, obj):
+    def __init__(self, obj) -> None:
         self.obj = obj
 
     def __getitem__(self, name):

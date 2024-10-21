@@ -330,7 +330,7 @@ def _count_relevant_tb_levels(tb):
 class _WritelnDecorator:
     """Used to decorate file-like objects with a handy :func:`writeln` method"""
 
-    def __init__(self, stream):
+    def __init__(self, stream) -> None:
         self.stream = stream
 
     def __getattr__(self, attr):

@@ -33,7 +33,7 @@ class Outcomes(Plugin):
         "Treat some configured exceptions as failure or skips",
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.treatAsFail = set(self.config.as_list("treat-as-fail", []))
         self.treatAsSkip = set(self.config.as_list("treat-as-skip", []))
 

@@ -102,7 +102,7 @@ class JUnitXmlReporter(events.Plugin):
     configSection = "junit-xml"
     commandLineSwitch = ("X", "junit-xml", "Generate junit-xml output report")
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Read argument from configuration file, or filled with default
         self.path = os.path.realpath(
             self.config.as_str("path", default="nose2-junit.xml")

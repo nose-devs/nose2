@@ -88,7 +88,7 @@ class TestFailingTestClassLoader(TestCase):
         self.module = Mod()
 
         class TestA:
-            def __init__(self):
+            def __init__(self) -> None:
                 raise RuntimeError("Something bad happened!")
 
             def test(self):

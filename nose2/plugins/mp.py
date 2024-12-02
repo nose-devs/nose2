@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 class MultiProcess(events.Plugin):
     configSection = "multiprocess"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.addArgument(
             self.setProcs,
             "N",
@@ -433,7 +433,7 @@ class SubprocessEvent(events.Event):
 
     """
 
-    def __init__(self, loader, result, runner, plugins, connection, **metadata):
+    def __init__(self, loader, result, runner, plugins, connection, **metadata) -> None:
         self.loader = loader
         self.result = result
         self.runner = runner
@@ -457,14 +457,14 @@ class RegisterInSubprocessEvent(events.Event):
 
     """
 
-    def __init__(self, **metadata):
+    def __init__(self, **metadata) -> None:
         self.pluginClasses = []
         super().__init__(**metadata)
 
 
 # custom hook system that records calls and events
 class RecordingHook(events.Hook):
-    def __init__(self, method, interface):
+    def __init__(self, method, interface) -> None:
         super().__init__(method)
         self.interface = interface
 
@@ -485,7 +485,7 @@ class RecordingPluginInterface(events.PluginInterface):
         "getTestMethodNames",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.events = []
 

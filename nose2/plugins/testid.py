@@ -28,7 +28,7 @@ class TestId(Plugin):
     commandLineSwitch = ("I", "with-id", "Add test ids to output")
     idpat = re.compile(r"(\d+)")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.idfile = self.config.as_str("id-file", ".noseids")
         self.ids = {}
         self.tests = {}

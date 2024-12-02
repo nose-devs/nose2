@@ -11,7 +11,7 @@ class NullHandler(logging.Handler):
 
 
 class StubPdb:
-    def __init__(self):
+    def __init__(self) -> None:
         self.called = False
         self.tb = None
 

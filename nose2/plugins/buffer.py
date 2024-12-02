@@ -24,7 +24,7 @@ __unittest = True
 
 
 class _Buffer:
-    def __init__(self, stream):
+    def __init__(self, stream) -> None:
         self._stream = stream
         self._buffer = io.StringIO()
 
@@ -56,7 +56,7 @@ class OutputBufferPlugin(events.Plugin):
     commandLineSwitch = ("B", "output-buffer", "Enable output buffer")
     configSection = "output-buffer"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.captureStdout = self.config.as_bool("stdout", default=True)
         self.captureStderr = self.config.as_bool("stderr", default=False)
         self.bufStdout = self.bufStderr = None

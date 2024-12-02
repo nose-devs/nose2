@@ -228,7 +228,7 @@ class Generators(Plugin):
 
 
 class GeneratorFunctionCase(unittest.FunctionTestCase):
-    def __init__(self, name, **args):
+    def __init__(self, name, **args) -> None:
         self._funcName = name
         unittest.FunctionTestCase.__init__(self, None, **args)
 

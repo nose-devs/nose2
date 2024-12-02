@@ -224,7 +224,7 @@ class Hook:
 
     """
 
-    def __init__(self, method):
+    def __init__(self, method) -> None:
         self.method = method
         self.plugins = []
 
@@ -319,7 +319,7 @@ class PluginInterface:
     )
     hookClass: type[Hook] = Hook
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.hooks = {}
 
     def addMethod(self, method):
@@ -367,7 +367,7 @@ class Event:
     _attrs: t.ClassVar[tuple[str, ...]] = ("handled",)
     version = "0.4"
 
-    def __init__(self, **metadata):
+    def __init__(self, **metadata) -> None:
         self.handled = False
         self.metadata = {}
         self.metadata.update(metadata)
@@ -413,7 +413,7 @@ class PluginsLoadedEvent(Event):
 
     _attrs = Event._attrs + ("pluginsLoaded",)
 
-    def __init__(self, pluginsLoaded, **kw):
+    def __init__(self, pluginsLoaded, **kw) -> None:
         self.pluginsLoaded = pluginsLoaded
         super().__init__(**kw)
 
@@ -430,7 +430,7 @@ class RunnerCreatedEvent(Event):
 
     _attrs = Event._attrs + ("runner",)
 
-    def __init__(self, runner, **kw):
+    def __init__(self, runner, **kw) -> None:
         self.runner = runner
         super().__init__(**kw)
 
@@ -447,7 +447,7 @@ class ResultCreatedEvent(Event):
 
     _attrs = Event._attrs + ("result",)
 
-    def __init__(self, result, **kw):
+    def __init__(self, result, **kw) -> None:
         self.result = result
         super().__init__(**kw)
 
@@ -462,7 +462,7 @@ class StartLayerSetupEvent(Event):
 
     _attrs = Event._attrs + ("layer",)
 
-    def __init__(self, layer, **kw):
+    def __init__(self, layer, **kw) -> None:
         self.layer = layer
         super().__init__(**kw)
 
@@ -477,7 +477,7 @@ class StopLayerSetupEvent(Event):
 
     _attrs = Event._attrs + ("layer",)
 
-    def __init__(self, layer, **kw):
+    def __init__(self, layer, **kw) -> None:
         self.layer = layer
         super().__init__(**kw)
 
@@ -496,7 +496,7 @@ class StartLayerSetupTestEvent(Event):
 
     _attrs = Event._attrs + ("layer", "test")
 
-    def __init__(self, layer, test, **kw):
+    def __init__(self, layer, test, **kw) -> None:
         self.layer = layer
         self.test = test
         super().__init__(**kw)
@@ -516,7 +516,7 @@ class StopLayerSetupTestEvent(Event):
 
     _attrs = Event._attrs + ("layer", "test")
 
-    def __init__(self, layer, test, **kw):
+    def __init__(self, layer, test, **kw) -> None:
         self.layer = layer
         self.test = test
         super().__init__(**kw)
@@ -532,7 +532,7 @@ class StartLayerTeardownEvent(Event):
 
     _attrs = Event._attrs + ("layer",)
 
-    def __init__(self, layer, **kw):
+    def __init__(self, layer, **kw) -> None:
         self.layer = layer
         super().__init__(**kw)
 
@@ -547,7 +547,7 @@ class StopLayerTeardownEvent(Event):
 
     _attrs = Event._attrs + ("layer",)
 
-    def __init__(self, layer, **kw):
+    def __init__(self, layer, **kw) -> None:
         self.layer = layer
         super().__init__(**kw)
 
@@ -566,7 +566,7 @@ class StartLayerTeardownTestEvent(Event):
 
     _attrs = Event._attrs + ("layer", "test")
 
-    def __init__(self, layer, test, **kw):
+    def __init__(self, layer, test, **kw) -> None:
         self.layer = layer
         self.test = test
         super().__init__(**kw)
@@ -586,7 +586,7 @@ class StopLayerTeardownTestEvent(Event):
 
     _attrs = Event._attrs + ("layer", "test")
 
-    def __init__(self, layer, test, **kw):
+    def __init__(self, layer, test, **kw) -> None:
         self.layer = layer
         self.test = test
         super().__init__(**kw)
@@ -633,7 +633,7 @@ class StartTestRunEvent(Event):
 
     _attrs = Event._attrs + ("runner", "suite", "result", "startTime", "executeTests")
 
-    def __init__(self, runner, suite, result, startTime, executeTests, **kw):
+    def __init__(self, runner, suite, result, startTime, executeTests, **kw) -> None:
         self.suite = suite
         self.runner = runner
         self.result = result
@@ -665,7 +665,7 @@ class StopTestRunEvent(Event):
 
     _attrs = Event._attrs + ("runner", "result", "stopTime", "timeTaken")
 
-    def __init__(self, runner, result, stopTime, timeTaken, **kw):
+    def __init__(self, runner, result, stopTime, timeTaken, **kw) -> None:
         self.runner = runner
         self.result = result
         self.stopTime = stopTime
@@ -692,7 +692,7 @@ class StartTestEvent(Event):
 
     _attrs = Event._attrs + ("test", "result", "startTime")
 
-    def __init__(self, test, result, startTime, **kw):
+    def __init__(self, test, result, startTime, **kw) -> None:
         self.test = test
         self.result = result
         self.startTime = startTime
@@ -718,7 +718,7 @@ class StopTestEvent(Event):
 
     _attrs = Event._attrs + ("test", "result", "stopTime")
 
-    def __init__(self, test, result, stopTime, **kw):
+    def __init__(self, test, result, stopTime, **kw) -> None:
         self.test = test
         self.result = result
         self.stopTime = stopTime
@@ -799,7 +799,7 @@ class TestOutcomeEvent(Event):
         shortLabel=None,
         longLabel=None,
         **kw,
-    ):
+    ) -> None:
         self.test = test
         self.result = result
         self.outcome = outcome
@@ -837,7 +837,7 @@ class LoadFromModuleEvent(Event):
 
     _attrs = Event._attrs + ("loader", "module", "extraTests")
 
-    def __init__(self, loader, module, **kw):
+    def __init__(self, loader, module, **kw) -> None:
         self.loader = loader
         self.module = module
         self.extraTests = []
@@ -847,7 +847,7 @@ class LoadFromModuleEvent(Event):
 class ModuleSuiteEvent(Event):
     _attrs = Event._attrs + ("loader", "module", "suite")
 
-    def __init__(self, loader, module, suite, **kw):
+    def __init__(self, loader, module, suite, **kw) -> None:
         self.loader = loader
         self.module = module
         self.suite = suite
@@ -880,7 +880,7 @@ class LoadFromTestCaseEvent(Event):
 
     _attrs = Event._attrs + ("loader", "testCase", "extraTests")
 
-    def __init__(self, loader, testCase, **kw):
+    def __init__(self, loader, testCase, **kw) -> None:
         self.loader = loader
         self.testCase = testCase
         self.extraTests = []
@@ -918,7 +918,7 @@ class LoadFromNamesEvent(Event):
 
     _attrs = Event._attrs + ("loader", "names", "module", "extraTests")
 
-    def __init__(self, loader, names, module, **kw):
+    def __init__(self, loader, names, module, **kw) -> None:
         self.loader = loader
         self.names = names
         self.module = module
@@ -960,7 +960,7 @@ class LoadFromNameEvent(Event):
 
     _attrs = Event._attrs + ("loader", "name", "module", "extraTests")
 
-    def __init__(self, loader, name, module, **kw):
+    def __init__(self, loader, name, module, **kw) -> None:
         self.loader = loader
         self.name = name
         self.module = module
@@ -1012,7 +1012,7 @@ class HandleFileEvent(Event):
 
     _attrs = Event._attrs + ("loader", "name", "path", "pattern", "topLevelDirectory")
 
-    def __init__(self, loader, name, path, pattern, topLevelDirectory, **kw):
+    def __init__(self, loader, name, path, pattern, topLevelDirectory, **kw) -> None:
         self.extraTests = []
         self.path = path
         self.loader = loader
@@ -1046,7 +1046,7 @@ class MatchPathEvent(Event):
 
     _attrs = Event._attrs + ("name", "path", "pattern")
 
-    def __init__(self, name, path, pattern, **kw):
+    def __init__(self, name, path, pattern, **kw) -> None:
         self.path = path
         self.name = name
         self.pattern = pattern
@@ -1101,7 +1101,7 @@ class GetTestCaseNamesEvent(Event):
         "isTestMethod",
     )
 
-    def __init__(self, loader, testCase, isTestMethod, **kw):
+    def __init__(self, loader, testCase, isTestMethod, **kw) -> None:
         self.loader = loader
         self.testCase = testCase
         self.testMethodPrefix = None
@@ -1134,7 +1134,7 @@ class ResultSuccessEvent(Event):
 
     _attrs = Event._attrs + ("result", "success")
 
-    def __init__(self, result, success, **kw):
+    def __init__(self, result, success, **kw) -> None:
         self.result = result
         self.success = success
         super().__init__(**kw)
@@ -1158,7 +1158,7 @@ class ResultStopEvent(Event):
 
     _attrs = Event._attrs + ("result", "shouldStop")
 
-    def __init__(self, result, shouldStop, **kw):
+    def __init__(self, result, shouldStop, **kw) -> None:
         self.result = result
         self.shouldStop = shouldStop
         super().__init__(**kw)
@@ -1185,7 +1185,7 @@ class DescribeTestEvent(Event):
 
     _attrs = Event._attrs + ("test", "description")
 
-    def __init__(self, test, description=None, errorList=False, **kw):
+    def __init__(self, test, description=None, errorList=False, **kw) -> None:
         self.test = test
         self.description = description
         self.errorList = errorList
@@ -1210,7 +1210,7 @@ class OutcomeDetailEvent(Event):
 
     _attrs = Event._attrs + ("outcomeEvent", "extraDetail")
 
-    def __init__(self, outcomeEvent, **kw):
+    def __init__(self, outcomeEvent, **kw) -> None:
         self.outcomeEvent = outcomeEvent
         self.extraDetail = []
         super().__init__(**kw)
@@ -1239,7 +1239,7 @@ class ReportSummaryEvent(Event):
 
     _attrs = Event._attrs + ("stopTestEvent", "stream", "reportCategories")
 
-    def __init__(self, stopTestEvent, stream, reportCategories, **kw):
+    def __init__(self, stopTestEvent, stream, reportCategories, **kw) -> None:
         self.stopTestEvent = stopTestEvent
         self.stream = stream
         self.reportCategories = reportCategories
@@ -1266,7 +1266,7 @@ class ReportTestEvent(Event):
 
     _attrs = Event._attrs + ("testEvent", "stream")
 
-    def __init__(self, testEvent, stream, **kw):
+    def __init__(self, testEvent, stream, **kw) -> None:
         self.testEvent = testEvent
         self.stream = stream
         super().__init__(**kw)
@@ -1284,7 +1284,7 @@ class UserInteractionEvent(Event):
 
     """
 
-    def __init__(self, **kw):
+    def __init__(self, **kw) -> None:
         super().__init__(**kw)
 
 
@@ -1308,7 +1308,7 @@ class CommandLineArgsEvent(Event):
 
     _attrs = Event._attrs + ("args",)
 
-    def __init__(self, args, **kw):
+    def __init__(self, args, **kw) -> None:
         self.args = args
         super().__init__(**kw)
 
@@ -1336,7 +1336,7 @@ class CreateTestsEvent(Event):
 
     _attrs = Event._attrs + ("loader", "testNames", "module")
 
-    def __init__(self, loader, testNames, module, **kw):
+    def __init__(self, loader, testNames, module, **kw) -> None:
         self.loader = loader
         self.testNames = testNames
         self.module = module
@@ -1357,6 +1357,6 @@ class CreatedTestSuiteEvent(Event):
 
     _attrs = Event._attrs + ("suite",)
 
-    def __init__(self, suite, **kw):
+    def __init__(self, suite, **kw) -> None:
         self.suite = suite
         super().__init__(**kw)

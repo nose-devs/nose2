@@ -194,7 +194,7 @@ class TestClassLoader(events.Plugin):
 # hide it inside of a factory func. ugly!
 def MethodTestCase(cls):
     class _MethodTestCase(unittest.TestCase):
-        def __init__(self, method):
+        def __init__(self, method) -> None:
             self.method = method
             self._name = f"{cls.__module__}.{cls.__name__}.{method}"
             self.obj = cls()

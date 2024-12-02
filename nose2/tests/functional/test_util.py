@@ -13,7 +13,7 @@ class UtilTests(TestCase):
 
     def test_non_ascii_output(self):
         class D:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.out = []
 
             def write(self, arg):

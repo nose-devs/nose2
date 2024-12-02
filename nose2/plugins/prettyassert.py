@@ -245,7 +245,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
 
 
 class TokenProcessor:
-    def __init__(self, frame_locals, frame_globals):
+    def __init__(self, frame_locals, frame_globals) -> None:
         # local and global variables from the frame which we're inspecting
         self.frame_locals, self.frame_globals = frame_locals, frame_globals
 

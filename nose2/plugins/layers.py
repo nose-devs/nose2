@@ -198,7 +198,7 @@ class LayerReporter(events.Plugin):
     )
     configSection = "layer-reporter"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.indent = self.config.as_str("indent", "  ")
         self.colors = self.config.as_bool("colors", False)
         self.highlight_words = self.config.as_list(

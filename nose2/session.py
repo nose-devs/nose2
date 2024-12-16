@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import logging
 import os
@@ -80,7 +82,7 @@ class Session:
         )
         self.config = ConfigParser()
         self.hooks = events.PluginInterface()
-        self.plugins = []
+        self.plugins: list[events.Plugin] = []
         # this will be reset later, whenever handleCfgArgs happens, but it
         # starts at 1 so that it always has a non-negative integer value
         self.verbosity = 1
@@ -89,7 +91,7 @@ class Session:
         self.testResult = None
         self.testLoader = None
         self.logLevel = logging.WARN
-        self.configCache = {}
+        self.configCache: dict[str, dict[str, config.Config]] = {}
 
     def get(self, section):
         """Get a config section.

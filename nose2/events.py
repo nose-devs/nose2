@@ -12,6 +12,9 @@ import unittest
 
 from nose2 import config, util
 
+if t.TYPE_CHECKING:
+    from nose2.session import Session
+
 log = logging.getLogger(__name__)
 __unittest = True
 
@@ -98,8 +101,12 @@ class Plugin(metaclass=PluginMeta):
 
     """
 
-    alwaysOn = False
-    registered = False
+    # annotate instance vars created via PluginMeta
+    session: Session
+    config: config.Config
+
+    alwaysOn: bool = False
+    registered: bool = False
 
     def register(self):
         """Register with appropriate hooks.
@@ -226,7 +233,7 @@ class Hook:
 
     def __init__(self, method) -> None:
         self.method = method
-        self.plugins = []
+        self.plugins: list[Plugin] = []
 
     def __call__(self, event):
         for plugin in self.plugins[:]:
@@ -320,7 +327,7 @@ class PluginInterface:
     hookClass: type[Hook] = Hook
 
     def __init__(self) -> None:
-        self.hooks = {}
+        self.hooks: dict[str, list[Hook]] = {}
 
     def addMethod(self, method):
         """Add a method to the available method.
@@ -840,7 +847,7 @@ class LoadFromModuleEvent(Event):
     def __init__(self, loader, module, **kw) -> None:
         self.loader = loader
         self.module = module
-        self.extraTests = []
+        self.extraTests: list[unittest.TestCase] = []
         super().__init__(**kw)
 
 
@@ -883,7 +890,7 @@ class LoadFromTestCaseEvent(Event):
     def __init__(self, loader, testCase, **kw) -> None:
         self.loader = loader
         self.testCase = testCase
-        self.extraTests = []
+        self.extraTests: list[unittest.TestCase] = []
         super().__init__(**kw)
 
 
@@ -922,7 +929,7 @@ class LoadFromNamesEvent(Event):
         self.loader = loader
         self.names = names
         self.module = module
-        self.extraTests = []
+        self.extraTests: list[unittest.TestCase] = []
         super().__init__(**kw)
 
     def __str__(self):
@@ -964,7 +971,7 @@ class LoadFromNameEvent(Event):
         self.loader = loader
         self.name = name
         self.module = module
-        self.extraTests = []
+        self.extraTests: list[unittest.TestCase] = []
         super().__init__(**kw)
 
 
@@ -1013,7 +1020,7 @@ class HandleFileEvent(Event):
     _attrs = Event._attrs + ("loader", "name", "path", "pattern", "topLevelDirectory")
 
     def __init__(self, loader, name, path, pattern, topLevelDirectory, **kw) -> None:
-        self.extraTests = []
+        self.extraTests: list[unittest.TestCase] = []
         self.path = path
         self.loader = loader
         self.name = name
@@ -1105,8 +1112,8 @@ class GetTestCaseNamesEvent(Event):
         self.loader = loader
         self.testCase = testCase
         self.testMethodPrefix = None
-        self.extraNames = []
-        self.excludedNames = []
+        self.extraNames: list[str] = []
+        self.excludedNames: list[str] = []
         self.isTestMethod = isTestMethod
         super().__init__(**kw)
 
@@ -1212,7 +1219,7 @@ class OutcomeDetailEvent(Event):
 
     def __init__(self, outcomeEvent, **kw) -> None:
         self.outcomeEvent = outcomeEvent
-        self.extraDetail = []
+        self.extraDetail: list[str] = []
         super().__init__(**kw)
 
 

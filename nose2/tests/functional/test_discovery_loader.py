@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from nose2 import events, loader, session
 from nose2.plugins.loader.discovery import DiscoveryLoader
 from nose2.tests._common import FunctionalTestCase, TestCase, support_file
@@ -5,7 +7,7 @@ from nose2.tests._common import FunctionalTestCase, TestCase, support_file
 
 class Watcher(events.Plugin):
     def __init__(self) -> None:
-        self.called = []
+        self.called: list[events.LoadFromModuleEvent] = []
 
     def loadTestsFromModule(self, event):
         self.called.append(event)

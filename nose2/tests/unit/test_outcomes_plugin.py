@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from nose2 import events, result, session
 from nose2.plugins import outcomes
 from nose2.tests._common import TestCase
@@ -26,7 +28,7 @@ class TestOutComesPlugin(TestCase):
 
         class Watcher(events.Plugin):
             def __init__(self) -> None:
-                self.outcomes = {}
+                self.outcomes: dict[str, list[events.TestOutcomeEvent]] = {}
 
             def testOutcome(self, event):
                 self.outcomes.setdefault(event.outcome, []).append(event)

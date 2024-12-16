@@ -10,12 +10,15 @@ add additional detail to the error report.
 
 """
 
+from __future__ import annotations
+
 import collections
 import inspect
 import io
 import re
 import textwrap
 import tokenize
+import typing as t
 
 from nose2 import events
 
@@ -262,7 +265,7 @@ class TokenProcessor:
         # they were encountered
         # track which tokens we've seen to avoid duplicates if a name appears
         # twice, as in `assert x != x`
-        self.seen_tokens = collections.OrderedDict()
+        self.seen_tokens: dict[str, t.Any] = {}
 
         # the previous token seen as a tuple of (tok_type, token_name)
         # (or None when we start)

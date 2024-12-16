@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import logging
 import sys
+import typing as t
 import unittest
 from contextlib import contextmanager
 
@@ -345,13 +348,13 @@ class Group:
         self.indent = indent
         self.parent = parent
         self.base_layer = base_layer
-        self.mixins = []
-        self._cases = []
-        self._setups = []
-        self._teardowns = []
-        self._test_setups = []
-        self._test_teardowns = []
-        self._children = []
+        self.mixins: list[type] = []
+        self._cases: list[unittest.TestCase] = []
+        self._setups: list[t.Callable[..., t.Any]] = []
+        self._teardowns: list[t.Callable[..., t.Any]] = []
+        self._test_setups: list[t.Callable[..., t.Any]] = []
+        self._test_teardowns: list[t.Callable[..., t.Any]] = []
+        self._children: list[Group] = []
 
     def addCase(self, case):
         if not self._cases:
@@ -395,8 +398,8 @@ class Case:
         self.group = group
         self.func = func
         self.description = description
-        self._setups = []
-        self._teardowns = []
+        self._setups: list[t.Callable[..., t.Any]] = []
+        self._teardowns: list[t.Callable[..., t.Any]] = []
         self.first = False
         self.full = False
 

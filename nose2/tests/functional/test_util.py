@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from nose2 import util
 from nose2.tests._common import TestCase, support_file
 
@@ -14,7 +16,7 @@ class UtilTests(TestCase):
     def test_non_ascii_output(self):
         class D:
             def __init__(self) -> None:
-                self.out = []
+                self.out: list[str] = []
 
             def write(self, arg):
                 self.out.append(arg)

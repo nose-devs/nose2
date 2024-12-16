@@ -107,7 +107,7 @@ class _FakeEventBase:
     def __init__(self) -> None:
         self.handled = False
         self.version = "0.1"
-        self.metadata = {}
+        self.metadata: dict = {}
 
 
 class FakeHandleFileEvent(_FakeEventBase):
@@ -119,7 +119,7 @@ class FakeHandleFileEvent(_FakeEventBase):
         self.loader = Stub()  # FIXME
         self.name = name
         self.path = os.path.split(name)[1]
-        self.extraTests = []
+        self.extraTests: list = []
 
 
 class FakeStartTestEvent(_FakeEventBase):
@@ -271,7 +271,7 @@ class RedirectStdStreams:
 class Conn:
     def __init__(self, items) -> None:
         self.items = items
-        self.sent = []
+        self.sent: list = []
         self.closed = False
 
     def recv(self):

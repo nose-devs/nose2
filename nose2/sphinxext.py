@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import types
+import typing as t
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -174,7 +177,7 @@ DEFAULT = object()
 class ConfigBucket:
     def __init__(self) -> None:
         self.section = None
-        self.vars = {}
+        self.vars: dict[str, dict[str, t.Any]] = {}
 
     def __call__(self, items):
         self.vars = dict(items)
@@ -219,10 +222,10 @@ class ConfigBucket:
 
 class OptBucket:
     def __init__(self, doc=None, prog="nosetests") -> None:
-        self.seen = set()
-        self.opts = []
-        self.doc = doc
-        self.prog = prog
+        self.seen: set[t.Any] = set()
+        self.opts: list[Opt] = []
+        self.doc: str | None = doc
+        self.prog: str = prog
 
     def __iter__(self):
         return iter(self.opts)

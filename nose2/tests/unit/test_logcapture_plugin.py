@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 from nose2 import session
@@ -10,7 +12,7 @@ log = logging.getLogger(__name__)
 class StubLogging:
     def __init__(self, name=None) -> None:
         self.name = name
-        self.handlers = []
+        self.handlers: list[logging.Handler] = []
         self.level = None
 
     def getLogger(self, _name=None):

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+import typing as t
 from unittest import TestSuite
 
 from nose2.events import Plugin
@@ -11,8 +14,8 @@ class AttributeSelector(Plugin):
     """Filter tests by attribute"""
 
     def __init__(self) -> None:
-        self.attribs = []
-        self.eval_attribs = []
+        self.attribs: list[tuple[str, t.Callable[..., t.Any]]] = []
+        self.eval_attribs: list[str] = []
         self.addArgument(
             self.attribs, "A", "attribute", "Select tests with matching attribute"
         )

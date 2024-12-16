@@ -30,6 +30,7 @@ import inspect
 import logging
 import sys
 import types
+import typing as t
 import unittest
 
 from nose2 import exceptions, util
@@ -228,18 +229,30 @@ class Generators(Plugin):
 
 
 class GeneratorFunctionCase(unittest.FunctionTestCase):
-    def __init__(self, name, **args) -> None:
+    def __init__(self, name: str, **args: t.Any) -> None:
         self._funcName = name
-        unittest.FunctionTestCase.__init__(self, None, **args)
+        # initialize with a placeholder, but it won't be used
+        # it gets overwritten with `_testFunc` below
+        unittest.FunctionTestCase.__init__(self, _placeholder_func, **args)
 
-    _testFunc = property(
-        lambda self: getattr(self, self._funcName), lambda self, func: None
-    )
+    @property
+    def _testFunc(self) -> t.Callable[..., t.Any]:
+        return getattr(self, self._funcName)
+
+    @_testFunc.setter
+    def _testFunc(self, newfunc: t.Callable[..., t.Any]) -> None:
+        pass
 
     def __repr__(self):
         return self._funcName
 
     id = __str__ = __repr__
+
+
+def _placeholder_func() -> None:
+    """
+    A no-op defined for use inside of GeneratorFunctionCase init.
+    """
 
 
 def GeneratorMethodCase(cls):

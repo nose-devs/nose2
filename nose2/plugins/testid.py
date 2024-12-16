@@ -11,6 +11,8 @@ This plugin implements :func:`reportStartTest`,
 
 """
 
+from __future__ import annotations
+
 import os
 import pickle
 import re
@@ -28,10 +30,10 @@ class TestId(Plugin):
     commandLineSwitch = ("I", "with-id", "Add test ids to output")
     idpat = re.compile(r"(\d+)")
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.idfile = self.config.as_str("id-file", ".noseids")
-        self.ids = {}
-        self.tests = {}
+        self.ids: dict[str, str] = {}
+        self.tests: dict[str, str] = {}
         if not os.path.isabs(self.idfile):
             # FIXME expand-user?
             self.idfile = os.path.join(os.getcwd(), self.idfile)

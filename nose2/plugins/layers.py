@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import re
 from collections import OrderedDict
@@ -198,14 +200,14 @@ class LayerReporter(events.Plugin):
     )
     configSection = "layer-reporter"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.indent = self.config.as_str("indent", "  ")
         self.colors = self.config.as_bool("colors", False)
         self.highlight_words = self.config.as_list(
             "highlight-words", ["A", "having", "should"]
         )
         self.highlight_re = re.compile(r"\b(%s)\b" % "|".join(self.highlight_words))
-        self.layersReported = set()
+        self.layersReported: set[LayerSuite] = set()
 
     def reportStartTest(self, event):
         if self.session.verbosity < 2:

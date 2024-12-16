@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+import typing as t
 from unittest import TestSuite
 
 from nose2.events import Plugin
@@ -10,9 +13,9 @@ undefined = object()
 class AttributeSelector(Plugin):
     """Filter tests by attribute"""
 
-    def __init__(self):
-        self.attribs = []
-        self.eval_attribs = []
+    def __init__(self) -> None:
+        self.attribs: list[tuple[str, t.Callable[..., t.Any]]] = []
+        self.eval_attribs: list[str] = []
         self.addArgument(
             self.attribs, "A", "attribute", "Select tests with matching attribute"
         )
@@ -154,7 +157,7 @@ def _get_attr(test, key):
 
 
 class ContextHelper:
-    def __init__(self, obj):
+    def __init__(self, obj) -> None:
         self.obj = obj
 
     def __getitem__(self, name):

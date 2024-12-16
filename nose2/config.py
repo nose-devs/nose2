@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 TRUE_VALS = {"1", "t", "true", "on", "yes", "y"}
 __unittest = True
 
@@ -11,9 +13,9 @@ class Config:
 
     """
 
-    def __init__(self, items):
+    def __init__(self, items) -> None:
         self._items = items
-        self._mvd = {}
+        self._mvd: dict[str, list[str]] = {}
         for k, v in items:
             self._mvd.setdefault(k, []).append(v)
 

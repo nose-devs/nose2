@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import sys
 
@@ -36,8 +38,8 @@ class TestBufferPlugin(TestCase):
         self.case = Test
 
         class Watcher(events.Plugin):
-            def __init__(self):
-                self.events = []
+            def __init__(self) -> None:
+                self.events: list[events.TestOutcomeEvent] = []
 
             def testOutcome(self, event):
                 self.events.append(event)

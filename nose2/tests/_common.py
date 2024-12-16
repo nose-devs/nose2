@@ -104,28 +104,28 @@ class FunctionalTestCase(unittest.TestCase):
 class _FakeEventBase:
     """Baseclass for fake :class:`~nose2.events.Event`s."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.handled = False
         self.version = "0.1"
-        self.metadata = {}
+        self.metadata: dict = {}
 
 
 class FakeHandleFileEvent(_FakeEventBase):
     """Fake HandleFileEvent."""
 
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         super().__init__()
 
         self.loader = Stub()  # FIXME
         self.name = name
         self.path = os.path.split(name)[1]
-        self.extraTests = []
+        self.extraTests: list = []
 
 
 class FakeStartTestEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.StartTestEvent`."""
 
-    def __init__(self, test):
+    def __init__(self, test) -> None:
         super().__init__()
         self.test = test
         self.result = test.defaultTestResult()
@@ -137,7 +137,7 @@ class FakeStartTestEvent(_FakeEventBase):
 class FakeLoadFromNameEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.LoadFromNameEvent`."""
 
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         super().__init__()
         self.name = name
 
@@ -145,7 +145,7 @@ class FakeLoadFromNameEvent(_FakeEventBase):
 class FakeLoadFromNamesEvent(_FakeEventBase):
     """Fake :class:`~nose2.events.LoadFromNamesEvent`."""
 
-    def __init__(self, names):
+    def __init__(self, names) -> None:
         super().__init__()
         self.names = names
 
@@ -155,7 +155,7 @@ class FakeStartTestRunEvent(_FakeEventBase):
 
     def __init__(
         self, runner=None, suite=None, result=None, startTime=None, executeTests=None
-    ):
+    ) -> None:
         super().__init__()
         self.suite = suite
         self.runner = runner
@@ -197,7 +197,7 @@ def run_module_as_main(test_module, *args):
 
 
 class NotReallyAProc:
-    def __init__(self, args, cwd=None, **kwargs):
+    def __init__(self, args, cwd=None, **kwargs) -> None:
         self.args = args
         self.chdir = cwd
         self.kwargs = kwargs
@@ -249,7 +249,7 @@ class RedirectStdStreams:
     buffers.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.stdout = io.StringIO()
         self.stderr = io.StringIO()
 
@@ -269,9 +269,9 @@ class RedirectStdStreams:
 
 # mock multiprocessing Connection
 class Conn:
-    def __init__(self, items):
+    def __init__(self, items) -> None:
         self.items = items
-        self.sent = []
+        self.sent: list = []
         self.closed = False
 
     def recv(self):

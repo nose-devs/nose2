@@ -26,6 +26,8 @@ runs to ``exit(1)``).
 # unittest2 is Copyright (c) 2001-2010 Python Software Foundation; All
 # Rights Reserved. See: http://docs.python.org/license.html
 
+from __future__ import annotations
+
 import sys
 import unittest
 
@@ -42,9 +44,9 @@ class ResultReporter(events.Plugin):
     separator1 = "=" * 70
     separator2 = "-" * 70
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.testsRun = 0
-        self.reportCategories = {
+        self.reportCategories: dict[str, list[events.Event]] = {
             "failures": [],
             "errors": [],
             "skipped": [],

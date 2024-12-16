@@ -9,7 +9,7 @@ from nose2.tests._common import TestCase
 class CustomEvent(events.Event):
     _attrs = events.Event._attrs + ("args",)
 
-    def __init__(self, args, **kw):
+    def __init__(self, args, **kw) -> None:
         self.args = args
         super().__init__(**kw)
 

@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
 import os
 import sys
+import typing as t
 import unittest
 
 from nose2 import events, loader, plugins, runner, session, util
@@ -71,16 +74,16 @@ class PluggableTestProgram(unittest.TestProgram):
     _currentSession = None
     loaderClass = loader.PluggableTestLoader
     runnerClass = runner.PluggableTestRunner
-    defaultPlugins = plugins.DEFAULT_PLUGINS
-    excludePlugins = ()
+    defaultPlugins: t.ClassVar[t.Sequence[str]] = plugins.DEFAULT_PLUGINS
+    excludePlugins: t.ClassVar[t.Sequence[str]] = ()
 
     # XXX override __init__ to warn that testLoader and testRunner are ignored?
-    def __init__(self, **kw):
+    def __init__(self, **kw) -> None:
         plugins = kw.pop("plugins", [])
         exclude = kw.pop("excludePlugins", [])
         hooks = kw.pop("extraHooks", [])
-        self.defaultPlugins = list(self.defaultPlugins)
-        self.excludePlugins = list(self.excludePlugins)
+        self.defaultPlugins: list[str] = list(self.defaultPlugins)  # type: ignore[misc]
+        self.excludePlugins: list[str] = list(self.excludePlugins)  # type: ignore[misc]
         self.extraHooks = hooks
         self.defaultPlugins.extend(plugins)
         self.excludePlugins.extend(exclude)

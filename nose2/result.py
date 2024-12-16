@@ -25,7 +25,7 @@ class PluggableTestResult:
 
     """
 
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
         self.shouldStop = False
         # XXX TestCase.subTest expects a result.failfast attribute

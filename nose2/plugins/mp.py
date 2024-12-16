@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import logging
 import multiprocessing
 import multiprocessing.connection as connection
 import os
 import select
 import sys
+import typing as t
 import unittest
 from collections.abc import Sequence
 
@@ -15,7 +18,7 @@ log = logging.getLogger(__name__)
 class MultiProcess(events.Plugin):
     configSection = "multiprocess"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.addArgument(
             self.setProcs,
             "N",
@@ -26,7 +29,7 @@ class MultiProcess(events.Plugin):
         self._procs = self.config.as_int("processes", 0)
         self.setAddress(self.config.as_str("bind_address", None))
 
-        self.cases = {}
+        self.cases: dict[str, unittest.TestCase] = {}
 
     @property
     def procs(self):
@@ -433,7 +436,7 @@ class SubprocessEvent(events.Event):
 
     """
 
-    def __init__(self, loader, result, runner, plugins, connection, **metadata):
+    def __init__(self, loader, result, runner, plugins, connection, **metadata) -> None:
         self.loader = loader
         self.result = result
         self.runner = runner
@@ -457,14 +460,14 @@ class RegisterInSubprocessEvent(events.Event):
 
     """
 
-    def __init__(self, **metadata):
-        self.pluginClasses = []
+    def __init__(self, **metadata) -> None:
+        self.pluginClasses: list[type[events.Plugin]] = []
         super().__init__(**metadata)
 
 
 # custom hook system that records calls and events
 class RecordingHook(events.Hook):
-    def __init__(self, method, interface):
+    def __init__(self, method, interface) -> None:
         super().__init__(method)
         self.interface = interface
 
@@ -485,9 +488,9 @@ class RecordingPluginInterface(events.PluginInterface):
         "getTestMethodNames",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.events = []
+        self.events: list[tuple[t.Callable[..., t.Any], events.Event]] = []
 
     def log(self, method, event):
         self.events.append((method, event))

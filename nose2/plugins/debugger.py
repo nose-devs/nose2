@@ -35,7 +35,7 @@ class Debugger(events.Plugin):
     # allow easy mocking and replacement of pdb
     pdb = pdb
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.errorsOnly = self.config.as_bool("errors-only", default=False)
 
     def testOutcome(self, event):

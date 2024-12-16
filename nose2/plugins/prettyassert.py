@@ -10,12 +10,15 @@ add additional detail to the error report.
 
 """
 
+from __future__ import annotations
+
 import collections
 import inspect
 import io
 import re
 import textwrap
 import tokenize
+import typing as t
 
 from nose2 import events
 
@@ -245,7 +248,7 @@ def _tokenize_assert(source_lines, frame_locals, frame_globals):
 
 
 class TokenProcessor:
-    def __init__(self, frame_locals, frame_globals):
+    def __init__(self, frame_locals, frame_globals) -> None:
         # local and global variables from the frame which we're inspecting
         self.frame_locals, self.frame_globals = frame_locals, frame_globals
 
@@ -262,7 +265,7 @@ class TokenProcessor:
         # they were encountered
         # track which tokens we've seen to avoid duplicates if a name appears
         # twice, as in `assert x != x`
-        self.seen_tokens = collections.OrderedDict()
+        self.seen_tokens: dict[str, t.Any] = {}
 
         # the previous token seen as a tuple of (tok_type, token_name)
         # (or None when we start)

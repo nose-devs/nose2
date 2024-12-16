@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 
 
 class DirectoryHandler:
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
         self.event_handled = False
 

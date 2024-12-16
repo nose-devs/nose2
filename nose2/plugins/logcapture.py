@@ -31,7 +31,7 @@ class LogCapture(Plugin):
     clear = False
     filters = ["-nose"]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.logformat = self.config.as_str("format", self.logformat)
         self.logdatefmt = self.config.as_str("date-format", self.logdatefmt)
         self.filters = self.config.as_list("filter", self.filters)
@@ -104,7 +104,7 @@ class LogCapture(Plugin):
 
 
 class FilterSet:
-    def __init__(self, filter_components):
+    def __init__(self, filter_components) -> None:
         self.inclusive, self.exclusive = self._partition(filter_components)
 
     @staticmethod
@@ -146,7 +146,7 @@ class FilterSet:
 
 
 class MyMemoryHandler(BufferingHandler):
-    def __init__(self, capacity, logformat, logdatefmt, filters):
+    def __init__(self, capacity, logformat, logdatefmt, filters) -> None:
         BufferingHandler.__init__(self, capacity)
         fmt = logging.Formatter(logformat, logdatefmt)
         self.setFormatter(fmt)

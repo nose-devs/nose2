@@ -23,7 +23,7 @@ def _fromisoformat(date_str):
 class TestJunitXmlPlugin(TestCase):
     _RUN_IN_TEMP = True
 
-    BAD_FOR_XML_U = "A\x07 B\x0B C\x10 D\uD900 E\uFFFE F\x80 G\x90 H\uFDDD"
+    BAD_FOR_XML_U = "A\x07 B\x0b C\x10 D\ud900 E\ufffe F\x80 G\x90 H\ufddd"
     # UTF-8 string with double null (invalid)
     BAD_FOR_XML_B = (
         b"A\x07 B\x0b C\x10 D\xed\xa4\x80 "
@@ -49,23 +49,23 @@ class TestJunitXmlPlugin(TestCase):
     # G\\xc2\\x90 H\\xef\\xb7\\x9d \\x00\\x00"
 
     if sys.maxunicode <= 0xFFFF:
-        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD]*$"
+        EXPECTED_RE = "^[\x09\x0a\x0d\x20\x21-\ud7ff\ue000-\ufffd]*$"
         EXPECTED_RE_SAFE = (
-            "^[\x09\x0A\x0D\x20\x21-\x7E\x85\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD]*$"
+            "^[\x09\x0a\x0d\x20\x21-\x7e\x85\xa0-\ud7ff\ue000-\ufdcf\ufdf0-\ufffd]*$"
         )
     else:
-        EXPECTED_RE = "^[\x09\x0A\x0D\x20\x21-\uD7FF\uE000-\uFFFD\u10000-\u10FFFF]*$"
+        EXPECTED_RE = "^[\x09\x0a\x0d\x20\x21-\ud7ff\ue000-\ufffd\u10000-\u10ffFF]*$"
         EXPECTED_RE_SAFE = (
-            "^[\x09\x0A\x0D\x20\x21-\x7E\x85"
-            "\xA0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD"
-            "\u10000-\u1FFFD\u20000-\u2FFFD"
-            "\u30000-\u3FFFD\u40000-\u4FFFD"
-            "\u50000-\u5FFFD\u60000-\u6FFFD"
-            "\u70000-\u7FFFD\u80000-\u8FFFD"
-            "\u90000-\u8FFFD\uA0000-\uAFFFD"
-            "\uB0000-\uBFFFD\uC0000-\uCFFFD"
-            "\uD0000-\uDFFFD\uE0000-\uEFFFD"
-            "\uF0000-\uFFFFD\u100000-\u10FFFD]*$"
+            "^[\x09\x0a\x0d\x20\x21-\x7e\x85"
+            "\xa0-\ud7ff\ue000-\ufdcf\ufdf0-\ufffd"
+            "\u10000-\u1fffD\u20000-\u2fffD"
+            "\u30000-\u3fffD\u40000-\u4fffD"
+            "\u50000-\u5fffD\u60000-\u6fffD"
+            "\u70000-\u7fffD\u80000-\u8fffD"
+            "\u90000-\u8fffD\ua0000-\uafffD"
+            "\ub0000-\ubfffD\uc0000-\ucfffD"
+            "\ud0000-\udfffD\ue0000-\uefffD"
+            "\uf0000-\uffffD\u100000-\u10ffFD]*$"
         )
 
     def setUp(self):

@@ -361,8 +361,8 @@ def string_cleanup(string, keep_restricted=False):
     if not issubclass(type(string), str):
         string = str(string, encoding="utf-8", errors="replace")
 
-    string = _ILLEGAL_REGEX.sub("\uFFFD", string)
+    string = _ILLEGAL_REGEX.sub("\ufffd", string)
     if not keep_restricted:
-        string = _RESTRICTED_REGEX.sub("\uFFFD", string)
+        string = _RESTRICTED_REGEX.sub("\ufffd", string)
 
     return string

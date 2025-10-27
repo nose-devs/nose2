@@ -36,7 +36,7 @@ jobs:
     steps:
       - run: git clone "https://gitlab.com/mailman/mailman/" .
       - name: download sdist build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: latest-build
           path: nose2-build

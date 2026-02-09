@@ -32,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Software Development :: Libraries",
@@ -41,7 +42,7 @@ classifiers = [
 dynamic = [
   "version",
 ]
-optional-dependencies.coverage_plugin = [
+optional-dependencies.coverage-plugin = [
   "coverage",
 ]
 optional-dependencies.dev = [
@@ -54,8 +55,8 @@ urls.documentation = "https://docs.nose2.io/"
 urls.repository = "https://github.com/nose-devs/nose2"
 scripts.nose2 = "nose2:discover"
 
-[tool.setuptools.dynamic]
-version = { attr = "nose2.__version__" }
+[tool.setuptools]
+dynamic.version = { attr = "nose2.__version__" }
 
 [tool.isort]
 profile = "black"

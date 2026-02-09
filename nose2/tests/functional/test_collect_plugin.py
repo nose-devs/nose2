@@ -17,8 +17,6 @@ class CollectOnlyFunctionalTest(FunctionalTestCase):
 
 
 # expectations
-EXPECT_LAYOUT1 = re.compile(
-    r"""Ran 25 tests in \d.\d+s
+EXPECT_LAYOUT1 = re.compile(r"""Ran 25 tests in \d.\d+s
 
-OK"""
-)
+OK""")

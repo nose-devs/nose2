@@ -12,14 +12,10 @@ class TestCollector(TestCase):
 
     def test_collector_completes_with_no_tests(self):
         with open("unittest.cfg", "w") as ut_file:
-            ut_file.write(
-                dedent(
-                    """
+            ut_file.write(dedent("""
                 [unittest]
                 quiet = true
-            """
-                )
-            )
+            """))
         test = collector.collector()
         with RedirectStdStreams() as redir:
             self.assertRaises(SystemExit, test.run, None)

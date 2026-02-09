@@ -137,9 +137,9 @@ def _get_inspection_info(trace):
     - statement which failed (which can be garbage -- don't trust it)
     - can_tokenize: a bool indicating that the lines of source can be parsed
     """
-    (frame, fname, lineno, funcname, context, ctx_index) = inspect.getinnerframes(
-        trace
-    )[-1]
+    frame, fname, lineno, funcname, context, ctx_index = inspect.getinnerframes(trace)[
+        -1
+    ]
     original_source_lines, firstlineno = inspect.getsourcelines(frame)
 
     # truncate to the code in this frame to remove anything after current

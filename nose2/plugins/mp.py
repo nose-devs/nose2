@@ -13,6 +13,7 @@ from collections.abc import Sequence
 from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
+mp_ctx = multiprocessing.get_context('fork')
 
 
 class MultiProcess(events.Plugin):
@@ -179,7 +180,7 @@ class MultiProcess(events.Plugin):
             listener = connection.Listener(address, authkey=authkey)
             return (listener, listener.address + (authkey,))
         else:
-            return multiprocessing.Pipe()
+            return mp_ctx.Pipe()
 
     def _acceptConns(self, parent_conn):
         """
@@ -208,7 +209,7 @@ class MultiProcess(events.Plugin):
         log.debug("Creating %i worker processes", count)
         for _ in range(0, count):
             parent_conn, child_conn = self._prepConns()
-            proc = multiprocessing.Process(
+            proc = mp_ctx.Process(
                 target=procserver, args=(session_export, child_conn)
             )
             proc.daemon = True
@@ -316,7 +317,7 @@ class MultiProcess(events.Plugin):
 
 def procserver(session_export, conn):
     # init logging system
-    rlog = multiprocessing.log_to_stderr()
+    rlog = mp_ctx.log_to_stderr()
     rlog.setLevel(session_export["logLevel"])
 
     # make a real session from the "session" we got

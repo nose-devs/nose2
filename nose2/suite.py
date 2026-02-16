@@ -105,7 +105,7 @@ class LayerSuite(unittest.BaseTestSuite):
 
         event = events.StopLayerTeardownTestEvent(self.layer, test)
         self.session.hooks.stopLayerTeardownTest(event)
-        delattr(test, "_layer_wasSetUp")
+        del test._layer_wasSetUp
 
     def tearDown(self):
         if self.layer is None:

@@ -82,20 +82,20 @@ class TestMpPlugin(FunctionalTestCase):
 
     def test_conn_prep(self):
         self.plugin.bind_host = None
-        (parent_conn, child_conn) = self.plugin._prepConns()
-        (parent_pipe, child_pipe) = multiprocessing.Pipe()
+        parent_conn, child_conn = self.plugin._prepConns()
+        parent_pipe, child_pipe = multiprocessing.Pipe()
         self.assertIsInstance(parent_conn, type(parent_pipe))
         self.assertIsInstance(child_conn, type(child_pipe))
 
         self.plugin.bind_host = "127.0.0.1"
         self.plugin.bind_port = 0
-        (parent_conn, child_conn) = self.plugin._prepConns()
+        parent_conn, child_conn = self.plugin._prepConns()
         self.assertIsInstance(parent_conn, connection.Listener)
         self.assertIsInstance(child_conn, tuple)
         self.assertEqual(parent_conn.address, child_conn[:2])
 
     def test_conn_accept(self):
-        (parent_conn, child_conn) = multiprocessing.Pipe()
+        parent_conn, child_conn = multiprocessing.Pipe()
         self.assertEqual(self.plugin._acceptConns(parent_conn), parent_conn)
 
         listener = connection.Listener(("127.0.0.1", 0))
@@ -161,13 +161,11 @@ class TestProcserver(FunctionalTestCase):
                         {
                             "outcome": "failed",
                             "expected": False,
-                            "metadata": {
-                                "stdout": """\
+                            "metadata": {"stdout": """\
 -------------------- >> begin captured stdout << ---------------------
 Hello stdout
 
---------------------- >> end captured stdout << ----------------------"""
-                            },
+--------------------- >> end captured stdout << ----------------------"""},
                         },
                     ),
                     (
@@ -175,13 +173,11 @@ Hello stdout
                         {
                             "outcome": "failed",
                             "expected": False,
-                            "metadata": {
-                                "stdout": """\
+                            "metadata": {"stdout": """\
 -------------------- >> begin captured stdout << ---------------------
 Hello stdout
 
---------------------- >> end captured stdout << ----------------------"""
-                            },
+--------------------- >> end captured stdout << ----------------------"""},
                         },
                     ),
                     ("stopTest", {}),

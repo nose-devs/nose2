@@ -1,5 +1,5 @@
-[tool.nose2.b]
-b = """
+[tool.nose2]
+b.b = """
 4
 5
 """

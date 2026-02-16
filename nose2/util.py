@@ -106,7 +106,7 @@ def object_from_name(name, module=None):
     import_error = None
     parts = name.split(".")
     if module is None:
-        (module, import_error) = try_import_module_from_name(parts[:])
+        module, import_error = try_import_module_from_name(parts[:])
         parts = parts[1:]
     parent = None
     obj = module

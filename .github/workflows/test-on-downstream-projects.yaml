@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
       - run: python -m pip install tox
@@ -43,7 +43,7 @@ jobs:
       # NOTE: be sure to use a python version supported by mailman tests
       # at time of writing, this can be seen in the mailman test matrix:
       # https://gitlab.com/mailman/mailman/-/blob/master/tox.ini
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - run: python -m pip install tox

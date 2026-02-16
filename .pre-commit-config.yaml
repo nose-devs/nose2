@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks.git
-  rev: v5.0.0
+  rev: v6.0.0
   hooks:
     - id: check-merge-conflict
     - id: check-toml
@@ -8,33 +8,33 @@ repos:
     - id: end-of-file-fixer
     - id: trailing-whitespace
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.33.0
+  rev: 0.36.1
   hooks:
     - id: check-github-workflows
     - id: check-dependabot
     - id: check-readthedocs
 - repo: https://github.com/psf/black
-  rev: 25.1.0
+  rev: 26.1.0
   hooks:
   - id: black
     language_version: python3
 - repo: https://github.com/PyCQA/isort
-  rev: 6.0.1
+  rev: 7.0.0
   hooks:
     - id: isort
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.19.1
+  rev: v3.21.2
   hooks:
     - id: pyupgrade
       args: ["--py37-plus"]
 - repo: https://github.com/PyCQA/flake8
-  rev: 7.2.0
+  rev: 7.3.0
   hooks:
     - id: flake8
       additional_dependencies:
-        - 'flake8-bugbear==24.12.12'
-        - 'flake8-comprehensions==3.16.0'
-        - 'flake8-typing-as-t==1.0.0'
+        - 'flake8-bugbear==25.11.29'
+        - 'flake8-comprehensions==3.17.0'
+        - 'flake8-typing-as-t==1.1.0'
 - repo: https://github.com/sirosen/slyp
   rev: 0.8.2
   hooks:
@@ -49,7 +49,8 @@ repos:
         - "-L"
         - "assertIn"
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.5.1
+  rev: v2.16.0
   hooks:
     - id: pyproject-fmt
+      args: ["--max-supported-python", "3.13"]
       additional_dependencies: ["tox>=4.9"]

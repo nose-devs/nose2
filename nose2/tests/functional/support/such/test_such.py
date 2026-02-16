@@ -124,8 +124,8 @@ with such.A("system with complex setup") as it:
 
             @it.has_test_teardown
             def test_teardown(case):
-                delattr(it, "is_funny")
-                delattr(case, "is_funny")
+                del it.is_funny
+                del case.is_funny
 
             @it.should("do something else")  # type: ignore[no-redef]
             def test(case):  # noqa: F811

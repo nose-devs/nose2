@@ -69,15 +69,13 @@ def func():
         # The file should be ignored by the plugin as it cannot safely be
         # imported.
 
-        setup_py = dedent(
-            """\
+        setup_py = dedent("""\
             '''
             >>> never executed
             '''
             from setuptools import setup
             setup(name='foo')
-            """
-        )
+            """)
         event = self._handle_file("setup.py", setup_py)
         self.assertEqual(event.extraTests, [])
 

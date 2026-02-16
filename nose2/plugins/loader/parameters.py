@@ -169,7 +169,7 @@ class Parameters(Plugin):
                     return method(self, *argSet)
 
                 _method = functools.update_wrapper(_method, method)
-                delattr(_method, "paramList")
+                del _method.paramList
                 setattr(testCaseClass, method_name, _method)
             names.append(method_name)
         return names
@@ -188,7 +188,7 @@ class Parameters(Plugin):
                 return obj(*argSet)
 
             func = functools.update_wrapper(func, obj)
-            delattr(func, "paramList")
+            del func.paramList
             name = f"{obj.__module__}.{obj.__name__}"
             func_name = util.name_from_args(name, index, argSet)
             yield util.transplant_class(ParamsFunctionCase, obj.__module__)(

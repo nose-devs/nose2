@@ -25,7 +25,7 @@ __unittest = True
 log = logging.getLogger(__name__)
 
 try:
-    import pkg_resources
+    import pkg_resources  # type: ignore[import-untyped]
 
     _has_pkg_resources = True
 except ImportError:

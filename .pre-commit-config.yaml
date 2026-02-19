@@ -52,5 +52,4 @@ repos:
   rev: v2.16.0
   hooks:
     - id: pyproject-fmt
-      args: ["--max-supported-python", "3.13"]
       additional_dependencies: ["tox>=4.9"]

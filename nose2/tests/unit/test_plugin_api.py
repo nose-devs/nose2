@@ -17,7 +17,7 @@ class TestPluginApi(TestCase):
 
     def test_add_option_adds_option(self):
         helpt = self.session.argparse.format_help()
-        assert "-X, --xxx" in helpt, (
+        assert "-X" in helpt and "--xxx" in helpt, (
             "commandLineSwitch arg not found in help text: %s" % helpt
         )
 

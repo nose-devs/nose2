@@ -15,6 +15,17 @@ from nose2 import events, loader, result, runner, session, util
 log = logging.getLogger(__name__)
 
 
+# Python 3.14: Change in multiprocessing API
+# https://docs.python.org/3/library/multiprocessing.html
+# #multiprocessing-start-methods
+# On POSIX platforms the default start method was changed from fork to
+# forkserver to retain the performance but avoid common multithreaded
+# process incompatibilities.
+# [...]
+# set_start_method() should not be used more than once in the program.
+multiprocessing.set_start_method("fork")
+
+
 class MultiProcess(events.Plugin):
     configSection = "multiprocess"
 

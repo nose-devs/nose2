@@ -1,11 +1,15 @@
 """
+.. warning::
+
+    This plugin is now deprecated.
+
 Use this plugin to activate coverage report.
 
-To use this plugin, you need to install ``nose2[coverage_plugin]``. e.g.
+To use this plugin, you need to install ``coverage``. e.g.
 
 ::
 
-    $ pip install nose2[coverage_plugin]>=0.6.5
+    $ pip install nose2 coverage
 
 
 Then, you can enable coverage reporting with :
@@ -31,6 +35,7 @@ However, when doing so you should also be aware of
 
 import io
 import logging
+import sys
 
 from nose2.events import Plugin
 
@@ -174,6 +179,23 @@ class Coverage(Plugin):
         """Reporting data is collected, failure status determined and set.
         Now print any buffered error output saved from beforeSummaryReport"""
         print(self.error_output_buffer.getvalue(), file=event.stream)
+
+        # show a warning at the end of output (after any report)
+        #
+        # warnings are not emitted to the user inside of nose2, plus
+        # DeprecationWarning is off by default -- for simplicity, just print
+        # to stderr
+        print(
+            (
+                "**********\n"
+                "WARNING\n"
+                "Support for the nose2 coverage plugin is gradually being removed. "
+                "Use `coverage run nose` instead.\n\n"
+                "For more detail, see https://github.com/nose-devs/nose2/issues/651"
+                "\n**********"
+            ),
+            file=sys.stderr,
+        )
 
     def _start_coverage(self):
         try:

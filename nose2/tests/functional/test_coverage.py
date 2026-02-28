@@ -10,6 +10,11 @@ from nose2.tests._common import FunctionalTestCase, support_file, windows_ci_ski
 class TestCoverage(FunctionalTestCase):
     def setUp(self):
         super().setUp()
+        if sys.version_info >= (3, 14):
+            self.skipTest(
+                "the coverage plugin is not tested on newer Pythons, "
+                "as part of its deprecation"
+            )
         try:
             import coverage  # noqa: F401
         except ImportError:

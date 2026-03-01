@@ -2,7 +2,7 @@ import os
 import tempfile
 from xml.etree import ElementTree as ET
 
-from nose2.tests._common import FunctionalTestCase
+from nose2.tests._common import FunctionalTestCase, skip_if_running_in_daemon
 
 
 def read_report(path):
@@ -100,6 +100,7 @@ class TestSubtests(FunctionalTestCase):
 
 
 class TestSubtestsMultiprocess(FunctionalTestCase):
+    @skip_if_running_in_daemon
     def test_success(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -113,6 +114,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="OK")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_failure(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -128,6 +130,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(failures=3\)")
         self.assertEqual(proc.poll(), 1)
 
+    @skip_if_running_in_daemon
     def test_error(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -146,6 +149,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(errors=3\)")
         self.assertEqual(proc.poll(), 1)
 
+    @skip_if_running_in_daemon
     def test_expected_failure(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -161,6 +165,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r"OK \(expected failures=1\)")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_message(self):
         proc = self.runIn(
             "scenario/subtests",
@@ -182,6 +187,7 @@ class TestSubtestsMultiprocess(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(failures=3\)")
         self.assertEqual(proc.poll(), 1)
 
+    @skip_if_running_in_daemon
     def test_all(self):
         proc = self.runIn(
             "scenario/subtests",

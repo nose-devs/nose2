@@ -311,7 +311,7 @@ class PluggableTestProgram(unittest.TestProgram):
             self.result = runner.run(self.test)
         except Exception as e:
             log.exception("Internal Error")
-            sys.stderr.write("Internal Error: runTests aborted: %s\n" % e)
+            sys.stderr.write(f"Internal Error: runTests aborted: {e}\n")
             if self.exit:
                 sys.exit(1)
         if self.exit:

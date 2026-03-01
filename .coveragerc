@@ -2,6 +2,7 @@
 branch = True
 omit = nose2/tests/*
 include = nose2/*
+parallel = True
 
 [report]
 show_missing = True

@@ -13,7 +13,7 @@ from collections.abc import Sequence
 from nose2 import events, loader, result, runner, session, util
 
 log = logging.getLogger(__name__)
-mp_ctx = multiprocessing.get_context('fork')
+mp_ctx = multiprocessing.get_context("fork")
 
 
 class MultiProcess(events.Plugin):
@@ -209,9 +209,7 @@ class MultiProcess(events.Plugin):
         log.debug("Creating %i worker processes", count)
         for _ in range(0, count):
             parent_conn, child_conn = self._prepConns()
-            proc = mp_ctx.Process(
-                target=procserver, args=(session_export, child_conn)
-            )
+            proc = mp_ctx.Process(target=procserver, args=(session_export, child_conn))
             proc.daemon = True
             proc.start()
             parent_conn = self._acceptConns(parent_conn)

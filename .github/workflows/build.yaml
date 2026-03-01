@@ -66,4 +66,18 @@ jobs:
         run: python -m pip install -U tox
       - name: test
         run: |
-          python -m tox -m ci
+          python -m tox run -m ci
+
+  test-mp:
+    name: "multiprocessing test run"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: install tox
+        run: python -m pip install -U tox
+      - name: test
+        run: |
+          python -m tox run -e py314-mp

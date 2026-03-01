@@ -1,6 +1,8 @@
 """Common functionality."""
 
+import functools
 import io
+import multiprocessing
 import os.path
 import platform
 import shutil
@@ -306,3 +308,22 @@ def _method_name(name="test"):
     """Get an extra method name for Python 3.11"""
     # https://github.com/python/cpython/issues/58473
     return r"\." + name if sys.version_info >= (3, 11) else ""
+
+
+def skip_if_running_in_daemon(testfunc):
+    """
+    mp runs subprocesses with `daemon=True`, so they can't spawn further
+    subproceses. Just skip mp tests in this context.
+
+    This is done at test runtime, not import time.
+    """
+
+    @functools.wraps(testfunc)
+    def wrapper(*args, **kwargs):
+        current_proc = multiprocessing.current_process()
+        if current_proc.daemon:
+            unittest.skip("mp plugin tests cannot run under the mp plugin")
+        else:
+            return testfunc(*args, **kwargs)
+
+    return wrapper

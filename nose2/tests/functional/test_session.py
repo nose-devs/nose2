@@ -8,6 +8,12 @@ from nose2._toml import TOML_ENABLED
 from nose2.tests._common import FunctionalTestCase, support_file
 
 
+def _ensure_support_lib_in_path():
+    support_path = support_file("lib")
+    if support_path not in sys.path:
+        sys.path.insert(0, support_path)
+
+
 def test_loading_config_from_ini_file_without_cfg_suffix():
     """
     Regression test for https://github.com/nose-devs/nose2/issues/614
@@ -33,7 +39,7 @@ class SessionFunctionalTests(FunctionalTestCase):
         self.s.loadConfigFiles(
             support_file("cfg", "a.cfg"), support_file("cfg", "b.cfg")
         )
-        sys.path.insert(0, support_file("lib"))
+        _ensure_support_lib_in_path()
 
     def test_session_can_load_config_files(self):
         assert self.s.config.has_section("a")
@@ -82,6 +88,7 @@ class SessionTomlFunctionalTests(FunctionalTestCase):
     def setUp(self):
         if not TOML_ENABLED:
             raise unittest.SkipTest("toml module not available")
+        _ensure_support_lib_in_path()
         self.s = session.Session()
         self.s.loadConfigFiles(
             support_file("toml", "a", "pyproject.toml"),

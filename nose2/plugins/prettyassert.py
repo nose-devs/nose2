@@ -60,6 +60,11 @@ class PrettyAssert(events.Plugin):
 
         trace: a traceback object for the exception
         """
+        # if the trace is a string, that means it was pickled/unpickled via the mp
+        # plugin, and is not a real traceback -- we won't be able to do anything with it
+        if isinstance(trace, str):
+            return
+
         assert_statement, token_descriptions = _collect_assert_data(trace)
 
         # no message was given

@@ -10,7 +10,13 @@ from nose2 import session
 from nose2.plugins import buffer
 from nose2.plugins.loader import discovery, testcases
 from nose2.plugins.mp import MultiProcess, procserver
-from nose2.tests._common import Conn, FunctionalTestCase, _method_name, support_file
+from nose2.tests._common import (
+    Conn,
+    FunctionalTestCase,
+    _method_name,
+    skip_if_running_in_daemon,
+    support_file,
+)
 
 
 class TestMpPlugin(FunctionalTestCase):
@@ -20,6 +26,7 @@ class TestMpPlugin(FunctionalTestCase):
         self.plugin = MultiProcess(session=self.session)
         self.plugin.testRunTimeout = 2
 
+    @skip_if_running_in_daemon
     def test_flatten_without_fixtures(self):
         sys.path.append(support_file("scenario/slow"))
         import test_slow as mod
@@ -32,6 +39,7 @@ class TestMpPlugin(FunctionalTestCase):
         flat = list(self.plugin._flatten(suite))
         self.assertEqual(len(flat), 3)
 
+    @skip_if_running_in_daemon
     def test_flatten_nested_suites(self):
         sys.path.append(support_file("scenario/slow"))
         import test_slow as mod
@@ -47,6 +55,7 @@ class TestMpPlugin(FunctionalTestCase):
         flat = list(self.plugin._flatten(suite2))
         self.assertEqual(len(flat), 3)
 
+    @skip_if_running_in_daemon
     def test_flatten_respects_module_fixtures(self):
         sys.path.append(support_file("scenario/module_fixtures"))
         import test_mf_testcase as mod
@@ -58,6 +67,7 @@ class TestMpPlugin(FunctionalTestCase):
         flat = list(self.plugin._flatten(suite))
         self.assertEqual(flat, ["test_mf_testcase"])
 
+    @skip_if_running_in_daemon
     def test_flatten_respects_class_fixtures(self):
         sys.path.append(support_file("scenario/class_fixtures"))
         import test_cf_testcase as mod
@@ -80,6 +90,7 @@ class TestMpPlugin(FunctionalTestCase):
             ],
         )
 
+    @skip_if_running_in_daemon
     def test_conn_prep(self):
         self.plugin.bind_host = None
         parent_conn, child_conn = self.plugin._prepConns()
@@ -94,6 +105,7 @@ class TestMpPlugin(FunctionalTestCase):
         self.assertIsInstance(child_conn, tuple)
         self.assertEqual(parent_conn.address, child_conn[:2])
 
+    @skip_if_running_in_daemon
     def test_conn_accept(self):
         parent_conn, child_conn = multiprocessing.Pipe()
         self.assertEqual(self.plugin._acceptConns(parent_conn), parent_conn)
@@ -120,6 +132,7 @@ class TestProcserver(FunctionalTestCase):
         super().setUp()
         self.session = session.Session()
 
+    @skip_if_running_in_daemon
     def test_dispatch_tests_receive_events(self):
         ssn = {
             "config": self.session.config,
@@ -198,6 +211,7 @@ Hello stdout
 
 
 class MPPluginTestRuns(FunctionalTestCase):
+    @skip_if_running_in_daemon
     def test_tests_in_package(self):
         proc = self.runIn(
             "scenario/tests_in_package", "-v", "--plugin=nose2.plugins.mp", "-N=2"
@@ -205,6 +219,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 25 tests")
         self.assertEqual(proc.poll(), 1)
 
+    @skip_if_running_in_daemon
     def test_package_in_lib(self):
         proc = self.runIn(
             "scenario/package_in_lib", "-v", "--plugin=nose2.plugins.mp", "-N=2"
@@ -212,6 +227,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 3 tests")
         self.assertEqual(proc.poll(), 1)
 
+    @skip_if_running_in_daemon
     def test_module_fixtures(self):
         proc = self.runIn(
             "scenario/module_fixtures", "-v", "--plugin=nose2.plugins.mp", "-N=2"
@@ -219,6 +235,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_class_fixtures(self):
         proc = self.runIn(
             "scenario/class_fixtures", "-v", "--plugin=nose2.plugins.mp", "-N=2"
@@ -226,6 +243,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 7 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_large_number_of_tests_stresstest(self):
         proc = self.runIn(
             "scenario/many_tests",
@@ -237,6 +255,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 600 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_socket_stresstest(self):
         proc = self.runIn(
             "scenario/many_tests_socket",
@@ -249,6 +268,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 600 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_too_many_procs(self):
         # Just need to run the mp plugin with less tests than
         # processes.
@@ -285,6 +305,7 @@ class MPPluginTestRuns(FunctionalTestCase):
             proc.kill()
         self.assertIsNone(exc, str(exc))
 
+    @skip_if_running_in_daemon
     def test_with_output_buffer(self):
         proc = self.runIn(
             "scenario/module_fixtures",
@@ -297,6 +318,7 @@ class MPPluginTestRuns(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_unknown_module(self):
         proc = self.runIn(
             "scenario/module_fixtures",
@@ -316,6 +338,7 @@ class MPPluginTestRuns(FunctionalTestCase):
 
 
 class MPTestClassSupport(FunctionalTestCase):
+    @skip_if_running_in_daemon
     def test_testclass_discover(self):
         proc = self.runIn(
             "scenario/test_classes_mp", "-v", "--plugin=nose2.plugins.mp", "-N=2"
@@ -323,6 +346,7 @@ class MPTestClassSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 13 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_by_module(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -334,6 +358,7 @@ class MPTestClassSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 8 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_by_class(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -345,6 +370,7 @@ class MPTestClassSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 8 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_parameters(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -356,6 +382,7 @@ class MPTestClassSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_generators(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -369,6 +396,7 @@ class MPTestClassSupport(FunctionalTestCase):
 
 
 class MPClassFixturesSupport(FunctionalTestCase):
+    @skip_if_running_in_daemon
     def test_testcase_class_fixtures(self):
         proc = self.runIn(
             "scenario/class_fixtures", "-v", "test_cf_testcase.Test.test_1"
@@ -377,6 +405,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testcase_class_fixtures_mp(self):
         proc = self.runIn(
             "scenario/class_fixtures",
@@ -389,6 +418,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testcase_class_fixtures_report_mp(self):
         proc = self.runIn(
             "scenario/class_fixtures",
@@ -413,6 +443,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_class_fixtures_and_parameters(self):
         proc = self.runIn(
             "scenario/test_classes_mp", "-v", "test_fixtures_mp.Test.test_params"
@@ -421,6 +452,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_class_fixtures_and_parameters_mp(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -433,6 +465,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_class_fixtures_and_generators(self):
         proc = self.runIn(
             "scenario/test_classes_mp", "-v", "test_fixtures_mp.Test.test_gen"
@@ -441,6 +474,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testclass_class_fixtures_and_generators_mp(self):
         proc = self.runIn(
             "scenario/test_classes_mp",
@@ -455,6 +489,7 @@ class MPClassFixturesSupport(FunctionalTestCase):
 
 
 class MPModuleFixturesSupport(FunctionalTestCase):
+    @skip_if_running_in_daemon
     def test_testcase_module_fixtures(self):
         proc = self.runIn(
             "scenario/module_fixtures", "-v", "test_mf_testcase.Test.test_1"
@@ -463,6 +498,7 @@ class MPModuleFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testcase_module_fixtures_mp(self):
         proc = self.runIn(
             "scenario/module_fixtures",
@@ -475,6 +511,7 @@ class MPModuleFixturesSupport(FunctionalTestCase):
         self.assertTestRunOutputMatches(proc, stderr="Ran 2 tests")
         self.assertEqual(proc.poll(), 0)
 
+    @skip_if_running_in_daemon
     def test_testcase_module_fixtures_report_mp(self):
         proc = self.runIn(
             "scenario/module_fixtures",

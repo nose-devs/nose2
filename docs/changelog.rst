@@ -13,6 +13,34 @@ testsuites.
 Unreleased
 ----------
 
+0.16.0 (2026-03-01)
+-------------------
+
+Added
+~~~~~
+
+* Added official support for Python 3.14.
+
+Changed
+~~~~~~~
+
+* ``nose2`` now explicitly uses a multiprocessing context for the ``mp`` plugin,
+  which ensures that it is isolated from any multiprocessing settings used by
+  applications under test. This ensures that the ``fork`` start method is always
+  used on POSIX systems. ``spawn`` is used on Windows. Thanks
+  :user:`JimmyDurandWesolowski` and :user:`airtower-luna`!
+
+Deprecated
+~~~~~~~~~~
+
+* The ``coverage`` plugin is now deprecated, and is no longer tested on newer
+  Python versions. It will be removed in a future version.
+
+Removed
+~~~~~~~
+
+* Removed support for Python 3.8.
+
 0.15.1 (2024-05-31)
 -------------------
 

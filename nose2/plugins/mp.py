@@ -16,7 +16,9 @@ from nose2 import events, loader, result, runner, session, util
 log = logging.getLogger(__name__)
 
 if platform.system() == "Windows":
-    MP_CTX = multiprocessing.get_context("spawn")
+    MP_CTX: (
+        multiprocessing.context.ForkContext | multiprocessing.context.SpawnContext
+    ) = multiprocessing.get_context("spawn")
 else:
     MP_CTX = multiprocessing.get_context("fork")
 

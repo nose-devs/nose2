@@ -49,7 +49,7 @@ repos:
         - "-L"
         - "assertIn"
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.18.1
+  rev: v2.20.0
   hooks:
     - id: pyproject-fmt
       additional_dependencies: ["tox>=4.9"]

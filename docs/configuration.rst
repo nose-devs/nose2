@@ -146,7 +146,7 @@ these options somewhere. Plugins that want to make use of nose2's
 *must* extract all of their config values in their ``__init__``
 methods.
 
-.. _Sphinx : http://sphinx.pocoo.org/
+.. _Sphinx : https://www.sphinx-doc.org/
 
 
 Test Runner Tips and Tweaks

@@ -30,4 +30,4 @@ docs explaining what your plugin does and how to use it. You can put
 those words in the ``*.rst`` file itself, or in the docstring of the module
 where your plugin lives.
 
-.. _Sphinx : http://sphinx.pocoo.org/
+.. _Sphinx : https://www.sphinx-doc.org/

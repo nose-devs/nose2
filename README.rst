@@ -181,7 +181,7 @@ If you want to make contributions, please read the `contributing`_ guide.
 
 .. _changelog: https://docs.nose2.io/en/latest/changelog.html
 
-.. _pytest: http://pytest.readthedocs.io/en/latest/
+.. _pytest: https://docs.pytest.org/en/latest/
 
 .. _contributing: https://github.com/nose-devs/nose2/blob/main/contributing.rst
 

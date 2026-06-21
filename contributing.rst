@@ -62,5 +62,5 @@ have ``pre-commit`` installed and run:
 .. _black: https://black.readthedocs.io/
 .. _github: https://github.com/nose-devs/nose2
 .. _pre-commit: https://pre-commit.com/
-.. _ruff: https://beta.ruff.rs/docs/
-.. _tox: http://pypi.python.org/pypi/tox
+.. _ruff: https://docs.astral.sh/ruff/
+.. _tox: https://pypi.org/project/tox/

@@ -1,9 +1,9 @@
 """
 Output test reports in junit-xml format.
 
-This plugin implements :func:`startTest`, :func:`testOutcome` and
-:func:`stopTestRun` to compile and then output a test report in
-junit-xml format. By default, the report is written to a file called
+This plugin implements :func:`startTest`, :func:`stopTest`,
+:func:`testOutcome` and :func:`stopTestRun` to compile and then output a test
+report in junit-xml format. By default, the report is written to a file called
 ``nose2-junit.xml`` in the current working directory.
 
 You can configure the output filename by setting ``path`` in a ``[junit-xml]``
@@ -145,6 +145,10 @@ class JUnitXmlReporter(events.Plugin):
         """Count test, record start time"""
         self.numtests += 1
         self._start = event.startTime
+
+    def stopTest(self, event):
+        """Clear the start time after all outcomes for a test are reported."""
+        self._start = None
 
     def testOutcome(self, event):
         """Add test outcome to xml tree"""
@@ -293,10 +297,7 @@ class JUnitXmlReporter(events.Plugin):
         try:
             return time.time() - self._start
         except Exception:
-            pass
-        finally:
-            self._start = None
-        return 0
+            return 0
 
     def _iso_timestamp(self):
         # in some cases, `self._start` is still None when this runs, convert to 0

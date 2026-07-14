@@ -201,6 +201,22 @@ class TestJunitXmlPlugin(TestCase):
         self.assertIsNone(skip.get("message"))
         self.assertIsNone(skip.text)
 
+    def test_subtest_timestamps_use_parent_start(self):
+        class SubTestCase(unittest.TestCase):
+            def test_failing_subtests(self):
+                for value in range(2):
+                    with self.subTest(value=value):
+                        self.fail()
+
+        test = SubTestCase("test_failing_subtests")
+        test(self.result)
+        timestamps = [
+            case.get("timestamp") for case in self.plugin.tree.findall("testcase")
+        ]
+        self.assertEqual(len(timestamps), 2)
+        self.assertEqual(timestamps[0], timestamps[1])
+        self.assertNotEqual(timestamps[0], "1970-01-01T00:00:00")
+
     def test_generator_timestamp_increases(self):
         gen = generators.Generators(session=self.session)
         gen.register()

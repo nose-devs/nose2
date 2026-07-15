@@ -13,6 +13,12 @@ testsuites.
 Unreleased
 ----------
 
+Fixed
+~~~~~
+
+* JUnit XML reports now use the containing test's start timestamp for every
+  failing subtest. (:issue:`567`)
+
 0.16.0 (2026-03-01)
 -------------------
 

@@ -19,6 +19,10 @@ Fixed
 * JUnit XML reports now use the containing test's start timestamp for every
   failing subtest. (:issue:`567`)
 
+* ``PluggableTestLoader.loadTestsFromNames`` no longer raises
+  ``UnboundLocalError`` when a plugin clears ``event.names`` without setting
+  ``event.handled``. An empty suite is loaded instead. (:issue:`445`)
+
 0.16.0 (2026-03-01)
 -------------------
 

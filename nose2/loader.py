@@ -64,6 +64,8 @@ class PluggableTestLoader:
                 suites = [self.loadTestsFromName(name, module) for name in event.names]
             elif module:
                 suites = self.loadTestsFromModule(module)
+            else:
+                suites = []
         if event.extraTests:
             suites.extend(event.extraTests)
         return self.suiteClass(suites)

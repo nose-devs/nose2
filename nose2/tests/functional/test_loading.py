@@ -335,3 +335,15 @@ class TestTestClassLoading(FunctionalTestCase):
                 r"FAILED \(failures=1, expected failures=1, unexpected successes=1\)"
             ),
         )
+
+
+class TestSkipTestInSetUpClass(FunctionalTestCase):
+    """SkipTest raised in setUpClass is a skip, not an error (issue #373)."""
+
+    def test_skiptest_in_setupclass_is_reported_as_skip(self):
+        proc = self.runIn("scenario/skip_in_class_setup", "-v")
+        self.assertTestRunOutputMatches(proc, stderr=r"OK \(skipped=1\)")
+        self.assertTestRunOutputMatches(proc, stderr=r"skipping the whole class")
+        # The skipped class must not be reported as an error.
+        self.assertTestRunOutputMatches(proc, stderr=r"Ran 1 test")
+        self.assertEqual(proc.poll(), 0)

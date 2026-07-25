@@ -74,6 +74,13 @@ class TestPluggableTestLoader(TestCase):
             "FakePlugin.loadTestsFromNames() was not called",
         )
 
+    def test_loader_from_names_without_names_or_module(self):
+        # a plugin may clear event.names without setting event.handled,
+        # which must produce an empty suite rather than UnboundLocalError
+        self.session.hooks.register("loadTestsFromNames", NameClearingPlugin())
+        suite = self.loader.loadTestsFromNames(["some_name"])
+        self.assertEqual(list(suite), [])
+
 
 class FakePlugin:
     def __init__(self) -> None:
@@ -92,3 +99,8 @@ class FakePlugin:
     def loadTestsFromNames(self, event):
         event.fakeLoadFromNames = True
         self.fakeLoadFromNames = True
+
+
+class NameClearingPlugin:
+    def loadTestsFromNames(self, event):
+        event.names = []

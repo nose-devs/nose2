@@ -143,12 +143,13 @@ class Scenario:
     def has_test_teardown(self, func):
         """Add a test case :func:`teardown` method to this group.
 
-        The :func:`teardown` method will run before each of the
+        The :func:`teardown` method will run after each of the
         tests in the containing group.
 
         A group may define any number of test case :func:`teardown`
         functions. They will execute in the order in which they are
-        defined.
+        defined. Nested groups' test case :func:`teardown` functions
+        run before their parent groups' functions.
 
         Test :func:`teardown` functions may optionally take one argument. If
         they do, they will be passed the :class:`unittest.TestCase`
@@ -278,8 +279,8 @@ class Scenario:
                     util.call_with_args_if_expected(func, self)
 
             attr["setUp"] = setUp
-        teardowns = (
-            getattr(parent_layer, "testTeardowns", []) + group._test_teardowns[:]
+        teardowns = group._test_teardowns[:] + getattr(
+            parent_layer, "testTeardowns", []
         )
         if teardowns:
 
@@ -315,8 +316,8 @@ class Scenario:
             "setups": group._setups[:],
             "testSetups": getattr(parent_layer, "testSetups", []) + group._test_setups,
             "teardowns": group._teardowns[:],
-            "testTeardowns": getattr(parent_layer, "testTeardowns", [])
-            + group._test_teardowns[:],
+            "testTeardowns": group._test_teardowns[:]
+            + getattr(parent_layer, "testTeardowns", []),
             "position": position,
             "mixins": (),
         }

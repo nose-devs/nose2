@@ -38,7 +38,7 @@ def ln(label, char="-", width=70):
 
 def valid_module_name(path):
     """Is ``path`` a valid module name?"""
-    return VALID_MODULE_RE.search(path)
+    return VALID_MODULE_RE.match(path)
 
 
 def name_from_path(path):

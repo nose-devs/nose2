@@ -14,7 +14,7 @@ import types
 
 __unittest = True
 IDENT_RE = re.compile(r"^[_a-zA-Z]\w*$", re.UNICODE)
-VALID_MODULE_RE = re.compile(r"[_a-zA-Z]\w*\.py$", re.UNICODE)
+_VALID_MODULE_RE = re.compile(r"^[_a-zA-Z]\w*\.py$", re.UNICODE)
 
 
 def ln(label, char="-", width=70):
@@ -36,9 +36,9 @@ def ln(label, char="-", width=70):
     return out
 
 
-def valid_module_name(path):
+def valid_module_name(path: str) -> bool:
     """Is ``path`` a valid module name?"""
-    return VALID_MODULE_RE.search(path)
+    return bool(_VALID_MODULE_RE.fullmatch(path))
 
 
 def name_from_path(path):

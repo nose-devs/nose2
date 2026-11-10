@@ -23,6 +23,11 @@ Fixed
   ``UnboundLocalError`` when a plugin clears ``event.names`` without setting
   ``event.handled``. An empty suite is loaded instead. (:issue:`445`)
 
+Removed
+~~~~~~~
+
+* Removed support for Python 3.9.
+
 0.16.0 (2026-03-01)
 -------------------
 

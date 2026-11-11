@@ -48,6 +48,7 @@ repos:
       args:
         - "-L"
         - "assertIn"
+      exclude: ^\.github/AI_POLICY\.md$
 - repo: https://github.com/tox-dev/pyproject-fmt
   rev: v2.30.3
   hooks:

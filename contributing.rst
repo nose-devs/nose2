@@ -3,6 +3,11 @@ Contributing to nose2
 
 Please do!
 
+.. important::
+
+  If you use LLMs / generative AI, please read our `AI Policy`_.
+
+
 The Basics
 ----------
 
@@ -64,3 +69,4 @@ have ``pre-commit`` installed and run:
 .. _pre-commit: https://pre-commit.com/
 .. _ruff: https://docs.astral.sh/ruff/
 .. _tox: https://pypi.org/project/tox/
+.. _AI Policy: https://github.com/nose-devs/nose2/blob/main/.github/AI_POLICY.md

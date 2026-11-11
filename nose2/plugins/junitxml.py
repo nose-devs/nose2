@@ -303,7 +303,11 @@ class JUnitXmlReporter(events.Plugin):
         # in some cases, `self._start` is still None when this runs, convert to 0
         # see: https://github.com/nose-devs/nose2/pull/505
         timestamp = self._start or 0
-        return str(datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc).replace(tzinfo=None).isoformat())
+        return str(
+            datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
+            .replace(tzinfo=None)
+            .isoformat()
+        )
 
 
 #

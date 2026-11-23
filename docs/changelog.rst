@@ -16,6 +16,9 @@ Unreleased
 Fixed
 ~~~~~
 
+* Such DSL test case teardowns now run from the innermost group to the
+  outermost group, preserving definition order within each group. (:issue:`430`)
+
 * JUnit XML reports now use the containing test's start timestamp for every
   failing subtest. (:issue:`567`)
 

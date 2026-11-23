@@ -3,6 +3,89 @@ from nose2.tools import such
 
 
 class TestSuchDSL(FunctionalTestCase):
+    def test_nested_test_fixture_order(self):
+        proc = self.runIn(
+            "such", "-v", "--plugin=nose2.plugins.layers", "test_fixture_order"
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 5 tests")
+        self.assertTestRunOutputMatches(proc, stderr=r"FAILED \(failures=1\)")
+        self.assertTestRunOutputMatches(proc, stderr="intentional failure")
+        self.assertEqual(proc.poll(), 1, proc.stderr.getvalue())
+        self.assertEqual(
+            proc.stdout.getvalue(),
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "parent test\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n"
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "child setup 1\n"
+            "child setup 2\n"
+            "child test\n"
+            "child teardown 1\n"
+            "child teardown 2\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n"
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "child setup 1\n"
+            "child setup 2\n"
+            "grandchild setup 1\n"
+            "grandchild setup 2\n"
+            "grandchild test\n"
+            "grandchild teardown 1\n"
+            "grandchild teardown 2\n"
+            "child teardown 1\n"
+            "child teardown 2\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n"
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "child setup 1\n"
+            "child setup 2\n"
+            "grandchild setup 1\n"
+            "grandchild setup 2\n"
+            "failing test\n"
+            "grandchild teardown 1\n"
+            "grandchild teardown 2\n"
+            "child teardown 1\n"
+            "child teardown 2\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n"
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "inherited test\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n",
+        )
+
+    def test_nested_test_fixture_order_by_name(self):
+        proc = self.runIn(
+            "such",
+            "-v",
+            "--plugin=nose2.plugins.layers",
+            "test_fixture_order.having grandchild.should run grandchild fixtures",
+        )
+        self.assertTestRunOutputMatches(proc, stderr="Ran 1 test")
+        self.assertEqual(proc.poll(), 0, proc.stderr.getvalue())
+        self.assertEqual(
+            proc.stdout.getvalue(),
+            "parent setup 1\n"
+            "parent setup 2\n"
+            "child setup 1\n"
+            "child setup 2\n"
+            "grandchild setup 1\n"
+            "grandchild setup 2\n"
+            "grandchild test\n"
+            "grandchild teardown 1\n"
+            "grandchild teardown 2\n"
+            "child teardown 1\n"
+            "child teardown 2\n"
+            "parent teardown 1\n"
+            "parent teardown 2\n",
+        )
+
     def test_runs_example(self):
         proc = self.runIn("such", "-v", "--plugin=nose2.plugins.layers", "test_such")
         self.assertTestRunOutputMatches(proc, stderr="Ran 9 tests")
